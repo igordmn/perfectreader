@@ -1,0 +1,48 @@
+import Utils
+
+apply plugin: 'sonar-runner'
+
+ext {
+    buildCounter = Integer.getInteger('build.counter', 0)
+    signProperties = Utils.rootProperties('.sign/sign.properties')
+}
+
+allprojects {
+    buildscript {
+        repositories {
+            jcenter()
+            maven {
+                url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            }
+            maven {
+                url 'https://github.com/igordmn/mvn-repo/raw/master/releases'
+            }
+            maven {
+                url 'https://github.com/igordmn/mvn-repo/raw/master/snapshots'
+            }
+        }
+    }
+
+    repositories {
+        jcenter()
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
+        maven {
+            url 'https://github.com/igordmn/mvn-repo/raw/master/releases'
+        }
+        maven {
+            url 'https://github.com/igordmn/mvn-repo/raw/master/snapshots'
+        }
+    }
+
+    sonarRunner {
+        sonarProperties {
+            property 'sonar.sourceEncoding', 'UTF-8'
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+}

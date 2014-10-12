@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="appName">Perfect Reader</string>
+    <string name="bookNotLoaded1">Книга не загружена</string>
+    <string name="bookNotLoaded2">Пожалуйста, откройте книгу через файловый мененджер</string>
+    <string name="bookTooBig">Книги размером больше 1 Мб не поддерживаются</string>
+</resources>

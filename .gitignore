@@ -1,0 +1,8 @@
+/.gradle/
+/.android-sdk/
+/.sign/
+/.idea/
+build/
+/local.properties
+*.iml
+*.log

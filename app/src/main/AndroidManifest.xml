@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.dmi.perfectreader">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-feature
+        android:name="string"
+        android:required="true"
+        android:glEsVersion="0x00020000"/>
+
+    <application
+        android:name=".main.MainApplication_"
+        android:allowBackup="true"
+        android:label="Perfect Reader"
+        android:icon="@drawable/ic_launcher"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".main.MainActivity_"
+            android:label="@string/appName"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data
+                    android:scheme="file"
+                    android:host="*"
+                    android:mimeType="text/plain"/>
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest> 
