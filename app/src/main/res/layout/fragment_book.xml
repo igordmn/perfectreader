@@ -6,9 +6,9 @@
     android:layout_height="match_parent"
     tools:context="com.dmi.perfectreader.book.BookFragment_">
 
-    <android.opengl.GLSurfaceView
-        android:id="@+id/glSurfaceView"
+    <com.dmi.perfectreader.main.PageBookView
+        android:id="@+id/pageBookView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 </RelativeLayout>
