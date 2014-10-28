@@ -49,10 +49,14 @@ public class PageBookView extends FrameLayout {
         if (location.segmentIndex() < segmentUrls.size() - 1) {
             segmentUrl = segmentUrls.get(location.segmentIndex() + 1);
             nextSegment.loadUrl(segmentUrl);
+        } else {
+            nextSegment.loadUrl(null);
         }
         if (location.segmentIndex() > 0) {
             segmentUrl = segmentUrls.get(location.segmentIndex() - 1);
             previewSegment.loadUrl(segmentUrl);
+        } else {
+            previewSegment.loadUrl(null);
         }
     }
 
@@ -77,12 +81,14 @@ public class PageBookView extends FrameLayout {
             previewSegment = currentSegment;
             currentSegment = nextSegment;
             nextSegment = newNextSegment;
-            reinitSegments();
             currentLocation.setSegmentIndex(currentLocation.segmentIndex() + 1);
             if (currentLocation.segmentIndex() < segmentUrls.size() - 1) {
                 String segmentUrl = segmentUrls.get(currentLocation.segmentIndex() + 1);
                 nextSegment.loadUrl(segmentUrl);
+            } else {
+                nextSegment.loadUrl(null);
             }
+            reinitSegments();
         } else {
             currentSegment.goNextPage();
         }
@@ -96,12 +102,14 @@ public class PageBookView extends FrameLayout {
             nextSegment = currentSegment;
             currentSegment = previewSegment;
             previewSegment = newPreviewSegment;
-            reinitSegments();
             currentLocation.setSegmentIndex(currentLocation.segmentIndex() - 1);
             if (currentLocation.segmentIndex() > 0) {
                 String segmentUrl = segmentUrls.get(currentLocation.segmentIndex() - 1);
                 previewSegment.loadUrl(segmentUrl);
+            } else {
+                previewSegment.loadUrl(null);
             }
+            reinitSegments();
         } else {
             currentSegment.goPreviewPage();
         }
@@ -148,14 +156,3 @@ public class PageBookView extends FrameLayout {
         previewSegment.setLineHeight(height);
     }
 }
-
-//final Bitmap bitmap = Bitmap.createBitmap(480, 800, Bitmap.Config.ARGB_8888);
-//final Canvas c = new Canvas(bitmap);
-//c.translate(0, 0);
-//        view.draw(c);
-//        try (OutputStream fos = new BufferedOutputStream(new FileOutputStream("/sdcard/1.png"))) { ///storage/sdcard1
-//        bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, fos);
-//        } catch (IOException e) {
-//        throw new RuntimeException(e);
-//        }
-//        bitmap.recycle();

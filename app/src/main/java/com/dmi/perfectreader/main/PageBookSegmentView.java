@@ -16,14 +16,20 @@ import android.widget.FrameLayout;
 
 import com.dmi.perfectreader.util.lang.LongPercent;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static com.dmi.perfectreader.util.lang.LongPercent.valuePercent;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Math.round;
+import static java.lang.String.format;
 
+// todo отрефакторить loadId
 public class PageBookSegmentView extends FrameLayout {
     private final WebView webView;
 
     private boolean isLoaded = false;
+    private String loadingUrl;
+    private final AtomicInteger loadId = new AtomicInteger();
 
     private int pageCount = 0;
     private int totalWidth = 0;
@@ -33,6 +39,8 @@ public class PageBookSegmentView extends FrameLayout {
     public PageBookSegmentView(Context context) {
         super(context);
         webView = createWebView(context);
+        webView.setVisibility(INVISIBLE);
+        setBackgroundColor(Color.WHITE);
         addView(webView);
     }
 
@@ -66,11 +74,13 @@ public class PageBookSegmentView extends FrameLayout {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(final WebView view, String url) {
-                String script =
-                        "__javaBridge.setScreenWidth(document.body.clientWidth);\n" +
-                        "__javaBridge.setTotalWidth(document.body.scrollWidth);\n" +
-                        "__javaBridge.finishLoad();";
-                webView.loadUrl("javascript:" + script);
+                if (url.equals(loadingUrl)) {
+                    String script =
+                            format("__javaBridge.setScreenWidth(%s, document.body.clientWidth);\n", loadId.get()) +
+                            format("__javaBridge.setTotalWidth(%s, document.body.scrollWidth);\n", loadId.get()) +
+                            format("__javaBridge.finishLoad(%s);", loadId.get());
+                    webView.loadUrl("javascript:" + script);
+                }
             }
         });
         webView.addJavascriptInterface(new JavaBridge(), "__javaBridge");
@@ -79,11 +89,16 @@ public class PageBookSegmentView extends FrameLayout {
     }
 
     public void loadUrl(String url) {
+        loadId.incrementAndGet();
         isLoaded = false;
+        webView.setVisibility(INVISIBLE);
         webView.stopLoading();
-        loadBlank();
         if (url != null) {
+            loadingUrl = url;
             webView.loadUrl(url);
+        } else {
+            loadBlank();
+            loadingUrl = null;
         }
     }
 
@@ -208,20 +223,28 @@ public class PageBookSegmentView extends FrameLayout {
 
     private class JavaBridge {
         @JavascriptInterface
-        public void setScreenWidth(int screenWidth) {
+        public void setScreenWidth(int loadId, int screenWidth) {
             PageBookSegmentView.this.screenWidth = screenWidth;
         }
 
         @JavascriptInterface
-        public void setTotalWidth(int totalWidth) {
+        public void setTotalWidth(int loadId, int totalWidth) {
             PageBookSegmentView.this.totalWidth = totalWidth;
-            pageCount = (int) round(totalWidth / screenWidth);
+            pageCount = round(totalWidth / screenWidth);
         }
 
         @JavascriptInterface
-        public void finishLoad() {
-            isLoaded =  true;
-            scrollToCurrentViewport();
+        public void finishLoad(final int loadId) {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    if (PageBookSegmentView.this.loadId.get() == loadId) {
+                        webView.setVisibility(VISIBLE);
+                        isLoaded = true;
+                        scrollToCurrentViewport();
+                    }
+                }
+            });
         }
     }
 }
