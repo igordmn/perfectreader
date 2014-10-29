@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<FrameLayout
+    android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.dmi.perfectreader.book.BookFragment_">
 
-    <com.dmi.perfectreader.main.PageBookView
+    <com.dmi.perfectreader.book.PageAnimationView
+        android:id="@+id/pageAnimationView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <com.dmi.perfectreader.book.PageBookView
         android:id="@+id/pageBookView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="invisible"/>
 
-</RelativeLayout>
+</FrameLayout>

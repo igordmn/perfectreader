@@ -6,15 +6,15 @@ import static java.lang.Math.sqrt;
 
 public class SlidePageAnimation implements PageAnimation {
     private float pageWidth = 100;
-    private float timeForOnePage = 1;
+    private float timeForOnePageInSeconds = 1;
 
     private float destinationPageOffset = 0;
 
     SlidePageAnimation() {
     }
 
-    public SlidePageAnimation(float timeForOnePage) {
-        this.timeForOnePage = timeForOnePage;
+    public SlidePageAnimation(float timeForOnePageInSeconds) {
+        this.timeForOnePageInSeconds = timeForOnePageInSeconds;
     }
 
     // t = sqrt(d)/t0
@@ -41,8 +41,8 @@ public class SlidePageAnimation implements PageAnimation {
         this.pageWidth = pageWidth;
     }
 
-    public void setTimeForOnePage(float timeInSeconds) {
-        this.timeForOnePage = timeInSeconds;
+    public void setTimeForOnePageInSeconds(float timeInSeconds) {
+        this.timeForOnePageInSeconds = timeInSeconds;
     }
 
     @Override
@@ -76,14 +76,14 @@ public class SlidePageAnimation implements PageAnimation {
     @Override
     public void update(float dt) {
         if (destinationPageOffset > 0) {
-            float timeForStop = computeTimeByDistance(destinationPageOffset / pageWidth, timeForOnePage);
-            destinationPageOffset = computeDistanceByTime(timeForStop - dt, timeForOnePage) * pageWidth;
+            float timeForStop = computeTimeByDistance(destinationPageOffset / pageWidth, timeForOnePageInSeconds);
+            destinationPageOffset = computeDistanceByTime(timeForStop - dt, timeForOnePageInSeconds) * pageWidth;
             if (destinationPageOffset <= 0) {
                 reset();
             }
         } else if (destinationPageOffset < 0) {
-            float timeForStop = computeTimeByDistance(-destinationPageOffset / pageWidth, timeForOnePage);
-            destinationPageOffset = -computeDistanceByTime(timeForStop - dt, timeForOnePage) * pageWidth;
+            float timeForStop = computeTimeByDistance(-destinationPageOffset / pageWidth, timeForOnePageInSeconds);
+            destinationPageOffset = -computeDistanceByTime(timeForStop - dt, timeForOnePageInSeconds) * pageWidth;
             if (destinationPageOffset >= 0) {
                 reset();
             }

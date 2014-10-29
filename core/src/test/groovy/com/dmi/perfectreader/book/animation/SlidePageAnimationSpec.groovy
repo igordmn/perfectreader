@@ -15,7 +15,7 @@ class SlidePageAnimationSpec extends Specification {
     def "should move to next page"(float pageWidth, float timeForOnePage) {
         given:
         animation.setPageWidth(pageWidth)
-        animation.setTimeForOnePage(timeForOnePage)
+        animation.setTimeForOnePageInSeconds(timeForOnePage)
         animation.reset()
 
         expect:
@@ -59,7 +59,7 @@ class SlidePageAnimationSpec extends Specification {
     def "should move to preview page"(float pageWidth, float timeForOnePage) {
         given:
         animation.setPageWidth(pageWidth)
-        animation.setTimeForOnePage(timeForOnePage)
+        animation.setTimeForOnePageInSeconds(timeForOnePage)
         animation.reset()
 
         expect:
@@ -103,7 +103,7 @@ class SlidePageAnimationSpec extends Specification {
     def "should move to second next page"(float pageWidth, float timeForOnePage) {
         given:
         animation.setPageWidth(pageWidth)
-        animation.setTimeForOnePage(timeForOnePage)
+        animation.setTimeForOnePageInSeconds(timeForOnePage)
         animation.reset()
 
         expect:
@@ -141,7 +141,7 @@ class SlidePageAnimationSpec extends Specification {
     def "should move to next page, then move to preview page"(float pageWidth, float timeForOnePage) {
         given:
         animation.setPageWidth(pageWidth)
-        animation.setTimeForOnePage(timeForOnePage)
+        animation.setTimeForOnePageInSeconds(timeForOnePage)
         animation.reset()
 
         expect:
@@ -163,7 +163,7 @@ class SlidePageAnimationSpec extends Specification {
     def "should move to next page, then after short wait move to preview page"(float pageWidth, float timeForOnePage) {
         given:
         animation.setPageWidth(pageWidth)
-        animation.setTimeForOnePage(timeForOnePage)
+        animation.setTimeForOnePageInSeconds(timeForOnePage)
         animation.reset()
 
         expect:
@@ -239,7 +239,7 @@ class SlidePageAnimationSpec extends Specification {
     def "should draw not moving pages"(float pageWidth, float timeForOnePage) {
         when:
         animation.setPageWidth(pageWidth)
-        animation.setTimeForOnePage(timeForOnePage)
+        animation.setTimeForOnePageInSeconds(timeForOnePage)
         pageDrawer.clearInfo()
         animation.setDestinationPageOffset(0)
         animation.drawPages(pageDrawer, pageWidth)
@@ -255,7 +255,7 @@ class SlidePageAnimationSpec extends Specification {
     def "should draw moving to next page"(float pageWidth, float timeForOnePage) {
         when:
         animation.setPageWidth(pageWidth)
-        animation.setTimeForOnePage(timeForOnePage)
+        animation.setTimeForOnePageInSeconds(timeForOnePage)
         pageDrawer.clearInfo()
         animation.setDestinationPageOffset(pageWidth * 1 / 4 as float)
         animation.drawPages(pageDrawer, pageWidth)
@@ -314,7 +314,7 @@ class SlidePageAnimationSpec extends Specification {
     def "should draw moving to preview page"(float pageWidth, float timeForOnePage) {
         when:
         animation.setPageWidth(pageWidth)
-        animation.setTimeForOnePage(timeForOnePage)
+        animation.setTimeForOnePageInSeconds(timeForOnePage)
         pageDrawer.clearInfo()
         animation.setDestinationPageOffset(-pageWidth * 1 / 4 as float)
         animation.drawPages(pageDrawer, pageWidth)
@@ -373,7 +373,7 @@ class SlidePageAnimationSpec extends Specification {
     def "should draw pages on big screen"(float pageWidth, float timeForOnePage) {
         when:
         animation.setPageWidth(pageWidth)
-        animation.setTimeForOnePage(timeForOnePage)
+        animation.setTimeForOnePageInSeconds(timeForOnePage)
         pageDrawer.clearInfo()
         animation.setDestinationPageOffset(0)
         animation.drawPages(pageDrawer, pageWidth * 17 / 16 as float)
@@ -400,7 +400,7 @@ class SlidePageAnimationSpec extends Specification {
     def "should draw pages on small screen"(float pageWidth, float timeForOnePage) {
         when:
         animation.setPageWidth(pageWidth)
-        animation.setTimeForOnePage(timeForOnePage)
+        animation.setTimeForOnePageInSeconds(timeForOnePage)
         pageDrawer.clearInfo()
         animation.setDestinationPageOffset(0)
         animation.drawPages(pageDrawer, pageWidth * 3 / 16 as float)

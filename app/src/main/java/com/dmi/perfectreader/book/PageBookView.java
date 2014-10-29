@@ -1,7 +1,8 @@
-package com.dmi.perfectreader.main;
+package com.dmi.perfectreader.book;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
@@ -11,8 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
-public class PageBookView extends FrameLayout {
+public class PageBookView extends FrameLayout implements PagesDrawer {
+    private static final BookLocation PRECREATED_CURRENT_LOCATION = new BookLocation(0, LongPercent.ZERO);
+
+    private PageAnimationView pageAnimationView;
+
     private PageBookSegmentView currentSegment;
     private PageBookSegmentView nextSegment;
     private PageBookSegmentView previewSegment;
@@ -29,6 +35,9 @@ public class PageBookView extends FrameLayout {
         currentSegment = new PageBookSegmentView(context);
         nextSegment = new PageBookSegmentView(context);
         previewSegment = new PageBookSegmentView(context);
+        currentSegment.setOnInvalidateListener(new SegmentOnInvalidateListener(currentSegment));
+        nextSegment.setOnInvalidateListener(new SegmentOnInvalidateListener(nextSegment));
+        previewSegment.setOnInvalidateListener(new SegmentOnInvalidateListener(previewSegment));
         currentSegment.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         nextSegment.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         previewSegment.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -38,12 +47,22 @@ public class PageBookView extends FrameLayout {
         addView(previewSegment);
     }
 
+    public void setPageAnimationView(PageAnimationView pageAnimationView) {
+        checkState(this.pageAnimationView == null || pageAnimationView == this.pageAnimationView);
+        this.pageAnimationView = pageAnimationView;
+        pageAnimationView.setPagesDrawer(this);
+    }
+
     public void addSegmentUrl(String segmentUrl) {
         segmentUrls.add(segmentUrl);
     }
 
     public void goLocation(BookLocation location) {
-        this.currentLocation = new BookLocation(location.segmentIndex(), location.percent());
+        if (currentLocation == null) {
+            currentLocation = PRECREATED_CURRENT_LOCATION;
+        }
+        currentLocation.setSegmentIndex(location.segmentIndex());
+        currentLocation.setPercent(location.percent());
         String segmentUrl = segmentUrls.get(location.segmentIndex());
         currentSegment.loadUrl(segmentUrl);
         if (location.segmentIndex() < segmentUrls.size() - 1) {
@@ -58,10 +77,7 @@ public class PageBookView extends FrameLayout {
         } else {
             previewSegment.loadUrl(null);
         }
-    }
-
-    public boolean isCurrentPageLoaded() {
-        return currentSegment.isLoaded();
+        pageAnimationView.moveLocation(currentLocation);
     }
 
     public boolean canGoNextPage() {
@@ -93,6 +109,7 @@ public class PageBookView extends FrameLayout {
             currentSegment.goNextPage();
         }
         currentLocation.setPercent(currentSegment.currentPercent());
+        pageAnimationView.moveNext(currentLocation);
     }
 
     public void goPreviewPage() {
@@ -114,6 +131,7 @@ public class PageBookView extends FrameLayout {
             currentSegment.goPreviewPage();
         }
         currentLocation.setPercent(currentSegment.currentPercent());
+        pageAnimationView.movePreview(currentLocation);
     }
 
     private void reinitSegments() {
@@ -124,23 +142,42 @@ public class PageBookView extends FrameLayout {
         nextSegment.setVisibility(INVISIBLE);
     }
 
-    public void drawCurrentPage(Canvas canvas) {
-        currentSegment.drawCurrentPage(canvas);
-    }
-
-    public void drawNextPage(Canvas canvas) {
-        if (currentSegment.isLastPage()) {
-            currentSegment.drawNextPage(canvas);
+    @Override
+    public void drawPage(BookLocation location, int relativeIndex, Canvas canvas) {
+        if (location.segmentIndex() == currentLocation.segmentIndex()) {
+            drawPage(location, relativeIndex, canvas, previewSegment, currentSegment, nextSegment);
+        } else if (location.segmentIndex() == currentLocation.segmentIndex() + 1) {
+            drawPage(location, relativeIndex, canvas, currentSegment, nextSegment, null);
+        } else if (location.segmentIndex() == currentLocation.segmentIndex() - 1) {
+            drawPage(location, relativeIndex, canvas, null, previewSegment, currentSegment);
         } else {
-            nextSegment.drawCurrentPage(canvas);
+            canvas.drawColor(Color.WHITE);
         }
     }
 
-    public void drawPreviewPage(Canvas canvas) {
-        if (currentSegment.isFirstPage()) {
-            previewSegment.drawPreviewPage(canvas);
+    private static void drawPage(BookLocation location, int relativeIndex, Canvas canvas,
+                                 PageBookSegmentView previewSegment,
+                                 PageBookSegmentView currentSegment,
+                                 PageBookSegmentView nextSegment) {
+        if (currentSegment != null && currentSegment.isLoaded()) {
+            int pageIndex = currentSegment.percentToPage(location.percent()) + relativeIndex;
+            if (pageIndex >= 0 && pageIndex < currentSegment.pageCount()) {
+                currentSegment.drawPage(pageIndex, canvas);
+            } else if (pageIndex < 0) {
+                if (previewSegment != null && previewSegment.isLoaded()) {
+                    previewSegment.drawPage(previewSegment.pageCount() + pageIndex, canvas);
+                } else {
+                    canvas.drawColor(Color.WHITE);
+                }
+            } else if (pageIndex >= currentSegment.pageCount()) {
+                if (nextSegment != null && nextSegment.isLoaded()) {
+                    nextSegment.drawPage(pageIndex - currentSegment.pageCount(), canvas);
+                } else {
+                    canvas.drawColor(Color.WHITE);
+                }
+            }
         } else {
-            currentSegment.drawCurrentPage(canvas);
+            canvas.drawColor(Color.WHITE);
         }
     }
 
@@ -154,5 +191,22 @@ public class PageBookView extends FrameLayout {
         currentSegment.setLineHeight(height);
         nextSegment.setLineHeight(height);
         previewSegment.setLineHeight(height);
+    }
+
+    private class SegmentOnInvalidateListener implements PageBookSegmentView.OnInvalidateListener {
+        private PageBookSegmentView segment;
+
+        private SegmentOnInvalidateListener(PageBookSegmentView segment) {
+            this.segment = segment;
+        }
+
+        @Override
+        public void onInvalidate() {
+            if (segment == currentSegment ||
+                (segment == nextSegment && currentSegment.isLoaded() && currentSegment.isLastPage()) ||
+                (segment == previewSegment && currentSegment.isLoaded() && currentSegment.isFirstPage())) {
+                pageAnimationView.postRefresh();
+            }
+        }
     }
 }

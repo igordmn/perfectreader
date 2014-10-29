@@ -99,6 +99,12 @@ public class MainActivity extends Activity {
         return bookFragment.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
+        BookFragment bookFragment = bookFragment(getFragmentManager());
+        return bookFragment.onKeyUp(keyCode, event) || super.onKeyUp(keyCode, event);
+    }
+
     private void toggleMenu() {
         FragmentManager fragmentManager = getFragmentManager();
         String tag = MenuFragment.class.getName();

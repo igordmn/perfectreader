@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+// todo заменить везде LongPercent на long. Все операции производить с помощью static методов
 public class LongPercent implements Serializable {
     public static LongPercent ZERO = new LongPercent(0);
     public static LongPercent HUNDRED = new LongPercent(Long.MAX_VALUE);

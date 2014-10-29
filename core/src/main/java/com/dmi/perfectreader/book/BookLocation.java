@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.main;
+package com.dmi.perfectreader.book;
 
 import com.dmi.perfectreader.util.lang.LongPercent;
 

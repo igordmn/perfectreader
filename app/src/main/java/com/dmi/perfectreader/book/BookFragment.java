@@ -8,9 +8,8 @@ import android.view.View;
 
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.asset.AssetPaths;
+import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 import com.dmi.perfectreader.book.position.Position;
-import com.dmi.perfectreader.main.BookLocation;
-import com.dmi.perfectreader.main.PageBookView;
 import com.dmi.perfectreader.util.android.Units;
 import com.dmi.perfectreader.util.lang.LongPercent;
 
@@ -24,6 +23,7 @@ import java.io.File;
 
 @EFragment(R.layout.fragment_book)
 public class BookFragment extends Fragment {
+    private final static float TIME_FOR_ONE_PAGE_IN_SECONDS = 1;
     private final static float TOUCH_SENSITIVITY = 8;
 
     @FragmentArg
@@ -32,6 +32,8 @@ public class BookFragment extends Fragment {
     protected Position bookPosition;
     @ViewById
     protected PageBookView pageBookView;
+    @ViewById
+    protected PageAnimationView pageAnimationView;
     @Bean
     protected AssetPaths assetPaths;
 
@@ -47,10 +49,12 @@ public class BookFragment extends Fragment {
 
     @AfterViews
     protected void initViews() {
+        pageAnimationView.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_PAGE_IN_SECONDS));
         pageBookView.addSegmentUrl("file:///android_asset/testBook/content_1m.html");
         pageBookView.addSegmentUrl("file:///android_asset/testBook/content_2m.html");
         pageBookView.addSegmentUrl("file:///android_asset/testBook/content_3m.html");
         pageBookView.addSegmentUrl("file:///android_asset/testBook/content_4m.html");
+        pageBookView.setPageAnimationView(pageAnimationView);
         pageBookView.goLocation(new BookLocation(0, LongPercent.ZERO));
     }
 
@@ -81,5 +85,9 @@ public class BookFragment extends Fragment {
         } else {
             return false;
         }
+    }
+
+    public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
+        return keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP;
     }
 }

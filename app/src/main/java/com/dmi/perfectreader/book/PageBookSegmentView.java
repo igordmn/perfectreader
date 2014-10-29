@@ -1,13 +1,15 @@
-package com.dmi.perfectreader.main;
+package com.dmi.perfectreader.book;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
-import android.util.AttributeSet;
+import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewParent;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -20,12 +22,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.dmi.perfectreader.util.lang.LongPercent.valuePercent;
 import static com.google.common.base.Preconditions.checkState;
+import static java.lang.Math.min;
 import static java.lang.Math.round;
 import static java.lang.String.format;
 
 // todo отрефакторить loadId
 public class PageBookSegmentView extends FrameLayout {
     private final WebView webView;
+
+    private OnInvalidateListener onInvalidateListener;
 
     private boolean isLoaded = false;
     private String loadingUrl;
@@ -44,21 +49,13 @@ public class PageBookSegmentView extends FrameLayout {
         addView(webView);
     }
 
-    public PageBookSegmentView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        webView = createWebView(context);
-        addView(webView);
-    }
-
-    public PageBookSegmentView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        webView = createWebView(context);
-        addView(webView);
+    public void setOnInvalidateListener(OnInvalidateListener onInvalidateListener) {
+        this.onInvalidateListener = onInvalidateListener;
     }
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     private WebView createWebView(Context context) {
-        final WebView webView = new WebView(context);
+        final WebView webView = new MyWebView(context);
         webView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -162,6 +159,16 @@ public class PageBookSegmentView extends FrameLayout {
         return pageCount;
     }
 
+    public LongPercent pageToPercent(int page) {
+        checkState(isLoaded());
+        return valuePercent(page, pageCount);
+    }
+
+    public int percentToPage(LongPercent percent) {
+        checkState(isLoaded());
+        return min((int) round(percent.multiply(totalWidth) / screenWidth), pageCount - 1);
+    }
+
     public boolean isLastPage() {
         checkState(isLoaded());
         return currentPage() == pageCount - 1;
@@ -172,53 +179,29 @@ public class PageBookSegmentView extends FrameLayout {
         return currentPage() == 0;
     }
 
-    public void drawCurrentPage(Canvas canvas) {
-        canvas.save();
-        canvas.translate(-currentPage() * screenWidth, 0);
-        if (isLoaded()) {
+    public void drawPage(int pageIndex, Canvas canvas) {
+        if (isLoaded() && pageIndex >= 0 && pageIndex < pageCount) {
+            canvas.save();
+            canvas.translate(-pageIndex * screenWidth, 0);
             webView.draw(canvas);
+            canvas.restore();
         } else {
             canvas.drawColor(Color.WHITE);
         }
-        canvas.restore();
-    }
-
-    public void drawNextPage(Canvas canvas) {
-        checkState(isLoaded());
-        canvas.save();
-        canvas.translate(-(currentPage() + 1) * screenWidth, 0);
-        if (isLoaded()) {
-            webView.draw(canvas);
-        } else {
-            canvas.drawColor(Color.WHITE);
-        }
-        canvas.restore();
-    }
-
-    public void drawPreviewPage(Canvas canvas) {
-        checkState(isLoaded());
-        canvas.save();
-        canvas.translate(-(currentPage() - 1) * screenWidth, 0);
-        if (isLoaded()) {
-            webView.draw(canvas);
-        } else {
-            canvas.drawColor(Color.WHITE);
-        }
-        canvas.restore();
     }
 
     public void setFontSize(float size) {
-        checkState(isLoaded());
         throw new UnsupportedOperationException();
     }
 
     public void setLineHeight(float height) {
-        checkState(isLoaded());
         throw new UnsupportedOperationException();
     }
 
-    private LongPercent pageToPercent(int page) {
-        return valuePercent(page, pageCount);
+    private void notifyOnInvalidate() {
+        if (isLoaded && onInvalidateListener != null) {
+            onInvalidateListener.onInvalidate();
+        }
     }
 
     private class JavaBridge {
@@ -242,9 +225,43 @@ public class PageBookSegmentView extends FrameLayout {
                         webView.setVisibility(VISIBLE);
                         isLoaded = true;
                         scrollToCurrentViewport();
+                        notifyOnInvalidate();
                     }
                 }
             });
         }
+    }
+
+    private class MyWebView extends WebView {
+        public MyWebView(Context context) {
+            super(context);
+        }
+
+        @Override
+        public ViewParent invalidateChildInParent(int[] location, @NonNull Rect dirty) {
+            return super.invalidateChildInParent(location, dirty);
+        }
+
+        @Override
+        public void invalidate(@NonNull Rect dirty) {
+            super.invalidate(dirty);
+            notifyOnInvalidate();
+        }
+
+        @Override
+        public void invalidate(int l, int t, int r, int b) {
+            super.invalidate(l, t, r, b);
+            notifyOnInvalidate();
+        }
+
+        @Override
+        public void invalidate() {
+            super.invalidate();
+            notifyOnInvalidate();
+        }
+    }
+
+    public static interface OnInvalidateListener {
+        void onInvalidate();
     }
 }
