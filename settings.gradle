@@ -1,2 +1,2 @@
 rootProject.name = 'perfectreader'
-include ':util:test', ':core', ':app'
+include ':util:test', ':readiumSdk', ':core', ':app'
