@@ -20,6 +20,8 @@ import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @EFragment(R.layout.fragment_book)
 public class BookFragment extends Fragment {
@@ -50,12 +52,7 @@ public class BookFragment extends Fragment {
     @AfterViews
     protected void initViews() {
         pageAnimationView.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_PAGE_IN_SECONDS));
-        pageBookView.addSegmentUrl("file:///android_asset/testBook/content_1m.html");
-        pageBookView.addSegmentUrl("file:///android_asset/testBook/content_2m.html");
-        pageBookView.addSegmentUrl("file:///android_asset/testBook/content_3m.html");
-        pageBookView.addSegmentUrl("file:///android_asset/testBook/content_4m.html");
         pageBookView.setPageAnimationView(pageAnimationView);
-        pageBookView.goLocation(new BookLocation(0, LongPercent.ZERO));
     }
 
     public void goPosition(Position position) {
@@ -69,6 +66,14 @@ public class BookFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         touchSensitivityInPixels = new Units(getActivity()).dipToPx(TOUCH_SENSITIVITY);
+
+        List<String> files = new ArrayList<>();
+        files.add("file:///android_asset/testBook/content_1m.html");
+        files.add("file:///android_asset/testBook/content_2m.html");
+        files.add("file:///android_asset/testBook/content_3m.html");
+        files.add("file:///android_asset/testBook/content_4m.html");
+        pageBookView.setBookData(new BookData(files));
+        pageBookView.goLocation(new BookLocation(0, LongPercent.ZERO));
     }
 
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {

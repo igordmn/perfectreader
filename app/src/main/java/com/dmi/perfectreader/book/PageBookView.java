@@ -8,9 +8,6 @@ import android.widget.FrameLayout;
 
 import com.dmi.perfectreader.util.lang.LongPercent;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -23,7 +20,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     private PageBookSegmentView nextSegment;
     private PageBookSegmentView previewSegment;
 
-    private final List<String> segmentUrls = new ArrayList<>();
+    private BookData bookData = BookData.EMPTY;
 
     private BookLocation currentLocation = null;
 
@@ -53,8 +50,8 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         pageAnimationView.setPagesDrawer(this);
     }
 
-    public void addSegmentUrl(String segmentUrl) {
-        segmentUrls.add(segmentUrl);
+    public void setBookData(BookData bookData) {
+        this.bookData = bookData;
     }
 
     public void goLocation(BookLocation location) {
@@ -63,16 +60,16 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         }
         currentLocation.setSegmentIndex(location.segmentIndex());
         currentLocation.setPercent(location.percent());
-        String segmentUrl = segmentUrls.get(location.segmentIndex());
+        String segmentUrl = bookData.segmentFile(location.segmentIndex());
         currentSegment.loadUrl(segmentUrl);
-        if (location.segmentIndex() < segmentUrls.size() - 1) {
-            segmentUrl = segmentUrls.get(location.segmentIndex() + 1);
+        if (location.segmentIndex() < bookData.segmentCount() - 1) {
+            segmentUrl = bookData.segmentFile(location.segmentIndex() + 1);
             nextSegment.loadUrl(segmentUrl);
         } else {
             nextSegment.loadUrl(null);
         }
         if (location.segmentIndex() > 0) {
-            segmentUrl = segmentUrls.get(location.segmentIndex() - 1);
+            segmentUrl = bookData.segmentFile(location.segmentIndex() - 1);
             previewSegment.loadUrl(segmentUrl);
         } else {
             previewSegment.loadUrl(null);
@@ -81,7 +78,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     }
 
     public boolean canGoNextPage() {
-        return currentLocation.segmentIndex() < segmentUrls.size() - 1 && currentSegment.isLoaded() ||
+        return currentLocation.segmentIndex() < bookData.segmentCount() - 1 && currentSegment.isLoaded() ||
                currentSegment.canGoNextPage();
     }
 
@@ -98,8 +95,8 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
             currentSegment = nextSegment;
             nextSegment = newNextSegment;
             currentLocation.setSegmentIndex(currentLocation.segmentIndex() + 1);
-            if (currentLocation.segmentIndex() < segmentUrls.size() - 1) {
-                String segmentUrl = segmentUrls.get(currentLocation.segmentIndex() + 1);
+            if (currentLocation.segmentIndex() < bookData.segmentCount() - 1) {
+                String segmentUrl = bookData.segmentFile(currentLocation.segmentIndex() + 1);
                 nextSegment.loadUrl(segmentUrl);
             } else {
                 nextSegment.loadUrl(null);
@@ -121,7 +118,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
             previewSegment = newPreviewSegment;
             currentLocation.setSegmentIndex(currentLocation.segmentIndex() - 1);
             if (currentLocation.segmentIndex() > 0) {
-                String segmentUrl = segmentUrls.get(currentLocation.segmentIndex() - 1);
+                String segmentUrl = bookData.segmentFile(currentLocation.segmentIndex() - 1);
                 previewSegment.loadUrl(segmentUrl);
             } else {
                 previewSegment.loadUrl(null);
