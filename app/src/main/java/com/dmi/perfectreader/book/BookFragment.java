@@ -1,6 +1,8 @@
 package com.dmi.perfectreader.book;
 
 import android.app.Fragment;
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
@@ -18,10 +20,17 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
+import org.readium.sdk.android.Container;
+import org.readium.sdk.android.EPub3;
+import org.readium.sdk.android.Package;
+import org.readium.sdk.android.SpineItem;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.dmi.perfectreader.util.zip.ZipUtls.unzipFiles;
 
 @EFragment(R.layout.fragment_book)
 public class BookFragment extends Fragment {
@@ -67,13 +76,54 @@ public class BookFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         touchSensitivityInPixels = new Units(getActivity()).dipToPx(TOUCH_SENSITIVITY);
 
+        loadBook();
+    }
+
+    private void loadBook() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                File bookDir = unzipBook(getActivity(), bookFile);
+                final List<String> files = getBookFiles(bookDir, bookFile);
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pageBookView.setBookData(new BookData(files));
+                        pageBookView.goLocation(new BookLocation(0, LongPercent.ZERO));
+                    }
+                });
+                return null;
+            }
+        }.execute();
+    }
+
+    private static File unzipBook(Context context, File bookFile) {
+        File cacheDir = new File(context.getExternalCacheDir(), "book");
+        File bookCacheDir = new File(cacheDir, "testBook" + bookFile.lastModified());
+        try {
+            unzipFiles(bookFile, bookCacheDir);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return bookCacheDir;
+    }
+
+    private static List<String> getBookFiles(File bookDir, File bookFile) {
         List<String> files = new ArrayList<>();
-        files.add("file:///android_asset/testBook/content_1m.html");
-        files.add("file:///android_asset/testBook/content_2m.html");
-        files.add("file:///android_asset/testBook/content_3m.html");
-        files.add("file:///android_asset/testBook/content_4m.html");
-        pageBookView.setBookData(new BookData(files));
-        pageBookView.goLocation(new BookLocation(0, LongPercent.ZERO));
+
+        Container container = EPub3.openBook(bookFile.getAbsolutePath());
+        try {
+            Package pack = container.getDefaultPackage();
+            File baseDir = new File(bookDir, pack.getBasePath());
+            for (SpineItem spineItem : pack.getSpineItems()) {
+                File file = new File(baseDir, spineItem.getHref());
+                files.add("file://" + file.getAbsolutePath());
+            }
+        } finally {
+            EPub3.closeBook(container);
+        }
+        return files;
     }
 
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
