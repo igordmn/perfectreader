@@ -60,16 +60,16 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         }
         currentLocation.setSegmentIndex(location.segmentIndex());
         currentLocation.setPercent(location.percent());
-        String segmentUrl = bookData.segmentFile(location.segmentIndex());
+        String segmentUrl = bookData.segmentUrl(location.segmentIndex());
         currentSegment.loadUrl(segmentUrl);
         if (location.segmentIndex() < bookData.segmentCount() - 1) {
-            segmentUrl = bookData.segmentFile(location.segmentIndex() + 1);
+            segmentUrl = bookData.segmentUrl(location.segmentIndex() + 1);
             nextSegment.loadUrl(segmentUrl);
         } else {
             nextSegment.loadUrl(null);
         }
         if (location.segmentIndex() > 0) {
-            segmentUrl = bookData.segmentFile(location.segmentIndex() - 1);
+            segmentUrl = bookData.segmentUrl(location.segmentIndex() - 1);
             previewSegment.loadUrl(segmentUrl);
         } else {
             previewSegment.loadUrl(null);
@@ -96,7 +96,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
             nextSegment = newNextSegment;
             currentLocation.setSegmentIndex(currentLocation.segmentIndex() + 1);
             if (currentLocation.segmentIndex() < bookData.segmentCount() - 1) {
-                String segmentUrl = bookData.segmentFile(currentLocation.segmentIndex() + 1);
+                String segmentUrl = bookData.segmentUrl(currentLocation.segmentIndex() + 1);
                 nextSegment.loadUrl(segmentUrl);
             } else {
                 nextSegment.loadUrl(null);
@@ -118,7 +118,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
             previewSegment = newPreviewSegment;
             currentLocation.setSegmentIndex(currentLocation.segmentIndex() - 1);
             if (currentLocation.segmentIndex() > 0) {
-                String segmentUrl = bookData.segmentFile(currentLocation.segmentIndex() - 1);
+                String segmentUrl = bookData.segmentUrl(currentLocation.segmentIndex() - 1);
                 previewSegment.loadUrl(segmentUrl);
             } else {
                 previewSegment.loadUrl(null);

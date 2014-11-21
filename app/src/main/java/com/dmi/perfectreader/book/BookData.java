@@ -16,7 +16,7 @@ public class BookData {
         return segmentUrls.size();
     }
 
-    String segmentFile(int segmentIndex) {
+    String segmentUrl(int segmentIndex) {
         return segmentUrls.get(segmentIndex);
     }
 }

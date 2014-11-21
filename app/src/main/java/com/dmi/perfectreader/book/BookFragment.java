@@ -14,6 +14,8 @@ import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 import com.dmi.perfectreader.book.position.Position;
 import com.dmi.perfectreader.util.android.Units;
 import com.dmi.perfectreader.util.lang.LongPercent;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -26,11 +28,13 @@ import org.readium.sdk.android.Package;
 import org.readium.sdk.android.SpineItem;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.dmi.perfectreader.util.zip.ZipUtls.unzipFiles;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @EFragment(R.layout.fragment_book)
 public class BookFragment extends Fragment {
@@ -83,16 +87,18 @@ public class BookFragment extends Fragment {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
+                List<File> segmentFiles = getSegmentFiles(bookFile);
                 File bookDir = unzipBook(getActivity(), bookFile);
-                final List<String> files = getBookFiles(bookDir, bookFile);
+                final List<String> segmentUrls = toUrls(bookDir, segmentFiles);
 
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        pageBookView.setBookData(new BookData(files));
+                        pageBookView.setBookData(new BookData(segmentUrls));
                         pageBookView.goLocation(new BookLocation(0, LongPercent.ZERO));
                     }
                 });
+
                 return null;
             }
         }.execute();
@@ -108,6 +114,29 @@ public class BookFragment extends Fragment {
             throw new RuntimeException(e);
         }
         return bookCacheDir;
+    }
+
+    private static void unzipFiles(File zipFile, File outputFolder) throws IOException {
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
+            for (ZipEntry entry = zis.getNextEntry(); entry != null; entry = zis.getNextEntry()) {
+                String fileName = entry.getName();
+                File newFile = new File(outputFolder, fileName);
+
+                Files.createParentDirs(newFile);
+
+                try (FileOutputStream fos = new FileOutputStream(newFile)) {
+                    ByteStreams.copy(zis, fos);
+                }
+            }
+        }
+    }
+
+    private static List<String> toUrls(File rootDirectory, List<File> localFiles) {
+        List<String> urls = new ArrayList<>();
+        for (File localFile : localFiles) {
+            urls.add("file://" + new File(rootDirectory, localFile.getAbsolutePath()).getAbsolutePath());
+        }
+        return urls;
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -128,16 +157,14 @@ public class BookFragment extends Fragment {
         return(directory.delete());
     }
 
-    private static List<String> getBookFiles(File bookDir, File bookFile) {
-        List<String> files = new ArrayList<>();
-
+    private static List<File> getSegmentFiles(File bookFile) {
+        List<File> files = new ArrayList<>();
         Container container = EPub3.openBook(bookFile.getAbsolutePath());
         try {
             Package pack = container.getDefaultPackage();
-            File baseDir = new File(bookDir, pack.getBasePath());
+            File baseDir = new File(pack.getBasePath());
             for (SpineItem spineItem : pack.getSpineItems()) {
-                File file = new File(baseDir, spineItem.getHref());
-                files.add("file://" + file.getAbsolutePath());
+                files.add(new File(baseDir, spineItem.getHref()));
             }
         } finally {
             EPub3.closeBook(container);
