@@ -100,13 +100,32 @@ public class BookFragment extends Fragment {
 
     private static File unzipBook(Context context, File bookFile) {
         File cacheDir = new File(context.getExternalCacheDir(), "book");
-        File bookCacheDir = new File(cacheDir, "testBook" + bookFile.lastModified());
+        File bookCacheDir = new File(cacheDir, "defaultBook");
+        deleteDirectory(bookCacheDir);
         try {
             unzipFiles(bookFile, bookCacheDir);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return bookCacheDir;
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private static boolean deleteDirectory(File directory) {
+        if(directory.exists()){
+            File[] files = directory.listFiles();
+            if(null!=files){
+                for(int i=0; i<files.length; i++) {
+                    if(files[i].isDirectory()) {
+                        deleteDirectory(files[i]);
+                    }
+                    else {
+                        files[i].delete();
+                    }
+                }
+            }
+        }
+        return(directory.delete());
     }
 
     private static List<String> getBookFiles(File bookDir, File bookFile) {
