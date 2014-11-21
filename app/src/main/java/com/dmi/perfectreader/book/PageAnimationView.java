@@ -345,18 +345,18 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
                     while (!Thread.interrupted()) {
                         refreshWaiter.waitForWakeUp();
 
-                        Page currentPage;
-                        Page nextPage;
-                        Page previewPage;
-                        synchronized (pages) {
-                            refreshLocation.setSegmentIndex(currentLocation.segmentIndex());
-                            refreshLocation.setPercent(currentLocation.percent());
-                            currentPage = pages.get(0);
-                            nextPage = pages.get(1);
-                            previewPage = pages.get(-1);
-                        }
-
                         if (currentLocation != null) {
+                            Page currentPage;
+                            Page nextPage;
+                            Page previewPage;
+                            synchronized (pages) {
+                                refreshLocation.setSegmentIndex(currentLocation.segmentIndex());
+                                refreshLocation.setPercent(currentLocation.percent());
+                                currentPage = pages.get(0);
+                                nextPage = pages.get(1);
+                                previewPage = pages.get(-1);
+                            }
+
                             currentPage.refreshByPage(refreshLocation, 0);
                             nextPage.refreshByPage(refreshLocation, 1);
                             previewPage.refreshByPage(refreshLocation, -1);
