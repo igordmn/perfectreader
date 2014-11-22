@@ -62,7 +62,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Math.abs;
 
 public class PageAnimationView extends DeltaTimeSurfaceView {
-    private final static int MAX_DISTANCE_IN_PAGES = 8;
+    private final static int MAX_DISTANCE_IN_PAGES = 4;
 
     private PageAnimation pageAnimation;
     private PagesDrawer pagesDrawer;
