@@ -1,23 +1,26 @@
 package com.dmi.perfectreader.html;
 
-import org.ccil.cowan.tagsoup.jaxp.SAXParserImpl;
+import org.ccil.cowan.tagsoup.Parser;
+import org.ccil.cowan.tagsoup.XMLWriter;
 import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.XMLReader;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
 
 public class HtmlBookTransformer {
+
+
     public void transform(InputStream is, OutputStream os) throws IOException {
         try {
             tryTransform(is, os);
@@ -27,98 +30,83 @@ public class HtmlBookTransformer {
     }
 
     private void tryTransform(InputStream is, OutputStream os) throws SAXException, IOException, TransformerConfigurationException {
-        final TransformerFactory tf = TransformerFactory.newInstance();
-        if(!tf.getFeature(SAXTransformerFactory.FEATURE)){
-            throw new RuntimeException(
-                    "Did not find a SAX-compatible TransformerFactory.");
-        }
-        SAXTransformerFactory stf = (SAXTransformerFactory)tf;
-        final TransformerHandler th = stf.newTransformerHandler();
-        th.setResult(new StreamResult(os));
+        final XMLWriter xmlWriter = new XMLWriter(new OutputStreamWriter(os));
+        xmlWriter.setOutputProperty(XMLWriter.METHOD, "html");
+        xmlWriter.setOutputProperty(XMLWriter.ENCODING, "utf-8");
+        xmlWriter.setErrorHandler(new ErrorHandler() {
+            @Override
+            public void warning(SAXParseException exception) throws SAXException {
+                exception.printStackTrace();
+            }
 
-        SAXParserImpl.newInstance(null).parse(
-                is,
-                new DefaultHandler() {
-                    @Override
-                    public void startDocument() throws SAXException {
-                        th.startDocument();
-                    }
+            @Override
+            public void error(SAXParseException exception) throws SAXException {
+                exception.printStackTrace();
+            }
 
-                    @Override
-                    public void endDocument() throws SAXException {
-                        th.endDocument();
-                    }
+            @Override
+            public void fatalError(SAXParseException exception) throws SAXException {
+                throw exception;
+            }
+        });
 
-                    @Override
-                    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-                        th.startElement(uri, localName, qName, attributes);
-                    }
+        final XMLReader xmlReader = new Parser();
+        xmlReader.setContentHandler(new ContentHandler() {
+            @Override
+            public void setDocumentLocator(Locator locator) {
+                xmlWriter.setDocumentLocator(locator);
+            }
 
-                    @Override
-                    public void endElement(String uri, String localName, String qName) throws SAXException {
-                        th.endElement(uri, localName, qName);
-                    }
+            @Override
+            public void startDocument() throws SAXException {
+                xmlWriter.startDocument();
+            }
 
-                    @Override
-                    public void characters(char[] ch, int start, int length) throws SAXException {
-                        th.characters(ch, start, length);
-                    }
+            @Override
+            public void endDocument() throws SAXException {
+                xmlWriter.endDocument();
+            }
 
-                    @Override
-                    public void startPrefixMapping(String prefix, String uri) throws SAXException {
-                        th.startPrefixMapping(prefix, uri);
-                    }
+            @Override
+            public void startPrefixMapping(String prefix, String uri) throws SAXException {
+                xmlWriter.startPrefixMapping(prefix, uri);
+            }
 
-                    @Override
-                    public void endPrefixMapping(String prefix) throws SAXException {
-                        th.endPrefixMapping(prefix);
-                    }
+            @Override
+            public void endPrefixMapping(String prefix) throws SAXException {
+                xmlWriter.endPrefixMapping(prefix);
+            }
 
-                    @Override
-                    public void notationDecl(String name, String publicId, String systemId) throws SAXException {
-                        th.notationDecl(name, publicId, systemId);
-                    }
+            @Override
+            public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+                xmlWriter.startElement(uri, localName, qName, atts);
+            }
 
-                    @Override
-                    public void unparsedEntityDecl(String name, String publicId, String systemId, String notationName) throws SAXException {
-                        th.unparsedEntityDecl(name, publicId, systemId, notationName);
-                    }
+            @Override
+            public void endElement(String uri, String localName, String qName) throws SAXException {
+                xmlWriter.endElement(uri, localName, qName);
+            }
 
-                    @Override
-                    public void setDocumentLocator(Locator locator) {
-                        th.setDocumentLocator(locator);
-                    }
+            @Override
+            public void characters(char[] ch, int start, int length) throws SAXException {
+                xmlWriter.characters(ch, start, length);
+            }
 
-                    @Override
-                    public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
-                        th.ignorableWhitespace(ch, start, length);
-                    }
+            @Override
+            public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
+                xmlWriter.ignorableWhitespace(ch, start, length);
+            }
 
-                    @Override
-                    public void processingInstruction(String target, String data) throws SAXException {
-                        th.processingInstruction(target, data);
-                    }
+            @Override
+            public void processingInstruction(String target, String data) throws SAXException {
+                xmlWriter.processingInstruction(target, data);
+            }
 
-                    @Override
-                    public void skippedEntity(String name) throws SAXException {
-                        th.skippedEntity(name);
-                    }
-
-                    @Override
-                    public void warning(SAXParseException e) throws SAXException {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void error(SAXParseException e) throws SAXException {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void fatalError(SAXParseException e) throws SAXException {
-                        e.printStackTrace();
-                    }
-                }
-        );
+            @Override
+            public void skippedEntity(String name) throws SAXException {
+                xmlWriter.skippedEntity(name);
+            }
+        });
+        xmlReader.parse(new InputSource(is));
     }
 }
