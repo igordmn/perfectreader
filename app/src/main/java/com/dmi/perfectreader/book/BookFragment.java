@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -155,20 +154,19 @@ public class BookFragment extends Fragment {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static boolean deleteDirectory(File directory) {
-        if(directory.exists()){
+        if (directory.exists()) {
             File[] files = directory.listFiles();
-            if(null!=files){
-                for(int i=0; i<files.length; i++) {
-                    if(files[i].isDirectory()) {
-                        deleteDirectory(files[i]);
-                    }
-                    else {
-                        files[i].delete();
+            if (null != files) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        deleteDirectory(file);
+                    } else {
+                        file.delete();
                     }
                 }
             }
         }
-        return(directory.delete());
+        return directory.delete();
     }
 
     private static List<File> getSegmentFiles(File bookFile) {
