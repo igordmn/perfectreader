@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.html;
 
+import org.ccil.cowan.tagsoup.AttributesImpl;
 import org.ccil.cowan.tagsoup.Parser;
 import org.ccil.cowan.tagsoup.XMLWriter;
 import org.xml.sax.Attributes;
@@ -19,7 +20,20 @@ import java.io.OutputStreamWriter;
 import javax.xml.transform.TransformerConfigurationException;
 
 public class HtmlBookTransformer {
+    private static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
 
+    private String styleInjection;
+    private String scriptInjection;
+
+    private boolean injectionComplete = false;
+
+    public void setStyleInjection(String styleInjection) {
+        this.styleInjection = styleInjection;
+    }
+
+    public void setScriptInjection(String scriptInjection) {
+        this.scriptInjection = scriptInjection;
+    }
 
     public void transform(InputStream is, OutputStream os) throws IOException {
         try {
@@ -79,12 +93,47 @@ public class HtmlBookTransformer {
 
             @Override
             public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+                if ("body".equals(qName) && !injectionComplete) {
+                    xmlWriter.startElement(XHTML_NAMESPACE, "head");
+                    processInjection();
+                    xmlWriter.endElement(XHTML_NAMESPACE, "head");
+                    injectionComplete = true;
+                }
                 xmlWriter.startElement(uri, localName, qName, atts);
             }
 
             @Override
             public void endElement(String uri, String localName, String qName) throws SAXException {
+                if ("head".equals(qName) && !injectionComplete) {
+                    processInjection();
+                    injectionComplete = true;
+                }
                 xmlWriter.endElement(uri, localName, qName);
+            }
+
+            private void processInjection() throws SAXException {
+                processStyleInjection();
+                processScriptInjection();
+            }
+
+            private void processStyleInjection() throws SAXException {
+                if (styleInjection != null) {
+                    AttributesImpl attributes = new AttributesImpl();
+                    attributes.addAttribute("", "type", "", "CDATA", "text/css");
+                    xmlWriter.startElement(XHTML_NAMESPACE, "style", "", attributes);
+                    xmlWriter.characters(styleInjection);
+                    xmlWriter.endElement("style");
+                }
+            }
+
+            private void processScriptInjection() throws SAXException {
+                if (scriptInjection != null) {
+                    AttributesImpl attributes = new AttributesImpl();
+                    attributes.addAttribute("", "type", "", "CDATA", "text/javascript");
+                    xmlWriter.startElement(XHTML_NAMESPACE, "script", "", attributes);
+                    xmlWriter.characters(scriptInjection);
+                    xmlWriter.endElement("script");
+                }
             }
 
             @Override
