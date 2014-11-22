@@ -12,6 +12,7 @@ import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 import com.dmi.perfectreader.book.position.Position;
+import com.dmi.perfectreader.html.HtmlBookTransformer;
 import com.dmi.perfectreader.util.android.Units;
 import com.dmi.perfectreader.util.lang.LongPercent;
 import com.google.common.io.ByteStreams;
@@ -31,8 +32,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -88,7 +93,7 @@ public class BookFragment extends Fragment {
             @Override
             protected Void doInBackground(Void... params) {
                 List<File> segmentFiles = getSegmentFiles(bookFile);
-                File bookDir = unzipBook(getActivity(), bookFile);
+                File bookDir = unzipBook(getActivity(), bookFile, segmentFiles);
                 final List<String> segmentUrls = toUrls(bookDir, segmentFiles);
 
                 getActivity().runOnUiThread(new Runnable() {
@@ -104,28 +109,37 @@ public class BookFragment extends Fragment {
         }.execute();
     }
 
-    private static File unzipBook(Context context, File bookFile) {
+    private File unzipBook(Context context, File bookFile, List<File> segmentFiles) {
         File cacheDir = new File(context.getExternalCacheDir(), "book");
         File bookCacheDir = new File(cacheDir, "defaultBook");
         deleteDirectory(bookCacheDir);
         try {
-            unzipFiles(bookFile, bookCacheDir);
+            unzipFiles(bookFile, bookCacheDir, segmentFiles);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return bookCacheDir;
     }
 
-    private static void unzipFiles(File zipFile, File outputFolder) throws IOException {
+    private void unzipFiles(File zipFile, File outputFolder, List<File> segmentFiles) throws IOException {
+        Set<File> segmentFilesSet = new HashSet<>(segmentFiles);
+
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
             for (ZipEntry entry = zis.getNextEntry(); entry != null; entry = zis.getNextEntry()) {
-                String fileName = entry.getName();
-                File newFile = new File(outputFolder, fileName);
+                String localFileName = entry.getName();
+                File localFile = new File(localFileName);
+                File newFile = new File(outputFolder, localFileName);
 
                 Files.createParentDirs(newFile);
 
-                try (FileOutputStream fos = new FileOutputStream(newFile)) {
-                    ByteStreams.copy(zis, fos);
+                if (segmentFilesSet.contains(localFile)) {
+                    try (OutputStream fos = new FileOutputStream(newFile)) {
+                        new HtmlBookTransformer().transform(zis, fos);
+                    }
+                } else {
+                    try (OutputStream fos = new FileOutputStream(newFile)) {
+                        ByteStreams.copy(zis, fos);
+                    }
                 }
             }
         }
