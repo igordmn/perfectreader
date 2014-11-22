@@ -78,12 +78,14 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     }
 
     public boolean canGoNextPage() {
-        return currentLocation.segmentIndex() < bookData.segmentCount() - 1 && currentSegment.isLoaded() ||
+        return currentLocation != null &&
+               currentLocation.segmentIndex() < bookData.segmentCount() - 1 && currentSegment.isLoaded() ||
                currentSegment.canGoNextPage();
     }
 
     public boolean canGoPreviewPage() {
-        return currentLocation.segmentIndex() > 0 && currentSegment.isLoaded() ||
+        return currentLocation != null &&
+               currentLocation.segmentIndex() > 0 && currentSegment.isLoaded() ||
                currentSegment.canGoPreviewPage();
     }
 
