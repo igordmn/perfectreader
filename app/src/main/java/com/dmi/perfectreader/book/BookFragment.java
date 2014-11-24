@@ -89,12 +89,12 @@ public class BookFragment extends Fragment {
                 File bookCacheDir = bookCacheDir();
                 HtmlBookTransformer htmlBookTransformer = new HtmlBookTransformer();
                 htmlBookTransformer.setStyleInjection(format("body {\n" +
-                                                             "    padding: 0;" +
-                                                             "    margin: 0; " +
-                                                             "    width: %s;\n" +
-                                                             "    height: %s;\n" +
-                                                             "    -webkit-column-width: %s;\n" +
-                                                             "    -webkit-column-gap: 0px;\n" +
+                                                             "    padding: 0; !important;" +
+                                                             "    margin: 0; !important;" +
+                                                             "    width: %s; !important;\n" +
+                                                             "    height: %s; !important;\n" +
+                                                             "    -webkit-column-width: %s !important;\n" +
+                                                             "    -webkit-column-gap: 0px !important;\n" +
                                                              "}", width + "px", height + "px", width + "px"));
                 EpubBookExtractor epubBookExtractor = new EpubBookExtractor(htmlBookTransformer);
                 final List<String> segmentUrls = epubBookExtractor.extract(bookFile, bookCacheDir);
