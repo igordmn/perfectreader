@@ -1,9 +1,9 @@
 buildscript {
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.13.1'
+        classpath 'com.android.tools.build:gradle:0.14.4'
         classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
-        classpath 'com.dmi.gradle:android-ndk-classic:0.1.2'
+        classpath 'com.dmi.gradle:android-ndk-classic:0.2.0'
     }
 }
 
@@ -37,7 +37,6 @@ android {
     if (rootProject.signProperties != null) {
         signingConfigs {
             main {
-
                 storeFile new File(rootProject.projectDir, '.sign/' + rootProject.signProperties['store.file'])
                 storePassword rootProject.signProperties['store.password']
                 keyAlias rootProject.signProperties['key.alias']
@@ -49,7 +48,7 @@ android {
     buildTypes {
         debug {
             debuggable true
-            jniDebugBuild true
+            jniDebuggable true
             signingConfig rootProject.signProperties ? signingConfigs.main : null
         }
         release {
