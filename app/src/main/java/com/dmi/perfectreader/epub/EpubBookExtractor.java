@@ -21,6 +21,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class EpubBookExtractor {
+    private HtmlBookTransformer htmlBookTransformer;
+
+    public EpubBookExtractor(HtmlBookTransformer htmlBookTransformer) {
+        this.htmlBookTransformer = htmlBookTransformer;
+    }
+
     public List<String> extract(File bookFile, File outputDirectory) {
         List<File> segmentFiles = getSegmentFiles(bookFile);
         unzipBook(bookFile, outputDirectory, segmentFiles);
@@ -49,7 +55,7 @@ public class EpubBookExtractor {
 
                 if (segmentFilesSet.contains(localFile)) {
                     try (OutputStream fos = new FileOutputStream(newFile)) {
-                        new HtmlBookTransformer().transform(zis, fos);
+                        htmlBookTransformer.transform(zis, fos);
                     }
                 } else {
                     try (OutputStream fos = new FileOutputStream(newFile)) {

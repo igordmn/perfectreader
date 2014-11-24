@@ -25,7 +25,7 @@ public class HtmlBookTransformer {
     private String styleInjection;
     private String scriptInjection;
 
-    private boolean injectionComplete = false;
+    private ThreadLocal<Boolean> injectionComplete = new ThreadLocal<>();
 
     public void setStyleInjection(String styleInjection) {
         this.styleInjection = styleInjection;
@@ -44,6 +44,7 @@ public class HtmlBookTransformer {
     }
 
     private void tryTransform(InputStream is, OutputStream os) throws SAXException, IOException, TransformerConfigurationException {
+        injectionComplete.set(false);
         final XMLWriter xmlWriter = new XMLWriter(new OutputStreamWriter(os));
         xmlWriter.setOutputProperty(XMLWriter.METHOD, "html");
         xmlWriter.setOutputProperty(XMLWriter.ENCODING, "utf-8");
@@ -93,20 +94,20 @@ public class HtmlBookTransformer {
 
             @Override
             public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
-                if ("body".equals(qName) && !injectionComplete) {
+                if ("body".equals(qName) && !injectionComplete.get()) {
                     xmlWriter.startElement(XHTML_NAMESPACE, "head");
                     processInjection();
                     xmlWriter.endElement(XHTML_NAMESPACE, "head");
-                    injectionComplete = true;
+                    injectionComplete.set(true);
                 }
                 xmlWriter.startElement(uri, localName, qName, atts);
             }
 
             @Override
             public void endElement(String uri, String localName, String qName) throws SAXException {
-                if ("head".equals(qName) && !injectionComplete) {
+                if ("head".equals(qName) && !injectionComplete.get()) {
                     processInjection();
-                    injectionComplete = true;
+                    injectionComplete.set(true);
                 }
                 xmlWriter.endElement(uri, localName, qName);
             }

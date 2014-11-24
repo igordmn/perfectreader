@@ -1,9 +1,11 @@
 package com.dmi.perfectreader.book;
 
 import android.app.Fragment;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -12,6 +14,7 @@ import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 import com.dmi.perfectreader.book.position.Position;
 import com.dmi.perfectreader.epub.EpubBookExtractor;
+import com.dmi.perfectreader.html.HtmlBookTransformer;
 import com.dmi.perfectreader.util.android.Units;
 import com.dmi.perfectreader.util.lang.LongPercent;
 
@@ -23,6 +26,8 @@ import org.androidannotations.annotations.ViewById;
 
 import java.io.File;
 import java.util.List;
+
+import static java.lang.String.format;
 
 @EFragment(R.layout.fragment_book)
 public class BookFragment extends Fragment {
@@ -75,9 +80,24 @@ public class BookFragment extends Fragment {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                File bookCacheDir = bookCacheDir();
-                final List<String> segmentUrls = new EpubBookExtractor().extract(bookFile, bookCacheDir);
+                Display display = getActivity().getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int width = size.x;
+                int height = size.y;
 
+                File bookCacheDir = bookCacheDir();
+                HtmlBookTransformer htmlBookTransformer = new HtmlBookTransformer();
+                htmlBookTransformer.setStyleInjection(format("body {\n" +
+                                                             "    padding: 0;" +
+                                                             "    margin: 0; " +
+                                                             "    width: %s;\n" +
+                                                             "    height: %s;\n" +
+                                                             "    -webkit-column-width: %s;\n" +
+                                                             "    -webkit-column-gap: 0px;\n" +
+                                                             "}", width + "px", height + "px", width + "px"));
+                EpubBookExtractor epubBookExtractor = new EpubBookExtractor(htmlBookTransformer);
+                final List<String> segmentUrls = epubBookExtractor.extract(bookFile, bookCacheDir);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
