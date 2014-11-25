@@ -8,7 +8,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public abstract class DeltaTimeSurfaceView extends GLSurfaceView {
-    private final static int SMOOTH_SAMPLES = 4;
+    private final static int SMOOTH_SAMPLES = 8;
 
     private boolean pause = true;
     private long previewTime = -1;
