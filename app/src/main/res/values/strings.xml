@@ -3,5 +3,5 @@
     <string name="appName">Perfect Reader</string>
     <string name="bookNotLoaded1">Книга не загружена</string>
     <string name="bookNotLoaded2">Пожалуйста, откройте книгу через файловый мененджер</string>
-    <string name="bookTooBig">Книги размером больше 1 Мб не поддерживаются</string>
+    <string name="bookOpenError">Ошибка при открытии книги</string>
 </resources>

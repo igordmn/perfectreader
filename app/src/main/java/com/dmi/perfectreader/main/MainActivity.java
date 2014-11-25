@@ -24,27 +24,21 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-import static com.dmi.perfectreader.book.position.Position.percentToPosition;
-import static com.dmi.perfectreader.book.position.Position.toPosition;
-
 @EActivity(R.layout.activity_book_reader)
 public class MainActivity extends Activity {
-    private static final int MAX_FILE_LENGTH = 1024 * 1024;
-
     @ViewById
     protected View bookNotLoadedView;
     @ViewById
-    protected View bookTooBigView;
+    protected View bookOpenErrorView;
     @Pref
     protected StatePrefs_ statePrefs;
 
     private boolean bookNotLoaded;
-    private boolean bookTooBig;
 
     @AfterViews
     protected void initViews() {
-        bookNotLoadedView.setVisibility(bookNotLoaded && !bookTooBig ? View.VISIBLE : View.GONE);
-        bookTooBigView.setVisibility(bookNotLoaded && bookTooBig ? View.VISIBLE : View.GONE);
+        bookNotLoadedView.setVisibility(bookNotLoaded ? View.VISIBLE : View.GONE);
+        bookOpenErrorView.setVisibility(View.GONE);
     }
 
     @Override
@@ -61,24 +55,17 @@ public class MainActivity extends Activity {
         }
 
         if (!bookFile.equals("")) {
-            if (new File(bookFile).length() >= MAX_FILE_LENGTH) {
-                bookTooBig = true;
-                bookNotLoaded = true;
-            } else {
-                BookFragment bookFragment = BookFragment_.builder()
-                        .bookFile(new File(bookFile))
-                        .bookPosition(toPosition(statePrefs.bookPosition().get(), Long.MAX_VALUE))
-                        .build();
-                bookFragment.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        toggleMenu();
-                    }
-                });
-                getFragmentManager().beginTransaction().add(R.id.mainContainer, bookFragment, BookFragment.class.getName()).commit();
-                bookTooBig = false;
-                bookNotLoaded = false;
-            }
+            BookFragment bookFragment = BookFragment_.builder()
+                    .bookFile(new File(bookFile))
+                    .build();
+            bookFragment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleMenu();
+                }
+            });
+            getFragmentManager().beginTransaction().add(R.id.mainContainer, bookFragment, BookFragment.class.getName()).commit();
+            bookNotLoaded = false;
         } else {
             bookNotLoaded = true;
         }
@@ -88,7 +75,7 @@ public class MainActivity extends Activity {
     protected void onPause() {
         BookFragment bookFragment = bookFragment(getFragmentManager());
         if (bookFragment != null) {
-            statePrefs.bookPosition().put(bookFragment.position().toLocalPosition(Long.MAX_VALUE));
+            statePrefs.bookPosition().put(0);
         }
         super.onPause();
     }
@@ -123,12 +110,11 @@ public class MainActivity extends Activity {
         fragment.setMenuActions(new MenuActions() {
             @Override
             public void goPercent(double percent) {
-                bookFragment.goPosition(percentToPosition(percent));
             }
 
             @Override
             public double getPercent() {
-                return bookFragment.position().percent();
+                return 0;
             }
         });
         return fragment;

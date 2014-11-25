@@ -13,7 +13,6 @@ import android.view.View;
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
-import com.dmi.perfectreader.book.position.Position;
 import com.dmi.perfectreader.epub.EpubBookExtractor;
 import com.dmi.perfectreader.html.HtmlBookTransformer;
 import com.dmi.perfectreader.util.android.Units;
@@ -38,8 +37,6 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
 
     @FragmentArg
     protected File bookFile;
-    @FragmentArg
-    protected Position bookPosition;
     @ViewById
     protected PageBookView pageBookView;
     @ViewById
@@ -63,13 +60,6 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
         pageAnimationView.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_PAGE_IN_SECONDS));
         pageBookView.setPageAnimationView(pageAnimationView);
         pageAnimationView.setOnTouchListener(this);
-    }
-
-    public void goPosition(Position position) {
-    }
-
-    public Position position() {
-        return Position.BEGIN;
     }
 
     @Override

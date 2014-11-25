@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+// todo добавить версионность. при копировании проверять, совпадает ли версия. как вариант, добавить спец. файл version в папку assets
 @EBean
 public class AssetsCopier {
     @RootContext

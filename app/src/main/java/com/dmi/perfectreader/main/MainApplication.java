@@ -9,10 +9,6 @@ import org.androidannotations.annotations.EApplication;
 
 @EApplication
 public class MainApplication extends Application {
-    static {
-        System.loadLibrary("text");
-    }
-
     @Bean
     protected AssetsCopier assetsCopier;
 
