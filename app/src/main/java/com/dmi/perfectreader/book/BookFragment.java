@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.Display;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.dmi.perfectreader.R;
@@ -27,10 +28,11 @@ import org.androidannotations.annotations.ViewById;
 import java.io.File;
 import java.util.List;
 
+import static java.lang.Math.sqrt;
 import static java.lang.String.format;
 
 @EFragment(R.layout.fragment_book)
-public class BookFragment extends Fragment {
+public class BookFragment extends Fragment implements View.OnTouchListener {
     private final static float TIME_FOR_ONE_PAGE_IN_SECONDS = 1;
     private final static float TOUCH_SENSITIVITY = 8;
 
@@ -50,6 +52,7 @@ public class BookFragment extends Fragment {
     private float touchSensitivityInPixels;
 
     private float touchDownX;
+    private float touchDownY;
 
     public void setOnClickListener(View.OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
@@ -59,6 +62,7 @@ public class BookFragment extends Fragment {
     protected void initViews() {
         pageAnimationView.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_PAGE_IN_SECONDS));
         pageBookView.setPageAnimationView(pageAnimationView);
+        pageAnimationView.setOnTouchListener(this);
     }
 
     public void goPosition(Position position) {
@@ -134,5 +138,46 @@ public class BookFragment extends Fragment {
 
     public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
         return keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP;
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            onTouchDown(event);
+            return true;
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            onTouchUp(event);
+            v.performClick();
+            return true;
+        }
+        return false;
+    }
+
+    private void onTouchDown(MotionEvent motionEvent) {
+        touchDownX = motionEvent.getX();
+        touchDownY = motionEvent.getY();
+    }
+
+    private void onTouchUp(MotionEvent motionEvent) {
+        int thirdOfScreen = pageBookView.getWidth() / 3;
+        float touchOffsetX = motionEvent.getX() - touchDownX;
+        float touchOffsetY = motionEvent.getY() - touchDownY;
+        float touchOffset = (float) sqrt(touchOffsetX * touchOffsetX + touchOffsetY * touchOffsetY);
+        boolean swipeLeft = touchOffsetX <= -touchSensitivityInPixels;
+        boolean swipeRight = touchOffsetX >= touchSensitivityInPixels;
+        boolean touchLeftZone = motionEvent.getX() < thirdOfScreen &&
+                                !swipeLeft && touchOffset <= touchSensitivityInPixels;
+        boolean touchRightZone = motionEvent.getX() > 2 * thirdOfScreen &&
+                                 !swipeRight && touchOffset <= touchSensitivityInPixels;
+        boolean touchCenterZone = motionEvent.getX() >= thirdOfScreen && motionEvent.getX() <= 2 * thirdOfScreen &&
+                                  !swipeRight && touchOffset <= touchSensitivityInPixels;
+
+        if ((touchRightZone || swipeLeft) && pageBookView.canGoNextPage()) {
+            pageBookView.goNextPage();
+        } else if ((touchLeftZone || swipeRight) && pageBookView.canGoPreviewPage()) {
+            pageBookView.goPreviewPage();
+        } else if (touchCenterZone) {
+            onClickListener.onClick(pageBookView);
+        }
     }
 }
