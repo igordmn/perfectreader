@@ -180,7 +180,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         }
     }
 
-    public void setFontSize(float size) {
+    public void setFontSize(String size) {
         currentSegment.setFontSize(size);
         nextSegment.setFontSize(size);
         previewSegment.setFontSize(size);

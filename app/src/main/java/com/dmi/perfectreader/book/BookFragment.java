@@ -74,31 +74,39 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                Display display = getActivity().getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
-                int width = size.x;
-                int height = size.y;
+                try {
+                    Display display = getActivity().getWindowManager().getDefaultDisplay();
+                    Point size = new Point();
+                    display.getSize(size);
+                    int width = size.x;
+                    int height = size.y;
 
-                File bookCacheDir = bookCacheDir();
-                HtmlBookTransformer htmlBookTransformer = new HtmlBookTransformer();
-                htmlBookTransformer.setStyleInjection(format("body {\n" +
-                                                             "    padding: 0; !important;" +
-                                                             "    margin: 0; !important;" +
-                                                             "    width: %s; !important;\n" +
-                                                             "    height: %s; !important;\n" +
-                                                             "    -webkit-column-width: %s !important;\n" +
-                                                             "    -webkit-column-gap: 0px !important;\n" +
-                                                             "}", width + "px", height + "px", width + "px"));
-                EpubBookExtractor epubBookExtractor = new EpubBookExtractor(htmlBookTransformer);
-                final List<String> segmentUrls = epubBookExtractor.extract(bookFile, bookCacheDir);
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        pageBookView.setBookData(new BookData(segmentUrls));
-                        pageBookView.goLocation(new BookLocation(0, LongPercent.ZERO));
-                    }
-                });
+                    File bookCacheDir = bookCacheDir();
+                    HtmlBookTransformer htmlBookTransformer = new HtmlBookTransformer();
+                    htmlBookTransformer.setStyleInjection(format("body {\n" +
+                                                                 "    padding: 0; !important;" +
+                                                                 "    margin: 0; !important;" +
+                                                                 "    width: %s; !important;\n" +
+                                                                 "    height: %s; !important;\n" +
+                                                                 "    font-size: 100%% !important;\n" +
+                                                                 "    -webkit-column-width: %s !important;\n" +
+                                                                 "    -webkit-column-gap: 0px !important;\n" +
+                                                                 "}", width + "px", height + "px", width + "px"));
+                    htmlBookTransformer.setScriptInjection("function setFontSize(value) {\n" +
+                                                           "    document.body.style.setProperty(\"font-size\", value, \"important\");\n" +
+                                                           "}");
+                    EpubBookExtractor epubBookExtractor = new EpubBookExtractor(htmlBookTransformer);
+                    final List<String> segmentUrls = epubBookExtractor.extract(bookFile, bookCacheDir);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pageBookView.setBookData(new BookData(segmentUrls));
+                            pageBookView.goLocation(new BookLocation(0, LongPercent.ZERO));
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 return null;
             }

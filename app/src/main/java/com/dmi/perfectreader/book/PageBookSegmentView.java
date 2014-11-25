@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewParent;
@@ -20,6 +21,7 @@ import com.dmi.perfectreader.util.lang.LongPercent;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.dmi.perfectreader.main.MainConstants.LOG_TAG;
 import static com.dmi.perfectreader.util.lang.LongPercent.valuePercent;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Math.min;
@@ -79,6 +81,16 @@ public class PageBookSegmentView extends FrameLayout {
                     webView.loadUrl("javascript:" + script);
                 }
             }
+
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                Log.e(LOG_TAG,
+                        format("WebView error. errorCode: {%s}, description: {%s}, failingUrl: {%s}",
+                                errorCode, description, failingUrl));
+            }
+
+
         });
         webView.addJavascriptInterface(new JavaBridge(), "__javaBridge");
         webView.setInitialScale(100);
@@ -190,8 +202,8 @@ public class PageBookSegmentView extends FrameLayout {
         }
     }
 
-    public void setFontSize(float size) {
-        throw new UnsupportedOperationException();
+    public void setFontSize(String size) {
+        webView.loadUrl(format("javascript: setFontSize(\"%s\")", size));
     }
 
     public void setLineHeight(float height) {
