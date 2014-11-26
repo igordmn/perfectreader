@@ -282,6 +282,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         private int textureHandle;
         private FloatBuffer vertexBuffer;
 
+        // todo вынести programId в верхний класс
         public void init() {
             programId = Graphics.createProgram(
                     getResources(),

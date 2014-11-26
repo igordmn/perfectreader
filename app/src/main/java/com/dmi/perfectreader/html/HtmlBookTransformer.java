@@ -22,18 +22,18 @@ import javax.xml.transform.TransformerConfigurationException;
 public class HtmlBookTransformer {
     private static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
 
-    private String styleInjection;
-    private String scriptInjection;
+    private String initScriptUrlInjection;
+    private String finalScriptUrlInjection;
 
-    private ThreadLocal<Boolean> styleInjected = new ThreadLocal<>();
-    private ThreadLocal<Boolean> scriptInjected = new ThreadLocal<>();
+    private ThreadLocal<Boolean> initScriptUrlInjected = new ThreadLocal<>();
+    private ThreadLocal<Boolean> finalScriptUrlInjected = new ThreadLocal<>();
 
-    public void setStyleInjection(String styleInjection) {
-        this.styleInjection = styleInjection;
+    public void setInitScriptUrlInjection(String initScriptUrlInjection) {
+        this.initScriptUrlInjection = initScriptUrlInjection;
     }
 
-    public void setScriptInjection(String scriptInjection) {
-        this.scriptInjection = scriptInjection;
+    public void setFinalScriptUrlInjection(String finalScriptUrlInjection) {
+        this.finalScriptUrlInjection = finalScriptUrlInjection;
     }
 
     public void transform(InputStream is, OutputStream os) throws IOException {
@@ -45,8 +45,8 @@ public class HtmlBookTransformer {
     }
 
     private void tryTransform(InputStream is, OutputStream os) throws SAXException, IOException, TransformerConfigurationException {
-        styleInjected.set(false);
-        scriptInjected.set(false);
+        initScriptUrlInjected.set(false);
+        finalScriptUrlInjected.set(false);
         final XMLWriter xmlWriter = new XMLWriter(new OutputStreamWriter(os));
         xmlWriter.setOutputProperty(XMLWriter.METHOD, "html");
         xmlWriter.setOutputProperty(XMLWriter.ENCODING, "utf-8");
@@ -97,44 +97,42 @@ public class HtmlBookTransformer {
 
             @Override
             public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
-                if ("body".equals(qName) && !styleInjected.get()) {
-                    xmlWriter.startElement(XHTML_NAMESPACE, "head");
-                    processStyleInjection();
-                    xmlWriter.endElement(XHTML_NAMESPACE, "head");
-                    styleInjected.set(true);
-                }
                 xmlWriter.startElement(uri, localName, qName, atts);
+                if ("body".equals(qName) && !initScriptUrlInjected.get()) {
+                    processInitScriptInjection();
+                    initScriptUrlInjected.set(true);
+                }
             }
 
             @Override
             public void endElement(String uri, String localName, String qName) throws SAXException {
+                if ("body".equals(qName) && !finalScriptUrlInjected.get()) {
+                    processFinalScriptInjection();
+                    finalScriptUrlInjected.set(true);
+                }
                 xmlWriter.endElement(uri, localName, qName);
-                if ("head".equals(qName) && !styleInjected.get()) {
-                    processStyleInjection();
-                    styleInjected.set(true);
-                }
-                if ("html".equals(qName) && !scriptInjected.get()) {
-                    processScriptInjection();
-                    scriptInjected.set(true);
-                }
             }
 
-            private void processStyleInjection() throws SAXException {
-                if (styleInjection != null) {
-                    AttributesImpl attributes = new AttributesImpl();
-                    attributes.addAttribute("", "type", "", "CDATA", "text/css");
-                    xmlWriter.startElement(XHTML_NAMESPACE, "style", "", attributes);
-                    xmlWriter.characters(styleInjection);
-                    xmlWriter.endElement("style");
-                }
+            private void processInitScriptInjection() throws SAXException {
+                processScriptInjection(initScriptUrlInjection);
             }
 
-            private void processScriptInjection() throws SAXException {
-                if (scriptInjection != null) {
+            private void processFinalScriptInjection() throws SAXException {
+                processScriptInjection(finalScriptUrlInjection);
+            }
+
+            private void processScriptInjection(String scriptUrl) throws SAXException {
+                if (scriptUrl != null) {
                     AttributesImpl attributes = new AttributesImpl();
                     attributes.addAttribute("", "type", "", "CDATA", "text/javascript");
                     xmlWriter.startElement(XHTML_NAMESPACE, "script", "", attributes);
-                    xmlWriter.characters(scriptInjection);
+                    // такой сложный код нужен для того, чтобы добавить randomId при загрузке скриптов
+                    // это нужно, чтобы WebView не кэшировал скрипты
+                    xmlWriter.characters("document.write('" +
+                                         "  \\x3Cscript type=\"text/javascript\" src=\"" +
+                                         scriptUrl + "?randomId='+" + "new Date().getTime().toString() + Math.random()" + "+'" +
+                                         "  \"\\x3E\\x3C/script\\x3E" +
+                                         "');");
                     xmlWriter.endElement("script");
                 }
             }

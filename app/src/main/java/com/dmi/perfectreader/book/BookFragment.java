@@ -1,11 +1,9 @@
 package com.dmi.perfectreader.book;
 
 import android.app.Fragment;
-import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,7 +26,6 @@ import java.io.File;
 import java.util.List;
 
 import static java.lang.Math.sqrt;
-import static java.lang.String.format;
 
 @EFragment(R.layout.fragment_book)
 public class BookFragment extends Fragment implements View.OnTouchListener {
@@ -58,8 +55,9 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
     @AfterViews
     protected void initViews() {
         pageAnimationView.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_PAGE_IN_SECONDS));
-        pageBookView.setPageAnimationView(pageAnimationView);
         pageAnimationView.setOnTouchListener(this);
+        pageBookView.setPageAnimationView(pageAnimationView);
+        pageBookView.setFontSize("200%");
     }
 
     @Override
@@ -75,26 +73,10 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    Display display = getActivity().getWindowManager().getDefaultDisplay();
-                    Point size = new Point();
-                    display.getSize(size);
-                    int width = size.x;
-                    int height = size.y;
-
                     File bookCacheDir = bookCacheDir();
                     HtmlBookTransformer htmlBookTransformer = new HtmlBookTransformer();
-                    htmlBookTransformer.setStyleInjection(format("body {\n" +
-                                                                 "    padding: 0; !important;" +
-                                                                 "    margin: 0; !important;" +
-                                                                 "    width: %s; !important;\n" +
-                                                                 "    height: %s; !important;\n" +
-                                                                 "    font-size: 100%% !important;\n" +
-                                                                 "    -webkit-column-width: %s !important;\n" +
-                                                                 "    -webkit-column-gap: 0px !important;\n" +
-                                                                 "}", width + "px", height + "px", width + "px"));
-                    htmlBookTransformer.setScriptInjection("function setFontSize(value) {\n" +
-                                                           "    document.body.style.setProperty(\"font-size\", value, \"important\");\n" +
-                                                           "}");
+                    htmlBookTransformer.setInitScriptUrlInjection("javabridge://initscript");
+                    htmlBookTransformer.setFinalScriptUrlInjection("javabridge://finalscript");
                     EpubBookExtractor epubBookExtractor = new EpubBookExtractor(htmlBookTransformer);
                     final List<String> segmentUrls = epubBookExtractor.extract(bookFile, bookCacheDir);
                     getActivity().runOnUiThread(new Runnable() {

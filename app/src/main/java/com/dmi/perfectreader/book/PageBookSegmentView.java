@@ -2,6 +2,7 @@ package com.dmi.perfectreader.book;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -12,36 +13,41 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewParent;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.util.lang.LongPercent;
+import com.dmi.perfectreader.util.opengl.ResourceUtils;
+import com.google.common.base.Charsets;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.io.ByteArrayInputStream;
 
-import static com.dmi.perfectreader.main.MainConstants.LOG_TAG;
 import static com.dmi.perfectreader.util.lang.LongPercent.valuePercent;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Math.min;
 import static java.lang.Math.round;
 import static java.lang.String.format;
 
-// todo отрефакторить loadId
+// todo проверить, нужен ли loadId
 public class PageBookSegmentView extends FrameLayout {
+    private static final String LOG_TAG = BookFragment.class.getSimpleName();
+
     private final WebView webView;
 
     private OnInvalidateListener onInvalidateListener;
 
     private boolean isLoaded = false;
-    private String loadingUrl;
-    private final AtomicInteger loadId = new AtomicInteger();
 
     private int pageCount = 0;
     private int totalWidth = 0;
     private int screenWidth = 0;
     private LongPercent currentPercent = LongPercent.ZERO;
+
+    private String fontSize = "100%";
 
     public PageBookSegmentView(Context context) {
         super(context);
@@ -68,46 +74,75 @@ public class PageBookSegmentView extends FrameLayout {
                 return event.getAction() == MotionEvent.ACTION_MOVE;
             }
         });
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webSettings.setAppCacheEnabled(false);
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
+        webView.setInitialScale(100);
+        webView.addJavascriptInterface(new JavaBridge(), "__javaBridge");
         webView.setWebViewClient(new WebViewClient() {
             @Override
-            public void onPageFinished(final WebView view, String url) {
-                if (url.equals(loadingUrl)) {
-                    String script =
-                            format("__javaBridge.setScreenWidth(%s, document.body.clientWidth);\n", loadId.get()) +
-                            format("__javaBridge.setTotalWidth(%s, document.body.scrollWidth);\n", loadId.get()) +
-                            format("__javaBridge.finishLoad(%s);", loadId.get());
-                    webView.loadUrl("javascript:" + script);
-                }
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                Log.i(LOG_TAG, "onPageStarted. url: " + url);
             }
 
+            @Override
+            public void onPageFinished(final WebView view, String url) {
+                Log.i(LOG_TAG, "onPageFinished. url: " + url);
+            }
 
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 Log.e(LOG_TAG,
-                        format("WebView error. errorCode: {%s}, description: {%s}, failingUrl: {%s}",
+                        format("onReceivedError. errorCode: {%s}, description: {%s}, failingUrl: {%s}",
                                 errorCode, description, failingUrl));
             }
 
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                Log.i(LOG_TAG, "loading " + url);
+                boolean isInitScript = url.startsWith("javabridge://initscript");
+                boolean isFinalScript = url.startsWith("javabridge://finalscript");
+                if (isInitScript) {
+                    return scriptResourceResponse(initScript());
+                } else if (isFinalScript) {
+                    return scriptResourceResponse(finalScript());
+                } else {
+                    return super.shouldInterceptRequest(view, url);
+                }
+            }
 
+            private WebResourceResponse scriptResourceResponse(String script) {
+                ByteArrayInputStream is = new ByteArrayInputStream(script.getBytes(Charsets.UTF_8));
+                return new WebResourceResponse("text/javascript", "UTF-8", is);
+            }
+
+            private String initScript() {
+                String varScript = varDeclaration("__javaFontSize", fontSize);
+                String mainScript = ResourceUtils.readTextRawResource(getResources(), R.raw.js_booksegment_init);
+                return varScript + mainScript;
+            }
+
+            private String varDeclaration(String name, String value) {
+                return  format("var %s = \"%s\";\n", name, value);
+            }
+
+            private String finalScript() {
+                return ResourceUtils.readTextRawResource(getResources(), R.raw.js_booksegment_final);
+            }
         });
-        webView.addJavascriptInterface(new JavaBridge(), "__javaBridge");
-        webView.setInitialScale(100);
         return webView;
     }
 
     public void loadUrl(String url) {
-        loadId.incrementAndGet();
+        Log.i(LOG_TAG, "loadUrl. url: " + url);
         isLoaded = false;
         webView.setVisibility(INVISIBLE);
         webView.stopLoading();
         if (url != null) {
-            loadingUrl = url;
             webView.loadUrl(url);
         } else {
             loadBlank();
-            loadingUrl = null;
         }
     }
 
@@ -202,11 +237,12 @@ public class PageBookSegmentView extends FrameLayout {
         }
     }
 
-    public void setFontSize(String size) {
-        webView.loadUrl(format("javascript: setFontSize(\"%s\")", size));
+    public void setFontSize(String fontSize) {
+        this.fontSize = fontSize;
+        webView.loadUrl(format("javascript: setFontSize(\"%s\")", fontSize));
     }
 
-    public void setLineHeight(float height) {
+    public void setLineHeight(float lineHeight) {
         throw new UnsupportedOperationException();
     }
 
@@ -218,27 +254,26 @@ public class PageBookSegmentView extends FrameLayout {
 
     private class JavaBridge {
         @JavascriptInterface
-        public void setScreenWidth(int loadId, int screenWidth) {
+        public void setScreenWidth(int screenWidth) {
             PageBookSegmentView.this.screenWidth = screenWidth;
         }
 
         @JavascriptInterface
-        public void setTotalWidth(int loadId, int totalWidth) {
+        public void setTotalWidth(int totalWidth) {
             PageBookSegmentView.this.totalWidth = totalWidth;
             pageCount = round(totalWidth / screenWidth);
         }
 
         @JavascriptInterface
-        public void finishLoad(final int loadId) {
+        public void finishLoad() {
+            Log.i(LOG_TAG, "finishLoad");
             post(new Runnable() {
                 @Override
                 public void run() {
-                    if (PageBookSegmentView.this.loadId.get() == loadId) {
-                        webView.setVisibility(VISIBLE);
-                        isLoaded = true;
-                        scrollToCurrentViewport();
-                        notifyOnInvalidate();
-                    }
+                    webView.setVisibility(VISIBLE);
+                    isLoaded = true;
+                    scrollToCurrentViewport();
+                    notifyOnInvalidate();
                 }
             });
         }
