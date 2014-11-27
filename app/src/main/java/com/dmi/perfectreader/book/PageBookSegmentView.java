@@ -102,11 +102,8 @@ public class PageBookSegmentView extends FrameLayout {
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
                 Log.i(LOG_TAG, "loading " + url);
                 boolean isInitScript = url.startsWith("javabridge://initscript");
-                boolean isFinalScript = url.startsWith("javabridge://finalscript");
                 if (isInitScript) {
                     return scriptResourceResponse(initScript());
-                } else if (isFinalScript) {
-                    return scriptResourceResponse(finalScript());
                 } else {
                     return super.shouldInterceptRequest(view, url);
                 }
@@ -125,10 +122,6 @@ public class PageBookSegmentView extends FrameLayout {
 
             private String varDeclaration(String name, String value) {
                 return  format("var %s = \"%s\";\n", name, value);
-            }
-
-            private String finalScript() {
-                return ResourceUtils.readTextRawResource(getResources(), R.raw.js_booksegment_final);
             }
         });
         return webView;
@@ -213,7 +206,7 @@ public class PageBookSegmentView extends FrameLayout {
 
     public int percentToPage(LongPercent percent) {
         checkState(isLoaded());
-        return min((int) round(percent.multiply(totalWidth) / screenWidth), pageCount - 1);
+        return screenWidth > 0 ? min((int) round(percent.multiply(totalWidth) / screenWidth), pageCount - 1) : 0;
     }
 
     public boolean isLastPage() {
@@ -256,12 +249,18 @@ public class PageBookSegmentView extends FrameLayout {
         @JavascriptInterface
         public void setScreenWidth(int screenWidth) {
             PageBookSegmentView.this.screenWidth = screenWidth;
+            if (isLoaded) {
+                scrollToCurrentViewport();
+            }
         }
 
         @JavascriptInterface
         public void setTotalWidth(int totalWidth) {
             PageBookSegmentView.this.totalWidth = totalWidth;
-            pageCount = round(totalWidth / screenWidth);
+            pageCount = screenWidth > 0 ? round(totalWidth / screenWidth) : 0;
+            if (isLoaded) {
+                scrollToCurrentViewport();
+            }
         }
 
         @JavascriptInterface

@@ -1,8 +1,21 @@
+/* ------------------------------------- До загрузки --------------------------------- */
+
 initPagination();
 setFontSize(__javaFontSize);
 
+/* ------------------------------------- После загрузки ------------------------------*/
+
+window.onload = function(e){
+    __javaBridge.setScreenWidth(document.body.clientWidth);
+    __javaBridge.setTotalWidth(document.body.scrollWidth);
+    __javaBridge.finishLoad();
+}
+
+/* ------------------------------------- Функции ------------------------------------- */
+
 function setFontSize(value) {
     document.body.style.setProperty("font-size", value, "important");
+    __javaBridge.setTotalWidth(document.body.scrollWidth);
 }
 
 function initPagination() {

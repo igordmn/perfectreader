@@ -76,7 +76,6 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
                     File bookCacheDir = bookCacheDir();
                     HtmlBookTransformer htmlBookTransformer = new HtmlBookTransformer();
                     htmlBookTransformer.setInitScriptUrlInjection("javabridge://initscript");
-                    htmlBookTransformer.setFinalScriptUrlInjection("javabridge://finalscript");
                     EpubBookExtractor epubBookExtractor = new EpubBookExtractor(htmlBookTransformer);
                     final List<String> segmentUrls = epubBookExtractor.extract(bookFile, bookCacheDir);
                     getActivity().runOnUiThread(new Runnable() {
@@ -86,6 +85,12 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
                             pageBookView.goLocation(new BookLocation(0, LongPercent.ZERO));
                         }
                     });
+                                                pageBookView.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    pageBookView.setFontSize("400%");
+                                }
+                            }, 20000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
