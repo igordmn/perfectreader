@@ -85,12 +85,6 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
                             pageBookView.goLocation(new BookLocation(0, LongPercent.ZERO));
                         }
                     });
-                                                pageBookView.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    pageBookView.setFontSize("400%");
-                                }
-                            }, 20000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
