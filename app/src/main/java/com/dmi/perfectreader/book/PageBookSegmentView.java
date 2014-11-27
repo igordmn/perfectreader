@@ -25,6 +25,10 @@ import com.dmi.perfectreader.util.opengl.ResourceUtils;
 import com.google.common.base.Charsets;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 import static com.dmi.perfectreader.util.lang.LongPercent.valuePercent;
 import static com.google.common.base.Preconditions.checkState;
@@ -38,6 +42,7 @@ public class PageBookSegmentView extends FrameLayout {
 
     private final WebView webView;
 
+    private BookStorage bookStorage;
     private OnInvalidateListener onInvalidateListener;
 
     private boolean isLoaded = false;
@@ -55,6 +60,10 @@ public class PageBookSegmentView extends FrameLayout {
         webView.setVisibility(INVISIBLE);
         setBackgroundColor(Color.WHITE);
         addView(webView);
+    }
+
+    public void setBookStorage(BookStorage bookStorage) {
+        this.bookStorage = bookStorage;
     }
 
     public void setOnInvalidateListener(OnInvalidateListener onInvalidateListener) {
@@ -104,8 +113,24 @@ public class PageBookSegmentView extends FrameLayout {
                 boolean isInitScript = url.startsWith("javabridge://initscript");
                 if (isInitScript) {
                     return scriptResourceResponse(initScript());
+                } else if (url.startsWith("bookstorage://")) {
+                    return bookStorageResponse(url);
                 } else {
                     return super.shouldInterceptRequest(view, url);
+                }
+            }
+
+            private WebResourceResponse bookStorageResponse(String url) {
+                try {
+                    String localUrl = url.substring("bookstorage://".length());
+                    URLConnection urlConnection = bookStorage.connectResource(localUrl);
+                    return new WebResourceResponse(
+                            urlConnection.getContentType(),
+                            urlConnection.getContentEncoding(),
+                            urlConnection.getInputStream());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
                 }
             }
 

@@ -50,6 +50,12 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         pageAnimationView.setPagesDrawer(this);
     }
 
+    public void setBookStorage(BookStorage bookStorage) {
+        currentSegment.setBookStorage(bookStorage);
+        nextSegment.setBookStorage(bookStorage);
+        previewSegment.setBookStorage(bookStorage);
+    }
+
     public void setBookData(BookData bookData) {
         this.bookData = bookData;
     }

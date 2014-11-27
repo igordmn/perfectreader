@@ -30,7 +30,7 @@ public class EpubBookExtractor {
     public List<String> extract(File bookFile, File outputDirectory) {
         List<File> segmentFiles = getSegmentFiles(bookFile);
         unzipBook(bookFile, outputDirectory, segmentFiles);
-        return toUrls(outputDirectory, segmentFiles);
+        return toUrls(segmentFiles);
     }
 
     private void unzipBook(File bookFile, File outputDirectory, List<File> segmentFiles) {
@@ -66,10 +66,10 @@ public class EpubBookExtractor {
         }
     }
 
-    private static List<String> toUrls(File rootDirectory, List<File> localFiles) {
+    private static List<String> toUrls(List<File> localFiles) {
         List<String> urls = new ArrayList<>();
         for (File localFile : localFiles) {
-            urls.add("file://" + new File(rootDirectory, localFile.getAbsolutePath()).getAbsolutePath());
+            urls.add("bookstorage://" + localFile.getAbsolutePath());
         }
         return urls;
     }
