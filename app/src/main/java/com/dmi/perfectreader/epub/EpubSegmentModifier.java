@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.html;
+package com.dmi.perfectreader.epub;
 
 import org.ccil.cowan.tagsoup.AttributesImpl;
 import org.ccil.cowan.tagsoup.Parser;
@@ -19,34 +19,35 @@ import java.io.OutputStreamWriter;
 
 import javax.xml.transform.TransformerConfigurationException;
 
-public class HtmlBookTransformer {
+/**
+ * ВНИМАНИЕ!!! После каждого изменения поведения этого класса необходимо изменить поле VERSION.
+ * Если этого не сделать, то для кэшированных ресурсов, изменения не произойдут.
+ *
+ * Также нужно помнить, что при модификации этого класса нужно обеспечить,
+ * чтобы он имел минимальное количество внешних зависимостей.
+ * Иначе будет сложно проследить, изменилось ли поведение класса.
+ */
+public class EpubSegmentModifier {
+    private static final int VERSION = 1;
     private static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
-
-    private String initScriptUrlInjection;
-    private String finalScriptUrlInjection;
+    private static final String INIT_SCRIPT_INJECTION = "javabridge://initscript";
 
     private ThreadLocal<Boolean> initScriptUrlInjected = new ThreadLocal<>();
-    private ThreadLocal<Boolean> finalScriptUrlInjected = new ThreadLocal<>();
 
-    public void setInitScriptUrlInjection(String initScriptUrlInjection) {
-        this.initScriptUrlInjection = initScriptUrlInjection;
+    public int version() {
+        return VERSION;
     }
 
-    public void setFinalScriptUrlInjection(String finalScriptUrlInjection) {
-        this.finalScriptUrlInjection = finalScriptUrlInjection;
-    }
-
-    public void transform(InputStream is, OutputStream os) throws IOException {
+    public void modify(InputStream inputStream, OutputStream outputStream) throws IOException {
         try {
-            tryTransform(is, os);
+            tryModify(inputStream, outputStream);
         } catch (TransformerConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void tryTransform(InputStream is, OutputStream os) throws SAXException, IOException, TransformerConfigurationException {
+    private void tryModify(InputStream is, OutputStream os) throws SAXException, IOException, TransformerConfigurationException {
         initScriptUrlInjected.set(false);
-        finalScriptUrlInjected.set(false);
         final XMLWriter xmlWriter = new XMLWriter(new OutputStreamWriter(os));
         xmlWriter.setOutputProperty(XMLWriter.METHOD, "html");
         xmlWriter.setOutputProperty(XMLWriter.ENCODING, "utf-8");
@@ -106,19 +107,11 @@ public class HtmlBookTransformer {
 
             @Override
             public void endElement(String uri, String localName, String qName) throws SAXException {
-                if ("body".equals(qName) && !finalScriptUrlInjected.get()) {
-                    processFinalScriptInjection();
-                    finalScriptUrlInjected.set(true);
-                }
                 xmlWriter.endElement(uri, localName, qName);
             }
 
             private void processInitScriptInjection() throws SAXException {
-                processScriptInjection(initScriptUrlInjection);
-            }
-
-            private void processFinalScriptInjection() throws SAXException {
-                processScriptInjection(finalScriptUrlInjection);
+                processScriptInjection(INIT_SCRIPT_INJECTION);
             }
 
             private void processScriptInjection(String scriptUrl) throws SAXException {

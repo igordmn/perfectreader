@@ -26,15 +26,13 @@ import com.google.common.base.Charsets;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 
 import static com.dmi.perfectreader.util.lang.LongPercent.valuePercent;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Math.min;
 import static java.lang.Math.round;
 import static java.lang.String.format;
+import static java.net.URLConnection.guessContentTypeFromName;
 
 // todo проверить, нужен ли loadId
 public class PageBookSegmentView extends FrameLayout {
@@ -113,7 +111,7 @@ public class PageBookSegmentView extends FrameLayout {
                 boolean isInitScript = url.startsWith("javabridge://initscript");
                 if (isInitScript) {
                     return scriptResourceResponse(initScript());
-                } else if (url.startsWith("bookstorage://")) {
+                } else if (bookStorage.isBookResource(url)) {
                     return bookStorageResponse(url);
                 } else {
                     return super.shouldInterceptRequest(view, url);
@@ -122,12 +120,10 @@ public class PageBookSegmentView extends FrameLayout {
 
             private WebResourceResponse bookStorageResponse(String url) {
                 try {
-                    String localUrl = url.substring("bookstorage://".length());
-                    URLConnection urlConnection = bookStorage.connectResource(localUrl);
                     return new WebResourceResponse(
-                            urlConnection.getContentType(),
-                            urlConnection.getContentEncoding(),
-                            urlConnection.getInputStream());
+                            guessContentTypeFromName(url),
+                            null,
+                            bookStorage.readResource(url));
                 } catch (IOException e) {
                     e.printStackTrace();
                     return null;

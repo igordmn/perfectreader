@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.book;
 
 import android.app.Fragment;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
@@ -10,8 +11,12 @@ import android.view.View;
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
+import com.dmi.perfectreader.epub.EpubSegmentModifier;
 import com.dmi.perfectreader.util.android.Units;
+import com.dmi.perfectreader.util.cache.DataCache;
+import com.dmi.perfectreader.util.lang.LongPercent;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
@@ -35,7 +40,7 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
     protected PageAnimationView pageAnimationView;
     @Bean
     protected AssetPaths assetPaths;
-    private BookStorage bookStorage = new BookStorage();
+    private BookStorage bookStorage;
 
     private View.OnClickListener onClickListener;
 
@@ -46,6 +51,13 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
 
     public void setOnClickListener(View.OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
+    }
+
+    @AfterInject
+    protected void init() {
+        EpubSegmentModifier epubSegmentModifier = new EpubSegmentModifier();
+        DataCache dataCache = new DataCache();
+        bookStorage = new BookStorage(epubSegmentModifier, dataCache);
     }
 
     @AfterViews
@@ -66,7 +78,24 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
     }
 
     private void loadBook() {
-        new LoadBookTask(getActivity(), bookFile, pageBookView, bookStorage).execute();
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    bookStorage.load(bookFile);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pageBookView.goLocation(new BookLocation(0, LongPercent.ZERO));
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+        }.execute();
     }
 
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
