@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.book;
 
-import com.dmi.perfectreader.epub.EpubSegmentModifier;
+import com.dmi.perfectreader.book.epub.EpubSegmentModifier;
 import com.dmi.perfectreader.util.cache.DataCache;
 import com.google.common.io.ByteStreams;
 

@@ -11,7 +11,7 @@ import android.view.View;
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
-import com.dmi.perfectreader.epub.EpubSegmentModifier;
+import com.dmi.perfectreader.book.epub.EpubSegmentModifier;
 import com.dmi.perfectreader.util.android.Units;
 import com.dmi.perfectreader.util.cache.DataCache;
 import com.dmi.perfectreader.util.lang.LongPercent;

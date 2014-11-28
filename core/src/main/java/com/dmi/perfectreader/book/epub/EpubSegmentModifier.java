@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.epub;
+package com.dmi.perfectreader.book.epub;
 
 import org.ccil.cowan.tagsoup.AttributesImpl;
 import org.ccil.cowan.tagsoup.Parser;
