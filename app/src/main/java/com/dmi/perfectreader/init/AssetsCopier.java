@@ -1,9 +1,10 @@
-package com.dmi.perfectreader.asset;
+package com.dmi.perfectreader.init;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.AssetManager;
 
+import com.dmi.perfectreader.asset.AssetPaths;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
@@ -18,7 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 // todo добавить версионность. при копировании проверять, совпадает ли версия. как вариант, добавить спец. файл version в папку assets
-@EBean
+@EBean(scope = EBean.Scope.Singleton)
 public class AssetsCopier {
     @RootContext
     protected Context context;

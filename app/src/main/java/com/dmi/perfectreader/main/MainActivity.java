@@ -11,11 +11,14 @@ import android.view.View;
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.BookFragment;
 import com.dmi.perfectreader.book.BookFragment_;
+import com.dmi.perfectreader.init.ApplicationInitFinishEvent;
 import com.dmi.perfectreader.menu.MenuActions;
 import com.dmi.perfectreader.menu.MenuFragment;
 import com.dmi.perfectreader.menu.MenuFragment_;
+import com.squareup.otto.Subscribe;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
@@ -26,6 +29,8 @@ import java.net.URLDecoder;
 
 @EActivity(R.layout.activity_book_reader)
 public class MainActivity extends Activity {
+    @Bean
+    protected EventBus eventBus;
     @ViewById
     protected View bookNotLoadedView;
     @ViewById
@@ -44,7 +49,16 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        eventBus.register(this);
+    }
 
+    @Subscribe
+    public void onApplicationInitFinish(ApplicationInitFinishEvent event) {
+        String bookFile = getBookFile();
+        openBook(bookFile);
+    }
+
+    private String getBookFile() {
         String bookFile = statePrefs.bookFilePath().get();
         String intentBookFile = extractFileFromIntent();
 
@@ -54,6 +68,10 @@ public class MainActivity extends Activity {
             bookFile = intentBookFile;
         }
 
+        return bookFile;
+    }
+
+    private void openBook(String bookFile) {
         if (!bookFile.equals("")) {
             BookFragment bookFragment = BookFragment_.builder()
                     .bookFile(new File(bookFile))
@@ -69,6 +87,12 @@ public class MainActivity extends Activity {
         } else {
             bookNotLoaded = true;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        eventBus.unregister(this);
+        super.onDestroy();
     }
 
     @Override
