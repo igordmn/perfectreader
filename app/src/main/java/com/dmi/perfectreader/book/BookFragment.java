@@ -13,7 +13,7 @@ import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 import com.dmi.perfectreader.book.epub.EpubSegmentModifier;
 import com.dmi.perfectreader.util.android.Units;
-import com.dmi.perfectreader.util.cache.DataCache;
+import com.dmi.perfectreader.util.cache.BookResourceCache;
 import com.dmi.perfectreader.util.lang.LongPercent;
 
 import org.androidannotations.annotations.AfterInject;
@@ -40,6 +40,8 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
     protected PageAnimationView pageAnimationView;
     @Bean
     protected AssetPaths assetPaths;
+    @Bean
+    protected BookResourceCache bookResourceCache;
     private BookStorage bookStorage;
 
     private View.OnClickListener onClickListener;
@@ -56,8 +58,7 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
     @AfterInject
     protected void init() {
         EpubSegmentModifier epubSegmentModifier = new EpubSegmentModifier();
-        DataCache dataCache = new DataCache();
-        bookStorage = new BookStorage(epubSegmentModifier, dataCache);
+        bookStorage = new BookStorage(epubSegmentModifier, bookResourceCache);
     }
 
     @AfterViews

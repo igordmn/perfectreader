@@ -11,6 +11,7 @@ import android.view.View;
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.BookFragment;
 import com.dmi.perfectreader.book.BookFragment_;
+import com.dmi.perfectreader.db.Databases;
 import com.dmi.perfectreader.init.ApplicationInitFinishEvent;
 import com.dmi.perfectreader.menu.MenuActions;
 import com.dmi.perfectreader.menu.MenuFragment;
@@ -29,14 +30,16 @@ import java.net.URLDecoder;
 
 @EActivity(R.layout.activity_book_reader)
 public class MainActivity extends Activity {
-    @Bean
-    protected EventBus eventBus;
     @ViewById
     protected View bookNotLoadedView;
     @ViewById
     protected View bookOpenErrorView;
     @Pref
     protected StatePrefs_ statePrefs;
+    @Bean
+    protected EventBus eventBus;
+    @Bean
+    protected Databases databases;
 
     private boolean bookNotLoaded;
 
@@ -50,6 +53,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         eventBus.register(this);
+        databases.registerClient();
     }
 
     @Subscribe
@@ -91,6 +95,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        databases.unregisterClient();
         eventBus.unregister(this);
         super.onDestroy();
     }

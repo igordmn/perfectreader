@@ -1,10 +1,9 @@
-package com.dmi.perfectreader.init;
+package com.dmi.perfectreader.asset;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.AssetManager;
 
-import com.dmi.perfectreader.asset.AssetPaths;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 

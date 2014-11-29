@@ -1,5 +1,7 @@
 package com.dmi.perfectreader.book;
 
+import android.annotation.SuppressLint;
+
 import com.dmi.perfectreader.book.epub.EpubSegmentModifier;
 import com.dmi.perfectreader.util.cache.DataCache;
 import com.google.common.io.ByteStreams;
@@ -19,19 +21,20 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+// todo переместить в модуль core
 public class BookStorage {
     private static final String URL_PREFIX = "bookstorage://";
 
     private EpubSegmentModifier epubSegmentModifier;
-    private DataCache dataCache;
+    private DataCache resourceCache;
 
     private File bookFile;
     private final List<String> segmentUrls = new ArrayList<>();
     private final Set<String> segmentUrlsSet = new HashSet<>();
 
-    public BookStorage(EpubSegmentModifier epubSegmentModifier, DataCache dataCache) {
+    public BookStorage(EpubSegmentModifier epubSegmentModifier, DataCache resourceCache) {
         this.epubSegmentModifier = epubSegmentModifier;
-        this.dataCache = dataCache;
+        this.resourceCache = resourceCache;
     }
 
     public void load(File bookFile) {
@@ -56,9 +59,10 @@ public class BookStorage {
 
     public InputStream readResource(final String url) throws IOException {
         final boolean isSegmentUrl = segmentUrlsSet.contains(url);
-        String cacheKey = String.format("file: %s; lastModified: %s; modVersion: %s",
-                bookFile.getAbsolutePath(), bookFile.lastModified(), epubSegmentModifier.version());
-        return dataCache.openRead(cacheKey, new DataCache.DataWriter() {
+        String cacheKey = String.format("file: %s; url: %s; lastModified: %s; modVersion: %s",
+                bookFile.getAbsolutePath(), url, bookFile.lastModified(), epubSegmentModifier.version());
+        return resourceCache.openRead(cacheKey, new DataCache.DataWriter() {
+            @SuppressLint("NewApi")
             @Override
             public void write(OutputStream outputStream) throws IOException {
                 // todo проверить производительность при открытии ZipFile каждый раз

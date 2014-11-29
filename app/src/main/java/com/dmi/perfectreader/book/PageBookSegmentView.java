@@ -125,6 +125,7 @@ public class PageBookSegmentView extends FrameLayout {
                             null,
                             bookStorage.readResource(url));
                 } catch (IOException e) {
+                    // todo при ошибке, нужно ее отобразить в диалоговом окне
                     e.printStackTrace();
                     return null;
                 }

@@ -1,10 +1,12 @@
-package com.dmi.perfectreader.init;
+package com.dmi.perfectreader.main;
 
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.dmi.perfectreader.main.EventBus;
+import com.dmi.perfectreader.db.Databases;
+import com.dmi.perfectreader.init.ApplicationInitFinishEvent;
+import com.dmi.perfectreader.asset.AssetsCopier;
 import com.squareup.otto.Produce;
 
 import org.androidannotations.annotations.AfterInject;
@@ -19,6 +21,8 @@ public class ApplicationInitializer {
     protected EventBus eventBus;
     @Bean
     protected AssetsCopier assetsCopier;
+    @Bean
+    protected Databases databases;
     private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @AfterInject
@@ -40,6 +44,7 @@ public class ApplicationInitializer {
 
     private void initApp() {
         assetsCopier.copyAssets();
+        databases.createOrUpgrade();
         initFinished.set(true);
         mainHandler.post(new Runnable() {
             @Override
