@@ -118,13 +118,13 @@ public class MainActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         BookFragment bookFragment = bookFragment(getFragmentManager());
-        return bookFragment.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+        return bookFragment != null && bookFragment.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
 
     @Override
     public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
         BookFragment bookFragment = bookFragment(getFragmentManager());
-        return bookFragment.onKeyUp(keyCode, event) || super.onKeyUp(keyCode, event);
+        return bookFragment != null && bookFragment.onKeyUp(keyCode, event) || super.onKeyUp(keyCode, event);
     }
 
     private void toggleMenu() {
