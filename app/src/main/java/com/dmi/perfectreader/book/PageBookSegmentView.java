@@ -20,9 +20,14 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 import com.dmi.perfectreader.R;
+import com.dmi.perfectreader.error.ErrorEvent;
+import com.dmi.perfectreader.main.EventBus;
 import com.dmi.perfectreader.util.lang.LongPercent;
 import com.dmi.perfectreader.util.opengl.ResourceUtils;
 import com.google.common.base.Charsets;
+
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EViewGroup;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -35,8 +40,12 @@ import static java.lang.String.format;
 import static java.net.URLConnection.guessContentTypeFromName;
 
 // todo проверить, нужен ли loadId
+@EViewGroup
 public class PageBookSegmentView extends FrameLayout {
     private static final String LOG_TAG = BookFragment.class.getSimpleName();
+
+    @Bean
+    protected EventBus eventBus;
 
     private final WebView webView;
 
@@ -125,8 +134,7 @@ public class PageBookSegmentView extends FrameLayout {
                             null,
                             bookStorage.readResource(url));
                 } catch (IOException e) {
-                    // todo при ошибке, нужно ее отобразить в диалоговом окне
-                    e.printStackTrace();
+                    eventBus.post(new ErrorEvent(e));
                     return null;
                 }
             }

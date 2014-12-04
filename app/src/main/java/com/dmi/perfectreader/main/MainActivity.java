@@ -7,11 +7,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.BookFragment;
 import com.dmi.perfectreader.book.BookFragment_;
 import com.dmi.perfectreader.db.Databases;
+import com.dmi.perfectreader.error.BookFileNotFoundException;
+import com.dmi.perfectreader.error.BookInvalidException;
+import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.init.ApplicationInitFinishEvent;
 import com.dmi.perfectreader.menu.MenuActions;
 import com.dmi.perfectreader.menu.MenuFragment;
@@ -34,6 +38,8 @@ public class MainActivity extends Activity {
     protected View bookNotLoadedView;
     @ViewById
     protected View bookOpenErrorView;
+    @ViewById
+    protected TextView bookOpenErrorDetailTextView;
     @Pref
     protected StatePrefs_ statePrefs;
     @Bean
@@ -159,6 +165,34 @@ public class MainActivity extends Activity {
             return data != null ? URLDecoder.decode(data.getEncodedPath(), "UTF-8") : null;
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException();
+        }
+    }
+
+    @Subscribe
+    public void onErrorEvent(ErrorEvent errorEvent) {
+        showError(getMessage(errorEvent.getThrowable()));
+    }
+
+    private void showError(String message) {
+        FragmentManager fragmentManager = getFragmentManager();
+        final BookFragment bookFragment = bookFragment(fragmentManager);
+        if (bookFragment != null) {
+            fragmentManager.beginTransaction().remove(bookFragment).commit();
+        }
+        bookOpenErrorDetailTextView.setText(message);
+        bookOpenErrorView.setVisibility(View.VISIBLE);
+    }
+
+    private String getMessage(Throwable throwable) {
+        if (throwable instanceof BookFileNotFoundException) {
+            String path = ((BookFileNotFoundException) throwable).getFile().getAbsolutePath();
+            return getString(R.string.bookFileNotFoundError, path);
+        } else if (throwable instanceof BookInvalidException) {
+            return getString(R.string.bookFileInvalidError);
+        } else if (throwable.getMessage() != null && !throwable.getMessage().isEmpty()) {
+            return throwable.getMessage();
+        } else {
+            return getString(R.string.unknownError);
         }
     }
 }

@@ -29,6 +29,7 @@ public class AssetsCopier {
         try {
             tryCopyAssets();
         } catch (IOException e) {
+            // todo отображать ошибку
             throw new RuntimeException(e);
         }
     }

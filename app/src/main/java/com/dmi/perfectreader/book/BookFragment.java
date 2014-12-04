@@ -12,6 +12,8 @@ import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 import com.dmi.perfectreader.book.epub.EpubSegmentModifier;
+import com.dmi.perfectreader.error.ErrorEvent;
+import com.dmi.perfectreader.main.EventBus;
 import com.dmi.perfectreader.util.android.Units;
 import com.dmi.perfectreader.util.cache.BookResourceCache;
 import com.dmi.perfectreader.util.lang.LongPercent;
@@ -24,6 +26,7 @@ import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 
 import java.io.File;
+import java.io.IOException;
 
 import static java.lang.Math.sqrt;
 
@@ -42,6 +45,8 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
     protected AssetPaths assetPaths;
     @Bean
     protected BookResourceCache bookResourceCache;
+    @Bean
+    protected EventBus eventBus;
     private BookStorage bookStorage;
 
     private View.OnClickListener onClickListener;
@@ -90,6 +95,8 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
                             pageBookView.goLocation(new BookLocation(0, LongPercent.ZERO));
                         }
                     });
+                } catch (IOException e) {
+                    eventBus.post(new ErrorEvent(e));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

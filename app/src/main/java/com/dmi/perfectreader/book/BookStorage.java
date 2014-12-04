@@ -3,6 +3,7 @@ package com.dmi.perfectreader.book;
 import android.annotation.SuppressLint;
 
 import com.dmi.perfectreader.book.epub.EpubSegmentModifier;
+import com.dmi.perfectreader.error.BookFileNotFoundException;
 import com.dmi.perfectreader.util.cache.DataCache;
 import com.google.common.io.ByteStreams;
 
@@ -37,7 +38,7 @@ public class BookStorage {
         this.resourceCache = resourceCache;
     }
 
-    public void load(File bookFile) {
+    public void load(File bookFile) throws BookFileNotFoundException {
         this.bookFile = bookFile;
         segmentUrls.clear();
         segmentUrlsSet.clear();
@@ -65,6 +66,9 @@ public class BookStorage {
             @SuppressLint("NewApi")
             @Override
             public void write(OutputStream outputStream) throws IOException {
+                if (!bookFile.exists()) {
+                    throw new BookFileNotFoundException(bookFile);
+                }
                 // todo проверить производительность при открытии ZipFile каждый раз
                 try (ZipFile zipFile = new ZipFile(bookFile)) {
                     String filePath = url.substring(URL_PREFIX.length());
@@ -81,8 +85,11 @@ public class BookStorage {
         });
     }
 
-    private static List<String> getSegmentUrls(File bookFile) {
+    private static List<String> getSegmentUrls(File bookFile) throws BookFileNotFoundException {
         List<String> files = new ArrayList<>();
+        if (!bookFile.exists()) {
+            throw new BookFileNotFoundException(bookFile);
+        }
         Container container = EPub3.openBook(bookFile.getAbsolutePath());
         try {
             org.readium.sdk.android.Package pack = container.getDefaultPackage();

@@ -1,5 +1,7 @@
 package com.dmi.perfectreader.book.epub;
 
+import com.dmi.perfectreader.error.BookInvalidException;
+
 import org.ccil.cowan.tagsoup.AttributesImpl;
 import org.ccil.cowan.tagsoup.Parser;
 import org.ccil.cowan.tagsoup.XMLWriter;
@@ -42,7 +44,7 @@ public class EpubSegmentModifier {
         try {
             tryModify(inputStream, outputStream);
         } catch (TransformerConfigurationException | SAXException e) {
-            throw new RuntimeException(e);
+            throw new BookInvalidException(e);
         }
     }
 

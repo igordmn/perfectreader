@@ -29,9 +29,9 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         setClickable(true);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        currentSegment = new PageBookSegmentView(context);
-        nextSegment = new PageBookSegmentView(context);
-        previewSegment = new PageBookSegmentView(context);
+        currentSegment = PageBookSegmentView_.build(context);
+        nextSegment = PageBookSegmentView_.build(context);
+        previewSegment = PageBookSegmentView_.build(context);
         currentSegment.setOnInvalidateListener(new SegmentOnInvalidateListener(currentSegment));
         nextSegment.setOnInvalidateListener(new SegmentOnInvalidateListener(nextSegment));
         previewSegment.setOnInvalidateListener(new SegmentOnInvalidateListener(previewSegment));
