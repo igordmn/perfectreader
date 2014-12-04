@@ -31,7 +31,7 @@
                 <data
                     android:scheme="file"
                     android:host="*"
-                    android:mimeType="text/plain"/>
+                    android:mimeType="application/epub+zip"/>
             </intent-filter>
         </activity>
 
