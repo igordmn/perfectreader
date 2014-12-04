@@ -3,16 +3,15 @@ package com.dmi.perfectreader.util.opengl;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+import static java.lang.String.format;
+
 public class Graphics {
     public static final int BYTES_PER_FLOAT = 4;
-
-    private static final String LOG_TAG = Graphics.class.getName();
 
     public static FloatBuffer floatBuffer(float[] items) {
         FloatBuffer floatBuffer = ByteBuffer.allocateDirect(items.length * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -39,18 +38,16 @@ public class Graphics {
         });
     }
 
-    public static int compileShader(String strSource, int iType) {
-        Log.d(LOG_TAG, "compileShader");
-        int[] compiled = new int[1];
-        int iShader = GLES20.glCreateShader(iType);
-        GLES20.glShaderSource(iShader, strSource);
-        GLES20.glCompileShader(iShader);
-        GLES20.glGetShaderiv(iShader, GLES20.GL_COMPILE_STATUS, compiled, 0);
-        if (compiled[0] == 0) {
-            Log.e("Load Shader Failed", "Compilation\n" + GLES20.glGetShaderInfoLog(iShader));
-            return 0;    // todo throw exception
+    public static int compileShader(String strSource, int type) {
+        int[] ids = new int[1];
+        int shader = GLES20.glCreateShader(type);
+        GLES20.glShaderSource(shader, strSource);
+        GLES20.glCompileShader(shader);
+        GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, ids, 0);
+        if (ids[0] == 0) {
+            throw new RuntimeException(format("Compile shader failed: %s", GLES20.glGetShaderInfoLog(shader)));
         }
-        return iShader;
+        return shader;
     }
 
     public static int createProgram(Resources resources, int vertexShaderResId, int fragmentShaderResId) {
@@ -60,36 +57,31 @@ public class Graphics {
     }
 
     public static int createProgram(String vertexShader, String fragmentShader) {
-        Log.d(LOG_TAG, "createProgram");
-        int iVShader;
-        int iFShader;
-        int iProgId;
-        int[] link = new int[1];
-        iVShader = compileShader(vertexShader, GLES20.GL_VERTEX_SHADER);
-        if (iVShader == 0) {
-            Log.d("Load Program", "Vertex Shader Failed");
-            return 0;    // todo throw exception
+        int[] ids = new int[1];
+
+        int vShader = compileShader(vertexShader, GLES20.GL_VERTEX_SHADER);
+        if (vShader == 0) {
+            throw new RuntimeException("Vertex shader failed");
         }
-        iFShader = compileShader(fragmentShader, GLES20.GL_FRAGMENT_SHADER);
-        if (iFShader == 0) {
-            Log.d("Load Program", "Fragment Shader Failed");
-            return 0;    // todo throw exception
+        int fShader = compileShader(fragmentShader, GLES20.GL_FRAGMENT_SHADER);
+        if (fShader == 0) {
+            throw new RuntimeException("Fragment shader failed");
         }
 
-        iProgId = GLES20.glCreateProgram();
+        int progId = GLES20.glCreateProgram();
 
-        GLES20.glAttachShader(iProgId, iVShader);
-        GLES20.glAttachShader(iProgId, iFShader);
+        GLES20.glAttachShader(progId, vShader);
+        GLES20.glAttachShader(progId, fShader);
 
-        GLES20.glLinkProgram(iProgId);
-
-        GLES20.glGetProgramiv(iProgId, GLES20.GL_LINK_STATUS, link, 0);
-        if (link[0] <= 0) {
-            Log.d("Load Program", "Linking Failed");
-            return 0;   // todo throw exception
+        GLES20.glLinkProgram(progId);
+        GLES20.glGetProgramiv(progId, GLES20.GL_LINK_STATUS, ids, 0);
+        if (ids[0] <= 0) {
+            throw new RuntimeException("Linking shader failed");
         }
-        GLES20.glDeleteShader(iVShader);
-        GLES20.glDeleteShader(iFShader);
-        return iProgId;
+
+        GLES20.glDeleteShader(vShader);
+        GLES20.glDeleteShader(fShader);
+
+        return progId;
     }
 }
