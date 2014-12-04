@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+// todo не использовать БД для хранения ключей. очистку кэша производить по файлам, находящимся в папках. напрямую читая размер и время последнего доступа
 @EBean(scope = EBean.Scope.Singleton)
 public class BookResourceCache extends DiskDataCache {
     public static final String CACHE_FOLDER = "bookResource";
@@ -33,8 +34,7 @@ public class BookResourceCache extends DiskDataCache {
 
     @AfterInject
     protected void init() {
-        // todo придумать, что делать при н едостпуность внешнего хранилища данных
-        setCachePath(new File(context.getExternalCacheDir(), CACHE_FOLDER));
+        setCachePath(new File(context.getCacheDir(), CACHE_FOLDER));
     }
 
     @SuppressLint("NewApi")
