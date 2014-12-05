@@ -59,11 +59,12 @@ public class PageBookSegmentView extends FrameLayout {
     private int screenWidth = 0;
     private LongPercent currentPercent = LongPercent.ZERO;
 
-    private int fontSizeInPercents = 100;
     private int pageTopPaddingInPixels = 24;
     private int pageRightPaddingInPixels = 24;
     private int pageBottomPaddingInPixels = 24;
     private int pageLeftPaddingInPixels = 24;
+    private TextAlign textAlign = TextAlign.JUSTIFY;
+    private int fontSizeInPercents = 100;
 
     public PageBookSegmentView(Context context) {
         super(context);
@@ -121,8 +122,11 @@ public class PageBookSegmentView extends FrameLayout {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
                 Log.i(LOG_TAG, "loading " + url);
+                boolean isConfigScript = url.startsWith("javabridge://configscript");
                 boolean isInitScript = url.startsWith("javabridge://initscript");
-                if (isInitScript) {
+                if (isConfigScript) {
+                    return scriptResourceResponse(configScript());
+                } else if (isInitScript) {
                     return scriptResourceResponse(initScript());
                 } else if (bookStorage.isBookResource(url)) {
                     return bookStorageResponse(url);
@@ -149,8 +153,7 @@ public class PageBookSegmentView extends FrameLayout {
             }
 
             private String initScript() {
-                String mainScript = ResourceUtils.readTextRawResource(getResources(), R.raw.js_booksegment_init);
-                return configScript() + mainScript;
+                return ResourceUtils.readTextRawResource(getResources(), R.raw.js_booksegment_init);
             }
         });
         return webView;
@@ -259,11 +262,6 @@ public class PageBookSegmentView extends FrameLayout {
         }
     }
 
-    public void setFontSize(int fontSizeInPercents) {
-        this.fontSizeInPercents = fontSizeInPercents;
-        webView.loadUrl("javascript: " + fontSizeScript());
-    }
-
     public void setPagePadding(int pageTopPaddingInPixels,
                                int pageRightPaddingInPixels,
                                int pageBottomPaddingInPixels,
@@ -275,16 +273,22 @@ public class PageBookSegmentView extends FrameLayout {
         webView.loadUrl("javascript: " + pageConfigurationScript());
     }
 
+    public void setTextAlign(TextAlign textAlign) {
+        this.textAlign = textAlign;
+        webView.loadUrl("javascript: " + textAlignScript());
+    }
+
+    public void setFontSize(int fontSizeInPercents) {
+        this.fontSizeInPercents = fontSizeInPercents;
+        webView.loadUrl("javascript: " + fontSizeScript());
+    }
+
     private String configScript() {
         return jsFunction("__configure",
                 pageConfigurationScript() +
+                textAlignScript() +
                 fontSizeScript()
         );
-    }
-
-    private String fontSizeScript() {
-        return jsVar("__fontSizeInPercents", fontSizeInPercents) +
-               "setFontSize();\n";
     }
 
     private String pageConfigurationScript() {
@@ -295,8 +299,22 @@ public class PageBookSegmentView extends FrameLayout {
                "setPageConfiguration();\n";
     }
 
+    private String textAlignScript() {
+        return jsVar("__textAlign", textAlign.cssValue()) +
+               "setTextAlign();\n";
+    }
+
+    private String fontSizeScript() {
+        return jsVar("__fontSizeInPercents", fontSizeInPercents) +
+               "setFontSize();\n";
+    }
+
     public void setLineHeight(float lineHeight) {
         throw new UnsupportedOperationException();
+    }
+
+    private String jsVar(String name, String value) {
+        return  format("window.%s = \"%s\";\n", name, value);
     }
 
     private String jsVar(String name, int value) {

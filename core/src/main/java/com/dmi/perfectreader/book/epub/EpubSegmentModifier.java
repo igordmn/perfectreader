@@ -28,6 +28,7 @@ import javax.xml.transform.TransformerConfigurationException;
 
 public class EpubSegmentModifier {
     private static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
+    private static final String CONFIG_SCRIPT_INJECTION = "javabridge://configscript";
     private static final String INIT_SCRIPT_INJECTION = "javabridge://initscript";
     private static final String MAIN_DIV_ID = "__mainDiv";
     private static final Set<String> DELETE_TRAILING_SPACES_ELEMENTS = new HashSet<>(Arrays.asList(
@@ -75,11 +76,13 @@ public class EpubSegmentModifier {
 
         final XMLReader xmlReader = new Parser();
         xmlReader.setContentHandler(new ContentHandler() {
+            private ThreadLocal<Boolean> configScriptUrlInjected = new ThreadLocal<>();
             private ThreadLocal<Boolean> initScriptUrlInjected = new ThreadLocal<>();
-            private Stack<String> currentElements = new Stack<String>();
+            private Stack<String> currentElements = new Stack<>();
             private StringBuilder currentText = new StringBuilder();
 
             {
+                configScriptUrlInjected.set(false);
                 initScriptUrlInjected.set(false);
             }
 
@@ -118,8 +121,12 @@ public class EpubSegmentModifier {
                     attributes.addAttribute("", "id", "", "CDATA", MAIN_DIV_ID);
                     xmlWriter.startElement(XHTML_NAMESPACE, "div", "", attributes);
                 }
+                if ("body".equals(qName) && !configScriptUrlInjected.get()) {
+                    processScriptInjection(CONFIG_SCRIPT_INJECTION);
+                    configScriptUrlInjected.set(true);
+                }
                 if ("body".equals(qName) && !initScriptUrlInjected.get()) {
-                    processInitScriptInjection();
+                    processScriptInjection(INIT_SCRIPT_INJECTION);
                     initScriptUrlInjected.set(true);
                 }
             }
@@ -132,10 +139,6 @@ public class EpubSegmentModifier {
                 }
                 xmlWriter.endElement(uri, localName, qName);
                 currentElements.pop();
-            }
-
-            private void processInitScriptInjection() throws SAXException {
-                processScriptInjection(INIT_SCRIPT_INJECTION);
             }
 
             private void processScriptInjection(String scriptUrl) throws SAXException {

@@ -2,6 +2,13 @@
 
 var loaded = false;
 var stylesheet = createStylesheet();
+var pRule = addCSSRule(stylesheet, "p");
+var divRule = addCSSRule(stylesheet, "div");
+var tdRule = addCSSRule(stylesheet, "td");
+var dtRule = addCSSRule(stylesheet, "dt");
+var ddRule = addCSSRule(stylesheet, "dd");
+var brRule = addCSSRule(stylesheet, "br");
+var liRule = addCSSRule(stylesheet, "li");
 __configure();
 
 /* ------------------------------------- После загрузки ------------------------------ */
@@ -36,6 +43,17 @@ function setPageConfiguration() {
     onContentChanged();
 }
 
+function setTextAlign() {
+    pRule.style.setProperty("text-align", __textAlign, "important");
+    divRule.style.setProperty("text-align", __textAlign, "important");
+    tdRule.style.setProperty("text-align", __textAlign, "important");
+    dtRule.style.setProperty("text-align", __textAlign, "important");
+    ddRule.style.setProperty("text-align", __textAlign, "important");
+    brRule.style.setProperty("text-align", __textAlign, "important");
+    liRule.style.setProperty("text-align", __textAlign, "important");
+    onContentChanged();
+}
+
 function setFontSize() {
     document.body.style.setProperty("font-size", __fontSizeInPercents + "%", "important");
     onContentChanged();
@@ -52,5 +70,11 @@ function onContentChanged() {
 function createStylesheet() {
     var style = document.createElement("style");
     document.head.appendChild(style);
-    return document.styleSheets[document.styleSheets.length-1];
+    return document.styleSheets[document.styleSheets.length - 1];
+}
+
+function addCSSRule(stylesheet, ruleName) {
+    var index = stylesheet.cssRules.length;
+    stylesheet.insertRule(ruleName + " { }", index);
+    return stylesheet.cssRules[index];
 }
