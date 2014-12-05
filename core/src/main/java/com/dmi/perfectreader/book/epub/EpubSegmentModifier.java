@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.book.epub;
 
 import com.dmi.perfectreader.error.BookInvalidException;
+import com.google.common.base.CharMatcher;
 
 import org.ccil.cowan.tagsoup.AttributesImpl;
 import org.ccil.cowan.tagsoup.Parser;
@@ -18,27 +19,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Stack;
 
 import javax.xml.transform.TransformerConfigurationException;
 
-/**
- * ВНИМАНИЕ!!! После каждого изменения поведения этого класса необходимо изменить поле VERSION.
- * Если этого не сделать, то для кэшированных ресурсов, изменения не произойдут.
- *
- * Также нужно помнить, что при модификации этого класса нужно обеспечить,
- * чтобы он имел минимальное количество внешних зависимостей.
- * Иначе будет сложно проследить, изменилось ли поведение класса.
- */
 public class EpubSegmentModifier {
-    private static final int VERSION = 3;
     private static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
     private static final String INIT_SCRIPT_INJECTION = "javabridge://initscript";
     private static final String MAIN_DIV_ID = "__mainDiv";
+    private static final Set<String> DELETE_TRAILING_SPACES_ELEMENTS = new HashSet<>(Arrays.asList(
+            // block elements
+            "p", "td", "div", "h1", "h2", "h3", "h4", "h5", "h6", "dt", "dd",
+            // inline elements
+            "br", "li"
+    ));
 
-    private ThreadLocal<Boolean> initScriptUrlInjected = new ThreadLocal<>();
+    private static boolean deleteTrailingSpaces = true;
 
     public int version() {
-        return VERSION;
+        return Version.VERSION;
     }
 
     public void modify(InputStream inputStream, OutputStream outputStream) throws IOException {
@@ -50,7 +52,6 @@ public class EpubSegmentModifier {
     }
 
     private void tryModify(InputStream is, OutputStream os) throws SAXException, IOException, TransformerConfigurationException {
-        initScriptUrlInjected.set(false);
         final XMLWriter xmlWriter = new XMLWriter(new OutputStreamWriter(os));
         xmlWriter.setOutputProperty(XMLWriter.METHOD, "html");
         xmlWriter.setOutputProperty(XMLWriter.ENCODING, "utf-8");
@@ -74,6 +75,14 @@ public class EpubSegmentModifier {
 
         final XMLReader xmlReader = new Parser();
         xmlReader.setContentHandler(new ContentHandler() {
+            private ThreadLocal<Boolean> initScriptUrlInjected = new ThreadLocal<>();
+            private Stack<String> currentElements = new Stack<String>();
+            private StringBuilder currentText = new StringBuilder();
+
+            {
+                initScriptUrlInjected.set(false);
+            }
+
             @Override
             public void setDocumentLocator(Locator locator) {
                 xmlWriter.setDocumentLocator(locator);
@@ -101,6 +110,8 @@ public class EpubSegmentModifier {
 
             @Override
             public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+                currentElements.add(localName);
+                writeCurrentText();
                 xmlWriter.startElement(uri, localName, qName, atts);
                 if ("body".equals(qName)) {
                     AttributesImpl attributes = new AttributesImpl();
@@ -115,10 +126,12 @@ public class EpubSegmentModifier {
 
             @Override
             public void endElement(String uri, String localName, String qName) throws SAXException {
+                writeCurrentText();
                 if ("body".equals(qName)) {
                     xmlWriter.endElement(XHTML_NAMESPACE, "div");
                 }
                 xmlWriter.endElement(uri, localName, qName);
+                currentElements.pop();
             }
 
             private void processInitScriptInjection() throws SAXException {
@@ -143,7 +156,27 @@ public class EpubSegmentModifier {
 
             @Override
             public void characters(char[] ch, int start, int length) throws SAXException {
-                xmlWriter.characters(ch, start, length);
+                currentText.append(ch, start, length);
+            }
+
+            private void writeCurrentText() throws SAXException {
+                if (currentText.length() > 0) {
+                    CharSequence modifiedText = modifyText(currentText);
+                    char[] chars = new char[modifiedText.length()];
+                    for (int i = 0; i < modifiedText.length(); i++) {
+                        chars[i] = modifiedText.charAt(i);
+                    }
+                    xmlWriter.characters(chars, 0, chars.length);
+                    currentText.setLength(0);
+                }
+            }
+
+            private CharSequence modifyText(CharSequence textChars) {
+                if (deleteTrailingSpaces && DELETE_TRAILING_SPACES_ELEMENTS.contains(currentElement())) {
+                    return CharMatcher.WHITESPACE.trimLeadingFrom(textChars);
+                } else {
+                    return textChars;
+                }
             }
 
             @Override
@@ -159,6 +192,10 @@ public class EpubSegmentModifier {
             @Override
             public void skippedEntity(String name) throws SAXException {
                 xmlWriter.skippedEntity(name);
+            }
+
+            private String currentElement() {
+                return currentElements.size() > 0 ? currentElements.peek() : null;
             }
         });
         xmlReader.parse(new InputSource(is));
