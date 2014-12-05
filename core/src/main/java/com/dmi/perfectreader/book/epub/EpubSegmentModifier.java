@@ -30,9 +30,10 @@ import javax.xml.transform.TransformerConfigurationException;
  * Иначе будет сложно проследить, изменилось ли поведение класса.
  */
 public class EpubSegmentModifier {
-    private static final int VERSION = 1;
+    private static final int VERSION = 3;
     private static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
     private static final String INIT_SCRIPT_INJECTION = "javabridge://initscript";
+    private static final String MAIN_DIV_ID = "__mainDiv";
 
     private ThreadLocal<Boolean> initScriptUrlInjected = new ThreadLocal<>();
 
@@ -101,6 +102,11 @@ public class EpubSegmentModifier {
             @Override
             public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
                 xmlWriter.startElement(uri, localName, qName, atts);
+                if ("body".equals(qName)) {
+                    AttributesImpl attributes = new AttributesImpl();
+                    attributes.addAttribute("", "id", "", "CDATA", MAIN_DIV_ID);
+                    xmlWriter.startElement(XHTML_NAMESPACE, "div", "", attributes);
+                }
                 if ("body".equals(qName) && !initScriptUrlInjected.get()) {
                     processInitScriptInjection();
                     initScriptUrlInjected.set(true);
@@ -109,6 +115,9 @@ public class EpubSegmentModifier {
 
             @Override
             public void endElement(String uri, String localName, String qName) throws SAXException {
+                if ("body".equals(qName)) {
+                    xmlWriter.endElement(XHTML_NAMESPACE, "div");
+                }
                 xmlWriter.endElement(uri, localName, qName);
             }
 
@@ -128,7 +137,7 @@ public class EpubSegmentModifier {
                                          scriptUrl + "?randomId='+" + "new Date().getTime().toString() + Math.random()" + "+'" +
                                          "  \"\\x3E\\x3C/script\\x3E" +
                                          "');");
-                    xmlWriter.endElement("script");
+                    xmlWriter.endElement(XHTML_NAMESPACE, "script");
                 }
             }
 

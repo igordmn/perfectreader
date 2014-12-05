@@ -183,10 +183,19 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         }
     }
 
-    public void setFontSize(String size) {
-        currentSegment.setFontSize(size);
-        nextSegment.setFontSize(size);
-        previewSegment.setFontSize(size);
+    public void setFontSize(int fontSizeInPercents) {
+        currentSegment.setFontSize(fontSizeInPercents);
+        nextSegment.setFontSize(fontSizeInPercents);
+        previewSegment.setFontSize(fontSizeInPercents);
+    }
+
+    public void setPagePadding(int topPaddingInPixels,
+                               int rightPaddingInPixels,
+                               int bottomPaddingInPixels,
+                               int leftPaddingInPixels) {
+        currentSegment.setPagePadding(topPaddingInPixels, rightPaddingInPixels, bottomPaddingInPixels, leftPaddingInPixels);
+        nextSegment.setPagePadding(topPaddingInPixels, rightPaddingInPixels, bottomPaddingInPixels, leftPaddingInPixels);
+        previewSegment.setPagePadding(topPaddingInPixels, rightPaddingInPixels, bottomPaddingInPixels, leftPaddingInPixels);
     }
 
     public void setLineHeight(float height) {

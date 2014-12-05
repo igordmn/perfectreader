@@ -59,7 +59,11 @@ public class PageBookSegmentView extends FrameLayout {
     private int screenWidth = 0;
     private LongPercent currentPercent = LongPercent.ZERO;
 
-    private String fontSize = "100%";
+    private int fontSizeInPercents = 100;
+    private int pageTopPaddingInPixels = 24;
+    private int pageRightPaddingInPixels = 24;
+    private int pageBottomPaddingInPixels = 24;
+    private int pageLeftPaddingInPixels = 24;
 
     public PageBookSegmentView(Context context) {
         super(context);
@@ -145,13 +149,8 @@ public class PageBookSegmentView extends FrameLayout {
             }
 
             private String initScript() {
-                String varScript = varDeclaration("__javaFontSize", fontSize);
                 String mainScript = ResourceUtils.readTextRawResource(getResources(), R.raw.js_booksegment_init);
-                return varScript + mainScript;
-            }
-
-            private String varDeclaration(String name, String value) {
-                return  format("var %s = \"%s\";\n", name, value);
+                return configScript() + mainScript;
             }
         });
         return webView;
@@ -260,13 +259,52 @@ public class PageBookSegmentView extends FrameLayout {
         }
     }
 
-    public void setFontSize(String fontSize) {
-        this.fontSize = fontSize;
-        webView.loadUrl(format("javascript: setFontSize(\"%s\")", fontSize));
+    public void setFontSize(int fontSizeInPercents) {
+        this.fontSizeInPercents = fontSizeInPercents;
+        webView.loadUrl("javascript: " + fontSizeScript());
+    }
+
+    public void setPagePadding(int pageTopPaddingInPixels,
+                               int pageRightPaddingInPixels,
+                               int pageBottomPaddingInPixels,
+                               int pageLeftPaddingInPixels) {
+        this.pageTopPaddingInPixels = pageTopPaddingInPixels;
+        this.pageRightPaddingInPixels = pageRightPaddingInPixels;
+        this.pageBottomPaddingInPixels = pageBottomPaddingInPixels;
+        this.pageLeftPaddingInPixels = pageLeftPaddingInPixels;
+        webView.loadUrl("javascript: " + pageConfigurationScript());
+    }
+
+    private String configScript() {
+        return jsFunction("__configure",
+                pageConfigurationScript() +
+                fontSizeScript()
+        );
+    }
+
+    private String fontSizeScript() {
+        return jsVar("__fontSizeInPercents", fontSizeInPercents) +
+               "setFontSize();\n";
+    }
+
+    private String pageConfigurationScript() {
+        return jsVar("__pageTopPaddingInPixels", pageTopPaddingInPixels) +
+               jsVar("__pageRightPaddingInPixels", pageRightPaddingInPixels) +
+               jsVar("__pageBottomPaddingInPixels", pageBottomPaddingInPixels) +
+               jsVar("__pageLeftPaddingInPixels", pageLeftPaddingInPixels) +
+               "setPageConfiguration();\n";
     }
 
     public void setLineHeight(float lineHeight) {
         throw new UnsupportedOperationException();
+    }
+
+    private String jsVar(String name, int value) {
+        return  format("window.%s = %s;\n", name, value);
+    }
+
+    private String jsFunction(String name, String body) {
+        return "function " + name + "() {\n" + body + "\n}\n";
     }
 
     private void notifyOnInvalidate() {
@@ -287,7 +325,7 @@ public class PageBookSegmentView extends FrameLayout {
         @JavascriptInterface
         public void setTotalWidth(int totalWidth) {
             PageBookSegmentView.this.totalWidth = totalWidth;
-            pageCount = screenWidth > 0 ? round(totalWidth / screenWidth) : 0;
+            pageCount = screenWidth > 0 ? (int) round((double) totalWidth / screenWidth) : 0;
             if (isLoaded) {
                 scrollToCurrentViewport();
             }

@@ -71,7 +71,7 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
         pageAnimationView.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_PAGE_IN_SECONDS));
         pageAnimationView.setOnTouchListener(this);
         pageBookView.setPageAnimationView(pageAnimationView);
-        pageBookView.setFontSize("200%");
+        pageBookView.setFontSize(200);
         pageBookView.setBookStorage(bookStorage);
     }
 
