@@ -11,7 +11,7 @@ import android.view.View;
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
-import com.dmi.perfectreader.book.epub.EpubSegmentModifier;
+import com.dmi.perfectreader.book.html.HtmlSegmentModifier;
 import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.main.EventBus;
 import com.dmi.perfectreader.util.android.Units;
@@ -62,8 +62,8 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
 
     @AfterInject
     protected void init() {
-        EpubSegmentModifier epubSegmentModifier = new EpubSegmentModifier();
-        bookStorage = new BookStorage(epubSegmentModifier, bookResourceCache);
+        HtmlSegmentModifier htmlSegmentModifier = new HtmlSegmentModifier();
+        bookStorage = new BookStorage(htmlSegmentModifier, bookResourceCache);
     }
 
     @AfterViews

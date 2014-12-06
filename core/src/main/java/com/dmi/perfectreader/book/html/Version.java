@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.book.epub;
+package com.dmi.perfectreader.book.html;
 
 /**
  * ВНИМАНИЕ!!! После каждого изменения поведения этого пакета необходимо изменить поле VERSION.

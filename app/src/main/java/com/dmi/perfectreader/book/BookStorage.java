@@ -2,7 +2,7 @@ package com.dmi.perfectreader.book;
 
 import android.annotation.SuppressLint;
 
-import com.dmi.perfectreader.book.epub.EpubSegmentModifier;
+import com.dmi.perfectreader.book.html.HtmlSegmentModifier;
 import com.dmi.perfectreader.error.BookFileNotFoundException;
 import com.dmi.perfectreader.util.cache.DataCache;
 import com.google.common.io.ByteStreams;
@@ -26,15 +26,15 @@ import java.util.zip.ZipFile;
 public class BookStorage {
     private static final String URL_PREFIX = "bookstorage://";
 
-    private EpubSegmentModifier epubSegmentModifier;
+    private HtmlSegmentModifier htmlSegmentModifier;
     private DataCache resourceCache;
 
     private File bookFile;
     private final List<String> segmentUrls = new ArrayList<>();
     private final Set<String> segmentUrlsSet = new HashSet<>();
 
-    public BookStorage(EpubSegmentModifier epubSegmentModifier, DataCache resourceCache) {
-        this.epubSegmentModifier = epubSegmentModifier;
+    public BookStorage(HtmlSegmentModifier htmlSegmentModifier, DataCache resourceCache) {
+        this.htmlSegmentModifier = htmlSegmentModifier;
         this.resourceCache = resourceCache;
     }
 
@@ -61,7 +61,7 @@ public class BookStorage {
     public InputStream readResource(final String url) throws IOException {
         final boolean isSegmentUrl = segmentUrlsSet.contains(url);
         String cacheKey = String.format("file: %s; url: %s; lastModified: %s; modVersion: %s",
-                bookFile.getAbsolutePath(), url, bookFile.lastModified(), epubSegmentModifier.version());
+                bookFile.getAbsolutePath(), url, bookFile.lastModified(), htmlSegmentModifier.version());
         return resourceCache.openRead(cacheKey, new DataCache.DataWriter() {
             @SuppressLint("NewApi")
             @Override
@@ -75,7 +75,7 @@ public class BookStorage {
                     ZipEntry entry = zipFile.getEntry(filePath);
                     try (InputStream inputStream = zipFile.getInputStream(entry)) {
                         if (isSegmentUrl) {
-                            epubSegmentModifier.modify(inputStream, outputStream);
+                            htmlSegmentModifier.modify(inputStream, outputStream);
                         } else {
                             ByteStreams.copy(inputStream, outputStream);
                         }

@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.book.epub;
+package com.dmi.perfectreader.book.html;
 
 import com.dmi.perfectreader.error.BookInvalidException;
 import com.google.common.base.CharMatcher;
@@ -26,7 +26,7 @@ import java.util.Stack;
 
 import javax.xml.transform.TransformerConfigurationException;
 
-public class EpubSegmentModifier {
+public class HtmlSegmentModifier {
     private static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
     private static final String CONFIG_SCRIPT_INJECTION = "javabridge://configscript";
     private static final String INIT_SCRIPT_INJECTION = "javabridge://initscript";
