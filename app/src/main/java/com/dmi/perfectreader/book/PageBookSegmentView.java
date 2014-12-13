@@ -20,6 +20,8 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 import com.dmi.perfectreader.R;
+import com.dmi.perfectreader.book.config.BookConfig;
+import com.dmi.perfectreader.book.config.TextAlign;
 import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.main.EventBus;
 import com.dmi.perfectreader.util.lang.LongPercent;
@@ -59,12 +61,7 @@ public class PageBookSegmentView extends FrameLayout {
     private int screenWidth = 0;
     private LongPercent currentPercent = LongPercent.ZERO;
 
-    private int pageTopPaddingInPixels = 24;
-    private int pageRightPaddingInPixels = 24;
-    private int pageBottomPaddingInPixels = 24;
-    private int pageLeftPaddingInPixels = 24;
-    private TextAlign textAlign = TextAlign.JUSTIFY;
-    private int fontSizeInPercents = 100;
+    private BookConfig bookConfig = new BookConfig();
 
     public PageBookSegmentView(Context context) {
         super(context);
@@ -140,7 +137,7 @@ public class PageBookSegmentView extends FrameLayout {
                     return new WebResourceResponse(
                             guessContentTypeFromName(url),
                             null,
-                            bookStorage.readResource(url));
+                            bookStorage.readResource(url, bookConfig));
                 } catch (IOException e) {
                     eventBus.post(new ErrorEvent(e));
                     return null;
@@ -266,20 +263,20 @@ public class PageBookSegmentView extends FrameLayout {
                                int pageRightPaddingInPixels,
                                int pageBottomPaddingInPixels,
                                int pageLeftPaddingInPixels) {
-        this.pageTopPaddingInPixels = pageTopPaddingInPixels;
-        this.pageRightPaddingInPixels = pageRightPaddingInPixels;
-        this.pageBottomPaddingInPixels = pageBottomPaddingInPixels;
-        this.pageLeftPaddingInPixels = pageLeftPaddingInPixels;
+        bookConfig.pageTopPaddingInPixels = pageTopPaddingInPixels;
+        bookConfig.pageRightPaddingInPixels = pageRightPaddingInPixels;
+        bookConfig.pageBottomPaddingInPixels = pageBottomPaddingInPixels;
+        bookConfig.pageLeftPaddingInPixels = pageLeftPaddingInPixels;
         webView.loadUrl("javascript: " + pageConfigurationScript());
     }
 
     public void setTextAlign(TextAlign textAlign) {
-        this.textAlign = textAlign;
+        bookConfig.textAlign = textAlign;
         webView.loadUrl("javascript: " + textAlignScript());
     }
 
     public void setFontSize(int fontSizeInPercents) {
-        this.fontSizeInPercents = fontSizeInPercents;
+        bookConfig.fontSizeInPercents = fontSizeInPercents;
         webView.loadUrl("javascript: " + fontSizeScript());
     }
 
@@ -292,20 +289,20 @@ public class PageBookSegmentView extends FrameLayout {
     }
 
     private String pageConfigurationScript() {
-        return jsVar("__pageTopPaddingInPixels", pageTopPaddingInPixels) +
-               jsVar("__pageRightPaddingInPixels", pageRightPaddingInPixels) +
-               jsVar("__pageBottomPaddingInPixels", pageBottomPaddingInPixels) +
-               jsVar("__pageLeftPaddingInPixels", pageLeftPaddingInPixels) +
+        return jsVar("__pageTopPaddingInPixels", bookConfig.pageTopPaddingInPixels) +
+               jsVar("__pageRightPaddingInPixels", bookConfig.pageRightPaddingInPixels) +
+               jsVar("__pageBottomPaddingInPixels", bookConfig.pageBottomPaddingInPixels) +
+               jsVar("__pageLeftPaddingInPixels", bookConfig.pageLeftPaddingInPixels) +
                "setPageConfiguration();\n";
     }
 
     private String textAlignScript() {
-        return jsVar("__textAlign", textAlign.cssValue()) +
+        return jsVar("__textAlign", bookConfig.textAlign.cssValue()) +
                "setTextAlign();\n";
     }
 
     private String fontSizeScript() {
-        return jsVar("__fontSizeInPercents", fontSizeInPercents) +
+        return jsVar("__fontSizeInPercents", bookConfig.fontSizeInPercents) +
                "setFontSize();\n";
     }
 

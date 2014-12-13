@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.book.html;
 
+import com.dmi.perfectreader.book.config.BookConfig;
 import com.dmi.perfectreader.error.BookInvalidException;
 import com.google.common.base.CharMatcher;
 
@@ -38,21 +39,19 @@ public class HtmlSegmentModifier {
             "br", "li"
     ));
 
-    private static boolean deleteTrailingSpaces = true;
-
-    public int version() {
-        return Version.VERSION;
+    public String version(BookConfig bookConfig) {
+        return String.valueOf(Version.VERSION) + String.valueOf(bookConfig.deleteTrailingSpaces);
     }
 
-    public void modify(InputStream inputStream, OutputStream outputStream) throws IOException {
+    public void modify(InputStream inputStream, OutputStream outputStream, BookConfig bookConfig) throws IOException {
         try {
-            tryModify(inputStream, outputStream);
+            tryModify(inputStream, outputStream, bookConfig);
         } catch (TransformerConfigurationException | SAXException e) {
             throw new BookInvalidException(e);
         }
     }
 
-    private void tryModify(InputStream is, OutputStream os) throws SAXException, IOException, TransformerConfigurationException {
+    private void tryModify(InputStream is, OutputStream os, final BookConfig bookConfig) throws SAXException, IOException, TransformerConfigurationException {
         final XMLWriter xmlWriter = new XMLWriter(new OutputStreamWriter(os));
         xmlWriter.setOutputProperty(XMLWriter.METHOD, "html");
         xmlWriter.setOutputProperty(XMLWriter.ENCODING, "utf-8");
@@ -175,7 +174,7 @@ public class HtmlSegmentModifier {
             }
 
             private CharSequence modifyText(CharSequence textChars) {
-                if (deleteTrailingSpaces && DELETE_TRAILING_SPACES_ELEMENTS.contains(currentElement())) {
+                if (bookConfig.deleteTrailingSpaces && DELETE_TRAILING_SPACES_ELEMENTS.contains(currentElement())) {
                     return CharMatcher.WHITESPACE.trimLeadingFrom(textChars);
                 } else {
                     return textChars;

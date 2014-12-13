@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import com.dmi.perfectreader.book.config.BookLocation;
 import com.dmi.perfectreader.util.lang.LongPercent;
 
 import static com.google.common.base.Preconditions.checkArgument;

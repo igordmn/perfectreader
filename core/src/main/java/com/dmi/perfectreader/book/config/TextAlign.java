@@ -1,9 +1,9 @@
-package com.dmi.perfectreader.book;
+package com.dmi.perfectreader.book.config;
 
 public enum TextAlign {
     LEFT, CENTER, RIGHT, JUSTIFY;
 
-    String cssValue() {
+    public String cssValue() {
         return name().toLowerCase();
     }
 }

@@ -9,9 +9,9 @@ import android.view.Surface;
 
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.animation.PageAnimation;
+import com.dmi.perfectreader.book.config.BookLocation;
 import com.dmi.perfectreader.util.collection.DuplexBuffer;
 import com.dmi.perfectreader.util.concurrent.Waiter;
-import com.dmi.perfectreader.util.lang.LongPercent;
 import com.dmi.perfectreader.util.opengl.DeltaTimeSurfaceView;
 import com.dmi.perfectreader.util.opengl.Graphics;
 
@@ -320,7 +320,6 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
     private class RefreshService {
         private Thread thread = null;
         private Waiter refreshWaiter = new Waiter();
-        private BookLocation refreshLocation = new BookLocation(0, LongPercent.ZERO);
 
         public void postRefresh() {
             refreshWaiter.wakeUp();
@@ -350,14 +349,15 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
                             Page currentPage;
                             Page nextPage;
                             Page previewPage;
+                            BookLocation refreshLocation;
+
                             synchronized (pages) {
-                                refreshLocation.setSegmentIndex(currentLocation.segmentIndex());
-                                refreshLocation.setPercent(currentLocation.percent());
+                                refreshLocation = currentLocation;
                                 currentPage = pages.get(0);
                                 nextPage = pages.get(1);
                                 previewPage = pages.get(-1);
                             }
-
+                            
                             currentPage.refreshByPage(refreshLocation, 0);
                             nextPage.refreshByPage(refreshLocation, 1);
                             previewPage.refreshByPage(refreshLocation, -1);

@@ -11,6 +11,7 @@ import android.view.View;
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
+import com.dmi.perfectreader.book.config.BookLocation;
 import com.dmi.perfectreader.book.html.HtmlSegmentModifier;
 import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.main.EventBus;

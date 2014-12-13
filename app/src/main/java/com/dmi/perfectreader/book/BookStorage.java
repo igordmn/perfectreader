@@ -2,6 +2,7 @@ package com.dmi.perfectreader.book;
 
 import android.annotation.SuppressLint;
 
+import com.dmi.perfectreader.book.config.BookConfig;
 import com.dmi.perfectreader.book.html.HtmlSegmentModifier;
 import com.dmi.perfectreader.error.BookFileNotFoundException;
 import com.dmi.perfectreader.util.cache.DataCache;
@@ -58,10 +59,10 @@ public class BookStorage {
         return url.startsWith(URL_PREFIX);
     }
 
-    public InputStream readResource(final String url) throws IOException {
+    public InputStream readResource(final String url, final BookConfig bookConfig) throws IOException {
         final boolean isSegmentUrl = segmentUrlsSet.contains(url);
         String cacheKey = String.format("file: %s; url: %s; lastModified: %s; modVersion: %s",
-                bookFile.getAbsolutePath(), url, bookFile.lastModified(), htmlSegmentModifier.version());
+                bookFile.getAbsolutePath(), url, bookFile.lastModified(), htmlSegmentModifier.version(bookConfig));
         return resourceCache.openRead(cacheKey, new DataCache.DataWriter() {
             @SuppressLint("NewApi")
             @Override
@@ -75,7 +76,7 @@ public class BookStorage {
                     ZipEntry entry = zipFile.getEntry(filePath);
                     try (InputStream inputStream = zipFile.getInputStream(entry)) {
                         if (isSegmentUrl) {
-                            htmlSegmentModifier.modify(inputStream, outputStream);
+                            htmlSegmentModifier.modify(inputStream, outputStream, bookConfig);
                         } else {
                             ByteStreams.copy(inputStream, outputStream);
                         }
