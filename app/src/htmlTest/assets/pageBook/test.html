@@ -10,12 +10,17 @@
         #reader {
             border: 0;
             background-color: white;
-            width: 360px;
-            height: 600px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -400px;
+            margin-left: -720px;
+            width: 480px;
+            height: 800px;
         }​
     </style>
 </head>
-<body style="padding: 0; margin: 0">
+<body>
 <script type="text/javascript">
 
 var ZERO_PERCENT = 0;
@@ -25,15 +30,23 @@ function onReaderLoad() {
     window.reader = document.getElementById('reader').contentWindow.reader;
 
     reader.setCallback({
-        afterLoad: function(totalWidth, screenWidth) {
-            alert(totalWidth + " " + screenWidth);
+        setCurrentLocation: function(segmentIndex, percent) {
         }
     });
 
+    window.onkeyup = function(e) {
+        if (e.keyCode == 39) {
+            reader.goNextPage();
+        } else if (e.keyCode == 37) {
+            reader.goPreviewPage();
+        }
+    }
+
     init();
 
-  //  document.getElementById('reader').style.width = document.body.clientWidth;
-  //  document.getElementById('reader').style.height = document.body.clientHeight;
+    setTimeout(function() {
+        document.getElementById('reader').style.width = document.getElementById('reader').clientWidth * 3;
+    }, 1000);
 }
 
 </script>

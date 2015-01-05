@@ -3,16 +3,18 @@
 <head>
     <meta HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8"/>
 </head>
-<body style="padding: 0; margin: 0;">
+<body style="padding: 0; margin: 0; overflow:hidden;">
 
-<div style="position: absolute; padding: 0; margin: 0">
-    <iframe id="firstFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0"></iframe>
-</div>
-<div style="position: absolute; padding: 0; margin: 0">
-    <iframe id="secondFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0"></iframe>
-</div>
-<div style="position: absolute; padding: 0; margin: 0">
-    <iframe id="thirdFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0"></iframe>
+<div id="mainContainer" style="position: relative; overflow: hidden; padding: 0; margin: 0;">
+    <div style="position: absolute; padding: 0; margin: 0; color: white">
+        <iframe id="firstFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0"></iframe>
+    </div>
+    <div style="position: absolute; padding: 0; margin: 0; color: white">
+        <iframe id="secondFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0"></iframe>
+    </div>
+    <div style="position: absolute; padding: 0; margin: 0; color: white">
+        <iframe id="thirdFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0"></iframe>
+    </div>
 </div>
 
 <script type="text/javascript" src="utils/element.js"></script>
@@ -46,6 +48,7 @@ window.onload = function() {
         replaceFixedSpaces: true
     }
 
+    var mainContainer = document.getElementById("mainContainer");
     var currentFrame = document.getElementById("firstFrame");
     var nextFrame = document.getElementById("secondFrame");
     var previewFrame = document.getElementById("thirdFrame");
@@ -65,43 +68,72 @@ window.onload = function() {
             settings.callback = callback;
         },
 
-        goLocation: function(location) {
-            var oldSegmentIndex = this.currentLocation !== undefined ? this.currentLocation.segmentIndex : undefined;
-            var segmentIndex = location.segmentIndex;
-            this.currentLocation = location;
-            if (segmentIndex == oldSegmentIndex + 1) {
+        canGoNextPage: function() {
+            return currentFrame.reader &&
+                    (
+                        this.currentLocation && this.currentLocation.segmentIndex < settings.segmentUrls.length - 1 ||
+                        currentFrame.reader.canGoNextPage()
+                    );
+        },
+
+        canGoPreviewPage: function() {
+            return currentFrame.reader &&
+                    (
+                        this.currentLocation && this.currentLocation.segmentIndex > 0 ||
+                        currentFrame.reader.canGoPreviewPage()
+                    );
+        },
+
+        goNextPage: function() {
+            if (!reader.canGoNextPage()) {
+                throw "Cannot go next page";
+            }
+
+            var currentReader = currentFrame.reader;
+            if (currentReader.canGoNextPage()) {
+                currentReader.goNextPage();
+                this.currentLocation.percent = currentReader.currentPercent;
+            } else {
                 var oldCurrentFrame = currentFrame;
                 currentFrame = nextFrame;
                 nextFrame = previewFrame;
                 previewFrame = oldCurrentFrame;
-                updateViewport();
-                reloadNextSegment();
-                if (currentFrame.reader) {
-                    afterLoad();
-                }
-            } else if (segmentIndex == oldSegmentIndex - 1) {
+                this.currentLocation.segmentIndex++;
+                this.currentLocation.percent = ZERO_PERCENT;
+
+                loadSegment(nextFrame, nextUrl(this.currentLocation), ZERO_PERCENT);
+            }
+        },
+
+        goPreviewPage: function() {
+            if (!reader.canGoPreviewPage()) {
+                throw "Cannot go preview page";
+            }
+
+            var currentReader = currentFrame.reader;
+            if (currentReader.canGoPreviewPage()) {
+                currentReader.goPreviewPage();
+                this.currentLocation.percent = currentReader.currentPercent;
+            } else {
                 var oldCurrentFrame = currentFrame;
                 currentFrame = previewFrame;
                 previewFrame = nextFrame;
                 nextFrame = oldCurrentFrame;
-                updateViewport();
-                reloadPreviewSegment();
-                if (currentFrame.reader) {
-                    afterLoad();
-                }
-            } else if (oldSegmentIndex === undefined || segmentIndex > oldSegmentIndex + 1 || segmentIndex < oldSegmentIndex - 1) {
-                reloadCurrentSegment();
-                reloadNextSegment();
-                reloadPreviewSegment();
-            } else {
-                updateViewport();
-                if (currentFrame.reader) {
-                    afterLoad();
-                }
+                this.currentLocation.segmentIndex--;
+                this.currentLocation.percent = ONE_HUNDRED_PERCENT;
+
+                loadSegment(previewFrame, previewUrl(this.currentLocation), ONE_HUNDRED_PERCENT);
             }
         },
 
-        setPadding: function(paddingTopInPixels, paddingRightInPixels, paddingBottomInPixels, paddingLeftInPixels) {
+        goLocation: function(location) {
+            this.currentLocation = location;
+            loadSegment(currentFrame, currentUrl(this.currentLocation), this.currentLocation.percent);
+            loadSegment(nextFrame, nextUrl(this.currentLocation), ZERO_PERCENT);
+            loadSegment(previewFrame, previewUrl(this.currentLocation), ONE_HUNDRED_PERCENT);
+        },
+
+        setPadding: function(textAlign) {
             bookConfig.paddingTopInPixels = paddingTopInPixels;
             bookConfig.paddingRightInPixels = paddingRightInPixels;
             bookConfig.paddingBottomInPixels = paddingBottomInPixels;
@@ -136,58 +168,66 @@ window.onload = function() {
         }
     }
 
-    function reload() {
-        reloadCurrentSegment();
-        reloadNextSegment();
-        reloadPreviewSegment();
+    function currentUrl(location) {
+        return settings.segmentUrls[location.segmentIndex];;
     }
 
-    function reloadCurrentSegment() {
-        loadSegment(currentFrame, settings.segmentUrls[reader.currentLocation.segmentIndex]);
+    function nextUrl(location) {
+        return location.segmentIndex < settings.segmentUrls.length - 1 ?
+                settings.segmentUrls[location.segmentIndex + 1] :
+                "about:blank";
     }
 
-    function reloadNextSegment() {
-        loadSegment(nextFrame,
-            reader.currentLocation.segmentIndex < settings.segmentUrls.length - 1 ?
-                settings.segmentUrls[reader.currentLocation.segmentIndex + 1] :
-                "about:blank"
-        );
-    }
-
-    function reloadPreviewSegment() {
-        loadSegment(previewFrame,
-            reader.currentLocation.segmentIndex > 0 ?
-                settings.segmentUrls[reader.currentLocation.segmentIndex - 1] :
-                "about:blank"
-        );
+    function previewUrl(location) {
+        return location.segmentIndex > 0 ?
+                settings.segmentUrls[location.segmentIndex - 1] :
+                "about:blank";
     }
 
     function callReflow(refreshFunction) {
+        resetViewportForReflow();
         if (currentFrame.reader) {
             refreshFunction(currentFrame.reader);
-            afterLoad();
+            currentFrame.reader.reflow();
         }
         if (nextFrame.reader) {
             refreshFunction(nextFrame.reader);
+            nextFrame.reader.reflow();
         }
         if (previewFrame.reader) {
             refreshFunction(previewFrame.reader);
+            previewFrame.reader.reflow();
         }
     }
 
+    function reload() {
+        reader.goLocation(reader.currentLocation);
+    }
+
+    function onSegmentPageChanged() {
+        updateViewport();
+        notifyLocationForCallback();
+    }
+
     function initViewport() {
-        currentFrame.parentNode.style.width = screenWidth;
+        currentFrame.parentNode.style.width = 0;
         currentFrame.parentNode.style.height = screenHeight;
-        currentFrame.parentNode.style.left = 0;
+        currentFrame.parentNode.style.left = -3 * screenWidth;
         currentFrame.parentNode.style.top = 0;
+        currentFrame.parentNode.style.zIndex = 0;
         nextFrame.parentNode.style.width = screenWidth;
         nextFrame.parentNode.style.height = screenHeight;
-        nextFrame.parentNode.style.left = 0;
-        nextFrame.parentNode.style.top = screenHeight;
+        nextFrame.parentNode.style.left = -screenWidth;
+        nextFrame.parentNode.style.top = 0;
+        nextFrame.parentNode.style.zIndex = 1;
         previewFrame.parentNode.style.width = screenWidth;
         previewFrame.parentNode.style.height = screenHeight;
-        previewFrame.parentNode.style.left = 0;
-        previewFrame.parentNode.style.top = 2 * screenHeight;
+        previewFrame.parentNode.style.left = -screenWidth;
+        previewFrame.parentNode.style.top = 0;
+        previewFrame.parentNode.style.zIndex = 1;
+        mainContainer.style.width = 3 * screenWidth;
+        mainContainer.style.height = screenHeight;
+        window.scrollTo(screenWidth, screenHeight);
     }
 
     function updateViewport() {
@@ -199,54 +239,63 @@ window.onload = function() {
         nextStyle = nextFrame.parentNode.style;
         previewStyle = previewFrame.parentNode.style;
 
-        currentStyle.width = currentReader ? currentFrame.contentWindow.document.body.scrollWidth : 0;
+        currentStyle.width = 3 * screenWidth;
         nextStyle.width = screenWidth;
         previewStyle.width = screenWidth;
 
-        currentStyle.top = 0;
-        nextFrame.parentNode.style.top = screenHeight;
-        previewFrame.parentNode.style.top = 2 * screenHeight;
-
-        nextReader && nextFrame.contentWindow.scrollTo(0, 0);
-        previewReader && previewFrame.contentWindow.scrollTo(previewFrame.contentWindow.document.body.scrollWidth, 0);
         if (currentReader) {
-            var totalWidth = currentFrame.contentWindow.document.body.scrollWidth;
-            var xOffset = percentToPage(reader.currentLocation.percent, totalWidth, screenWidth) * screenWidth;
-            window.scrollTo(xOffset, 0);
+            var page = currentReader.currentPage;
+            var pageCount = currentReader.pageCount;
+            var onFirstPartOfFrame = page == 0;
+            var onThirdPartOfFrame = (pageCount >= 3 && page == pageCount - 1);
+            if (onFirstPartOfFrame) {
+                currentStyle.left = screenWidth;
+            } else if (onThirdPartOfFrame) {
+                currentStyle.left = -screenWidth;
+            } else {
+                currentStyle.left = 0;
+            }
+        } else {
+            currentStyle.left = -3 * screenWidth;
         }
+
+        if (nextReader && (currentReader && !currentReader.canGoNextPage() || !currentReader)) {
+            nextStyle.left = 2 * screenWidth;
+        } else {
+            nextStyle.left = -screenWidth;
+        }
+
+        if (previewReader && (currentReader && !currentReader.canGoPreviewPage() || !currentReader)) {
+            previewStyle.left = 0;
+        } else {
+            previewStyle.left = -screenWidth;
+        }
+
+        currentReader && currentFrame.contentWindow.scrollTo(currentReader && (page - 1) * screenWidth, 0);
+        nextReader && nextFrame.contentWindow.scrollTo(nextReader.currentPage * screenWidth, 0);
+        previewReader && previewFrame.contentWindow.scrollTo(previewReader.currentPage * screenWidth, 0);
     }
 
-    /**
-     * Должна совпадать с  com.dmi.perfectreader.bookview.PageBookView.percentToPage
-     */
-    function percentToPage(percent, totalWidth, screenWidth) {
-        var pageCount = screenWidth > 0 ? Math.round(totalWidth / screenWidth) : 0;
-        return screenWidth > 0 ?
-                Math.min(Math.round(percent / ONE_HUNDRED_PERCENT * totalWidth / screenWidth),
-                        pageCount - 1) :
-                0;
+    function resetViewportForReflow() {
+        currentFrame.parentNode.style.width = screenWidth;
     }
 
-    function afterLoad() {
-        var totalWidth = currentFrame.contentWindow.document.body.scrollWidth;
-        settings.callback.afterLoad(totalWidth, screenWidth);
+    function notifyLocationForCallback() {
+        settings.callback.setCurrentLocation(reader.currentLocation.segmentIndex, reader.currentLocation.percent);
     }
 
-    function loadSegment(frame, segmentUrl) {
+    function loadSegment(frame, segmentUrl, percent) {
         frame.style.visibility = "hidden";
         frame.reader = undefined;
         frame.onload = function() {
-            initFrameContent(frame);
+            resetViewportForReflow();
+            initFrameContent(frame, percent);
             frame.style.visibility = "";
-            updateViewport();
-            if (frame == currentFrame) {
-                afterLoad();
-            }
         }
         frame.src = segmentUrl;
     }
 
-    function initFrameContent(frame) {
+    function initFrameContent(frame, percent) {
         var window = frame.contentWindow;
         var document = window.document;
 
@@ -263,6 +312,35 @@ window.onload = function() {
         };
 
         var frameReader = frame.reader = {
+            pageCount: 0,
+            currentPage: 0,
+            currentPercent: percent,
+
+            goPercent: function(percent) {
+                this.currentPercent = percent;
+                refreshCurrentPage();
+            },
+
+            goPage: function(page) {
+                this.goPercent((page / this.pageCount) * ONE_HUNDRED_PERCENT);
+            },
+
+            canGoNextPage: function() {
+                return this.currentPage < this.pageCount - 1;
+            },
+
+            canGoPreviewPage: function() {
+                return this.currentPage > 0;
+            },
+
+            goNextPage: function() {
+                this.goPage(this.currentPage + 1);
+            },
+
+            goPreviewPage: function() {
+                this.goPage(this.currentPage - 1);
+            },
+
             refreshPageConfiguration: function() {
                 var wrapDiv = document.createElement("div");
                 while (document.body.firstChild) {
@@ -302,6 +380,11 @@ window.onload = function() {
 
             refreshFontSize: function() {
                 document.body.style.setProperty("font-size", bookConfig.fontSizeInPercents + "%", "important");
+            },
+
+            reflow: function() {
+                refreshPageCount();
+                refreshCurrentPage();
             }
         };
 
@@ -360,7 +443,7 @@ window.onload = function() {
                 replaceInDialog(text);
 
                 // Заменяются пробелы в диалоге на фиксированные, чтобы при выравнивании по ширине они не разъезжались
-                // "    -  Как дела?" будет заменено на "    -<span class='fixSpace'>\u00A0</span>Как дела?"
+                // "    -  Как дела?" будет заменено на "    -<span class='fixSpace'></span>Как дела?"
                 function replaceInDialog(text) {
                     return text.find(
                         fregexp("(^[%spaces]*[%dashes])([%spaces]+)", "g", {
@@ -368,6 +451,8 @@ window.onload = function() {
                         }),
                         function(result) {
                             var range = result.range(result.subStrings[0].length);
+                           // range.deleteContents();
+                            //range.insertNode(document.createTextNode("&thinsp;"));
                             var span = document.createElement("span");
                             span.className = "fixSpace";
                             span.textContent = "\u00A0";
@@ -383,6 +468,21 @@ window.onload = function() {
         frameReader.refreshTextAlign();
         frameReader.refreshFontSize();
         refreshTextModification();
+        frameReader.reflow();
+
+        function refreshPageCount() {
+            var totalWidth = document.body.scrollWidth;
+            frameReader.pageCount = screenWidth > 0 ? Math.round(totalWidth / screenWidth) : 0;
+        }
+
+        function refreshCurrentPage() {
+            var totalWidth = document.body.scrollWidth;
+            frameReader.currentPage = screenWidth > 0 ?
+                    Math.min(Math.round(frameReader.currentPercent / ONE_HUNDRED_PERCENT * totalWidth / screenWidth),
+                             frameReader.pageCount - 1) :
+                    0;
+            onSegmentPageChanged();
+        }
     }
 };
 
