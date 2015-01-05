@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.book;
+package com.dmi.perfectreader.bookview;
 
 import android.graphics.Canvas;
 

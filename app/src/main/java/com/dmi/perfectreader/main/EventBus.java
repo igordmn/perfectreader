@@ -1,16 +1,14 @@
 package com.dmi.perfectreader.main;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.squareup.otto.Bus;
 
 import org.androidannotations.annotations.EBean;
 
+import static com.dmi.perfectreader.util.android.MainThreads.runOnMainThread;
+
 @EBean(scope = EBean.Scope.Singleton)
 public class EventBus {
     private Bus bus = new Bus();
-    private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public void register(Object object) {
         bus.register(object);
@@ -21,16 +19,11 @@ public class EventBus {
     }
 
     public void post(final Object event) {
-        boolean isMainThread = Looper.getMainLooper() == Looper.myLooper();
-        if (isMainThread) {
-            bus.post(event);
-        } else {
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    bus.post(event);
-                }
-            });
-        }
+        runOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+                bus.post(event);
+            }
+        });
     }
 }

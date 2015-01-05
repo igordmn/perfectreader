@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.book;
+package com.dmi.perfectreader.bookview;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -124,7 +124,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         synchronized (pages) {
             this.currentLocation = currentLocation;
             Page lastPage = pages.get(pages.maxRelativeIndex());
-            for (int i = pages.maxRelativeIndex(); i >= -pages.maxRelativeIndex() + 1 ; i--) {
+            for (int i = pages.maxRelativeIndex(); i >= -pages.maxRelativeIndex() + 1; i--) {
                 pages.set(i, pages.get(i - 1));
             }
             pages.set(-pages.maxRelativeIndex(), lastPage);
@@ -322,7 +322,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         private Waiter refreshWaiter = new Waiter();
 
         public void postRefresh() {
-            refreshWaiter.wakeUp();
+            refreshWaiter.request();
         }
 
         public void start() {
@@ -343,7 +343,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
             public void run() {
                 try {
                     while (!Thread.interrupted()) {
-                        refreshWaiter.waitForWakeUp();
+                        refreshWaiter.waitRequest();
 
                         if (currentLocation != null) {
                             Page currentPage;
@@ -357,7 +357,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
                                 nextPage = pages.get(1);
                                 previewPage = pages.get(-1);
                             }
-                            
+
                             currentPage.refreshByPage(refreshLocation, 0);
                             nextPage.refreshByPage(refreshLocation, 1);
                             previewPage.refreshByPage(refreshLocation, -1);

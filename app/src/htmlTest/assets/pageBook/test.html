@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html>
+<head>
+    <meta HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8"/>
+    <style type="text/css">
+        body {
+            background-color: #EEEEEE;
+        }
+
+        #reader {
+            border: 0;
+            background-color: white;
+            width: 360px;
+            height: 600px;
+        }​
+    </style>
+</head>
+<body style="padding: 0; margin: 0">
+<script type="text/javascript">
+
+var ZERO_PERCENT = 0;
+var ONE_HUNDRED_PERCENT = 0x7fffffff;
+
+function onReaderLoad() {
+    window.reader = document.getElementById('reader').contentWindow.reader;
+
+    reader.setCallback({
+        afterLoad: function(totalWidth, screenWidth) {
+            alert(totalWidth + " " + screenWidth);
+        }
+    });
+
+    init();
+
+  //  document.getElementById('reader').style.width = document.body.clientWidth;
+  //  document.getElementById('reader').style.height = document.body.clientHeight;
+}
+
+</script>
+<script type="text/javascript" src="http://localhost:8080/test/books/newDozor/newDozor.js"></script>
+
+<iframe id="reader" src="../../../main/assets/pageBook/pageBook.html" onload="onReaderLoad()"></iframe>
+
+</body>
+</html>

@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html>
+<head>
+    <meta HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8"/>
+</head>
+<body style="padding: 0; margin: 0;">
+
+<div style="position: absolute; padding: 0; margin: 0">
+    <iframe id="firstFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0"></iframe>
+</div>
+<div style="position: absolute; padding: 0; margin: 0">
+    <iframe id="secondFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0"></iframe>
+</div>
+<div style="position: absolute; padding: 0; margin: 0">
+    <iframe id="thirdFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0"></iframe>
+</div>
+
+<script type="text/javascript" src="utils/element.js"></script>
+<script type="text/javascript" src="utils/format.js"></script>
+<script type="text/javascript" src="utils/string.js"></script>
+<script type="text/javascript" src="utils/style.js"></script>
+<script type="text/javascript" src="utils/regexp.js"></script>
+<script type="text/javascript" src="utils/object.js"></script>
+<script type="text/javascript" src="utils/set.js"></script>
+<script type="text/javascript">
+
+var ZERO_PERCENT = 0;
+var ONE_HUNDRED_PERCENT = 0x7fffffff;
+
+window.onload = function() {
+    var settings = {
+        segmentUrls: [],
+        callback: undefined,
+    };
+
+    var bookConfig = {
+        paddingTopInPixels: 10,
+        paddingRightInPixels: 10,
+        paddingBottomInPixels: 10,
+        paddingLeftInPixels: 10,
+
+        textAlign: "justify",
+        fontSizeInPercents: 100,
+
+        deleteRedundantSpaces: true,
+        replaceFixedSpaces: true
+    }
+
+    var currentFrame = document.getElementById("firstFrame");
+    var nextFrame = document.getElementById("secondFrame");
+    var previewFrame = document.getElementById("thirdFrame");
+    var screenWidth = window.innerWidth;
+    var screenHeight = window.innerHeight;
+
+    initViewport();
+
+    var reader = window.reader = {
+        currentLocation: undefined,
+
+        setSegmentUrls: function(segmentUrls) {
+            settings.segmentUrls = segmentUrls;
+        },
+
+        setCallback: function(callback) {
+            settings.callback = callback;
+        },
+
+        goLocation: function(location) {
+            var oldSegmentIndex = this.currentLocation !== undefined ? this.currentLocation.segmentIndex : undefined;
+            var segmentIndex = location.segmentIndex;
+            this.currentLocation = location;
+            if (segmentIndex == oldSegmentIndex + 1) {
+                var oldCurrentFrame = currentFrame;
+                currentFrame = nextFrame;
+                nextFrame = previewFrame;
+                previewFrame = oldCurrentFrame;
+                updateViewport();
+                reloadNextSegment();
+                if (currentFrame.reader) {
+                    afterLoad();
+                }
+            } else if (segmentIndex == oldSegmentIndex - 1) {
+                var oldCurrentFrame = currentFrame;
+                currentFrame = previewFrame;
+                previewFrame = nextFrame;
+                nextFrame = oldCurrentFrame;
+                updateViewport();
+                reloadPreviewSegment();
+                if (currentFrame.reader) {
+                    afterLoad();
+                }
+            } else if (oldSegmentIndex === undefined || segmentIndex > oldSegmentIndex + 1 || segmentIndex < oldSegmentIndex - 1) {
+                reloadCurrentSegment();
+                reloadNextSegment();
+                reloadPreviewSegment();
+            } else {
+                updateViewport();
+                if (currentFrame.reader) {
+                    afterLoad();
+                }
+            }
+        },
+
+        setPadding: function(paddingTopInPixels, paddingRightInPixels, paddingBottomInPixels, paddingLeftInPixels) {
+            bookConfig.paddingTopInPixels = paddingTopInPixels;
+            bookConfig.paddingRightInPixels = paddingRightInPixels;
+            bookConfig.paddingBottomInPixels = paddingBottomInPixels;
+            bookConfig.paddingLeftInPixels = paddingLeftInPixels;
+            callReflow(function(reader) {
+                reader.refreshPageConfiguration();
+            });
+        },
+
+        setTextAlign: function(textAlign) {
+            bookConfig.textAlign = textAlign;
+            callReflow(function(reader) {
+                reader.refreshTextAlign();
+            });
+        },
+
+        setFontSize: function(fontSizeInPercents) {
+            bookConfig.fontSizeInPercents = fontSizeInPercents;
+            callReflow(function(reader) {
+                reader.refreshFontSize();
+            });
+        },
+
+        setDeleteRedundantSpaces: function(deleteRedundantSpaces) {
+            bookConfig.deleteRedundantSpaces = deleteRedundantSpaces;
+            reload();
+        },
+
+        setReplaceFixedSpaces: function(replaceFixedSpaces) {
+            bookConfig.replaceFixedSpaces = replaceFixedSpaces;
+            reload();
+        }
+    }
+
+    function reload() {
+        reloadCurrentSegment();
+        reloadNextSegment();
+        reloadPreviewSegment();
+    }
+
+    function reloadCurrentSegment() {
+        loadSegment(currentFrame, settings.segmentUrls[reader.currentLocation.segmentIndex]);
+    }
+
+    function reloadNextSegment() {
+        loadSegment(nextFrame,
+            reader.currentLocation.segmentIndex < settings.segmentUrls.length - 1 ?
+                settings.segmentUrls[reader.currentLocation.segmentIndex + 1] :
+                "about:blank"
+        );
+    }
+
+    function reloadPreviewSegment() {
+        loadSegment(previewFrame,
+            reader.currentLocation.segmentIndex > 0 ?
+                settings.segmentUrls[reader.currentLocation.segmentIndex - 1] :
+                "about:blank"
+        );
+    }
+
+    function callReflow(refreshFunction) {
+        if (currentFrame.reader) {
+            refreshFunction(currentFrame.reader);
+            afterLoad();
+        }
+        if (nextFrame.reader) {
+            refreshFunction(nextFrame.reader);
+        }
+        if (previewFrame.reader) {
+            refreshFunction(previewFrame.reader);
+        }
+    }
+
+    function initViewport() {
+        currentFrame.parentNode.style.width = screenWidth;
+        currentFrame.parentNode.style.height = screenHeight;
+        currentFrame.parentNode.style.left = 0;
+        currentFrame.parentNode.style.top = 0;
+        nextFrame.parentNode.style.width = screenWidth;
+        nextFrame.parentNode.style.height = screenHeight;
+        nextFrame.parentNode.style.left = 0;
+        nextFrame.parentNode.style.top = screenHeight;
+        previewFrame.parentNode.style.width = screenWidth;
+        previewFrame.parentNode.style.height = screenHeight;
+        previewFrame.parentNode.style.left = 0;
+        previewFrame.parentNode.style.top = 2 * screenHeight;
+    }
+
+    function updateViewport() {
+        var currentReader = currentFrame.reader;
+        var nextReader = nextFrame.reader;
+        var previewReader = previewFrame.reader;
+
+        currentStyle = currentFrame.parentNode.style;
+        nextStyle = nextFrame.parentNode.style;
+        previewStyle = previewFrame.parentNode.style;
+
+        currentStyle.width = currentReader ? currentFrame.contentWindow.document.body.scrollWidth : 0;
+        nextStyle.width = screenWidth;
+        previewStyle.width = screenWidth;
+
+        currentStyle.top = 0;
+        nextFrame.parentNode.style.top = screenHeight;
+        previewFrame.parentNode.style.top = 2 * screenHeight;
+
+        nextReader && nextFrame.contentWindow.scrollTo(0, 0);
+        previewReader && previewFrame.contentWindow.scrollTo(previewFrame.contentWindow.document.body.scrollWidth, 0);
+        if (currentReader) {
+            var totalWidth = currentFrame.contentWindow.document.body.scrollWidth;
+            var xOffset = percentToPage(reader.currentLocation.percent, totalWidth, screenWidth) * screenWidth;
+            window.scrollTo(xOffset, 0);
+        }
+    }
+
+    /**
+     * Должна совпадать с  com.dmi.perfectreader.bookview.PageBookView.percentToPage
+     */
+    function percentToPage(percent, totalWidth, screenWidth) {
+        var pageCount = screenWidth > 0 ? Math.round(totalWidth / screenWidth) : 0;
+        return screenWidth > 0 ?
+                Math.min(Math.round(percent / ONE_HUNDRED_PERCENT * totalWidth / screenWidth),
+                        pageCount - 1) :
+                0;
+    }
+
+    function afterLoad() {
+        var totalWidth = currentFrame.contentWindow.document.body.scrollWidth;
+        settings.callback.afterLoad(totalWidth, screenWidth);
+    }
+
+    function loadSegment(frame, segmentUrl) {
+        frame.style.visibility = "hidden";
+        frame.reader = undefined;
+        frame.onload = function() {
+            initFrameContent(frame);
+            frame.style.visibility = "";
+            updateViewport();
+            if (frame == currentFrame) {
+                afterLoad();
+            }
+        }
+        frame.src = segmentUrl;
+    }
+
+    function initFrameContent(frame) {
+        var window = frame.contentWindow;
+        var document = window.document;
+
+        var stylesheet = createStylesheet(document);
+        var styles = {
+            p: addCSSStyle(stylesheet, "p"),
+            div: addCSSStyle(stylesheet, "div"),
+            td: addCSSStyle(stylesheet, "td"),
+            dt: addCSSStyle(stylesheet, "dt"),
+            dd: addCSSStyle(stylesheet, "dd"),
+            br: addCSSStyle(stylesheet, "br"),
+            li: addCSSStyle(stylesheet, "li"),
+            fixSpace: addCSSStyle(stylesheet, ".fixSpace", "display: inline-block; width: 0.25em; text-indent: 0; padding: 0; margin: 0")
+        };
+
+        var frameReader = frame.reader = {
+            refreshPageConfiguration: function() {
+                var wrapDiv = document.createElement("div");
+                while (document.body.firstChild) {
+                    wrapDiv.appendChild(document.body.firstChild);
+                }
+                document.body.appendChild(wrapDiv);
+
+                document.body.style.setProperty("margin-top", bookConfig.paddingTopInPixels + "px", "important");
+                document.body.style.setProperty("margin-bottom", bookConfig.paddingBottomInPixels + "px", "important");
+                document.body.style.setProperty("margin-right", "0px", "important");
+                document.body.style.setProperty("margin-left", "0px", "important");
+                document.body.style.setProperty("padding", "0", "important");
+
+                wrapDiv.style.setProperty("margin-top", "0px", "important");
+                wrapDiv.style.setProperty("margin-bottom", "0px", "important");
+                wrapDiv.style.setProperty("margin-right", bookConfig.paddingRightInPixels + "px", "important");
+                wrapDiv.style.setProperty("margin-left", bookConfig.paddingLeftInPixels + "px", "important");
+                wrapDiv.style.setProperty("padding", "0", "important");
+
+                var width = screenWidth;
+                var height = screenHeight - bookConfig.paddingTopInPixels - bookConfig.paddingBottomInPixels;
+                document.body.style.setProperty("width", width + "px", "important");
+                document.body.style.setProperty("height", height + "px", "important");
+                document.body.style.setProperty("-webkit-column-width", width + "px", "important");
+                document.body.style.setProperty("-webkit-column-gap", "0px", "important");
+            },
+
+            refreshTextAlign: function() {
+                styles.p.setProperty("text-align", bookConfig.textAlign, "important");
+                styles.div.setProperty("text-align", bookConfig.textAlign, "important");
+                styles.td.setProperty("text-align", bookConfig.textAlign, "important");
+                styles.dt.setProperty("text-align", bookConfig.textAlign, "important");
+                styles.dd.setProperty("text-align", bookConfig.textAlign, "important");
+                styles.br.setProperty("text-align", bookConfig.textAlign, "important");
+                styles.li.setProperty("text-align", bookConfig.textAlign, "important");
+            },
+
+            refreshFontSize: function() {
+                document.body.style.setProperty("font-size", bookConfig.fontSizeInPercents + "%", "important");
+            }
+        };
+
+        function refreshTextModification() {
+            var regexVars = {
+                spaces: "\u0020\u00A0\u2000\u2001\u2002\u2002\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u200B\u202F\u205F\u2060\u3000\u0009",
+                lineBreaks: "\n\r\f"
+            };
+
+            function fregexp(pattern, flags, vars) {
+                return vregexp(pattern, flags, vars ? mergeObjects(regexVars, vars) : regexVars);
+            }
+
+            var FORMAT_ELEMENTS = stringSet([
+                "LABEL", "RUBY", "RT", "LI", "CAPTION", "TD", "TH", "INPUT", "BUTTON", "MARQUEE",
+                "ARTICLE", "BLOCKQUOTE", "CENTER", "DT", "DD", "DETAILS", "DIV", "FIGCAPTION",
+                "FOOTER", "H1", "H2", "H3", "H4", "H5", "H6", "HEADER", "LEGEND", "LISTING", "MAIN",
+                "NAV", "OL", "OPTION", "P", "SECTION", "SUMMARY", "UL", "XMP"
+            ]);
+
+            iterateChildrenRecursively(document.body, function(node) {
+                if (node.nodeType == Node.ELEMENT_NODE && FORMAT_ELEMENTS.contains(node.nodeName)) {
+                    var text = elementText(node);
+                    bookConfig.deleteRedundantSpaces && deleteRedundantSpaces(text);
+                    bookConfig.replaceFixedSpaces && replaceFixedSpaces(text);
+                }
+            });
+
+            function deleteRedundantSpaces(text) {
+                deleteTrailingSpaces(text);
+                deleteLeadingSpaces(text);
+
+                // Удаляются пробелы в начале строки
+                // "   Погода сегодня хорошая" будет заменно на "Погода сегодня хорошая"
+                function deleteLeadingSpaces(text) {
+                    text.find(
+                        fregexp("^[%spaces%lineBreaks]+", "g"),
+                        function(result) {
+                            result.range().deleteContents();
+                        }
+                    );
+                }
+
+                // Удаляются пробелы в конце строки
+                function deleteTrailingSpaces(text) {
+                    text.find(
+                        fregexp("[%spaces%lineBreaks]+$", "g"),
+                        function(result) {
+                            result.range().deleteContents();
+                        }
+                    );
+                }
+            }
+
+            function replaceFixedSpaces(text) {
+                replaceInDialog(text);
+
+                // Заменяются пробелы в диалоге на фиксированные, чтобы при выравнивании по ширине они не разъезжались
+                // "    -  Как дела?" будет заменено на "    -<span class='fixSpace'>\u00A0</span>Как дела?"
+                function replaceInDialog(text) {
+                    return text.find(
+                        fregexp("(^[%spaces]*[%dashes])([%spaces]+)", "g", {
+                            dashes: "\u2013\u2014\u2015\u002D"
+                        }),
+                        function(result) {
+                            var range = result.range(result.subStrings[0].length);
+                            var span = document.createElement("span");
+                            span.className = "fixSpace";
+                            span.textContent = "\u00A0";
+                            range.deleteContents();
+                            range.insertNode(span);
+                        }
+                    );
+                }
+            }
+        }
+
+        frameReader.refreshPageConfiguration();
+        frameReader.refreshTextAlign();
+        frameReader.refreshFontSize();
+        refreshTextModification();
+    }
+};
+
+</script>
+
+</body>
+</html>

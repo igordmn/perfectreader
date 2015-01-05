@@ -1,14 +1,14 @@
 package com.dmi.perfectreader.book.config;
 
-import com.dmi.perfectreader.util.lang.LongPercent;
+import com.dmi.perfectreader.util.lang.IntegerPercent;
 
 import java.io.Serializable;
 
 public class BookLocation implements Serializable {
-    private int segmentIndex;
-    private LongPercent percent;
+    private final int segmentIndex;
+    private final int percent;
 
-    public BookLocation(int segmentIndex, LongPercent percent) {
+    public BookLocation(int segmentIndex, int percent) {
         this.segmentIndex = segmentIndex;
         this.percent = percent;
     }
@@ -17,16 +17,8 @@ public class BookLocation implements Serializable {
         return segmentIndex;
     }
 
-    public void setSegmentIndex(int segmentIndex) {
-        this.segmentIndex = segmentIndex;
-    }
-
-    public LongPercent percent() {
+    public int percent() {
         return percent;
-    }
-
-    public void setPercent(LongPercent percent) {
-        this.percent = percent;
     }
 
     @Override
@@ -36,13 +28,13 @@ public class BookLocation implements Serializable {
 
         BookLocation that = (BookLocation) o;
 
-        return segmentIndex == that.segmentIndex && percent.equals(that.percent);
+        return segmentIndex == that.segmentIndex && percent == that.percent;
     }
 
     @Override
     public int hashCode() {
         int result = segmentIndex;
-        result = 31 * result + percent.hashCode();
+        result = 31 * result + percent;
         return result;
     }
 
@@ -50,7 +42,7 @@ public class BookLocation implements Serializable {
     public String toString() {
         return String.format("[%s, %s]",
                 segmentIndex,
-                percent.toString()
+                IntegerPercent.toString(percent)
         );
     }
 }

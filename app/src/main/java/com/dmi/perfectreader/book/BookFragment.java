@@ -12,12 +12,13 @@ import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 import com.dmi.perfectreader.book.config.BookLocation;
-import com.dmi.perfectreader.book.html.HtmlSegmentModifier;
+import com.dmi.perfectreader.bookview.PageAnimationView;
+import com.dmi.perfectreader.bookview.PageBookView;
 import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.main.EventBus;
 import com.dmi.perfectreader.util.android.Units;
 import com.dmi.perfectreader.util.cache.BookResourceCache;
-import com.dmi.perfectreader.util.lang.LongPercent;
+import com.dmi.perfectreader.util.lang.IntegerPercent;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
@@ -63,8 +64,7 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
 
     @AfterInject
     protected void init() {
-        HtmlSegmentModifier htmlSegmentModifier = new HtmlSegmentModifier();
-        bookStorage = new BookStorage(htmlSegmentModifier, bookResourceCache);
+        bookStorage = new BookStorage(bookResourceCache);
     }
 
     @AfterViews
@@ -72,7 +72,6 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
         pageAnimationView.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_PAGE_IN_SECONDS));
         pageAnimationView.setOnTouchListener(this);
         pageBookView.setPageAnimationView(pageAnimationView);
-        pageBookView.setFontSize(200);
         pageBookView.setBookStorage(bookStorage);
     }
 
@@ -90,10 +89,12 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
             protected Void doInBackground(Void... params) {
                 try {
                     bookStorage.load(bookFile);
+                    pageBookView.init();
+                    pageBookView.configure().setFontSize(200).commit();
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            pageBookView.goLocation(new BookLocation(0, LongPercent.ZERO));
+                            pageBookView.goLocation(new BookLocation(0, IntegerPercent.ZERO));
                         }
                     });
                 } catch (IOException e) {

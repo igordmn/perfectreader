@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Этот файл нужен для различного рода экспериментов с элементами html -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body>
+    
+    <script type="text/javascript">
+
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+var mozilla = [
+    "a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base", 
+    "basefont", "bdi", "bdo", "bgsound", "big", "blink", "blockquote", "body", "br", "button", 
+    "canvas", "caption", "center", "cite", "code", "col", "colgroup", "content", "data", "datalist", 
+    "dd", "decorator", "del", "details", "dfn", "dialog", "dir", "div", "dl", "dt", "element", "em", 
+    "embed", "fieldset", "figcaption", "figure", "font", "footer", "form", "frame", "frameset", 
+    "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html", "i", "iframe", 
+    "img", "input", "ins", "isindex", "kbd", "keygen", "label", "legend", "li", "link", "listing", 
+    "main", "map", "mark", "marquee", "menu", "menuitem", "meta", "meter", "nav", "nobr", 
+    "noframes", "noscript", "object", "ol", "optgroup", "option", "output", "p", "param", "picture", 
+    "plaintext", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "script", "section", 
+    "select", "shadow", "small", "source", "spacer", "span", "strike", "strong", "style", "sub", 
+    "summary", "sup", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", 
+    "title", "tr", "track", "tt", "u", "ul", "var", "video", "wbr", "xmp"
+];
+
+// http://htmlbook.ru/html
+var htmlbook = [
+    "a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base", 
+    "basefont", "bdi", "bdo", "bgsound", "big", "blink", "blockquote", "body", "br", "button", 
+    "canvas", "caption", "center", "cite", "code", "col", "colgroup", "command", "comment", 
+    "datalist", "dd", "del", "details", "dfn", "dir", "div", "dl", "dt", "em", "embed", "fieldset", 
+    "figcaption", "figure", "font", "footer", "form", "frame", "frameset", "h1", "h2", "h3", "h4", 
+    "h5", "h6", "head", "header", "hgroup", "hr", "html", "i", "iframe", "img", "input", "ins", 
+    "isindex", "kbd", "keygen", "label", "legend", "li", "link", "listing", "main", "map", "mark", 
+    "marquee", "menu", "meta", "meter", "multicol", "nav", "nobr", "noembed", "noframes", 
+    "noscript", "object", "ol", "optgroup", "option", "output", "p", "param", "plaintext", 
+    "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "script", "section", "select", 
+    "small", "source", "spacer", "span", "strike", "strong", "style", "sub", "summary", "sup", 
+    "table", "tbody", "td", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track", 
+    "tt", "u", "ul", "var", "video", "wbr", "xmp"
+];
+
+// http://www.w3schools.com/tags/
+var w3schools = [
+    "a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base", 
+    "basefont", "bdi", "bdo", "big", "blockquote", "body", "br", "button", "canvas", "caption", 
+    "center", "cite", "code", "col", "colgroup", "datalist", "dd", "del", "details", "dfn", "dialog", 
+    "dir", "div", "dl", "dt", "em", "embed", "fieldset", "figcaption", "figure", "font", "footer", 
+    "form", "frame", "frameset", "head", "header", "hgroup", "h1", "h6", "hr", "html", "i", 
+    "iframe", "img", "input", "ins", "kbd", "keygen", "label", "legend", "li", "link", "main", 
+    "map", "mark", "menu", "menuitem", "meta", "meter", "nav", "noframes", "noscript", "object", 
+    "ol", "optgroup", "option", "output", "p", "param", "pre", "progress", "q", "rp", "rt", "ruby", 
+    "s", "samp", "script", "section", "select", "small", "source", "span", "strike", "strong", 
+    "style", "sub", "summary", "sup", "table", "tbody", "td", "textarea", "tfoot", "th", "thead", 
+    "time", "title", "tr", "track", "tt", "u", "ul", "var", "video", "wbr"
+];
+
+var all = [];
+
+for (var i = 0; i < htmlbook.length; i++) {
+    all.push(mozilla[i]);
+}
+for (var i = 0; i < mozilla.length; i++) {
+    if (all.indexOf(mozilla[i]) < 0) {
+        all.push(mozilla[i]);
+    }
+}
+for (var i = 0; i < w3schools.length; i++) {
+    if (all.indexOf(w3schools[i]) < 0) {
+        all.push(w3schools[i]);
+    }
+}
+
+var displays = {};
+
+var hidden = document.createElement("div");
+hidden.style.display = "none";
+document.body.appendChild(hidden);
+for (var i = 0; i < all.length; i++) {
+    var el = document.createElement(all[i]);
+    hidden.appendChild(el);
+    var display = window.getComputedStyle(el).display;
+    if (displays[display] === undefined) {
+        displays[display] = [];
+    }
+    displays[display].push(all[i]);
+}
+
+for (display in displays) {
+    var section = document.createElement("p");
+
+    var title = document.createElement("p");
+    title.textContent = display;
+    title.style.padding = 0;
+    title.style.margin = 0;
+    title.style.fontWeight = "bold";
+    section.appendChild(title);
+
+    for (var j = 0; j < displays[display].length; j++) {
+        var tagName = displays[display][j];
+
+        var text = document.createElement("p");
+        text.style.padding = 0;
+        text.style.margin = 0;
+
+        var span1 = document.createElement("span");
+        text.appendChild(span1);
+        span1.textContent = tagName;
+       
+        if (mozilla.indexOf(tagName) >= 0) {
+            var space = document.createElement("span");
+            text.appendChild(space);
+            space.textContent = " ";
+
+            var a = document.createElement("a");
+            text.appendChild(a);
+            a.href = "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/" + tagName;
+            a.textContent = "m";
+        }
+
+        if (htmlbook.indexOf(tagName) >= 0) {
+            var space = document.createElement("span");
+            text.appendChild(space);
+            space.textContent = " ";
+
+            var a = document.createElement("a");
+            text.appendChild(a);
+            a.href = "http://htmlbook.ru/html/" + tagName;
+            a.textContent = "h";
+        }
+
+        if (w3schools.indexOf(tagName) >= 0) {
+            var space = document.createElement("span");
+            text.appendChild(space);
+            space.textContent = " ";
+
+            var a = document.createElement("a");
+            text.appendChild(a);
+            a.href = "http://www.w3schools.com/tags/tag_" + tagName + ".asp";
+            a.textContent = "w";
+        }
+
+        section.appendChild(text);
+    }
+
+    document.body.appendChild(section);
+}
+
+    </script>
+  </body>
+</html>
