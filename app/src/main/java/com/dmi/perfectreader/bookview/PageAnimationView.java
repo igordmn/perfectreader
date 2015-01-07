@@ -5,18 +5,19 @@ import android.graphics.Canvas;
 import android.graphics.SurfaceTexture;
 import android.opengl.Matrix;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Surface;
 
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.animation.PageAnimation;
-import com.dmi.perfectreader.book.config.BookLocation;
 import com.dmi.perfectreader.util.collection.DuplexBuffer;
 import com.dmi.perfectreader.util.concurrent.Waiter;
+import com.dmi.perfectreader.util.lang.Pool;
 import com.dmi.perfectreader.util.opengl.DeltaTimeSurfaceView;
 import com.dmi.perfectreader.util.opengl.Graphics;
 
 import java.nio.FloatBuffer;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
 import static android.opengl.GLES20.GL_BLEND;
@@ -56,13 +57,19 @@ import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
+import static android.util.Log.getStackTraceString;
 import static com.dmi.perfectreader.util.opengl.GLObjects.glGenTexture;
 import static com.dmi.perfectreader.util.opengl.Graphics.floatBuffer;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Math.abs;
 
 public class PageAnimationView extends DeltaTimeSurfaceView {
-    private final static int MAX_DISTANCE_IN_PAGES = 4;
+    private static final String LOG_TAG = PageBookView.class.getSimpleName();
+
+    private final static int MAX_DISTANCE_IN_PAGES = 5; // todo изменить на два после тестов
+    private final static int BACK_BUFFER_PAGE_COUNT = 3;
+    private final static int DRAWING_PAGE_COUNT = 2 * MAX_DISTANCE_IN_PAGES + 1;
+    private final static int PAGE_POOL_SIZE = DRAWING_PAGE_COUNT + BACK_BUFFER_PAGE_COUNT;
 
     private PageAnimation pageAnimation;
     private PagesDrawer pagesDrawer;
@@ -70,11 +77,13 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
     private final float[] viewProjectionMatrix = new float[16];
+    private int planeProgramId;
     private float screenWidth;
 
-    private BookLocation currentLocation = null;
-    private final DuplexBuffer<Page> pages = new DuplexBuffer<>(MAX_DISTANCE_IN_PAGES);
-    private final DuplexBuffer<Page> pagesForDraw = new DuplexBuffer<>(MAX_DISTANCE_IN_PAGES);
+    private final DuplexBuffer<PageSlot> pageSlots = new DuplexBuffer<>(MAX_DISTANCE_IN_PAGES);
+    private final DuplexBuffer<Page> drawingPages = new DuplexBuffer<>(MAX_DISTANCE_IN_PAGES);
+    private final Pool<Page> pagePool;
+    private AtomicInteger currentPageIndex = new AtomicInteger(0);
 
     private final RefreshService refreshService = new RefreshService();
 
@@ -83,8 +92,17 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         setEGLContextClientVersion(2);
         initRender();
         for (int i = -MAX_DISTANCE_IN_PAGES; i <= MAX_DISTANCE_IN_PAGES; i++) {
-            pages.set(i, new Page());
+            pageSlots.set(i, new PageSlot());
         }
+        pagePool = createPagePool();
+    }
+
+    private Pool<Page> createPagePool() {
+        Page[] precreatedPages = new Page[PAGE_POOL_SIZE];
+        for (int i = 0; i < PAGE_POOL_SIZE; i++) {
+            precreatedPages[i] = new Page();
+        }
+        return new Pool<>(precreatedPages);
     }
 
     public void setPageAnimation(PageAnimation pageAnimation) {
@@ -95,41 +113,44 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         this.pagesDrawer = pagesDrawer;
     }
 
-    public void moveLocation(BookLocation currentLocation) {
-        synchronized (pages) {
-            this.currentLocation = currentLocation;
-            for (int i = -pages.maxRelativeIndex(); i <= pages.maxRelativeIndex() - 1; i++) {
-                pages.get(i).clear();
+    public void reset() {
+        synchronized (pageSlots) {
+            for (int i = -pageSlots.maxRelativeIndex(); i <= pageSlots.maxRelativeIndex() - 1; i++) {
+                replaceSlotPage(i, null);
             }
             pageAnimation.reset();
         }
         resumeDrawing();
     }
 
-    public void moveNext(BookLocation currentLocation) {
-        synchronized (pages) {
-            this.currentLocation = currentLocation;
-            Page firstPage = pages.get(-pages.maxRelativeIndex());
-            for (int i = -pages.maxRelativeIndex(); i <= pages.maxRelativeIndex() - 1; i++) {
-                pages.set(i, pages.get(i + 1));
+    public void moveNext() {
+        synchronized (pageSlots) {
+            Page firstPage = pageSlots.get(-pageSlots.maxRelativeIndex()).getPage();
+            for (int i = -pageSlots.maxRelativeIndex(); i <= pageSlots.maxRelativeIndex() - 1; i++) {
+                pageSlots.get(i).setPage(pageSlots.get(i + 1).getPage());
             }
-            pages.set(pages.maxRelativeIndex(), firstPage);
-            pages.get(pages.maxRelativeIndex()).clear();
+            pageSlots.get(pageSlots.maxRelativeIndex()).setPage(null);
+            if (firstPage != null) {
+                pagePool.release(firstPage);
+            }
             pageAnimation.moveNext();
+            currentPageIndex.incrementAndGet();
         }
         resumeDrawing();
     }
 
-    public void movePreview(BookLocation currentLocation) {
-        synchronized (pages) {
-            this.currentLocation = currentLocation;
-            Page lastPage = pages.get(pages.maxRelativeIndex());
-            for (int i = pages.maxRelativeIndex(); i >= -pages.maxRelativeIndex() + 1; i--) {
-                pages.set(i, pages.get(i - 1));
+    public void movePreview() {
+        synchronized (pageSlots) {
+            Page lastPage = pageSlots.get(pageSlots.maxRelativeIndex()).getPage();
+            for (int i = pageSlots.maxRelativeIndex(); i >= -pageSlots.maxRelativeIndex() + 1; i--) {
+                pageSlots.get(i).setPage(pageSlots.get(i - 1).getPage());
             }
-            pages.set(-pages.maxRelativeIndex(), lastPage);
-            pages.get(-pages.maxRelativeIndex()).clear();
+            pageSlots.get(-pageSlots.maxRelativeIndex()).setPage(null);
+            if (lastPage != null) {
+                pagePool.release(lastPage);
+            }
             pageAnimation.movePreview();
+            currentPageIndex.decrementAndGet();
         }
         resumeDrawing();
     }
@@ -160,8 +181,12 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-        for (int i = -MAX_DISTANCE_IN_PAGES; i <= MAX_DISTANCE_IN_PAGES; i++) {
-            Page page = pages.get(i);
+        planeProgramId = Graphics.createProgram(
+                getResources(),
+                R.raw.shader_webview_snapshot_vertex,
+                R.raw.shader_webview_snapshot_fragment);
+
+        for (Page page : pagePool) {
             page.init();
         }
     }
@@ -177,8 +202,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
-        for (int i = -MAX_DISTANCE_IN_PAGES; i <= MAX_DISTANCE_IN_PAGES; i++) {
-            Page page = pages.get(i);
+        for (Page page : pagePool) {
             page.setSize(width, height);
         }
     }
@@ -189,26 +213,61 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        synchronized (pages) {
-            for (int i = -MAX_DISTANCE_IN_PAGES; i <= MAX_DISTANCE_IN_PAGES; i++) {
-                pagesForDraw.set(i, pages.get(i));
+        synchronized (pageSlots) {
+            synchronized (drawingPages) {
+                for (int i = -MAX_DISTANCE_IN_PAGES; i <= MAX_DISTANCE_IN_PAGES; i++) {
+                    drawingPages.set(i, pageSlots.get(i).getPage());
+                }
             }
         }
 
         pageAnimation.drawPages(new PageAnimation.PageDrawer() {
             @Override
             public void drawPage(int relativeIndex, float posX) {
-                if (abs(relativeIndex) <= MAX_DISTANCE_IN_PAGES) {
+                if (abs(relativeIndex) <= MAX_DISTANCE_IN_PAGES && drawingPages.get(relativeIndex) != null) {
                     Matrix.translateM(viewMatrix, 0, posX, 0, 0);
                     Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-                    pagesForDraw.get(relativeIndex).draw();
+                    drawingPages.get(relativeIndex).draw();
                     Matrix.translateM(viewMatrix, 0, -posX, 0, 0);
                 }
             }
         }, screenWidth);
 
+        synchronized (drawingPages) {
+            drawingPages.clear();
+        }
+
         if (!pageAnimation.isPagesMoving()) {
             pauseDrawing();
+        }
+    }
+
+    private void replaceSlotPage(int slotIndex, Page page) {
+        PageSlot pageSlot = pageSlots.get(slotIndex);
+        if (pageSlot.getPage() != null) {
+            pagePool.release(pageSlot.getPage());
+        }
+        pageSlot.setPage(page);
+    }
+
+    private boolean isPageDrawing(Page page) {
+        for (int i = -MAX_DISTANCE_IN_PAGES; i <= MAX_DISTANCE_IN_PAGES; i++) {
+            if (drawingPages.get(i) == page) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private class PageSlot {
+        private Page page;
+
+        public Page getPage() {
+            return page;
+        }
+
+        public void setPage(Page page) {
+            this.page = page;
         }
     }
 
@@ -218,7 +277,6 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         private Surface surface = null;
         private SurfaceTexture surfaceTexture = null;
         private final Object drawMutex = new Object();
-        private final AtomicBoolean isBlank = new AtomicBoolean(true);
 
         public void init() {
             plane.init();
@@ -246,52 +304,36 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
                 surfaceTexture.updateTexImage();
             }
 
-            if (!isBlank.get()) {
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
-                plane.draw(viewProjectionMatrix);
-                glBindTexture(GL_TEXTURE_EXTERNAL_OES, 0);
-            }
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
+            plane.draw(viewProjectionMatrix);
+            glBindTexture(GL_TEXTURE_EXTERNAL_OES, 0);
         }
 
-        public void refreshByPage(BookLocation location, int relativeIndex) {
+        public void refreshByPage(int relativeIndex) {
             synchronized (drawMutex) {
                 Canvas canvas = surface.lockCanvas(null);
                 try {
-                    pagesDrawer.drawPage(location, relativeIndex, canvas);
+                    pagesDrawer.drawPages(relativeIndex, canvas);
                 } finally {
                     surface.unlockCanvasAndPost(canvas);
                 }
             }
-            isBlank.set(false);
-            resumeDrawing();
-        }
-
-        public void clear() {
-            isBlank.set(true);
             resumeDrawing();
         }
     }
 
     private class Plane {
         private final static int VERTEX_COUNT = 4;
-
-        private int programId;
         private int coordinateHandle;
         private int mvpMatrixHandle;
         private int textureHandle;
         private FloatBuffer vertexBuffer;
 
-        // todo вынести programId в верхний класс
         public void init() {
-            programId = Graphics.createProgram(
-                    getResources(),
-                    R.raw.shader_webview_snapshot_vertex,
-                    R.raw.shader_webview_snapshot_fragment);
-
-            coordinateHandle = glGetAttribLocation(programId, "coordinate");
-            mvpMatrixHandle = glGetUniformLocation(programId, "mvpMatrix");
-            textureHandle = glGetUniformLocation(programId, "texture");
+            coordinateHandle = glGetAttribLocation(planeProgramId, "coordinate");
+            mvpMatrixHandle = glGetUniformLocation(planeProgramId, "mvpMatrix");
+            textureHandle = glGetUniformLocation(planeProgramId, "texture");
         }
 
         public void setSize(int width, int height) {
@@ -304,7 +346,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         }
 
         public void draw(float[] matrix) {
-            glUseProgram(programId);
+            glUseProgram(planeProgramId);
 
             glEnableVertexAttribArray(coordinateHandle);
             glVertexAttribPointer(coordinateHandle, 4,
@@ -341,30 +383,59 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         private class RefreshRunnable implements Runnable {
             @Override
             public void run() {
-                try {
-                    while (!Thread.interrupted()) {
-                        refreshWaiter.waitRequest();
+                while (!Thread.interrupted()) {
+                    refreshWaiter.waitRequest();
 
-                        if (currentLocation != null) {
-                            Page currentPage;
-                            Page nextPage;
-                            Page previewPage;
-                            BookLocation refreshLocation;
+                    int currentPageIndex = PageAnimationView.this.currentPageIndex.get();
 
-                            synchronized (pages) {
-                                refreshLocation = currentLocation;
-                                currentPage = pages.get(0);
-                                nextPage = pages.get(1);
-                                previewPage = pages.get(-1);
-                            }
+                    Page currentPage = pagePool.acquire();
+                    Page nextPage = pagePool.acquire();
+                    Page previewPage = pagePool.acquire();
 
-                            currentPage.refreshByPage(refreshLocation, 0);
-                            nextPage.refreshByPage(refreshLocation, 1);
-                            previewPage.refreshByPage(refreshLocation, -1);
-                        }
+                    // Нужно подождать пока рисуются на экране эти страницы,
+                    // иначе на экране может отобразиться не то
+                    waitPageDrawing(currentPage, nextPage, previewPage);
+
+                    // Необходимо, чтобы все страницы были отрисованы корректно
+                    // (некорректно страницы отрисовываются в моменте начала перехода между ними)
+                    boolean correctlyDrawn = true;
+
+                    try {
+                        if (!pagesDrawer.canDraw()) correctlyDrawn = false;
+                        if (correctlyDrawn) currentPage.refreshByPage(0);
+                        if (!pagesDrawer.canDraw()) correctlyDrawn = false;
+                        // todo может возникнуть ситуация, когда во время этого метода произойдет смещение страницы полностью, и при этом canDraw возвратит true
+                        if (correctlyDrawn) nextPage.refreshByPage(1);
+                        if (!pagesDrawer.canDraw()) correctlyDrawn = false;
+                        if (correctlyDrawn) previewPage.refreshByPage(-1);
+                        if (!pagesDrawer.canDraw()) correctlyDrawn = false;
+                    } catch (Exception e) {
+                        Log.w(LOG_TAG, getStackTraceString(e));
+                        correctlyDrawn = false;
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+
+                    if (correctlyDrawn) {
+                        synchronized (pageSlots) {
+                            int newPageIndex = PageAnimationView.this.currentPageIndex.get();
+                            int pageOffset = currentPageIndex - newPageIndex;
+                            replaceSlotPage(pageOffset, currentPage);
+                            replaceSlotPage(pageOffset + 1, nextPage);
+                            replaceSlotPage(pageOffset - 1, previewPage);
+                        }
+                        resumeDrawing();
+                    } else {
+                        pagePool.release(currentPage);
+                        pagePool.release(nextPage);
+                        pagePool.release(previewPage);
+                        refreshWaiter.request();
+                    }
+                }
+            }
+
+            @SuppressWarnings("StatementWithEmptyBody")
+            private void waitPageDrawing(Page currentPage, Page nextPage, Page previewPage) {
+                while (isPageDrawing(currentPage) && isPageDrawing(nextPage) && isPageDrawing(previewPage)) {
+                    // wait
                 }
             }
         }

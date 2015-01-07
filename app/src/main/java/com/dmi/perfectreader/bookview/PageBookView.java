@@ -35,6 +35,7 @@ import static com.dmi.perfectreader.util.js.JavaScript.jsArray;
 import static com.dmi.perfectreader.util.js.JavaScript.jsValue;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
+import static java.lang.Math.abs;
 import static java.lang.String.format;
 import static java.net.URLConnection.guessContentTypeFromName;
 
@@ -54,6 +55,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     private Waiter jsReady = new Waiter();
 
     private BookLocation currentLocation = null;
+    private final DrawState drawState = new DrawState();
 
     public PageBookView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -161,33 +163,40 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
 
     public void goLocation(BookLocation location) {
         checkArgument(location.segmentIndex() >= 0 && location.segmentIndex() < bookStorage.segmentUrls().size());
+        drawState.beforeChange();
         execJs(format("reader.goLocation({segmentIndex: %s, percent: %s})", location.segmentIndex(), location.percent()));
+        pageAnimationView.reset();
     }
 
     public void goNextPage() {
+        drawState.beforeChange();
         execJs("reader.goNextPage()");
+        pageAnimationView.moveNext();
     }
 
     public void goPreviewPage() {
+        drawState.beforeChange();
         execJs("reader.goPreviewPage()");
+        pageAnimationView.movePreview();
     }
 
     public BookLocation currentLocation() {
         return currentLocation;
     }
 
-    public void drawPage(float offset, Canvas canvas) {
-    }
-
-    public void drawNextSegmentPage(Canvas canvas) {
-    }
-
-    public void drawPreviewSegmentPage(Canvas canvas) {
+    @Override
+    public void drawPages(int relativeIndex, Canvas canvas) {
+        checkArgument(abs(relativeIndex) <= 1);
+        canvas.save();
+        int width = getWidth();
+        canvas.translate(-(width + relativeIndex * width), 0);
+        webView.draw(canvas);
+        canvas.restore();
     }
 
     @Override
-    public void drawPage(BookLocation location, int relativeIndex, Canvas canvas) {
-
+    public boolean canDraw() {
+        return drawState.isCorrect();
     }
 
     private void execJs(String js) {
@@ -244,6 +253,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         }
 
         public void commit() {
+            drawState.beforeChange();
             execJs(fullJs.toString());
         }
 
@@ -261,6 +271,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         @JavascriptInterface
         public void setCurrentLocation(int segmentIndex, int percent) {
             currentLocation = new BookLocation(segmentIndex, percent);
+            drawState.afterLocationSet();
         }
     }
 
@@ -288,7 +299,35 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         }
 
         private void notifyOnInvalidate() {
+            drawState.afterInvalidate();
             pageAnimationView.postRefresh();
+        }
+    }
+
+    //todo нерабтает, т.к. если срузу нажать 4 раза goNextPage, то afterLocationSet сработает только три раза
+    private class DrawState {
+        private volatile int locationSetNeedCount = 0;
+        private volatile int invalidateNeedCount = 0;
+
+        public void beforeChange() {
+            locationSetNeedCount++;
+            invalidateNeedCount++;
+        }
+
+        public void afterLocationSet() {
+            if (locationSetNeedCount > 0) {
+                locationSetNeedCount--;
+            }
+        }
+
+        public void afterInvalidate() {
+            if (invalidateNeedCount > 0 && invalidateNeedCount > locationSetNeedCount) {
+                invalidateNeedCount--;
+            }
+        }
+
+        public boolean isCorrect() {
+            return locationSetNeedCount == 0 && invalidateNeedCount == 0;
         }
     }
 }

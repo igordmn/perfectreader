@@ -99,8 +99,6 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
                     });
                 } catch (IOException e) {
                     eventBus.post(new ErrorEvent(e));
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
 
                 return null;
