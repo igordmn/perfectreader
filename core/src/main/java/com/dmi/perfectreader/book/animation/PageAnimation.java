@@ -13,7 +13,7 @@ public interface PageAnimation {
 
     void update(float dt);
 
-    void drawPages(PageDrawer pageDrawer, float screenWidth);
+    void drawPages(PageDrawer pageDrawer);
 
     public static interface PageDrawer {
         void drawPage(int relativeIndex, float posX);

@@ -34,7 +34,7 @@ import static java.lang.Math.sqrt;
 
 @EFragment(R.layout.fragment_book)
 public class BookFragment extends Fragment implements View.OnTouchListener {
-    private final static float TIME_FOR_ONE_PAGE_IN_SECONDS = 1;
+    private final static float TIME_FOR_ONE_SLID_IN_SECONDS = 0.4F;
     private final static float TOUCH_SENSITIVITY = 8;
 
     @FragmentArg
@@ -69,7 +69,7 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
 
     @AfterViews
     protected void initViews() {
-        pageAnimationView.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_PAGE_IN_SECONDS));
+        pageAnimationView.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_SLID_IN_SECONDS));
         pageAnimationView.setOnTouchListener(this);
         pageBookView.setPageAnimationView(pageAnimationView);
         pageBookView.setBookStorage(bookStorage);

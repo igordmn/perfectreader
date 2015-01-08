@@ -66,7 +66,7 @@ import static java.lang.Math.abs;
 public class PageAnimationView extends DeltaTimeSurfaceView {
     private static final String LOG_TAG = PageBookView.class.getSimpleName();
 
-    private final static int MAX_DISTANCE_IN_PAGES = 5; // todo изменить на два после тестов
+    private final static int MAX_DISTANCE_IN_PAGES = 2;
     private final static int BACK_BUFFER_PAGE_COUNT = 3;
     private final static int DRAWING_PAGE_COUNT = 2 * MAX_DISTANCE_IN_PAGES + 1;
     private final static int PAGE_POOL_SIZE = DRAWING_PAGE_COUNT + BACK_BUFFER_PAGE_COUNT;
@@ -231,7 +231,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
                     Matrix.translateM(viewMatrix, 0, -posX, 0, 0);
                 }
             }
-        }, screenWidth);
+        });
 
         synchronized (drawingPages) {
             drawingPages.clear();

@@ -1,39 +1,20 @@
 package com.dmi.perfectreader.book.animation;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.Math.abs;
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
-import static java.lang.Math.sqrt;
 
 public class SlidePageAnimation implements PageAnimation {
     private float pageWidth = 100;
-    private float timeForOnePageInSeconds = 1;
+    private float timeForOneSlideInSeconds = 1;
 
-    private float destinationPageOffset = 0;
+    private float distance = 0;
+    private float velocity = 0;
 
-    SlidePageAnimation() {
-    }
-
-    public SlidePageAnimation(float timeForOnePageInSeconds) {
-        this.timeForOnePageInSeconds = timeForOnePageInSeconds;
-    }
-
-    // t = sqrt(d)/t0
-    static float computeTimeByDistance(float distanceInPages, float timeForOnePage) {
-        if (distanceInPages > 0) {
-            return (float) sqrt(distanceInPages) * timeForOnePage;
-        } else {
-            return 0;
-        }
-    }
-
-    // d = (t*t0)^2
-    static float computeDistanceByTime(float time, float timeForOnePage) {
-        if (time > 0) {
-            float a = time / timeForOnePage;
-            return a * a;
-        } else {
-            return 0;
-        }
+    public SlidePageAnimation(float timeForOneSlideInSeconds) {
+        checkArgument(timeForOneSlideInSeconds >= 0);
+        this.timeForOneSlideInSeconds = timeForOneSlideInSeconds;
     }
 
     @Override
@@ -41,64 +22,55 @@ public class SlidePageAnimation implements PageAnimation {
         this.pageWidth = pageWidth;
     }
 
-    public void setTimeForOnePageInSeconds(float timeInSeconds) {
-        this.timeForOnePageInSeconds = timeInSeconds;
-    }
-
     @Override
     public boolean isPagesMoving() {
-        return destinationPageOffset != 0;
-    }
-
-    float destinationPageOffset() {
-        return destinationPageOffset;
-    }
-
-    void setDestinationPageOffset(float offset) {
-        destinationPageOffset = offset;
+        return distance != 0;
     }
 
     @Override
     public void reset() {
-        destinationPageOffset = 0;
+        distance = 0;
+        velocity = 0;
     }
 
     @Override
     public void moveNext() {
-        destinationPageOffset += pageWidth;
+        distance += pageWidth;
+        velocity = timeForOneSlideInSeconds > 0 ? abs(distance) / timeForOneSlideInSeconds : 1_000_000;
     }
 
     @Override
     public void movePreview() {
-        destinationPageOffset -= pageWidth;
+        distance -= pageWidth;
+        velocity = timeForOneSlideInSeconds > 0 ? abs(distance) / timeForOneSlideInSeconds : 1_000_000;
     }
 
     @Override
     public void update(float dt) {
-        if (destinationPageOffset > 0) {
-            float timeForStop = computeTimeByDistance(destinationPageOffset / pageWidth, timeForOnePageInSeconds);
-            destinationPageOffset = computeDistanceByTime(timeForStop - dt, timeForOnePageInSeconds) * pageWidth;
-            if (destinationPageOffset <= 0) {
-                reset();
+        if (distance != 0) {
+            float oldDistance = distance;
+
+            if (distance > 0) {
+                distance -= velocity * dt;
+            } else {
+                distance += velocity * dt;
             }
-        } else if (destinationPageOffset < 0) {
-            float timeForStop = computeTimeByDistance(-destinationPageOffset / pageWidth, timeForOnePageInSeconds);
-            destinationPageOffset = -computeDistanceByTime(timeForStop - dt, timeForOnePageInSeconds) * pageWidth;
-            if (destinationPageOffset >= 0) {
+
+            if (oldDistance > 0 && distance <= 0 || oldDistance < 0 && distance >= 0) {
                 reset();
             }
         }
     }
 
     @Override
-    public void drawPages(PageDrawer pageDrawer, float screenWidth) {
-        float distanceInPages = destinationPageOffset / pageWidth;
+    public void drawPages(PageDrawer pageDrawer) {
+        float distanceInPages = distance / pageWidth;
 
         int firstRelativeIndex = (int) floor(-distanceInPages);
         float firstDrawingPageX = (distanceInPages - (float) ceil(distanceInPages)) * pageWidth;
 
         int relativeIndex = firstRelativeIndex;
-        for (float pageX = firstDrawingPageX; pageX < screenWidth; pageX += pageWidth) {
+        for (float pageX = firstDrawingPageX; pageX < pageWidth; pageX += pageWidth) {
             pageDrawer.drawPage(relativeIndex, pageX);
             relativeIndex++;
         }
