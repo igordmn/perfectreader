@@ -11,7 +11,19 @@ public abstract class MainThreads {
         if (isMainThread) {
             runnable.run();
         } else {
-            mainHandler.post(runnable);
+            post(runnable);
         }
+    }
+
+    public static void post(Runnable runnable) {
+        mainHandler.post(runnable);
+    }
+
+    public static void postDelayed(Runnable runnable, long delayMillis) {
+        mainHandler.postDelayed(runnable, delayMillis);
+    }
+
+    public static void removeCallbacks(Runnable runnable) {
+        mainHandler.removeCallbacks(runnable);
     }
 }

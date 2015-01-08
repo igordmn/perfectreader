@@ -16,6 +16,7 @@ import com.dmi.perfectreader.bookview.PageAnimationView;
 import com.dmi.perfectreader.bookview.PageBookView;
 import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.main.EventBus;
+import com.dmi.perfectreader.util.android.MainThreads;
 import com.dmi.perfectreader.util.android.Units;
 import com.dmi.perfectreader.util.cache.BookResourceCache;
 import com.dmi.perfectreader.util.lang.IntegerPercent;
@@ -30,7 +31,6 @@ import org.androidannotations.annotations.ViewById;
 import java.io.File;
 import java.io.IOException;
 
-import static com.dmi.perfectreader.util.android.MainThreads.runOnMainThread;
 import static java.lang.Math.sqrt;
 
 @EFragment(R.layout.fragment_book)
@@ -176,6 +176,8 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
     }
 
     private class ShowAnimationListener implements PageAnimationView.Listener, PageBookView.Listener  {
+        private int hideAnimationDelay = 100;
+
         private final Runnable hideAnimationRunnable = new Runnable() {
             @Override
             public void run() {
@@ -195,7 +197,8 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
 
         @Override
         public void onStartAnimation() {
-            runOnMainThread(showAnimationRunnable);
+            MainThreads.removeCallbacks(hideAnimationRunnable);
+            MainThreads.post(showAnimationRunnable);
             isAnimating = true;
         }
 
@@ -227,7 +230,7 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
 
         private void hideAnimationIfPossible() {
             if (!isAnimating && !isLoading && isInvalidatedAfterLoad) {
-                runOnMainThread(hideAnimationRunnable);
+                MainThreads.postDelayed(hideAnimationRunnable, hideAnimationDelay);
             }
         }
     }
