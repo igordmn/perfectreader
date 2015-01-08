@@ -5,18 +5,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 import com.dmi.perfectreader.book.config.BookLocation;
-import com.dmi.perfectreader.bookview.PageAnimationView;
-import com.dmi.perfectreader.bookview.PageBookView;
+import com.dmi.perfectreader.bookview.PageBookBox;
 import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.main.EventBus;
-import com.dmi.perfectreader.util.android.MainThreads;
 import com.dmi.perfectreader.util.android.Units;
 import com.dmi.perfectreader.util.cache.BookResourceCache;
 import com.dmi.perfectreader.util.lang.IntegerPercent;
@@ -31,19 +28,15 @@ import org.androidannotations.annotations.ViewById;
 import java.io.File;
 import java.io.IOException;
 
-import static java.lang.Math.sqrt;
-
 @EFragment(R.layout.fragment_book)
-public class BookFragment extends Fragment implements View.OnTouchListener {
+public class BookFragment extends Fragment {
     private final static float TIME_FOR_ONE_SLID_IN_SECONDS = 0.4F;
     private final static float TOUCH_SENSITIVITY = 8;
 
     @FragmentArg
     protected File bookFile;
     @ViewById
-    protected PageBookView pageBookView;
-    @ViewById
-    protected PageAnimationView pageAnimationView;
+    protected PageBookBox pageBookBox;
     @Bean
     protected AssetPaths assetPaths;
     @Bean
@@ -70,13 +63,8 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
 
     @AfterViews
     protected void initViews() {
-        ShowAnimationListener showAnimationListener = new ShowAnimationListener();
-        pageAnimationView.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_SLID_IN_SECONDS));
-        pageAnimationView.setOnTouchListener(this);
-        pageAnimationView.setListener(showAnimationListener);
-        pageBookView.setPageAnimationView(pageAnimationView);
-        pageBookView.setBookStorage(bookStorage);
-        pageBookView.setListener(showAnimationListener);
+        pageBookBox.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_SLID_IN_SECONDS));
+        pageBookBox.setBookStorage(bookStorage);
     }
 
     @Override
@@ -93,12 +81,12 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
             protected Void doInBackground(Void... params) {
                 try {
                     bookStorage.load(bookFile);
-                    pageBookView.init();
-                    pageBookView.configure().setFontSize(200).commit();
+                    pageBookBox.init();
+                    pageBookBox.configure().setFontSize(200).commit();
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            pageBookView.goLocation(new BookLocation(0, IntegerPercent.ZERO));
+                            pageBookBox.goLocation(new BookLocation(0, IntegerPercent.ZERO));
                         }
                     });
                 } catch (IOException e) {
@@ -112,13 +100,13 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
 
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            if (pageBookView.canGoNextPage()) {
-                pageBookView.goNextPage();
+            if (pageBookBox.canGoNextPage()) {
+                pageBookBox.goNextPage();
             }
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            if (pageBookView.canGoPreviewPage()) {
-                pageBookView.goPreviewPage();
+            if (pageBookBox.canGoPreviewPage()) {
+                pageBookBox.goPreviewPage();
             }
             return true;
         } else {
@@ -129,7 +117,7 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
     public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
         return keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP;
     }
-
+/*
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -149,7 +137,7 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
     }
 
     private void onTouchUp(MotionEvent motionEvent) {
-        int thirdOfScreen = pageBookView.getWidth() / 3;
+        int thirdOfScreen = pageBookBox.getWidth() / 3;
         float touchOffsetX = motionEvent.getX() - touchDownX;
         float touchOffsetY = motionEvent.getY() - touchDownY;
         float touchOffset = (float) sqrt(touchOffsetX * touchOffsetX + touchOffsetY * touchOffsetY);
@@ -163,75 +151,15 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
                                   !swipeRight && touchOffset <= touchSensitivityInPixels;
 
         if (touchRightZone || swipeLeft) {
-            if (pageBookView.canGoNextPage()) {
-                pageBookView.goNextPage();
+            if (pageBookBox.canGoNextPage()) {
+                pageBookBox.goNextPage();
             }
         } else if (touchLeftZone || swipeRight) {
-            if (pageBookView.canGoPreviewPage()) {
-                pageBookView.goPreviewPage();
+            if (pageBookBox.canGoPreviewPage()) {
+                pageBookBox.goPreviewPage();
             }
         } else if (touchCenterZone) {
-            onClickListener.onClick(pageBookView);
+            onClickListener.onClick(pageBookBox);
         }
-    }
-
-    private class ShowAnimationListener implements PageAnimationView.Listener, PageBookView.Listener  {
-        private int hideAnimationDelay = 100;
-
-        private final Runnable hideAnimationRunnable = new Runnable() {
-            @Override
-            public void run() {
-                pageBookView.setVisibility(View.VISIBLE);
-            }
-        };
-        private final Runnable showAnimationRunnable = new Runnable() {
-            @Override
-            public void run() {
-                pageBookView.setVisibility(View.INVISIBLE);
-            }
-        };
-
-        private volatile boolean isAnimating = false;
-        private volatile boolean isLoading = false;
-        private volatile boolean isInvalidatedAfterLoad = false;
-
-        @Override
-        public void onStartAnimation() {
-            MainThreads.removeCallbacks(hideAnimationRunnable);
-            MainThreads.post(showAnimationRunnable);
-            isAnimating = true;
-        }
-
-        @Override
-        public void onEndAnimation() {
-            isAnimating = false;
-            hideAnimationIfPossible();
-        }
-
-        @Override
-        public void beforeLoad() {
-            isLoading = true;
-            isInvalidatedAfterLoad = false;
-        }
-
-        @Override
-        public void afterLoad() {
-            isLoading = false;
-            hideAnimationIfPossible();
-        }
-
-        @Override
-        public void afterInvalidate() {
-            if (!isLoading) {
-                isInvalidatedAfterLoad = true;
-            }
-            hideAnimationIfPossible();
-        }
-
-        private void hideAnimationIfPossible() {
-            if (!isAnimating && !isLoading && isInvalidatedAfterLoad) {
-                MainThreads.postDelayed(hideAnimationRunnable, hideAnimationDelay);
-            }
-        }
-    }
+    }*/
 }

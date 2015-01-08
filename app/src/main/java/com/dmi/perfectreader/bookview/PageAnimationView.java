@@ -4,13 +4,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.SurfaceTexture;
 import android.opengl.Matrix;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Surface;
 
 import com.dmi.perfectreader.R;
-import com.dmi.perfectreader.book.animation.PageAnimationState;
 import com.dmi.perfectreader.book.animation.PageAnimation;
+import com.dmi.perfectreader.book.animation.PageAnimationState;
 import com.dmi.perfectreader.util.collection.DuplexBuffer;
 import com.dmi.perfectreader.util.concurrent.Waiter;
 import com.dmi.perfectreader.util.lang.Pool;
@@ -88,8 +87,8 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
 
     private final RefreshService refreshService = new RefreshService();
 
-    public PageAnimationView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public PageAnimationView(Context context) {
+        super(context);
         setEGLContextClientVersion(2);
         initRender();
         for (int i = -MAX_DISTANCE_IN_PAGES; i <= MAX_DISTANCE_IN_PAGES; i++) {

@@ -7,13 +7,8 @@
     android:layout_height="match_parent"
     tools:context="com.dmi.perfectreader.book.BookFragment_">
 
-    <com.dmi.perfectreader.bookview.PageAnimationView
-        android:id="@+id/pageAnimationView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-    <com.dmi.perfectreader.bookview.PageBookView
-        android:id="@+id/pageBookView"
+    <com.dmi.perfectreader.bookview.PageBookBox
+        android:id="@+id/pageBookBox"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

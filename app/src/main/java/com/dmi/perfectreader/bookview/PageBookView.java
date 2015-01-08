@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -62,8 +61,8 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     private boolean canGoPreviewPage = false;
     private final BatchDrawImpl batchDraw = new BatchDrawImpl();
 
-    public PageBookView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public PageBookView(Context context) {
+        super(context);
         setClickable(true);
         setFocusable(true);
         setFocusableInTouchMode(true);
