@@ -9,6 +9,7 @@ public class SlidePageAnimation implements PageAnimation {
     private float pageWidth = 100;
     private float timeForOneSlideInSeconds = 1;
 
+    private PageAnimationState state = new PageAnimationState();
     private float distance = 0;
     private float velocity = 0;
 
@@ -60,10 +61,12 @@ public class SlidePageAnimation implements PageAnimation {
                 reset();
             }
         }
+        updateState();
     }
 
-    @Override
-    public void drawPages(PageDrawer pageDrawer) {
+    private void updateState() {
+        state.clear();
+
         float distanceInPages = distance / pageWidth;
 
         int firstRelativeIndex = (int) floor(-distanceInPages);
@@ -71,8 +74,13 @@ public class SlidePageAnimation implements PageAnimation {
 
         int relativeIndex = firstRelativeIndex;
         for (float pageX = firstDrawingPageX; pageX < pageWidth; pageX += pageWidth) {
-            pageDrawer.drawPage(relativeIndex, pageX);
+            state.add(relativeIndex, pageX);
             relativeIndex++;
         }
+    }
+
+    @Override
+    public PageAnimationState currentState() {
+        return state;
     }
 }

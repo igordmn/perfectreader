@@ -166,11 +166,11 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     }
 
     public boolean canGoNextPage() {
-        return canGoNextPage;
+        return canGoNextPage && pageAnimationView.canMoveNext();
     }
 
     public boolean canGoPreviewPage() {
-        return canGoPreviewPage;
+        return canGoPreviewPage && pageAnimationView.canMovePreview();
     }
 
     public void goLocation(BookLocation location) {

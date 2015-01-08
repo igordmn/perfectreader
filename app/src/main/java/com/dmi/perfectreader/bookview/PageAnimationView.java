@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Surface;
 
 import com.dmi.perfectreader.R;
+import com.dmi.perfectreader.book.animation.PageAnimationState;
 import com.dmi.perfectreader.book.animation.PageAnimation;
 import com.dmi.perfectreader.util.collection.DuplexBuffer;
 import com.dmi.perfectreader.util.concurrent.Waiter;
@@ -112,6 +113,18 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         this.pagesDrawer = pagesDrawer;
     }
 
+    public boolean canMoveNext() {
+        PageAnimationState animationState = pageAnimation.currentState();
+        int animationPageCount = animationState.pageCount();
+        return animationPageCount > 0 && animationState.pageRelativeIndex(0) > -MAX_DISTANCE_IN_PAGES;
+    }
+
+    public boolean canMovePreview() {
+        PageAnimationState animationState = pageAnimation.currentState();
+        int animationPageCount = animationState.pageCount();
+        return animationPageCount > 0 && animationState.pageRelativeIndex(animationPageCount - 1) < MAX_DISTANCE_IN_PAGES;
+    }
+
     public void reset() {
         synchronized (pageSlots) {
             for (int i = -pageSlots.maxRelativeIndex(); i <= pageSlots.maxRelativeIndex() - 1; i++) {
@@ -207,8 +220,6 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
 
     @Override
     protected void onDrawFrame(float dt) {
-        pageAnimation.update(dt);
-
         glClear(GL_COLOR_BUFFER_BIT);
 
         synchronized (pageSlots) {
@@ -219,17 +230,18 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
             }
         }
 
-        pageAnimation.drawPages(new PageAnimation.PageDrawer() {
-            @Override
-            public void drawPage(int relativeIndex, float posX) {
-                if (abs(relativeIndex) <= MAX_DISTANCE_IN_PAGES && drawingPages.get(relativeIndex) != null) {
-                    Matrix.translateM(viewMatrix, 0, posX, 0, 0);
-                    Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-                    drawingPages.get(relativeIndex).draw();
-                    Matrix.translateM(viewMatrix, 0, -posX, 0, 0);
-                }
+        pageAnimation.update(dt);
+        PageAnimationState animationState = pageAnimation.currentState();
+        for (int i = 0; i < animationState.pageCount(); i++) {
+            int relativeIndex = animationState.pageRelativeIndex(i);
+            float positionX = animationState.pagePositionX(i);
+            if (abs(relativeIndex) <= MAX_DISTANCE_IN_PAGES && drawingPages.get(relativeIndex) != null) {
+                Matrix.translateM(viewMatrix, 0, positionX, 0, 0);
+                Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+                drawingPages.get(relativeIndex).draw();
+                Matrix.translateM(viewMatrix, 0, -positionX, 0, 0);
             }
-        });
+        }
 
         synchronized (drawingPages) {
             drawingPages.clear();
