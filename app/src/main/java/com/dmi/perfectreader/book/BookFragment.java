@@ -108,10 +108,14 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
 
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            pageBookView.goNextPage();
+            if (pageBookView.canGoNextPage()) {
+                pageBookView.goNextPage();
+            }
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            pageBookView.goPreviewPage();
+            if (pageBookView.canGoPreviewPage()) {
+                pageBookView.goPreviewPage();
+            }
             return true;
         } else {
             return false;
@@ -155,9 +159,13 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
                                   !swipeRight && touchOffset <= touchSensitivityInPixels;
 
         if (touchRightZone || swipeLeft) {
-            pageBookView.goNextPage();
+            if (pageBookView.canGoNextPage()) {
+                pageBookView.goNextPage();
+            }
         } else if (touchLeftZone || swipeRight) {
-            pageBookView.goPreviewPage();
+            if (pageBookView.canGoPreviewPage()) {
+                pageBookView.goPreviewPage();
+            }
         } else if (touchCenterZone) {
             onClickListener.onClick(pageBookView);
         }

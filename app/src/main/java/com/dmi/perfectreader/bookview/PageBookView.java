@@ -57,8 +57,8 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     private Waiter jsReady = new Waiter();
 
     private BookLocation currentLocation = null;
-    private boolean isLastPage = false;
-    private boolean isFirstPage = false;
+    private boolean canGoNextPage = false;
+    private boolean canGoPreviewPage = false;
     private final BatchDrawImpl batchDraw = new BatchDrawImpl();
 
     public PageBookView(Context context, AttributeSet attrs) {
@@ -165,27 +165,27 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         return new BookConfigurator();
     }
 
-    public boolean isLastPage() {
-        return isLastPage;
+    public boolean canGoNextPage() {
+        return canGoNextPage;
     }
 
-    public boolean isFirstPage() {
-        return isFirstPage;
+    public boolean canGoPreviewPage() {
+        return canGoPreviewPage;
     }
 
     public void goLocation(BookLocation location) {
         checkArgument(location.segmentIndex() >= 0 && location.segmentIndex() < bookStorage.segmentUrls().size());
-        resetPagesInfo();
+        resetCanGoPages();
         execJs(format("reader.goLocation({segmentIndex: %s, percent: %s})", location.segmentIndex(), location.percent()));
     }
 
     public void goNextPage() {
-        resetPagesInfo();
+        resetCanGoPages();
         execJs("reader.goNextPage()");
     }
 
     public void goPreviewPage() {
-        resetPagesInfo();
+        resetCanGoPages();
         execJs("reader.goPreviewPage()");
     }
 
@@ -222,9 +222,9 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         });
     }
 
-    private void resetPagesInfo() {
-        isLastPage = false;
-        isFirstPage = false;
+    private void resetCanGoPages() {
+        canGoNextPage = false;
+        canGoPreviewPage = false;
     }
 
     private void updateStateByJsReader() {
@@ -273,7 +273,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         }
 
         public void commit() {
-            resetPagesInfo();
+            resetCanGoPages();
             execJs(fullJs.toString());
         }
 
@@ -295,8 +295,8 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
 
         @JavascriptInterface
         public void setCanGoPages(boolean canGoNextPage, boolean canGoPreviewPage) {
-            PageBookView.this.isLastPage = canGoNextPage;
-            PageBookView.this.isFirstPage = canGoPreviewPage;
+            PageBookView.this.canGoNextPage = canGoNextPage;
+            PageBookView.this.canGoPreviewPage = canGoPreviewPage;
         }
 
         @JavascriptInterface

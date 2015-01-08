@@ -78,7 +78,6 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
     private final float[] viewMatrix = new float[16];
     private final float[] viewProjectionMatrix = new float[16];
     private int planeProgramId;
-    private float screenWidth;
 
     private final DuplexBuffer<PageSlot> pageSlots = new DuplexBuffer<>(MAX_DISTANCE_IN_PAGES);
     private final DuplexBuffer<Page> drawingPages = new DuplexBuffer<>(MAX_DISTANCE_IN_PAGES);
@@ -193,7 +192,6 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
 
     @Override
     protected void onSurfaceChanged(int width, int height) {
-        screenWidth = width;
         pageAnimation.setPageWidth(width);
 
         glViewport(0, 0, width, height);
