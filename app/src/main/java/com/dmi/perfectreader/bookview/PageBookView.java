@@ -29,6 +29,8 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EViewGroup;
 
 import java.io.IOException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.dmi.perfectreader.util.android.MainThreads.runOnMainThread;
 import static com.dmi.perfectreader.util.js.JavaScript.jsArray;
@@ -55,7 +57,9 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     private Waiter jsReady = new Waiter();
 
     private BookLocation currentLocation = null;
-    private final DrawState drawState = new DrawState();
+    private boolean isLastPage = false;
+    private boolean isFirstPage = false;
+    private final BatchDrawImpl batchDraw = new BatchDrawImpl();
 
     public PageBookView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -161,23 +165,28 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         return new BookConfigurator();
     }
 
+    public boolean isLastPage() {
+        return isLastPage;
+    }
+
+    public boolean isFirstPage() {
+        return isFirstPage;
+    }
+
     public void goLocation(BookLocation location) {
         checkArgument(location.segmentIndex() >= 0 && location.segmentIndex() < bookStorage.segmentUrls().size());
-        drawState.beforeChange();
+        resetPagesInfo();
         execJs(format("reader.goLocation({segmentIndex: %s, percent: %s})", location.segmentIndex(), location.percent()));
-        pageAnimationView.reset();
     }
 
     public void goNextPage() {
-        drawState.beforeChange();
+        resetPagesInfo();
         execJs("reader.goNextPage()");
-        pageAnimationView.moveNext();
     }
 
     public void goPreviewPage() {
-        drawState.beforeChange();
+        resetPagesInfo();
         execJs("reader.goPreviewPage()");
-        pageAnimationView.movePreview();
     }
 
     public BookLocation currentLocation() {
@@ -185,7 +194,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     }
 
     @Override
-    public void drawPages(int relativeIndex, Canvas canvas) {
+    public void drawPage(int relativeIndex, Canvas canvas) {
         checkArgument(abs(relativeIndex) <= 1);
         canvas.save();
         int width = getWidth();
@@ -195,8 +204,9 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     }
 
     @Override
-    public boolean canDraw() {
-        return drawState.isCorrect();
+    public BatchDraw batchDraw() {
+        batchDraw.acquire();
+        return batchDraw;
     }
 
     private void execJs(String js) {
@@ -210,6 +220,16 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
                 webView.loadUrl(url);
             }
         });
+    }
+
+    private void resetPagesInfo() {
+        isLastPage = false;
+        isFirstPage = false;
+    }
+
+    private void updateStateByJsReader() {
+        execJs("javaBridge.setCurrentLocation(reader.currentLocation.segmentIndex, reader.currentLocation.percent);\n" +
+               "javaBridge.setCanGoPages(reader.canGoNextPage(), reader.canGoPreviewPage());\n");
     }
 
     public class BookConfigurator {
@@ -253,7 +273,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         }
 
         public void commit() {
-            drawState.beforeChange();
+            resetPagesInfo();
             execJs(fullJs.toString());
         }
 
@@ -271,7 +291,38 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         @JavascriptInterface
         public void setCurrentLocation(int segmentIndex, int percent) {
             currentLocation = new BookLocation(segmentIndex, percent);
-            drawState.afterLocationSet();
+        }
+
+        @JavascriptInterface
+        public void setCanGoPages(boolean canGoNextPage, boolean canGoPreviewPage) {
+            PageBookView.this.isLastPage = canGoNextPage;
+            PageBookView.this.isFirstPage = canGoPreviewPage;
+        }
+
+        @JavascriptInterface
+        public void beforeLoad() {
+            batchDraw.beforeLoad();
+        }
+
+        @JavascriptInterface
+        public void afterLoad() {
+            batchDraw.afterLoad();
+            updateStateByJsReader();
+        }
+
+        @JavascriptInterface
+        public void beforeGoLocation() {
+            pageAnimationView.reset();
+        }
+
+        @JavascriptInterface
+        public void beforeGoNextPage() {
+            pageAnimationView.moveNext();
+        }
+
+        @JavascriptInterface
+        public void beforeGoPreviewPage() {
+            pageAnimationView.movePreview();
         }
     }
 
@@ -299,35 +350,42 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         }
 
         private void notifyOnInvalidate() {
-            drawState.afterInvalidate();
+            batchDraw.afterInvalidate();
             pageAnimationView.postRefresh();
         }
     }
 
-    //todo нерабтает, т.к. если срузу нажать 4 раза goNextPage, то afterLocationSet сработает только три раза
-    private class DrawState {
-        private volatile int locationSetNeedCount = 0;
-        private volatile int invalidateNeedCount = 0;
+    private class BatchDrawImpl implements BatchDraw {
+        private final Lock lock = new ReentrantLock();
+        private volatile int allPagesLoadedCount = 0;
+        private volatile boolean jsViewDrawn = true;
+        private boolean correctlyDrawn = false;
 
-        public void beforeChange() {
-            locationSetNeedCount++;
-            invalidateNeedCount++;
+        public void beforeLoad() {
+            allPagesLoadedCount++;
+            jsViewDrawn = false;
+            correctlyDrawn = false;
         }
 
-        public void afterLocationSet() {
-            if (locationSetNeedCount > 0) {
-                locationSetNeedCount--;
-            }
+        public void afterLoad() {
+            allPagesLoadedCount--;
         }
 
         public void afterInvalidate() {
-            if (invalidateNeedCount > 0 && invalidateNeedCount > locationSetNeedCount) {
-                invalidateNeedCount--;
+            if (allPagesLoadedCount == 0) {
+                jsViewDrawn = true;
             }
         }
 
-        public boolean isCorrect() {
-            return locationSetNeedCount == 0 && invalidateNeedCount == 0;
+        public void acquire() {
+            lock.lock();
+            correctlyDrawn = jsViewDrawn;
+        }
+
+        @Override
+        public boolean endDraw() {
+            lock.unlock();
+            return correctlyDrawn;
         }
     }
 }

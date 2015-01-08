@@ -107,11 +107,11 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
     }
 
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            pageBookView.goPreviewPage();
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            pageBookView.goNextPage();
             return true;
-        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-             pageBookView.goNextPage();
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            pageBookView.goPreviewPage();
             return true;
         } else {
             return false;

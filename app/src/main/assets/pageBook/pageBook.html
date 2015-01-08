@@ -17,13 +17,14 @@
     </div>
 </div>
 
-<script type="text/javascript" src="utils/element.js"></script>
+<script type="text/javascript" src="utils/dom.js"></script>
 <script type="text/javascript" src="utils/format.js"></script>
 <script type="text/javascript" src="utils/string.js"></script>
 <script type="text/javascript" src="utils/style.js"></script>
 <script type="text/javascript" src="utils/regexp.js"></script>
 <script type="text/javascript" src="utils/object.js"></script>
 <script type="text/javascript" src="utils/set.js"></script>
+<script type="text/javascript" src="utils/render.js"></script>
 <script type="text/javascript">
 
 var ZERO_PERCENT = 0;
@@ -57,6 +58,8 @@ window.onload = function() {
 
     initViewport();
 
+    var loadActionCount = 0;
+
     var reader = window.reader = {
         currentLocation: undefined,
 
@@ -84,53 +87,57 @@ window.onload = function() {
                     );
         },
 
-        goNextPage: function() {
-            if (!reader.canGoNextPage()) {
-                throw "Cannot go next page";
-            }
-
-            var currentReader = currentFrame.reader;
-            if (currentReader.canGoNextPage()) {
-                currentReader.goNextPage();
-                this.currentLocation.percent = currentReader.currentPercent;
-            } else {
-                var oldCurrentFrame = currentFrame;
-                currentFrame = nextFrame;
-                nextFrame = previewFrame;
-                previewFrame = oldCurrentFrame;
-                this.currentLocation.segmentIndex++;
-                this.currentLocation.percent = ZERO_PERCENT;
-
-                loadSegment(nextFrame, nextUrl(this.currentLocation), ZERO_PERCENT);
-            }
-        },
-
-        goPreviewPage: function() {
-            if (!reader.canGoPreviewPage()) {
-                throw "Cannot go preview page";
-            }
-
-            var currentReader = currentFrame.reader;
-            if (currentReader.canGoPreviewPage()) {
-                currentReader.goPreviewPage();
-                this.currentLocation.percent = currentReader.currentPercent;
-            } else {
-                var oldCurrentFrame = currentFrame;
-                currentFrame = previewFrame;
-                previewFrame = nextFrame;
-                nextFrame = oldCurrentFrame;
-                this.currentLocation.segmentIndex--;
-                this.currentLocation.percent = ONE_HUNDRED_PERCENT;
-
-                loadSegment(previewFrame, previewUrl(this.currentLocation), ONE_HUNDRED_PERCENT);
-            }
-        },
-
         goLocation: function(location) {
+            settings.callback.beforeGoLocation();
+            beforeLoad();
             this.currentLocation = location;
             loadSegment(currentFrame, currentUrl(this.currentLocation), this.currentLocation.percent);
             loadSegment(nextFrame, nextUrl(this.currentLocation), ZERO_PERCENT);
             loadSegment(previewFrame, previewUrl(this.currentLocation), ONE_HUNDRED_PERCENT);
+        },
+
+        goNextPage: function() {
+            if (this.canGoNextPage()) {
+                settings.callback.beforeGoNextPage();
+                beforeLoad();
+
+                var currentReader = currentFrame.reader;
+                if (currentReader.canGoNextPage()) {
+                    currentReader.goNextPage();
+                    this.currentLocation.percent = currentReader.currentPercent;
+                } else {
+                    var oldCurrentFrame = currentFrame;
+                    currentFrame = nextFrame;
+                    nextFrame = previewFrame;
+                    previewFrame = oldCurrentFrame;
+                    this.currentLocation.segmentIndex++;
+                    this.currentLocation.percent = ZERO_PERCENT;
+
+                    loadSegment(nextFrame, nextUrl(this.currentLocation), ZERO_PERCENT);
+                }
+            }
+        },
+
+        goPreviewPage: function() {
+            if (this.canGoPreviewPage()) {
+                settings.callback.beforeGoPreviewPage();
+                beforeLoad();
+
+                var currentReader = currentFrame.reader;
+                if (currentReader.canGoPreviewPage()) {
+                    currentReader.goPreviewPage();
+                    this.currentLocation.percent = currentReader.currentPercent;
+                } else {
+                    var oldCurrentFrame = currentFrame;
+                    currentFrame = previewFrame;
+                    previewFrame = nextFrame;
+                    nextFrame = oldCurrentFrame;
+                    this.currentLocation.segmentIndex--;
+                    this.currentLocation.percent = ONE_HUNDRED_PERCENT;
+
+                    loadSegment(previewFrame, previewUrl(this.currentLocation), ONE_HUNDRED_PERCENT);
+                }
+            }
         },
 
         setPadding: function(textAlign) {
@@ -185,6 +192,7 @@ window.onload = function() {
     }
 
     function callReflow(refreshFunction) {
+        beforeLoad();
         resetViewportForReflow();
         if (currentFrame.reader) {
             refreshFunction(currentFrame.reader);
@@ -206,7 +214,26 @@ window.onload = function() {
 
     function onSegmentPageChanged() {
         updateViewport();
-        notifyLocationForCallback();
+        if (isAfterLoad()) {
+            afterLoad();
+        }
+    }
+
+    function isAfterLoad() {
+        return loadActionCount > 0 && currentFrame.reader && nextFrame.reader && previewFrame.reader;
+    }
+
+    function beforeLoad() {
+        loadActionCount++;
+        settings.callback.beforeLoad();
+    }
+    
+    function afterLoad() {
+        for (var i = 0; i < loadActionCount; i++) {
+            settings.callback.afterLoad();
+        }
+        loadActionCount = 0;
+        repaint(document.body); // для того, чтобы вызвался invalidate для WebView в Android (см. com.dmi.perfectreader.bookview.PageBookView.MyWebView.invalidate)
     }
 
     function initViewport() {
@@ -278,10 +305,6 @@ window.onload = function() {
 
     function resetViewportForReflow() {
         currentFrame.parentNode.style.width = screenWidth;
-    }
-
-    function notifyLocationForCallback() {
-        settings.callback.setCurrentLocation(reader.currentLocation.segmentIndex, reader.currentLocation.percent);
     }
 
     function loadSegment(frame, segmentUrl, percent) {

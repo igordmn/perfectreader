@@ -30,7 +30,19 @@ function onReaderLoad() {
     window.reader = document.getElementById('reader').contentWindow.reader;
 
     reader.setCallback({
-        setCurrentLocation: function(segmentIndex, percent) {
+        beforeLoad: function() {
+        },
+
+        afterLoad: function() {
+        },
+
+        beforeGoLocation: function() {
+        },
+
+        beforeGoNextPage: function() {
+        },
+
+        beforeGoPreviewPage: function() {
         }
     });
 
@@ -50,7 +62,7 @@ function onReaderLoad() {
 }
 
 </script>
-<script type="text/javascript" src="http://localhost:8080/test/books/newDozor/newDozor.js"></script>
+<script type="text/javascript" src="book/init.js"></script>
 
 <iframe id="reader" src="../../../main/assets/pageBook/pageBook.html" onload="onReaderLoad()"></iframe>
 

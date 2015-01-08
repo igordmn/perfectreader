@@ -314,7 +314,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
             synchronized (drawMutex) {
                 Canvas canvas = surface.lockCanvas(null);
                 try {
-                    pagesDrawer.drawPages(relativeIndex, canvas);
+                    pagesDrawer.drawPage(relativeIndex, canvas);
                 } finally {
                     surface.unlockCanvasAndPost(canvas);
                 }
@@ -361,7 +361,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
 
     private class RefreshService {
         private Thread thread = null;
-        private Waiter refreshWaiter = new Waiter();
+        private final Waiter refreshWaiter = new Waiter();
 
         public void postRefresh() {
             refreshWaiter.request();
@@ -396,23 +396,17 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
                     // иначе на экране может отобразиться не то
                     waitPageDrawing(currentPage, nextPage, previewPage);
 
-                    // Необходимо, чтобы все страницы были отрисованы корректно
-                    // (некорректно страницы отрисовываются в моменте начала перехода между ними)
-                    boolean correctlyDrawn = true;
-
+                    PagesDrawer.BatchDraw batchDraw = pagesDrawer.batchDraw();
+                    boolean drawWithoutError = true;
                     try {
-                        if (!pagesDrawer.canDraw()) correctlyDrawn = false;
-                        if (correctlyDrawn) currentPage.refreshByPage(0);
-                        if (!pagesDrawer.canDraw()) correctlyDrawn = false;
-                        // todo может возникнуть ситуация, когда во время этого метода произойдет смещение страницы полностью, и при этом canDraw возвратит true
-                        if (correctlyDrawn) nextPage.refreshByPage(1);
-                        if (!pagesDrawer.canDraw()) correctlyDrawn = false;
-                        if (correctlyDrawn) previewPage.refreshByPage(-1);
-                        if (!pagesDrawer.canDraw()) correctlyDrawn = false;
+                        currentPage.refreshByPage(0);
+                        nextPage.refreshByPage(1);
+                        previewPage.refreshByPage(-1);
                     } catch (Exception e) {
                         Log.w(LOG_TAG, getStackTraceString(e));
-                        correctlyDrawn = false;
+                        drawWithoutError = false;
                     }
+                    boolean correctlyDrawn = drawWithoutError && batchDraw.endDraw();
 
                     if (correctlyDrawn) {
                         synchronized (pageSlots) {
