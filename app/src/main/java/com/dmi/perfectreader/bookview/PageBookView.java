@@ -47,6 +47,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
 
     private PageAnimationView pageAnimationView;
     private BookStorage bookStorage;
+    private Listener listener;
 
     @Bean
     protected EventBus eventBus;
@@ -145,6 +146,10 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
 
     public void setBookStorage(BookStorage bookStorage) {
         this.bookStorage = bookStorage;
+    }
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
     }
 
     /**
@@ -301,6 +306,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
 
         @JavascriptInterface
         public void beforeLoad() {
+            listener.beforeLoad();
             batchDraw.beforeLoad();
         }
 
@@ -308,6 +314,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         public void afterLoad() {
             batchDraw.afterLoad();
             updateStateByJsReader();
+            listener.afterLoad();
         }
 
         @JavascriptInterface
@@ -352,6 +359,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         private void notifyOnInvalidate() {
             batchDraw.afterInvalidate();
             pageAnimationView.postRefresh();
+            listener.afterInvalidate();
         }
     }
 
@@ -387,5 +395,13 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
             lock.unlock();
             return correctlyDrawn;
         }
+    }
+
+    public static interface Listener {
+        void beforeLoad();
+
+        void afterLoad();
+
+        void afterInvalidate();
     }
 }

@@ -1,5 +1,5 @@
 function repaint(element) {
-    element.style.display = "none";
+    element.style.display = "invisible";
     element.offsetHeight;
     element.style.display = "";
 }

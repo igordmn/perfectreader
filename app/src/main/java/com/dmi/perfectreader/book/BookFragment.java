@@ -30,6 +30,7 @@ import org.androidannotations.annotations.ViewById;
 import java.io.File;
 import java.io.IOException;
 
+import static com.dmi.perfectreader.util.android.MainThreads.runOnMainThread;
 import static java.lang.Math.sqrt;
 
 @EFragment(R.layout.fragment_book)
@@ -69,10 +70,13 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
 
     @AfterViews
     protected void initViews() {
+        ShowAnimationListener showAnimationListener = new ShowAnimationListener();
         pageAnimationView.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_SLID_IN_SECONDS));
         pageAnimationView.setOnTouchListener(this);
+        pageAnimationView.setListener(showAnimationListener);
         pageBookView.setPageAnimationView(pageAnimationView);
         pageBookView.setBookStorage(bookStorage);
+        pageBookView.setListener(showAnimationListener);
     }
 
     @Override
@@ -168,6 +172,63 @@ public class BookFragment extends Fragment implements View.OnTouchListener {
             }
         } else if (touchCenterZone) {
             onClickListener.onClick(pageBookView);
+        }
+    }
+
+    private class ShowAnimationListener implements PageAnimationView.Listener, PageBookView.Listener  {
+        private final Runnable hideAnimationRunnable = new Runnable() {
+            @Override
+            public void run() {
+                pageBookView.setVisibility(View.VISIBLE);
+            }
+        };
+        private final Runnable showAnimationRunnable = new Runnable() {
+            @Override
+            public void run() {
+                pageBookView.setVisibility(View.INVISIBLE);
+            }
+        };
+
+        private volatile boolean isAnimating = false;
+        private volatile boolean isLoading = false;
+        private volatile boolean isInvalidatedAfterLoad = false;
+
+        @Override
+        public void onStartAnimation() {
+            runOnMainThread(showAnimationRunnable);
+            isAnimating = true;
+        }
+
+        @Override
+        public void onEndAnimation() {
+            isAnimating = false;
+            hideAnimationIfPossible();
+        }
+
+        @Override
+        public void beforeLoad() {
+            isLoading = true;
+            isInvalidatedAfterLoad = false;
+        }
+
+        @Override
+        public void afterLoad() {
+            isLoading = false;
+            hideAnimationIfPossible();
+        }
+
+        @Override
+        public void afterInvalidate() {
+            if (!isLoading) {
+                isInvalidatedAfterLoad = true;
+            }
+            hideAnimationIfPossible();
+        }
+
+        private void hideAnimationIfPossible() {
+            if (!isAnimating && !isLoading && isInvalidatedAfterLoad) {
+                runOnMainThread(hideAnimationRunnable);
+            }
         }
     }
 }

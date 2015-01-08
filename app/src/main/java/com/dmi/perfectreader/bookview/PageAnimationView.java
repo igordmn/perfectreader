@@ -74,6 +74,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
 
     private PageAnimation pageAnimation;
     private PagesDrawer pagesDrawer;
+    private Listener listener;
 
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
@@ -113,6 +114,10 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         this.pagesDrawer = pagesDrawer;
     }
 
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
     public boolean canMoveNext() {
         PageAnimationState animationState = pageAnimation.currentState();
         int animationPageCount = animationState.pageCount();
@@ -149,6 +154,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
             currentPageIndex.incrementAndGet();
         }
         resumeDrawing();
+        listener.onStartAnimation();
     }
 
     public void movePreview() {
@@ -165,6 +171,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
             currentPageIndex.decrementAndGet();
         }
         resumeDrawing();
+        listener.onStartAnimation();
     }
 
     public void postRefresh() {
@@ -230,6 +237,8 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
             }
         }
 
+        boolean wasMoving = pageAnimation.isPagesMoving();
+
         pageAnimation.update(dt);
         PageAnimationState animationState = pageAnimation.currentState();
         for (int i = 0; i < animationState.pageCount(); i++) {
@@ -249,6 +258,10 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
 
         if (!pageAnimation.isPagesMoving()) {
             pauseDrawing();
+
+            if (wasMoving) {
+                listener.onEndAnimation();
+            }
         }
     }
 
@@ -443,5 +456,11 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
                 }
             }
         }
+    }
+
+    public static interface Listener {
+        void onStartAnimation();
+
+        void onEndAnimation();
     }
 }
