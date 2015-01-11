@@ -126,14 +126,33 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
-        BookFragment bookFragment = bookFragment(getFragmentManager());
-        return bookFragment != null && bookFragment.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+        if (isMenuShown()) {
+            // todo перенаправлять в MenuFragment, если false, то тогда уже выполнять нужные действия
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                toggleMenu();
+                return false;
+            }
+            return false;
+        } else {
+            BookFragment bookFragment = bookFragment(getFragmentManager());
+            return bookFragment != null && bookFragment.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+        }
     }
 
     @Override
     public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
-        BookFragment bookFragment = bookFragment(getFragmentManager());
-        return bookFragment != null && bookFragment.onKeyUp(keyCode, event) || super.onKeyUp(keyCode, event);
+        if (isMenuShown()) {
+            // todo перенаправлять в MenuFragment, если false, то тогда уже выполнять нужные действия
+            return false;
+        } else {
+            BookFragment bookFragment = bookFragment(getFragmentManager());
+            return bookFragment != null && bookFragment.onKeyUp(keyCode, event) || super.onKeyUp(keyCode, event);
+        }
+    }
+
+    private boolean isMenuShown() {
+        String tag = MenuFragment.class.getName();
+        return getFragmentManager().findFragmentByTag(tag) != null;
     }
 
     private void toggleMenu() {
@@ -152,6 +171,11 @@ public class MainActivity extends Activity {
         final BookFragment bookFragment = bookFragment(fragmentManager);
         MenuFragment fragment = MenuFragment_.builder().build();
         fragment.setMenuActions(new MenuActions() {
+            @Override
+            public void toggleMenu() {
+                MainActivity.this.toggleMenu();
+            }
+
             @Override
             public void goPercent(double percent) {
                 bookFragment.goLocation(bookFragment.percentToLocation(percent));

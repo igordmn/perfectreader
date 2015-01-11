@@ -6,6 +6,7 @@ import android.widget.SeekBar;
 import com.dmi.perfectreader.R;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
@@ -40,5 +41,10 @@ public class MenuFragment extends Fragment {
 
     public void setMenuActions(MenuActions menuActions) {
         this.menuActions = menuActions;
+    }
+
+    @Click(R.id.middleSpace)
+    protected void onMiddleSpaceClick() {
+        menuActions.toggleMenu();
     }
 }
