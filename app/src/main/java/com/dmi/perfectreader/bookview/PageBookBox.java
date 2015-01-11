@@ -21,7 +21,7 @@ public class PageBookBox extends FrameLayout {
 
     private PageAnimationView pageAnimationView;
     private PageBookView pageBookView;
-
+    private OnLocationChangeListener onLocationChangeListener;
     private OnTouchListener onTouchListener;
 
     private MotionEvent touchDownEvent;
@@ -90,6 +90,10 @@ public class PageBookBox extends FrameLayout {
     @Override
     public void setOnTouchListener(OnTouchListener onTouchListener) {
         this.onTouchListener = onTouchListener;
+    }
+
+    public void setOnLocationChangeListener(OnLocationChangeListener onLocationChangeListener) {
+        this.onLocationChangeListener = onLocationChangeListener;
     }
 
     // todo onTouchStartAllowedElement может вызваться уже после ACTION_UP на тормозящих девайсах
@@ -213,5 +217,14 @@ public class PageBookBox extends FrameLayout {
         public void onSelectEnd() {
             nowSelect = false;
         }
+
+        @Override
+        public void onLocationChange() {
+            onLocationChangeListener.onBookLocationChange();
+        }
+    }
+
+    public static interface OnLocationChangeListener {
+        void onBookLocationChange();
     }
 }

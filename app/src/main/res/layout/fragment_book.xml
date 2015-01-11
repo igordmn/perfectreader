@@ -8,7 +8,7 @@
     tools:context="com.dmi.perfectreader.book.BookFragment_">
 
     <com.dmi.perfectreader.bookview.PageBookBox
-        android:id="@+id/pageBookBox"
+        android:id="@+id/bookBox"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

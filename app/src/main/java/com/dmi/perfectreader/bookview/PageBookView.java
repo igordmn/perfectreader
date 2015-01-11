@@ -309,7 +309,13 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
 
         @JavascriptInterface
         public void setCurrentLocation(int segmentIndex, int percent) {
-            currentLocation = new BookLocation(segmentIndex, percent);
+            if (currentLocation == null ||
+                currentLocation.segmentIndex() != segmentIndex ||
+                currentLocation.percent() != percent)
+            {
+                currentLocation = new BookLocation(segmentIndex, percent);
+                listener.onLocationChange();
+            }
         }
 
         @JavascriptInterface
@@ -494,5 +500,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         void onSelectStart();
 
         void onSelectEnd();
+
+        void onLocationChange();
     }
 }

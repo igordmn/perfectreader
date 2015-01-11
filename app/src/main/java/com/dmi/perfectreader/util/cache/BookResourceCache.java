@@ -40,7 +40,7 @@ public class BookResourceCache extends DiskDataCache {
     @SuppressLint("NewApi")
     @Override
     protected String fetchUUID(String key) {
-        SQLiteDatabase cacheDB = databases.cache().getWritableDatabase();
+        SQLiteDatabase cacheDB = databases.cache().getReadableDatabase();
         try (Cursor cursor = cacheDB.rawQuery("SELECT uuid FROM bookResource WHERE key = ?", new String[]{key})) {
             return cursor.moveToFirst() ? cursor.getString(0) : null;
         }
@@ -50,7 +50,7 @@ public class BookResourceCache extends DiskDataCache {
     @Override
     protected List<SizeEntry> sizeEntriesOrderByLastAccess() {
         ArrayList<SizeEntry> sizeEntries = new ArrayList<>();
-        SQLiteDatabase cacheDB = databases.cache().getWritableDatabase();
+        SQLiteDatabase cacheDB = databases.cache().getReadableDatabase();
         try (Cursor cursor = cacheDB.rawQuery("SELECT uuid, size FROM bookResource ORDER BY lastAccess DESC", null)) {
             if (cursor.moveToFirst()) {
                 do {

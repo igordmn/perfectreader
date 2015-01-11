@@ -16,6 +16,7 @@ import com.dmi.perfectreader.bookview.PageBookBox;
 import com.dmi.perfectreader.command.Commands;
 import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.main.EventBus;
+import com.dmi.perfectreader.userdata.UserData;
 import com.dmi.perfectreader.util.lang.IntegerPercent;
 
 import org.androidannotations.annotations.AfterViews;
@@ -40,13 +41,15 @@ public class BookFragment extends Fragment {
     @FragmentArg
     protected File bookFile;
     @ViewById
-    protected PageBookBox pageBookBox;
+    protected PageBookBox bookBox;
     @Bean
     protected AssetPaths assetPaths;
     @Bean
     protected EventBus eventBus;
     @Bean
     protected Commands commands;
+    @Bean
+    protected UserData userData;
 
     private static final int FONT_SIZE_MAX = 800;
     private static final int FONT_SIZE_MIN = 20;
@@ -55,8 +58,9 @@ public class BookFragment extends Fragment {
 
     @AfterViews
     protected void initViews() {
-        pageBookBox.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_SLIDE_IN_SECONDS));
-        pageBookBox.setOnTouchListener(new BookBoxOnTouchListener());
+        bookBox.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_SLIDE_IN_SECONDS));
+        bookBox.setOnTouchListener(new OnTouchListenerImpl());
+        bookBox.setOnLocationChangeListener(new OnLocationChangeListenerImpl());
     }
 
     @Override
@@ -70,16 +74,23 @@ public class BookFragment extends Fragment {
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    pageBookBox.load(bookFile);
+                    bookBox.load(bookFile);
                 } catch (IOException e) {
                     eventBus.post(new ErrorEvent(e));
                 }
 
-                pageBookBox.configure().setFontSize(fontSize).commit();
+                bookBox.configure().setFontSize(fontSize).commit();
+
+                final BookLocation loadedLocation = userData.loadBookLocation(bookFile);
+
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        pageBookBox.goLocation(new BookLocation(0, IntegerPercent.ZERO));
+                        if (loadedLocation != null) {
+                            bookBox.goLocation(loadedLocation);
+                        } else {
+                            bookBox.goLocation(new BookLocation(0, IntegerPercent.ZERO));
+                        }
                     }
                 });
 
@@ -89,29 +100,29 @@ public class BookFragment extends Fragment {
     }
 
     public BookLocation currentLocation() {
-        return pageBookBox.currentLocation();
+        return bookBox.currentLocation();
     }
 
     public void goLocation(BookLocation location) {
-        pageBookBox.goLocation(location);
+        bookBox.goLocation(location);
     }
 
     public BookLocation percentToLocation(double percent) {
-        return pageBookBox.percentToLocation(percent);
+        return bookBox.percentToLocation(percent);
     }
 
     public double locationToPercent(BookLocation location) {
-        return pageBookBox.locationToPercent(location);
+        return bookBox.locationToPercent(location);
     }
 
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            if (pageBookBox.canGoNextPage()) {
-                pageBookBox.goNextPage();
+            if (bookBox.canGoNextPage()) {
+                bookBox.goNextPage();
             }
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            if (pageBookBox.canGoPreviewPage()) {
-                pageBookBox.goPreviewPage();
+            if (bookBox.canGoPreviewPage()) {
+                bookBox.goPreviewPage();
             }
         }
         return true;
@@ -121,7 +132,11 @@ public class BookFragment extends Fragment {
         return true;
     }
 
-    private class BookBoxOnTouchListener implements View.OnTouchListener {
+    private void saveCurrentLocation() {
+        userData.saveBookLocation(bookFile, bookBox.currentLocation());
+    }
+
+    private class OnTouchListenerImpl implements View.OnTouchListener {
         private final float TOUCH_SENSITIVITY = dipToPx(8);
         private final float LEFT_SIDE_WIDTH_FOR_SLIDE = dipToPx(40);
         private final float SLIDE_SENSITIVITY = dipToPx(20);
@@ -160,7 +175,7 @@ public class BookFragment extends Fragment {
                 if (abs(oldApplySlideActionTouchY - motionEvent.getY()) >= SLIDE_SENSITIVITY) {
                     int count = (int) ((motionEvent.getY() - oldApplySlideActionTouchY) / SLIDE_SENSITIVITY);
                     fontSize = max(FONT_SIZE_MIN, min(FONT_SIZE_MAX, fontSize + count * FONT_SIZE_DELTA));
-                    pageBookBox.configure().setFontSize(fontSize).commit();
+                    bookBox.configure().setFontSize(fontSize).commit();
                     oldApplySlideActionTouchY = motionEvent.getY();
                 }
             }
@@ -168,7 +183,7 @@ public class BookFragment extends Fragment {
 
         private void onTouchUp(MotionEvent motionEvent) {
             if (!nowIsSlideByLeftSide) {
-                int thirdOfScreen = pageBookBox.getWidth() / 3;
+                int thirdOfScreen = bookBox.getWidth() / 3;
                 float touchOffsetX = motionEvent.getX() - touchDownX;
                 float touchOffsetY = motionEvent.getY() - touchDownY;
                 float touchOffset = (float) sqrt(touchOffsetX * touchOffsetX + touchOffsetY * touchOffsetY);
@@ -183,17 +198,24 @@ public class BookFragment extends Fragment {
                         !swipeRight && touchOffset <= TOUCH_SENSITIVITY;
 
                 if (touchRightZone || swipeLeft) {
-                    if (pageBookBox.canGoNextPage()) {
-                        pageBookBox.goNextPage();
+                    if (bookBox.canGoNextPage()) {
+                        bookBox.goNextPage();
                     }
                 } else if (touchLeftZone || swipeRight) {
-                    if (pageBookBox.canGoPreviewPage()) {
-                        pageBookBox.goPreviewPage();
+                    if (bookBox.canGoPreviewPage()) {
+                        bookBox.goPreviewPage();
                     }
                 } else if (touchCenterZone) {
                     commands.toggleMenu();
                 }
             }
+        }
+    }
+
+    private class OnLocationChangeListenerImpl implements PageBookBox.OnLocationChangeListener {
+        @Override
+        public void onBookLocationChange() {
+            saveCurrentLocation();
         }
     }
 }
