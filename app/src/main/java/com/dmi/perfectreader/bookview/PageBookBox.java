@@ -3,7 +3,6 @@ package com.dmi.perfectreader.bookview;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -96,8 +95,6 @@ public class PageBookBox extends FrameLayout {
     // todo onTouchStartAllowedElement может вызваться уже после ACTION_UP на тормозящих девайсах
     @Override
     public boolean dispatchTouchEvent(@NonNull MotionEvent event) {
-        Log.d("ddd", event.toString());
-
         int action = event.getAction();
 
         if (action == MotionEvent.ACTION_DOWN) {
