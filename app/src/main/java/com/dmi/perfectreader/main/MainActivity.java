@@ -12,6 +12,8 @@ import android.widget.TextView;
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.BookFragment;
 import com.dmi.perfectreader.book.BookFragment_;
+import com.dmi.perfectreader.command.Commands;
+import com.dmi.perfectreader.command.RunnableCommand;
 import com.dmi.perfectreader.db.Databases;
 import com.dmi.perfectreader.error.BookFileNotFoundException;
 import com.dmi.perfectreader.error.BookInvalidException;
@@ -22,6 +24,7 @@ import com.dmi.perfectreader.menu.MenuFragment;
 import com.dmi.perfectreader.menu.MenuFragment_;
 import com.squareup.otto.Subscribe;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
@@ -46,6 +49,8 @@ public class MainActivity extends Activity {
     protected EventBus eventBus;
     @Bean
     protected Databases databases;
+    @Bean
+    protected Commands commands;
 
     private boolean bookNotLoaded;
 
@@ -53,6 +58,16 @@ public class MainActivity extends Activity {
     protected void initViews() {
         bookNotLoadedView.setVisibility(bookNotLoaded ? View.VISIBLE : View.GONE);
         bookOpenErrorView.setVisibility(View.GONE);
+    }
+
+    @AfterInject
+    protected void init() {
+        commands.setToggleMenuCommand(new RunnableCommand(new Runnable() {
+            @Override
+            public void run() {
+                toggleMenu();
+            }
+        }));
     }
 
     @Override
@@ -86,12 +101,6 @@ public class MainActivity extends Activity {
             BookFragment bookFragment = BookFragment_.builder()
                     .bookFile(new File(bookFile))
                     .build();
-            bookFragment.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    toggleMenu();
-                }
-            });
             getFragmentManager().beginTransaction().add(R.id.mainContainer, bookFragment, BookFragment.class.getName()).commit();
             bookNotLoaded = false;
         } else {

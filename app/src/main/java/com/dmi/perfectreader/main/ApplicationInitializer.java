@@ -1,15 +1,18 @@
 package com.dmi.perfectreader.main;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.dmi.perfectreader.asset.AssetsCopier;
 import com.dmi.perfectreader.db.Databases;
 import com.dmi.perfectreader.init.ApplicationInitFinishEvent;
+import com.dmi.perfectreader.util.android.Units;
 import com.squareup.otto.Produce;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.RootContext;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,6 +24,8 @@ public class ApplicationInitializer {
     protected AssetsCopier assetsCopier;
     @Bean
     protected Databases databases;
+    @RootContext
+    protected Context context;
 
     @AfterInject
     protected void initThis() {
@@ -43,6 +48,7 @@ public class ApplicationInitializer {
         assetsCopier.copyAssets();
         databases.createOrUpgrade();
         initFinished.set(true);
+        Units.init(context);
         eventBus.post(new ApplicationInitFinishEvent());
     }
 

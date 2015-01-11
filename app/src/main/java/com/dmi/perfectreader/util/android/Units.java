@@ -2,20 +2,19 @@ package com.dmi.perfectreader.util.android;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 
 public class Units {
-    private final DisplayMetrics displayMetrics;
+    private static DisplayMetrics displayMetrics;
 
-    public Units(Context context) {
-        displayMetrics = context.getResources().getDisplayMetrics();
+    public static void init(Context context) {
+        displayMetrics = context.getApplicationContext().getResources().getDisplayMetrics();
     }
 
-    public float dipToPx(float dip) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, displayMetrics);
+    public static float dipToPx(float dip) {
+        return dip * displayMetrics.density;
     }
 
-    public int displayDpi() {
-        return displayMetrics.densityDpi;
+    public static float pxToDip(float px) {
+        return px / displayMetrics.density;
     }
 }

@@ -34,14 +34,17 @@ public class AssetsCopier {
         }
     }
 
-    @SuppressLint("NewApi")
     private void tryCopyAssets() throws IOException {
+        tryCopyAssets("fonts", assetPaths.fontsPath());
+    }
+
+    @SuppressLint("NewApi")
+    private void tryCopyAssets(String path, File destination) throws IOException {
         AssetManager assets = context.getAssets();
-        String[] fontFiles = assets.list("font");
-        File fontsPath = assetPaths.fontsPath();
-        for (String fontFile : fontFiles) {
-            try (InputStream in = assets.open("font/" + fontFile)) {
-                File newFile = new File(fontsPath, fontFile);
+        String[] files = assets.list(path);
+        for (String file : files) {
+            try (InputStream in = assets.open(path + "/" + file)) {
+                File newFile = new File(destination, file);
                 if (!newFile.exists()) {
                     Files.createParentDirs(newFile);
                     try (OutputStream out = new FileOutputStream(newFile)) {

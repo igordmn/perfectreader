@@ -322,6 +322,23 @@ window.onload = function() {
         var window = frame.contentWindow;
         var document = window.document;
 
+        window.addEventListener("touchstart", function(event) {
+            if (isAllowedElement(event.target)) {
+                settings.callback.onTouchStartAllowedElement();
+            }
+
+            function isAllowedElement(element) {
+                for (var it = element; it != null; it = it.parentNode) {
+                    if (["BUTTON", "INPUT", "SELECT", "TEXTAREA"].indexOf(it.nodeName) >= 0) {
+                        return false;
+                    } else if (it.nodeName == "A" && it.href != "") {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }, false);
+
         var stylesheet = createStylesheet(document);
         var styles = {
             p: addCSSStyle(stylesheet, "p"),

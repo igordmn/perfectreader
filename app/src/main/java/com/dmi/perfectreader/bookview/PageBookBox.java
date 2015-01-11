@@ -1,18 +1,34 @@
 package com.dmi.perfectreader.bookview;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.dmi.perfectreader.book.BookStorage;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 import com.dmi.perfectreader.book.config.BookLocation;
+import com.dmi.perfectreader.error.BookFileNotFoundException;
 import com.dmi.perfectreader.util.android.MainThreads;
 
+import java.io.File;
+
+import static com.dmi.perfectreader.util.android.Units.dipToPx;
+
 public class PageBookBox extends FrameLayout {
+    public static final float TOUCH_TO_START_MOVE_SENSITIVITY = dipToPx(8);
+
     private PageAnimationView pageAnimationView;
     private PageBookView pageBookView;
+
+    private OnTouchListener onTouchListener;
+
+    private MotionEvent touchDownEvent;
+    private boolean nowSelect = false;
+    private boolean touchOnAllowedElement = false;
+    private boolean customTouchStarted = false;
 
     public PageBookBox(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -32,12 +48,8 @@ public class PageBookBox extends FrameLayout {
         pageAnimationView.setPageAnimation(pageAnimation);
     }
 
-    public void setBookStorage(BookStorage bookStorage) {
-        pageBookView.setBookStorage(bookStorage);
-    }
-
-    public void init() {
-        pageBookView.init();
+    public void load(File bookFile) throws BookFileNotFoundException {
+        pageBookView.load(bookFile);
     }
 
     public PageBookView.BookConfigurator configure() {
@@ -62,6 +74,61 @@ public class PageBookBox extends FrameLayout {
 
     public void goPreviewPage() {
         pageBookView.goPreviewPage();
+    }
+
+    @Override
+    public void setOnTouchListener(OnTouchListener onTouchListener) {
+        this.onTouchListener = onTouchListener;
+    }
+
+    // todo onTouchStartAllowedElement может вызваться уже после ACTION_UP на тормозящих девайсах
+    @Override
+    public boolean dispatchTouchEvent(@NonNull MotionEvent event) {
+        Log.d("ddd", event.toString());
+
+        int action = event.getAction();
+
+        if (action == MotionEvent.ACTION_DOWN) {
+            touchDownEvent = MotionEvent.obtain(event);
+            touchOnAllowedElement = false;
+            customTouchStarted = false;
+
+            boolean animationVisible = pageBookView.getVisibility() == View.INVISIBLE;
+            if (animationVisible) {
+                customTouchStarted = true;
+            }
+        }
+
+        if (action == MotionEvent.ACTION_MOVE &&
+            touchDistance(touchDownEvent, event) >= TOUCH_TO_START_MOVE_SENSITIVITY ||
+            action == MotionEvent.ACTION_UP ||
+            action == MotionEvent.ACTION_CANCEL)
+        {
+            boolean defaultTouchNotStarted = touchOnAllowedElement && !nowSelect;
+            if (defaultTouchNotStarted && !customTouchStarted) {
+                pageBookView.preventDefaultTouch();
+                customTouchStarted = true;
+                onTouchListener.onTouch(this, touchDownEvent);
+            }
+        }
+
+        if (customTouchStarted) {
+            onTouchListener.onTouch(this, event);
+        }
+
+        if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            touchDownEvent.recycle();
+        }
+
+        super.dispatchTouchEvent(event);
+
+        return true;
+    }
+
+    private static double touchDistance(MotionEvent event1, MotionEvent event2) {
+        float dX = event1.getX() - event2.getX();
+        float dY = event1.getY() - event2.getY();
+        return Math.sqrt(dX * dX + dY * dY);
     }
 
     private class ShowAnimationListener implements PageAnimationView.Listener, PageBookView.Listener  {
@@ -121,6 +188,21 @@ public class PageBookBox extends FrameLayout {
             if (!isAnimating && !isLoading && isInvalidatedAfterLoad) {
                 MainThreads.postDelayed(hideAnimationRunnable, hideAnimationDelay);
             }
+        }
+
+        @Override
+        public void onTouchStartAllowedElement() {
+            touchOnAllowedElement = true;
+        }
+
+        @Override
+        public void onSelectStart() {
+            nowSelect = true;
+        }
+
+        @Override
+        public void onSelectEnd() {
+            nowSelect = false;
         }
     }
 }

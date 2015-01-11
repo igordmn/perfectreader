@@ -6,8 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -20,6 +24,7 @@ import android.widget.FrameLayout;
 import com.dmi.perfectreader.book.BookStorage;
 import com.dmi.perfectreader.book.config.BookLocation;
 import com.dmi.perfectreader.book.config.TextAlign;
+import com.dmi.perfectreader.error.BookFileNotFoundException;
 import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.main.EventBus;
 import com.dmi.perfectreader.util.concurrent.Waiter;
@@ -27,6 +32,7 @@ import com.dmi.perfectreader.util.concurrent.Waiter;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EViewGroup;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -45,11 +51,11 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     private static final String LOG_TAG = PageBookView.class.getSimpleName();
 
     private PageAnimationView pageAnimationView;
-    private BookStorage bookStorage;
     private Listener listener;
-
     @Bean
     protected EventBus eventBus;
+    @Bean
+    protected BookStorage bookStorage;
 
     private final MyWebView webView;
 
@@ -63,10 +69,14 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
 
     public PageBookView(Context context) {
         super(context);
-        setClickable(true);
-        setFocusable(true);
-        setFocusableInTouchMode(true);
         webView = createWebView(context);
+        webView.setLongClickable(false);
+        webView.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return false;
+            }
+        });
         addView(webView);
     }
 
@@ -133,7 +143,6 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
                 }
             }
         });
-
         return webView;
     }
 
@@ -143,28 +152,23 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         pageAnimationView.setPagesDrawer(this);
     }
 
-    public void setBookStorage(BookStorage bookStorage) {
-        this.bookStorage = bookStorage;
-    }
-
     public void setListener(Listener listener) {
         this.listener = listener;
     }
 
-    /**
-     * Инициализация должна запускаться вне UI потока, т.к. она происходит небыстро
-     * Должна вызываться после того, как загрузится bookStorage
-     */
-    public void init() {
+    public void load(File bookFile) throws BookFileNotFoundException {
+        bookStorage.load(bookFile);
         loadUrl("file:///android_asset/pageBook/pageBook.html");
         htmlPageReady.waitRequest();
-        String setCallback = "reader.setCallback(javaBridge);\n";
-        String setSegmentUrls = format("reader.setSegmentUrls(%s);\n", jsArray(bookStorage.segmentUrls()));
-        String callJsReady = format("javaBridge.jsReady()");
-        execJs(setCallback + setSegmentUrls + callJsReady);
+        execJs(
+                "reader.setCallback(javaBridge);\n" +
+                format("reader.setSegmentUrls(%s);\n", jsArray(bookStorage.segmentUrls())) +
+                format("javaBridge.jsReady()")
+        );
         jsReady.waitRequest();
     }
 
+    // todo вызывая постоянно эту команду, можно заDDOSить и все затормозит. нужно сделать проверку, выполнился ли прошлый вызов. если нет, то отложить.
     public BookConfigurator configure() {
         return new BookConfigurator();
     }
@@ -211,6 +215,10 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     public BatchDraw batchDraw() {
         batchDraw.acquire();
         return batchDraw;
+    }
+
+    public void preventDefaultTouch() {
+        webView.preventDefaultTouch();
     }
 
     private void execJs(String js) {
@@ -330,9 +338,18 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         public void beforeGoPreviewPage() {
             pageAnimationView.movePreview();
         }
+
+        @JavascriptInterface
+        public void onTouchStartAllowedElement() {
+            listener.onTouchStartAllowedElement();
+        }
     }
 
     private class MyWebView extends WebView {
+        private boolean preventDefaultTouch = false;
+        private long downTime;
+        private boolean isDown = false;
+
         public MyWebView(Context context) {
             super(context);
         }
@@ -359,6 +376,68 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
             batchDraw.afterInvalidate();
             pageAnimationView.postRefresh();
             listener.afterInvalidate();
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                isDown = true;
+                downTime = event.getDownTime();
+                preventDefaultTouch = false;
+            }
+
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                isDown = false;
+                preventDefaultTouch = false;
+            }
+
+            if (!preventDefaultTouch) {
+                super.onTouchEvent(event);
+            }
+
+            return true;
+        }
+
+        public void preventDefaultTouch() {
+            if (isDown) {
+                super.onTouchEvent(MotionEvent.obtain(
+                        downTime,
+                        SystemClock.uptimeMillis(),
+                        MotionEvent.ACTION_CANCEL, 0, 0, 0));
+                preventDefaultTouch = true;
+            }
+        }
+
+        @Override
+        public boolean performLongClick() {
+            return !preventDefaultTouch && super.performLongClick();
+        }
+
+        @Override
+        public ActionMode startActionMode(final ActionMode.Callback callback) {
+            listener.onSelectStart();
+            return super.startActionMode(new ActionMode.Callback() {
+                @Override
+                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                    return callback.onCreateActionMode(mode, menu);
+                }
+
+                @Override
+                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                    return callback.onPrepareActionMode(mode, menu);
+                }
+
+                @Override
+                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                    return callback.onActionItemClicked(mode, item);
+                }
+
+                @Override
+                public void onDestroyActionMode(ActionMode mode) {
+                    callback.onDestroyActionMode(mode);
+                    listener.onSelectEnd();
+                }
+            });
         }
     }
 
@@ -402,5 +481,11 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         void afterLoad();
 
         void afterInvalidate();
+
+        void onTouchStartAllowedElement();
+
+        void onSelectStart();
+
+        void onSelectEnd();
     }
 }

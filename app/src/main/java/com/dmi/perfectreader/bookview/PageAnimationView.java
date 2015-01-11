@@ -84,6 +84,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
     private final DuplexBuffer<Page> drawingPages = new DuplexBuffer<>(MAX_DISTANCE_IN_PAGES);
     private final Pool<Page> pagePool;
     private AtomicInteger currentPageIndex = new AtomicInteger(0);
+    private final Object animationStateMutex = new Object();
 
     private final RefreshService refreshService = new RefreshService();
 
@@ -118,15 +119,20 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
     }
 
     public boolean canMoveNext() {
-        PageAnimationState animationState = pageAnimation.currentState();
-        int animationPageCount = animationState.pageCount();
-        return animationPageCount > 0 && animationState.pageRelativeIndex(0) > -MAX_DISTANCE_IN_PAGES;
+        synchronized (animationStateMutex) {
+            PageAnimationState animationState = pageAnimation.currentState();
+            int animationPageCount = animationState.pageCount();
+            return animationPageCount > 0 && animationState.pageRelativeIndex(0) > -MAX_DISTANCE_IN_PAGES;
+        }
     }
 
     public boolean canMovePreview() {
-        PageAnimationState animationState = pageAnimation.currentState();
-        int animationPageCount = animationState.pageCount();
-        return animationPageCount > 0 && animationState.pageRelativeIndex(animationPageCount - 1) < MAX_DISTANCE_IN_PAGES;
+        synchronized (animationStateMutex) {
+            PageAnimationState animationState = pageAnimation.currentState();
+            int animationPageCount = animationState.pageCount();
+            return animationPageCount > 0 &&
+                   animationState.pageRelativeIndex(animationPageCount - 1) < MAX_DISTANCE_IN_PAGES;
+        }
     }
 
     public void reset() {
@@ -238,7 +244,9 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
 
         boolean wasMoving = pageAnimation.isPagesMoving();
 
-        pageAnimation.update(dt);
+        synchronized (animationStateMutex) {
+            pageAnimation.update(dt);
+        }
         PageAnimationState animationState = pageAnimation.currentState();
         for (int i = 0; i < animationState.pageCount(); i++) {
             int relativeIndex = animationState.pageRelativeIndex(i);

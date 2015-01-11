@@ -3,9 +3,12 @@ package com.dmi.perfectreader.book;
 import android.annotation.SuppressLint;
 
 import com.dmi.perfectreader.error.BookFileNotFoundException;
+import com.dmi.perfectreader.util.cache.BookResourceCache;
 import com.dmi.perfectreader.util.cache.DataCache;
 import com.google.common.io.ByteStreams;
 
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EBean;
 import org.readium.sdk.android.Container;
 import org.readium.sdk.android.EPub3;
 import org.readium.sdk.android.SpineItem;
@@ -19,18 +22,15 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-// todo переместить в модуль core
+@EBean(scope = EBean.Scope.Singleton)
 public class BookStorage {
     private static final String URL_PREFIX = "bookstorage://";
 
-    private DataCache resourceCache;
+    @Bean
+    protected BookResourceCache resourceCache;
 
     private File bookFile;
     private final List<String> segmentUrls = new ArrayList<>();
-
-    public BookStorage(DataCache resourceCache) {
-        this.resourceCache = resourceCache;
-    }
 
     public void load(File bookFile) throws BookFileNotFoundException {
         this.bookFile = bookFile;
