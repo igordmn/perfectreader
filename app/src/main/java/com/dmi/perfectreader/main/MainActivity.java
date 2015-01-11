@@ -154,11 +154,12 @@ public class MainActivity extends Activity {
         fragment.setMenuActions(new MenuActions() {
             @Override
             public void goPercent(double percent) {
+                bookFragment.goLocation(bookFragment.percentToLocation(percent));
             }
 
             @Override
             public double getPercent() {
-                return 0;
+                return bookFragment.locationToPercent(bookFragment.currentLocation());
             }
         });
         return fragment;

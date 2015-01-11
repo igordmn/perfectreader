@@ -10,10 +10,10 @@ import android.widget.FrameLayout;
 
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 import com.dmi.perfectreader.book.config.BookLocation;
-import com.dmi.perfectreader.error.BookFileNotFoundException;
 import com.dmi.perfectreader.util.android.MainThreads;
 
 import java.io.File;
+import java.io.IOException;
 
 import static com.dmi.perfectreader.util.android.Units.dipToPx;
 
@@ -48,12 +48,24 @@ public class PageBookBox extends FrameLayout {
         pageAnimationView.setPageAnimation(pageAnimation);
     }
 
-    public void load(File bookFile) throws BookFileNotFoundException {
+    public void load(File bookFile) throws IOException {
         pageBookView.load(bookFile);
     }
 
     public PageBookView.BookConfigurator configure() {
         return pageBookView.configure();
+    }
+
+    public BookLocation percentToLocation(double percent) {
+        return pageBookView.percentToLocation(percent);
+    }
+
+    public double locationToPercent(BookLocation location) {
+        return pageBookView.locationToPercent(location);
+    }
+
+    public BookLocation currentLocation() {
+        return pageBookView.currentLocation();
     }
 
     public boolean canGoNextPage() {

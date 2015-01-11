@@ -4,13 +4,17 @@ import java.util.List;
 
 public abstract class JavaScript {
     public static String jsArray(List<String> items) {
+        return jsArray((String[]) items.toArray());
+    }
+
+    public static String jsArray(String[] items) {
         StringBuilder js = new StringBuilder();
         js.append("[\n");
-        for (int i = 0; i < items.size(); i++) {
+        for (int i = 0; i < items.length; i++) {
             js.append("'");
-            js.append(items.get(i));
+            js.append(items[i]);
             js.append("'");
-            if (i < items.size() - 1) {
+            if (i < items.length - 1) {
                 js.append(",\n");
             }
         }

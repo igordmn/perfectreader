@@ -88,6 +88,22 @@ public class BookFragment extends Fragment {
         }.execute();
     }
 
+    public BookLocation currentLocation() {
+        return pageBookBox.currentLocation();
+    }
+
+    public void goLocation(BookLocation location) {
+        pageBookBox.goLocation(location);
+    }
+
+    public BookLocation percentToLocation(double percent) {
+        return pageBookBox.percentToLocation(percent);
+    }
+
+    public double locationToPercent(BookLocation location) {
+        return pageBookBox.locationToPercent(location);
+    }
+
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             if (pageBookBox.canGoNextPage()) {
@@ -134,7 +150,7 @@ public class BookFragment extends Fragment {
         }
 
         private void onTouchMove(MotionEvent motionEvent) {
-            boolean onLeftSide = touchDownX <= LEFT_SIDE_WIDTH_FOR_SLIDE;
+            boolean onLeftSide = motionEvent.getX() <= LEFT_SIDE_WIDTH_FOR_SLIDE;
             boolean isTouchedFar = abs(motionEvent.getY() - touchDownY) >= TOUCH_SENSITIVITY;
             if (onLeftSide && isTouchedFar) {
                 nowIsSlideByLeftSide = true;

@@ -2,9 +2,11 @@ package com.dmi.perfectreader.book;
 
 import android.annotation.SuppressLint;
 
+import com.dmi.perfectreader.book.config.BookLocation;
 import com.dmi.perfectreader.error.BookFileNotFoundException;
 import com.dmi.perfectreader.util.cache.BookResourceCache;
 import com.dmi.perfectreader.util.cache.DataCache;
+import com.dmi.perfectreader.util.lang.IntegerPercent;
 import com.google.common.io.ByteStreams;
 
 import org.androidannotations.annotations.Bean;
@@ -14,6 +16,7 @@ import org.readium.sdk.android.EPub3;
 import org.readium.sdk.android.SpineItem;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import static com.dmi.perfectreader.util.lang.IntegerPercent.toIntegerPercent;
+import static com.google.common.base.Preconditions.checkArgument;
 
 @EBean(scope = EBean.Scope.Singleton)
 public class BookStorage {
@@ -30,15 +36,19 @@ public class BookStorage {
     protected BookResourceCache resourceCache;
 
     private File bookFile;
-    private final List<String> segmentUrls = new ArrayList<>();
+    private String[] segmentUrls;
+    private long[] segmentSizes;
+    private long totalSize;
 
-    public void load(File bookFile) throws BookFileNotFoundException {
+    public void load(File bookFile) throws IOException {
         this.bookFile = bookFile;
-        segmentUrls.clear();
-        segmentUrls.addAll(getSegmentUrls(bookFile));
+        String[] segmentPaths = getSegmentPaths(bookFile);
+        segmentUrls = toUrls(segmentPaths);
+        segmentSizes = getLengths(bookFile, segmentPaths);
+        totalSize = sum(segmentSizes);
     }
 
-    public List<String> segmentUrls() {
+    public String[] segmentUrls() {
         return segmentUrls;
     }
 
@@ -60,6 +70,9 @@ public class BookStorage {
                 try (ZipFile zipFile = new ZipFile(bookFile)) {
                     String filePath = url.substring(URL_PREFIX.length());
                     ZipEntry entry = zipFile.getEntry(filePath);
+                    if (entry == null) {
+                        throw new FileNotFoundException("ZipEntry " + filePath + " not found");
+                    }
                     try (InputStream inputStream = zipFile.getInputStream(entry)) {
                         ByteStreams.copy(inputStream, outputStream);
                     }
@@ -68,21 +81,77 @@ public class BookStorage {
         });
     }
 
-    private static List<String> getSegmentUrls(File bookFile) throws BookFileNotFoundException {
-        List<String> files = new ArrayList<>();
+    private static String[] getSegmentPaths(File bookFile) throws BookFileNotFoundException {
+        List<String> paths = new ArrayList<>();
         if (!bookFile.exists()) {
             throw new BookFileNotFoundException(bookFile);
         }
         Container container = EPub3.openBook(bookFile.getAbsolutePath());
         try {
             org.readium.sdk.android.Package pack = container.getDefaultPackage();
-            File baseDir = new File(pack.getBasePath());
+            String basePath = pack.getBasePath();
             for (SpineItem spineItem : pack.getSpineItems()) {
-                files.add(URL_PREFIX + baseDir + "/" + spineItem.getHref());
+                paths.add(basePath + spineItem.getHref());
             }
         } finally {
             EPub3.closeBook(container);
         }
-        return files;
+        return paths.toArray(new String[paths.size()]);
+    }
+
+    private static String[] toUrls(String[] paths) throws BookFileNotFoundException {
+        String[] urls = new String[paths.length];
+        for (int i = 0; i < paths.length; i++) {
+            urls[i] = URL_PREFIX + paths[i];
+        }
+        return urls;
+    }
+
+    private static long[] getLengths(File zipFile, String[] paths) throws IOException {
+        long[] fileLengths = new long[paths.length];
+        try (ZipFile zip = new ZipFile(zipFile)) {
+            for (int i = 0; i < paths.length; i++) {
+                ZipEntry entry = zip.getEntry(paths[i]);
+                if (entry == null) {
+                    throw new FileNotFoundException("ZipEntry " + paths[i] + " not found");
+                }
+                fileLengths[i] = entry.getSize();
+            }
+        }
+        return fileLengths;
+    }
+
+    private static long sum(long[] lengths) {
+        long sum = 0;
+        for (long length : lengths) {
+            sum += length;
+        }
+        return sum;
+    }
+
+    public BookLocation percentToLocation(double percent) {
+        checkArgument(percent >= 0 && percent <= 1.0);
+        long position = (long) (percent * totalSize);
+        long segmentStart, segmentEnd = 0;
+        for (int i = 0; i < segmentSizes.length; i++) {
+            segmentStart = segmentEnd;
+            long segmentSize = segmentSizes[i];
+            segmentEnd += segmentSize;
+            if (position >= segmentStart && position < segmentEnd) {
+                long positionInSegment = position - segmentStart;
+                double segmentPercent = (double) positionInSegment / segmentSize;
+                return new BookLocation(i, toIntegerPercent(segmentPercent));
+            }
+        }
+        return new BookLocation(segmentSizes.length - 1, IntegerPercent.HUNDRED);
+    }
+
+    public double locationToPercent(BookLocation location) {
+        long position = 0;
+        for (int i = 0; i < location.segmentIndex() - 1; i++) {
+            position += segmentSizes[i];
+        }
+        position += segmentSizes[location.segmentIndex()] * IntegerPercent.toDouble(location.percent());
+        return (double) position / totalSize;
     }
 }

@@ -24,7 +24,6 @@ import android.widget.FrameLayout;
 import com.dmi.perfectreader.book.BookStorage;
 import com.dmi.perfectreader.book.config.BookLocation;
 import com.dmi.perfectreader.book.config.TextAlign;
-import com.dmi.perfectreader.error.BookFileNotFoundException;
 import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.main.EventBus;
 import com.dmi.perfectreader.util.concurrent.Waiter;
@@ -156,7 +155,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         this.listener = listener;
     }
 
-    public void load(File bookFile) throws BookFileNotFoundException {
+    public void load(File bookFile) throws IOException {
         bookStorage.load(bookFile);
         loadUrl("file:///android_asset/pageBook/pageBook.html");
         htmlPageReady.waitRequest();
@@ -173,6 +172,14 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         return new BookConfigurator();
     }
 
+    public BookLocation percentToLocation(double percent) {
+        return bookStorage.percentToLocation(percent);
+    }
+
+    public double locationToPercent(BookLocation location) {
+        return bookStorage.locationToPercent(location);
+    }
+
     public boolean canGoNextPage() {
         return canGoNextPage && pageAnimationView.canMoveNext();
     }
@@ -182,7 +189,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     }
 
     public void goLocation(BookLocation location) {
-        checkArgument(location.segmentIndex() >= 0 && location.segmentIndex() < bookStorage.segmentUrls().size());
+        checkArgument(location.segmentIndex() >= 0 && location.segmentIndex() < bookStorage.segmentUrls().length);
         resetCanGoPages();
         execJs(format("reader.goLocation({segmentIndex: %s, percent: %s})", location.segmentIndex(), location.percent()));
     }

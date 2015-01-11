@@ -18,7 +18,7 @@ public abstract class IntegerPercent implements Serializable {
     }
 
     public static int toIntegerPercent(double doubleValue) {
-        checkArgument(doubleValue >= 0);
+        checkArgument(doubleValue >= 0 && doubleValue <= 1.0);
         return (int) (Long.MAX_VALUE * doubleValue);
     }
 
