@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.menu;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.widget.SeekBar;
 
 import com.dmi.perfectreader.R;

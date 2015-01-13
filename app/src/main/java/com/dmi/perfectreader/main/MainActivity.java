@@ -1,10 +1,10 @@
 package com.dmi.perfectreader.main;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -36,7 +36,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 @EActivity(R.layout.activity_book_reader)
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
     @ViewById
     protected View bookNotLoadedView;
     @ViewById
@@ -101,7 +101,10 @@ public class MainActivity extends Activity {
             BookFragment bookFragment = BookFragment_.builder()
                     .bookFile(new File(bookFile))
                     .build();
-            getFragmentManager().beginTransaction().add(R.id.mainContainer, bookFragment, BookFragment.class.getName()).commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.mainContainer, bookFragment, BookFragment.class.getName())
+                    .commit();
             bookNotLoaded = false;
         } else {
             bookNotLoaded = true;
@@ -117,7 +120,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onPause() {
-        BookFragment bookFragment = bookFragment(getFragmentManager());
+        BookFragment bookFragment = bookFragment(getSupportFragmentManager());
         if (bookFragment != null) {
             statePrefs.bookPosition().put(0);
         }
@@ -134,7 +137,7 @@ public class MainActivity extends Activity {
             }
             return false;
         } else {
-            BookFragment bookFragment = bookFragment(getFragmentManager());
+            BookFragment bookFragment = bookFragment(getSupportFragmentManager());
             return bookFragment != null && bookFragment.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
         }
     }
@@ -145,7 +148,7 @@ public class MainActivity extends Activity {
             // todo перенаправлять в MenuFragment, если false, то тогда уже выполнять нужные действия
             return false;
         } else {
-            BookFragment bookFragment = bookFragment(getFragmentManager());
+            BookFragment bookFragment = bookFragment(getSupportFragmentManager());
             return bookFragment != null && bookFragment.onKeyUp(keyCode, event) || super.onKeyUp(keyCode, event);
         }
     }
@@ -156,7 +159,7 @@ public class MainActivity extends Activity {
     }
 
     private void toggleMenu() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         String tag = MenuFragment.class.getName();
         MenuFragment fragment = (MenuFragment) fragmentManager.findFragmentByTag(tag);
         if (fragment == null) {
@@ -208,7 +211,7 @@ public class MainActivity extends Activity {
     }
 
     private void showError(String message) {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         final BookFragment bookFragment = bookFragment(fragmentManager);
         if (bookFragment != null) {
             fragmentManager.beginTransaction().remove(bookFragment).commit();
