@@ -17,7 +17,7 @@ public class UserData {
     @Bean
     protected Databases databases;
 
-    public BookLocation loadBookLocation(File bookFile) {
+    public synchronized BookLocation loadBookLocation(File bookFile) {
         SQLiteDatabase cacheDB = databases.userData().getReadableDatabase();
         try (Cursor cursor = cacheDB.rawQuery("SELECT segmentIndex, percent FROM bookLocation WHERE path = ?", new String[]{bookFile.getAbsolutePath()})) {
             if (cursor.moveToFirst()) {
@@ -30,7 +30,7 @@ public class UserData {
         }
     }
 
-    public void saveBookLocation(File bookFile, BookLocation location) {
+    public synchronized void saveBookLocation(File bookFile, BookLocation location) {
         SQLiteDatabase cacheDB = databases.userData().getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("path", bookFile.getAbsolutePath());

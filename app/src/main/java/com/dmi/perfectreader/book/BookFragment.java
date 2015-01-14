@@ -20,6 +20,7 @@ import com.dmi.perfectreader.userdata.UserData;
 import com.dmi.perfectreader.util.lang.IntegerPercent;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
@@ -132,7 +133,8 @@ public class BookFragment extends Fragment {
         return true;
     }
 
-    private void saveCurrentLocation() {
+    @Background
+    protected void saveCurrentLocation() {
         userData.saveBookLocation(bookFile, bookBox.currentLocation());
     }
 
