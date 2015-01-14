@@ -78,7 +78,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
     private final float[] viewProjectionMatrix = new float[16];
-    private int planeProgramId;
+    private PlaneProgram planeProgram = new PlaneProgram();
 
     private final DuplexBuffer<PageSlot> pageSlots = new DuplexBuffer<>(MAX_DISTANCE_IN_PAGES);
     private final DuplexBuffer<Page> drawingPages = new DuplexBuffer<>(MAX_DISTANCE_IN_PAGES);
@@ -205,10 +205,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-        planeProgramId = Graphics.createProgram(
-                getResources(),
-                R.raw.shader_webview_snapshot_vertex,
-                R.raw.shader_webview_snapshot_fragment);
+        planeProgram.init();
 
         for (Page page : pagePool) {
             page.init();
@@ -309,7 +306,7 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         private final Object drawMutex = new Object();
 
         public void init() {
-            plane.init();
+            planeProgram.init();
             textureId = glGenTexture();
             surfaceTexture = new SurfaceTexture(textureId);
             surface = new Surface(surfaceTexture);
@@ -353,18 +350,27 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         }
     }
 
-    private class Plane {
-        private final static int VERTEX_COUNT = 4;
+    private class PlaneProgram {
+        private int id;
         private int coordinateHandle;
         private int mvpMatrixHandle;
         private int textureHandle;
-        private FloatBuffer vertexBuffer;
 
         public void init() {
-            coordinateHandle = glGetAttribLocation(planeProgramId, "coordinate");
-            mvpMatrixHandle = glGetUniformLocation(planeProgramId, "mvpMatrix");
-            textureHandle = glGetUniformLocation(planeProgramId, "texture");
+            id = Graphics.createProgram(
+                    getResources(),
+                    R.raw.shader_webview_snapshot_vertex,
+                    R.raw.shader_webview_snapshot_fragment);
+            coordinateHandle = glGetAttribLocation(id, "coordinate");
+            mvpMatrixHandle = glGetUniformLocation(id, "mvpMatrix");
+            textureHandle = glGetUniformLocation(id, "texture");
         }
+    }
+
+    private class Plane {
+        private final static int VERTEX_COUNT = 4;
+
+        private FloatBuffer vertexBuffer;
 
         public void setSize(int width, int height) {
             vertexBuffer = floatBuffer(new float[]{
@@ -376,14 +382,14 @@ public class PageAnimationView extends DeltaTimeSurfaceView {
         }
 
         public void draw(float[] matrix) {
-            glUseProgram(planeProgramId);
+            glUseProgram(planeProgram.id);
 
-            glEnableVertexAttribArray(coordinateHandle);
-            glVertexAttribPointer(coordinateHandle, 4,
+            glEnableVertexAttribArray(planeProgram.coordinateHandle);
+            glVertexAttribPointer(planeProgram.coordinateHandle, 4,
                     GL_FLOAT, false,
                     0, vertexBuffer);
-            glUniformMatrix4fv(mvpMatrixHandle, 1, false, matrix, 0);
-            glUniform1i(textureHandle, 0);
+            glUniformMatrix4fv(planeProgram.mvpMatrixHandle, 1, false, matrix, 0);
+            glUniform1i(planeProgram.textureHandle, 0);
 
             glDrawArrays(GL_TRIANGLE_STRIP, 0, VERTEX_COUNT);
         }
