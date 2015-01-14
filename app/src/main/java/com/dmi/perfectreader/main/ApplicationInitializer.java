@@ -16,6 +16,8 @@ import org.androidannotations.annotations.RootContext;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.dmi.perfectreader.util.android.MainThreads.runOnMainThread;
+
 @EBean(scope = EBean.Scope.Singleton)
 public class ApplicationInitializer {
     @Bean
@@ -47,9 +49,14 @@ public class ApplicationInitializer {
     private void initApp() {
         assetsCopier.copyAssets();
         databases.createOrUpgrade();
-        initFinished.set(true);
         Units.init(context);
-        eventBus.post(new ApplicationInitFinishEvent());
+        runOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+                eventBus.post(new ApplicationInitFinishEvent());
+                initFinished.set(true);
+            }
+        });
     }
 
     @Produce

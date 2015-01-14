@@ -18,12 +18,16 @@ public class EventBus {
         bus.unregister(object);
     }
 
-    public void post(final Object event) {
+    public void postOnMainThread(final Object event) {
         runOnMainThread(new Runnable() {
             @Override
             public void run() {
                 bus.post(event);
             }
         });
+    }
+
+    public void post(final Object event) {
+        bus.post(event);
     }
 }

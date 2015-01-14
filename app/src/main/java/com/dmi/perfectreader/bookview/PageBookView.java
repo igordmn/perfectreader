@@ -137,7 +137,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
                             null,
                             bookStorage.readResource(url));
                 } catch (IOException e) {
-                    eventBus.post(new ErrorEvent(e));
+                    eventBus.postOnMainThread(new ErrorEvent(e));
                     return null;
                 }
             }

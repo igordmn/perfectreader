@@ -77,7 +77,7 @@ public class BookFragment extends Fragment {
                 try {
                     bookBox.load(bookFile);
                 } catch (IOException e) {
-                    eventBus.post(new ErrorEvent(e));
+                    eventBus.postOnMainThread(new ErrorEvent(e));
                 }
 
                 bookBox.configure().setFontSize(fontSize).commit();
