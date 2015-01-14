@@ -350,6 +350,9 @@ window.onload = function() {
             li: addCSSStyle(stylesheet, "li"),
             fixSpace: addCSSStyle(stylesheet, ".fixSpace", "display: inline-block; width: 0.25em; text-indent: 0; padding: 0; margin: 0")
         };
+        var elements = {
+            touchLayer: undefined
+        };
 
         var frameReader = frame.reader = {
             pageCount: 0,
@@ -382,30 +385,44 @@ window.onload = function() {
             },
 
             refreshPageConfiguration: function() {
+                var pageDiv = document.createElement("div");
                 var wrapDiv = document.createElement("div");
                 while (document.body.firstChild) {
                     wrapDiv.appendChild(document.body.firstChild);
                 }
-                document.body.appendChild(wrapDiv);
 
-                document.body.style.setProperty("margin-top", bookConfig.paddingTopInPixels + "px", "important");
-                document.body.style.setProperty("margin-bottom", bookConfig.paddingBottomInPixels + "px", "important");
-                document.body.style.setProperty("margin-right", "0px", "important");
-                document.body.style.setProperty("margin-left", "0px", "important");
-                document.body.style.setProperty("padding", "0", "important");
+                pageDiv.style.setProperty("margin-top", bookConfig.paddingTopInPixels + "px", "important");
+                pageDiv.style.setProperty("margin-bottom", bookConfig.paddingBottomInPixels + "px", "important");
+                pageDiv.style.setProperty("margin-right", "0px", "important");
+                pageDiv.style.setProperty("margin-left", "0px", "important");
+                pageDiv.style.setProperty("padding", "0px", "important");
 
                 wrapDiv.style.setProperty("margin-top", "0px", "important");
                 wrapDiv.style.setProperty("margin-bottom", "0px", "important");
                 wrapDiv.style.setProperty("margin-right", bookConfig.paddingRightInPixels + "px", "important");
                 wrapDiv.style.setProperty("margin-left", bookConfig.paddingLeftInPixels + "px", "important");
-                wrapDiv.style.setProperty("padding", "0", "important");
+                wrapDiv.style.setProperty("padding", "0px", "important");
 
                 var width = screenWidth;
                 var height = screenHeight - bookConfig.paddingTopInPixels - bookConfig.paddingBottomInPixels;
-                document.body.style.setProperty("width", width + "px", "important");
-                document.body.style.setProperty("height", height + "px", "important");
-                document.body.style.setProperty("-webkit-column-width", width + "px", "important");
-                document.body.style.setProperty("-webkit-column-gap", "0px", "important");
+                pageDiv.style.setProperty("width", width + "px", "important");
+                pageDiv.style.setProperty("height", height + "px", "important");
+                pageDiv.style.setProperty("-webkit-column-width", width + "px", "important");
+                pageDiv.style.setProperty("-webkit-column-gap", "0px", "important");
+
+                document.body.style.setProperty("margin", "0px", "important");
+                document.body.style.setProperty("padding", "0px", "important");
+
+                pageDiv.appendChild(wrapDiv);
+                document.body.appendChild(pageDiv);
+
+                elements.touchLayer = document.createElement("div");
+                elements.touchLayer.style.setProperty("height", screenHeight + "px", "important");
+                elements.touchLayer.style.setProperty("position", "absolute", "important");
+                elements.touchLayer.style.setProperty("left", "0px", "important");
+                elements.touchLayer.style.setProperty("top", "0px", "important");
+                elements.touchLayer.style.setProperty("z-index", "-1000", "important");
+                document.body.appendChild(elements.touchLayer);
             },
 
             refreshTextAlign: function() {
@@ -425,6 +442,7 @@ window.onload = function() {
             reflow: function() {
                 refreshPageCount();
                 refreshCurrentPage();
+                elements.touchLayer.style.setProperty("width", document.body.scrollWidth + "px", "important");
             }
         };
 
