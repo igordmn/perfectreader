@@ -440,6 +440,7 @@ window.onload = function() {
             },
 
             reflow: function() {
+                elements.touchLayer.style.setProperty("width", "0px", "important");
                 refreshPageCount();
                 refreshCurrentPage();
                 elements.touchLayer.style.setProperty("width", document.body.scrollWidth + "px", "important");
