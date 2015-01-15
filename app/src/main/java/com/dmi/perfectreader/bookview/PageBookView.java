@@ -287,8 +287,13 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
             return this;
         }
 
-        public BookConfigurator setLineHeight(float lineHeight) {
-            throw new UnsupportedOperationException();
+        public BookConfigurator setLineHeight(int lineHeightInPercents) {
+            appendJs(
+                    format("reader.setLineHeight(%s);",
+                            jsValue(lineHeightInPercents)
+                    )
+            );
+            return this;
         }
 
         public void commit() {

@@ -44,6 +44,7 @@ window.onload = function() {
 
         textAlign: "justify",
         fontSizeInPercents: 100,
+        lineHeightInPercents: 100,
 
         deleteRedundantSpaces: true,
         replaceFixedSpaces: true
@@ -161,6 +162,13 @@ window.onload = function() {
             bookConfig.fontSizeInPercents = fontSizeInPercents;
             callReflow(function(reader) {
                 reader.refreshFontSize();
+            });
+        },
+
+        setLineHeight: function(lineHeightInPercents) {
+            bookConfig.lineHeightInPercents = lineHeightInPercents;
+            callReflow(function(reader) {
+                reader.refreshLineHeight();
             });
         },
 
@@ -439,6 +447,16 @@ window.onload = function() {
                 document.body.style.setProperty("font-size", bookConfig.fontSizeInPercents + "%", "important");
             },
 
+            refreshLineHeight: function() {
+                styles.p.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
+                styles.div.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
+                styles.td.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
+                styles.dt.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
+                styles.dd.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
+                styles.br.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
+                styles.li.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
+            },
+
             reflow: function() {
                 elements.touchLayer.style.setProperty("width", "0px", "important");
                 refreshPageCount();
@@ -526,6 +544,7 @@ window.onload = function() {
         frameReader.refreshPageConfiguration();
         frameReader.refreshTextAlign();
         frameReader.refreshFontSize();
+        frameReader.refreshLineHeight();
         refreshTextModification();
         frameReader.reflow();
 

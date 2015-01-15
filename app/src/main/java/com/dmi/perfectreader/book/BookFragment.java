@@ -12,6 +12,7 @@ import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 import com.dmi.perfectreader.book.config.BookLocation;
+import com.dmi.perfectreader.book.config.TextAlign;
 import com.dmi.perfectreader.bookview.PageBookBox;
 import com.dmi.perfectreader.command.Commands;
 import com.dmi.perfectreader.error.ErrorEvent;
@@ -55,7 +56,9 @@ public class BookFragment extends Fragment {
     private static final int FONT_SIZE_MAX = 800;
     private static final int FONT_SIZE_MIN = 20;
     private static final int FONT_SIZE_DELTA = 10;
+    private TextAlign textAlign = TextAlign.JUSTIFY;
     private int fontSize = 200;
+    private int lineHeight = 200;
 
     @AfterViews
     protected void initViews() {
@@ -80,7 +83,11 @@ public class BookFragment extends Fragment {
                     eventBus.postOnMainThread(new ErrorEvent(e));
                 }
 
-                bookBox.configure().setFontSize(fontSize).commit();
+                bookBox.configure()
+                        .setFontSize(fontSize)
+                        .setTextAlign(textAlign)
+                        .setLineHeight(lineHeight)
+                        .commit();
 
                 final BookLocation loadedLocation = userData.loadBookLocation(bookFile);
 
