@@ -12,11 +12,11 @@ import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 import com.dmi.perfectreader.book.config.BookLocation;
-import com.dmi.perfectreader.book.config.TextAlign;
 import com.dmi.perfectreader.bookview.PageBookBox;
 import com.dmi.perfectreader.command.Commands;
 import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.main.EventBus;
+import com.dmi.perfectreader.setting.Settings;
 import com.dmi.perfectreader.userdata.UserData;
 import com.dmi.perfectreader.util.lang.IntegerPercent;
 
@@ -52,13 +52,12 @@ public class BookFragment extends Fragment {
     protected Commands commands;
     @Bean
     protected UserData userData;
+    @Bean
+    protected Settings settings;
 
     private static final int FONT_SIZE_MAX = 800;
     private static final int FONT_SIZE_MIN = 20;
     private static final int FONT_SIZE_DELTA = 10;
-    private TextAlign textAlign = TextAlign.JUSTIFY;
-    private int fontSize = 200;
-    private int lineHeight = 200;
 
     @AfterViews
     protected void initViews() {
@@ -84,9 +83,9 @@ public class BookFragment extends Fragment {
                 }
 
                 bookBox.configure()
-                        .setFontSize(fontSize)
-                        .setTextAlign(textAlign)
-                        .setLineHeight(lineHeight)
+                        .setTextAlign(settings.format.TEXT_ALIGN.get())
+                        .setFontSize(settings.format.FONT_SIZE.get())
+                        .setLineHeight(settings.format.LINE_HEIGHT.get())
                         .commit();
 
                 final BookLocation loadedLocation = userData.loadBookLocation(bookFile);
@@ -183,7 +182,9 @@ public class BookFragment extends Fragment {
             if (nowIsSlideByLeftSide) {
                 if (abs(oldApplySlideActionTouchY - motionEvent.getY()) >= SLIDE_SENSITIVITY) {
                     int count = (int) ((motionEvent.getY() - oldApplySlideActionTouchY) / SLIDE_SENSITIVITY);
+                    int fontSize = settings.format.FONT_SIZE.get();
                     fontSize = max(FONT_SIZE_MIN, min(FONT_SIZE_MAX, fontSize + count * FONT_SIZE_DELTA));
+                    settings.format.FONT_SIZE.set(fontSize);
                     bookBox.configure().setFontSize(fontSize).commit();
                     oldApplySlideActionTouchY = motionEvent.getY();
                 }
