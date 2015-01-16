@@ -21,7 +21,6 @@ import com.dmi.perfectreader.userdata.UserData;
 import com.dmi.perfectreader.util.lang.IntegerPercent;
 
 import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
@@ -139,11 +138,6 @@ public class BookFragment extends Fragment {
         return true;
     }
 
-    @Background
-    protected void saveCurrentLocation() {
-        userData.saveBookLocation(bookFile, bookBox.currentLocation());
-    }
-
     private class OnTouchListenerImpl implements View.OnTouchListener {
         private final float TOUCH_SENSITIVITY = dipToPx(8);
         private final float LEFT_SIDE_WIDTH_FOR_SLIDE = dipToPx(40);
@@ -225,7 +219,7 @@ public class BookFragment extends Fragment {
     private class OnLocationChangeListenerImpl implements PageBookBox.OnLocationChangeListener {
         @Override
         public void onBookLocationChange() {
-            saveCurrentLocation();
+            userData.saveBookLocation(bookFile, bookBox.currentLocation());
         }
     }
 }

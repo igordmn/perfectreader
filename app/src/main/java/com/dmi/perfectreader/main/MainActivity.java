@@ -22,14 +22,15 @@ import com.dmi.perfectreader.init.ApplicationInitFinishEvent;
 import com.dmi.perfectreader.menu.MenuActions;
 import com.dmi.perfectreader.menu.MenuFragment;
 import com.dmi.perfectreader.menu.MenuFragment_;
+import com.dmi.perfectreader.userdata.UserData;
+import com.google.common.base.Objects;
 import com.squareup.otto.Subscribe;
 
 import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -43,22 +44,14 @@ public class MainActivity extends ActionBarActivity {
     protected View bookOpenErrorView;
     @ViewById
     protected TextView bookOpenErrorDetailTextView;
-    @Pref
-    protected StatePrefs_ statePrefs;
+    @Bean
+    protected UserData userData;
     @Bean
     protected EventBus eventBus;
     @Bean
     protected Databases databases;
     @Bean
     protected Commands commands;
-
-    private boolean bookNotLoaded;
-
-    @AfterViews
-    protected void initViews() {
-        bookNotLoadedView.setVisibility(bookNotLoaded ? View.VISIBLE : View.GONE);
-        bookOpenErrorView.setVisibility(View.GONE);
-    }
 
     @AfterInject
     protected void init() {
@@ -79,35 +72,35 @@ public class MainActivity extends ActionBarActivity {
 
     @Subscribe
     public void onApplicationInitFinish(ApplicationInitFinishEvent event) {
-        String bookFile = getBookFile();
-        openBook(bookFile);
+        startOpenBook();
     }
 
-    private String getBookFile() {
-        String bookFile = statePrefs.bookFilePath().get();
-        String intentBookFile = extractFileFromIntent();
+    @Background
+    protected void startOpenBook() {
+        openBook(getBookFile());
+    }
 
-        if (intentBookFile != null && !intentBookFile.equals(bookFile)) {
-            statePrefs.bookFilePath().put(intentBookFile);
-            statePrefs.bookPosition().put(0);
+    private File getBookFile() {
+        File bookFile = userData.loadLastBookFile();
+        File intentBookFile = bookFileFromIntent();
+        if (intentBookFile != null && !Objects.equal(bookFile, intentBookFile)) {
             bookFile = intentBookFile;
+            userData.saveLastBookFile(bookFile);
         }
-
         return bookFile;
     }
 
-    private void openBook(String bookFile) {
-        if (!bookFile.equals("")) {
+    private void openBook(File bookFile) {
+        if (bookFile != null) {
             BookFragment bookFragment = BookFragment_.builder()
-                    .bookFile(new File(bookFile))
+                    .bookFile(bookFile)
                     .build();
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.mainContainer, bookFragment, BookFragment.class.getName())
                     .commit();
-            bookNotLoaded = false;
         } else {
-            bookNotLoaded = true;
+            bookNotLoadedView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -116,15 +109,6 @@ public class MainActivity extends ActionBarActivity {
         databases.unregisterClient();
         eventBus.unregister(this);
         super.onDestroy();
-    }
-
-    @Override
-    protected void onPause() {
-        BookFragment bookFragment = bookFragment(getSupportFragmentManager());
-        if (bookFragment != null) {
-            statePrefs.bookPosition().put(0);
-        }
-        super.onPause();
     }
 
     @Override
@@ -196,10 +180,15 @@ public class MainActivity extends ActionBarActivity {
         return (BookFragment) fragmentManager.findFragmentByTag(BookFragment.class.getName());
     }
 
-    private String extractFileFromIntent() {
+    private File bookFileFromIntent() {
         Uri data = getIntent().getData();
         try {
-            return data != null ? URLDecoder.decode(data.getEncodedPath(), "UTF-8") : null;
+            if (data != null) {
+                String path = URLDecoder.decode(data.getEncodedPath(), "UTF-8");
+                return new File(path);
+            } else {
+                return null;
+            }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException();
         }
