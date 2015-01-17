@@ -12,24 +12,21 @@ import android.widget.TextView;
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.BookFragment;
 import com.dmi.perfectreader.book.BookFragment_;
-import com.dmi.perfectreader.command.Commands;
-import com.dmi.perfectreader.command.RunnableCommand;
 import com.dmi.perfectreader.db.Databases;
 import com.dmi.perfectreader.error.BookFileNotFoundException;
 import com.dmi.perfectreader.error.BookInvalidException;
 import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.init.ApplicationInitFinishEvent;
-import com.dmi.perfectreader.menu.MenuActions;
 import com.dmi.perfectreader.menu.MenuFragment;
 import com.dmi.perfectreader.menu.MenuFragment_;
 import com.dmi.perfectreader.userdata.UserData;
+import com.dmi.perfectreader.util.android.EventBus;
 import com.google.common.base.Objects;
 import com.squareup.otto.Subscribe;
 
-import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.ViewById;
 
 import java.io.File;
@@ -50,18 +47,9 @@ public class MainActivity extends ActionBarActivity {
     protected EventBus eventBus;
     @Bean
     protected Databases databases;
-    @Bean
-    protected Commands commands;
 
-    @AfterInject
-    protected void init() {
-        commands.setToggleMenuCommand(new RunnableCommand(new Runnable() {
-            @Override
-            public void run() {
-                toggleMenu();
-            }
-        }));
-    }
+    @InstanceState
+    protected boolean bookFileRecognized = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +60,10 @@ public class MainActivity extends ActionBarActivity {
 
     @Subscribe
     public void onApplicationInitFinish(ApplicationInitFinishEvent event) {
-        startOpenBook();
-    }
-
-    @Background
-    protected void startOpenBook() {
-        openBook(getBookFile());
+        if (!bookFileRecognized) {
+            openBook(getBookFile());
+            bookFileRecognized = true;
+        }
     }
 
     private File getBookFile() {
@@ -113,33 +99,33 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
-        if (isMenuShown()) {
-            // todo перенаправлять в MenuFragment, если false, то тогда уже выполнять нужные действия
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                toggleMenu();
-                return false;
-            }
-            return false;
+        MenuFragment menuFragment = menuFragment();
+        BookFragment bookFragment = bookFragment();
+        if (menuFragment != null) {
+            return menuFragment.onKeyDown(keyCode, event);
+        } else if (bookFragment != null) {
+            return bookFragment.onKeyDown(keyCode, event);
         } else {
-            BookFragment bookFragment = bookFragment(getSupportFragmentManager());
-            return bookFragment != null && bookFragment.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+            return super.onKeyDown(keyCode, event);
         }
     }
 
     @Override
     public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
-        if (isMenuShown()) {
-            // todo перенаправлять в MenuFragment, если false, то тогда уже выполнять нужные действия
-            return false;
+        MenuFragment menuFragment = menuFragment();
+        BookFragment bookFragment = bookFragment();
+        if (menuFragment != null) {
+            return menuFragment.onKeyUp(keyCode, event);
+        } else if (bookFragment != null) {
+            return bookFragment.onKeyUp(keyCode, event);
         } else {
-            BookFragment bookFragment = bookFragment(getSupportFragmentManager());
-            return bookFragment != null && bookFragment.onKeyUp(keyCode, event) || super.onKeyUp(keyCode, event);
+            return super.onKeyUp(keyCode, event);
         }
     }
 
-    private boolean isMenuShown() {
-        String tag = MenuFragment.class.getName();
-        return getFragmentManager().findFragmentByTag(tag) != null;
+    @Subscribe
+    public void onToggleMenuIntent(ToggleMenuIntent intent) {
+        toggleMenu();
     }
 
     private void toggleMenu() {
@@ -147,37 +133,19 @@ public class MainActivity extends ActionBarActivity {
         String tag = MenuFragment.class.getName();
         MenuFragment fragment = (MenuFragment) fragmentManager.findFragmentByTag(tag);
         if (fragment == null) {
-            fragment = buildMenuFragment(fragmentManager);
+            fragment = MenuFragment_.builder().build();
             fragmentManager.beginTransaction().add(R.id.mainContainer, fragment, tag).commit();
         } else {
             fragmentManager.beginTransaction().remove(fragment).commit();
         }
     }
 
-    private MenuFragment buildMenuFragment(FragmentManager fragmentManager) {
-        final BookFragment bookFragment = bookFragment(fragmentManager);
-        MenuFragment fragment = MenuFragment_.builder().build();
-        fragment.setMenuActions(new MenuActions() {
-            @Override
-            public void toggleMenu() {
-                MainActivity.this.toggleMenu();
-            }
-
-            @Override
-            public void goPercent(double percent) {
-                bookFragment.goLocation(bookFragment.percentToLocation(percent));
-            }
-
-            @Override
-            public double getPercent() {
-                return bookFragment.locationToPercent(bookFragment.currentLocation());
-            }
-        });
-        return fragment;
+    private BookFragment bookFragment() {
+        return (BookFragment) getSupportFragmentManager().findFragmentByTag(BookFragment.class.getName());
     }
 
-    private BookFragment bookFragment(FragmentManager fragmentManager) {
-        return (BookFragment) fragmentManager.findFragmentByTag(BookFragment.class.getName());
+    private MenuFragment menuFragment() {
+        return (MenuFragment) getSupportFragmentManager().findFragmentByTag(MenuFragment.class.getName());
     }
 
     private File bookFileFromIntent() {
@@ -201,7 +169,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void showError(String message) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        final BookFragment bookFragment = bookFragment(fragmentManager);
+        final BookFragment bookFragment = bookFragment();
         if (bookFragment != null) {
             fragmentManager.beginTransaction().remove(bookFragment).commit();
         }

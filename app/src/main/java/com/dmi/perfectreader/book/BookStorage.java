@@ -28,7 +28,7 @@ import java.util.zip.ZipFile;
 import static com.dmi.perfectreader.util.lang.IntegerPercent.toIntegerPercent;
 import static com.google.common.base.Preconditions.checkArgument;
 
-@EBean(scope = EBean.Scope.Singleton)
+@EBean
 public class BookStorage {
     private static final String URL_PREFIX = "bookstorage://";
 

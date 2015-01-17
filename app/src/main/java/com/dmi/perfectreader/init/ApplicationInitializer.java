@@ -1,11 +1,11 @@
-package com.dmi.perfectreader.main;
+package com.dmi.perfectreader.init;
 
 import android.content.Context;
 import android.os.AsyncTask;
 
 import com.dmi.perfectreader.asset.AssetsCopier;
 import com.dmi.perfectreader.db.Databases;
-import com.dmi.perfectreader.init.ApplicationInitFinishEvent;
+import com.dmi.perfectreader.util.android.EventBus;
 import com.dmi.perfectreader.util.android.Units;
 import com.squareup.otto.Produce;
 

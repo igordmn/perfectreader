@@ -11,12 +11,11 @@
         android:background="@android:color/transparent"
         android:clickable="true"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/downBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:gravity="center_vertical"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:paddingLeft="16dp"
@@ -24,11 +23,20 @@
         android:background="#EEEEEE"
         android:clickable="true">
 
+        <ProgressBar
+            android:id="@+id/downBarProgressBar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerInParent="true"
+            android:visibility="invisible"/>
+
         <SeekBar
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="invisible"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

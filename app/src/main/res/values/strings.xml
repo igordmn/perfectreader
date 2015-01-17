@@ -4,7 +4,7 @@
     <string name="bookNotLoaded1">Книга не загружена</string>
     <string name="bookNotLoaded2">Пожалуйста, откройте книгу через файловый мененджер</string>
     <string name="bookOpenError">Ошибка при открытии книги</string>
-    <string name="bookFileNotFoundError">Файл книги не найден:\n%s</string>
+    <string name="bookFileNotFoundError">Файл книги не найден: \n%s</string>
     <string name="bookFileInvalidError">Файл книги поврежден или его формат не поддерживается</string>
     <string name="unknownError">Неизвестная ошибка</string>
 </resources>

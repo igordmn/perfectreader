@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.main;
+package com.dmi.perfectreader.util.android;
 
 import com.squareup.otto.Bus;
 

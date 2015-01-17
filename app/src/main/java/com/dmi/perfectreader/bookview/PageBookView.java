@@ -25,7 +25,7 @@ import com.dmi.perfectreader.book.BookStorage;
 import com.dmi.perfectreader.book.config.BookLocation;
 import com.dmi.perfectreader.book.config.TextAlign;
 import com.dmi.perfectreader.error.ErrorEvent;
-import com.dmi.perfectreader.main.EventBus;
+import com.dmi.perfectreader.util.android.EventBus;
 import com.dmi.perfectreader.util.concurrent.Waiter;
 
 import org.androidannotations.annotations.Bean;

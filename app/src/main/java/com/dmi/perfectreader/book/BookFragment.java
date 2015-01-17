@@ -1,9 +1,7 @@
 package com.dmi.perfectreader.book;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,15 +13,18 @@ import com.dmi.perfectreader.book.config.BookLocation;
 import com.dmi.perfectreader.bookview.PageBookBox;
 import com.dmi.perfectreader.command.Commands;
 import com.dmi.perfectreader.error.ErrorEvent;
-import com.dmi.perfectreader.main.EventBus;
 import com.dmi.perfectreader.setting.Settings;
 import com.dmi.perfectreader.userdata.UserData;
+import com.dmi.perfectreader.util.android.EventBus;
+import com.dmi.perfectreader.util.android.ExtFragment;
 import com.dmi.perfectreader.util.lang.IntegerPercent;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
 import java.io.File;
@@ -36,7 +37,7 @@ import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 
 @EFragment(R.layout.fragment_book)
-public class BookFragment extends Fragment {
+public class BookFragment extends ExtFragment {
     private final static float TIME_FOR_ONE_SLIDE_IN_SECONDS = 0.4F;
 
     @FragmentArg
@@ -71,38 +72,31 @@ public class BookFragment extends Fragment {
         loadBook();
     }
 
-    private void loadBook() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    bookBox.load(bookFile);
-                } catch (IOException e) {
-                    eventBus.postOnMainThread(new ErrorEvent(e));
-                }
+    @Background
+    protected void loadBook() {
+        try {
+            bookBox.load(bookFile);
+        } catch (IOException e) {
+            eventBus.postOnMainThread(new ErrorEvent(e));
+        }
 
-                bookBox.configure()
-                        .setTextAlign(settings.format.TEXT_ALIGN.get())
-                        .setFontSize(settings.format.FONT_SIZE.get())
-                        .setLineHeight(settings.format.LINE_HEIGHT.get())
-                        .commit();
+        bookBox.configure()
+                .setTextAlign(settings.format.TEXT_ALIGN.get())
+                .setFontSize(settings.format.FONT_SIZE.get())
+                .setLineHeight(settings.format.LINE_HEIGHT.get())
+                .commit();
 
-                final BookLocation loadedLocation = userData.loadBookLocation(bookFile);
+        BookLocation loadedLocation = userData.loadBookLocation(bookFile);
+        goLoadedLocation(loadedLocation);
+    }
 
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (loadedLocation != null) {
-                            bookBox.goLocation(loadedLocation);
-                        } else {
-                            bookBox.goLocation(new BookLocation(0, IntegerPercent.ZERO));
-                        }
-                    }
-                });
-
-                return null;
-            }
-        }.execute();
+    @UiThread
+    protected void goLoadedLocation(BookLocation loadedLocation) {
+        if (loadedLocation != null) {
+            bookBox.goLocation(loadedLocation);
+        } else {
+            bookBox.goLocation(new BookLocation(0, IntegerPercent.ZERO));
+        }
     }
 
     public BookLocation currentLocation() {
@@ -121,6 +115,7 @@ public class BookFragment extends Fragment {
         return bookBox.locationToPercent(location);
     }
 
+    @Override
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             if (bookBox.canGoNextPage()) {
@@ -134,6 +129,7 @@ public class BookFragment extends Fragment {
         return true;
     }
 
+    @Override
     public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
         return true;
     }
@@ -167,7 +163,7 @@ public class BookFragment extends Fragment {
         }
 
         private void onTouchMove(MotionEvent motionEvent) {
-            boolean onLeftSide = motionEvent.getX() <= LEFT_SIDE_WIDTH_FOR_SLIDE;
+            boolean onLeftSide = touchDownX <= LEFT_SIDE_WIDTH_FOR_SLIDE;
             boolean isTouchedFar = abs(motionEvent.getY() - touchDownY) >= TOUCH_SENSITIVITY;
             if (onLeftSide && isTouchedFar) {
                 nowIsSlideByLeftSide = true;
