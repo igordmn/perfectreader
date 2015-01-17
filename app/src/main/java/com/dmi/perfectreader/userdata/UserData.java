@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.userdata;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,6 +19,7 @@ public class UserData {
     @Bean
     protected Databases databases;
 
+    @SuppressLint("NewApi")
     public File loadLastBookFile() {
         SQLiteDatabase db = databases.userData().getReadableDatabase();
         try (Cursor cursor = db.rawQuery("SELECT path FROM lastBook", null)) {
@@ -38,6 +40,7 @@ public class UserData {
         db.insertWithOnConflict("lastBook", null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
+    @SuppressLint("NewApi")
     public BookLocation loadBookLocation(File bookFile) {
         SQLiteDatabase db = databases.userData().getReadableDatabase();
         try (Cursor cursor = db.rawQuery("SELECT segmentIndex, percent FROM bookLocation WHERE path = ?", new String[]{bookFile.getAbsolutePath()})) {
