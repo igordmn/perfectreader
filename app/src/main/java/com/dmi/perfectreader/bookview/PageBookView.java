@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.bookview;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -86,9 +87,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setAllowFileAccess(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            webSettings.setAllowUniversalAccessFromFileURLs(true);
-        }
+        setAllowUniversalAccessFromFileURLs(webSettings);
         webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
         webView.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
@@ -143,6 +142,13 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
             }
         });
         return webView;
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private void setAllowUniversalAccessFromFileURLs(WebSettings webSettings) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            webSettings.setAllowUniversalAccessFromFileURLs(true);
+        }
     }
 
     public void setPageAnimationView(PageAnimationView pageAnimationView) {

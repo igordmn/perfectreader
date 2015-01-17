@@ -107,6 +107,7 @@ public class BookStorage {
         return urls;
     }
 
+    @SuppressLint("NewApi")
     private static long[] getLengths(File zipFile, String[] paths) throws IOException {
         long[] fileLengths = new long[paths.length];
         try (ZipFile zip = new ZipFile(zipFile)) {
