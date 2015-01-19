@@ -3,15 +3,20 @@ package com.dmi.perfectreader.menu;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.SeekBar;
+import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.BookFragment;
 import com.dmi.perfectreader.book.config.BookLocation;
 import com.dmi.perfectreader.util.android.ExtFragment;
+import com.gc.materialdesign.views.Slider;
+import com.pnikosis.materialishprogress.ProgressWheel;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -21,35 +26,49 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.api.BackgroundExecutor;
 
+import static com.dmi.perfectreader.util.android.Units.dipToPx;
+
 @EFragment(R.layout.fragment_menu)
 public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
     private static final int SEEK_BAR_RESOLUTION = 1024;
 
     @ViewById
-    protected ProgressBar downBarProgressBar;
+    protected ViewGroup topBar;
     @ViewById
-    protected SeekBar seekBar;
+    protected ViewGroup bottomBar;
+    @ViewById
+    protected Toolbar toolbar;
+    @ViewById
+    protected TextView currentChapterText;
+    @ViewById
+    protected TextView currentPageText;
+    @ViewById
+    protected ProgressWheel bottomProgressBar;
+    @ViewById
+    protected Slider locationSlider;
 
     @AfterViews
     protected void initViews() {
-        initSeekBar();
+        initTopBar();
+        initBottomBar();
     }
 
-    private void initSeekBar() {
+    private void initTopBar() {
+        ViewCompat.setElevation(toolbar, dipToPx(2));
+        toolbar.setTitle("Alice's Adventures in Wonderland");
+        toolbar.setSubtitle("Lewis Carroll");
+        toolbar.inflateMenu(R.menu.book);
+        currentChapterText.setText("X — Alice's evidence");
+        currentPageText.setText("302 / 2031");
+    }
+
+    private void initBottomBar() {
         final BookFragment bookFragment = bookFragment();
-        seekBar.setMax(SEEK_BAR_RESOLUTION);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        locationSlider.setMax(SEEK_BAR_RESOLUTION);
+        locationSlider.setOnValueChangedListener(new Slider.OnValueChangedListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                double percent = (double) seekBar.getProgress() / SEEK_BAR_RESOLUTION;
+            public void onValueChanged(int value) {
+                double percent = (double) value / SEEK_BAR_RESOLUTION;
                 bookFragment.goLocation(bookFragment.percentToLocation(percent));
             }
         });
@@ -59,6 +78,8 @@ public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         checkLocationAvailable();
+        topBar.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.menu_topbar));
+        bottomBar.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.menu_bottombar));
     }
 
     @Override
@@ -73,7 +94,7 @@ public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
         if (currentLocation != null) {
             onLocationAvailable(bookFragment, currentLocation);
         } else {
-            downBarProgressBar.setVisibility(View.VISIBLE);
+            bottomProgressBar.setVisibility(View.VISIBLE);
             startCheckLocationAvailable();
         }
     }
@@ -91,10 +112,10 @@ public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
 
     @UiThread
     protected void onLocationAvailable(BookFragment bookFragment, BookLocation currentLocation) {
-        downBarProgressBar.setVisibility(View.INVISIBLE);
-        seekBar.setVisibility(View.VISIBLE);
         double percent = bookFragment.locationToPercent(currentLocation);
-        seekBar.setProgress((int) (SEEK_BAR_RESOLUTION * percent));
+        locationSlider.setValue((int) (SEEK_BAR_RESOLUTION * percent));
+        bottomProgressBar.setVisibility(View.INVISIBLE);
+        locationSlider.setVisibility(View.VISIBLE);
     }
 
     @Click(R.id.middleSpace)

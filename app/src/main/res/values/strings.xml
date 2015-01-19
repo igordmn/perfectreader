@@ -7,4 +7,7 @@
     <string name="bookFileNotFoundError">Файл книги не найден: \n%s</string>
     <string name="bookFileInvalidError">Файл книги поврежден или его формат не поддерживается</string>
     <string name="unknownError">Неизвестная ошибка</string>
+
+    <string name="bookMenuBookmarks">Закладки</string>
+    <string name="bookMenuSettings">Настройки</string>
 </resources>
