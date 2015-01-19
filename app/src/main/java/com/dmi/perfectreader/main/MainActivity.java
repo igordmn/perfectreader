@@ -134,9 +134,17 @@ public class MainActivity extends ActionBarActivity {
         MenuFragment fragment = (MenuFragment) fragmentManager.findFragmentByTag(tag);
         if (fragment == null) {
             fragment = MenuFragment_.builder().build();
-            fragmentManager.beginTransaction().add(R.id.mainContainer, fragment, tag).commit();
+            fragmentManager
+                    .beginTransaction()
+                    .setCustomAnimations(R.anim.fadein, R.anim.fadeout)
+                    .add(R.id.mainContainer, fragment, tag)
+                    .commit();
         } else {
-            fragmentManager.beginTransaction().remove(fragment).commit();
+            fragmentManager
+                    .beginTransaction()
+                    .setCustomAnimations(R.anim.fadein, R.anim.fadeout)
+                    .remove(fragment)
+                    .commit();
         }
     }
 

@@ -7,8 +7,6 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.dmi.perfectreader.R;
@@ -32,10 +30,6 @@ import static com.dmi.perfectreader.util.android.Units.dipToPx;
 public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
     private static final int SEEK_BAR_RESOLUTION = 1024;
 
-    @ViewById
-    protected ViewGroup topBar;
-    @ViewById
-    protected ViewGroup bottomBar;
     @ViewById
     protected Toolbar toolbar;
     @ViewById
@@ -78,8 +72,6 @@ public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         checkLocationAvailable();
-        topBar.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.menu_topbar));
-        bottomBar.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.menu_bottombar));
     }
 
     @Override
@@ -132,7 +124,11 @@ public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
     }
 
     private void closeMenu() {
-        getFragmentManager().beginTransaction().remove(this).commit();
+        getFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.fadein, R.anim.fadeout)
+                .remove(MenuFragment.this)
+                .commit();
     }
 
     private BookFragment bookFragment() {
