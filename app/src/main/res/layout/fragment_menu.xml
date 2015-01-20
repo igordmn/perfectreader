@@ -92,13 +92,13 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="4dp"
-            android:paddingBottom="0dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp">
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp">
 
             <com.pnikosis.materialishprogress.ProgressWheel
-                android:id="@+id/bottomProgressBar"
+                android:id="@+id/locationProgressBar"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_centerInParent="true"
@@ -107,12 +107,14 @@
                 app:matProg_fillRadius="true"
                 app:matProg_barColor="@color/primary"/>
 
-            <com.gc.materialdesign.views.Slider
+            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
                 android:id="@+id/locationSlider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:visibility="invisible"/>
+                app:dsb_progressColor="@color/accent"
+                app:dsb_indicatorColor="@color/accent"
+                app:dsb_indicatorFormatter="302"/>
 
         </RelativeLayout>
 

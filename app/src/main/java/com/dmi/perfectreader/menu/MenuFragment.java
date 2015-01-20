@@ -14,9 +14,9 @@ import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.BookFragment;
 import com.dmi.perfectreader.book.config.BookLocation;
 import com.dmi.perfectreader.util.android.ExtFragment;
-import com.gc.materialdesign.views.Slider;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
@@ -38,9 +38,9 @@ public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
     @ViewById
     protected TextView currentPageText;
     @ViewById
-    protected ProgressWheel bottomProgressBar;
+    protected ProgressWheel locationProgressBar;
     @ViewById
-    protected Slider locationSlider;
+    protected DiscreteSeekBar locationSlider;
 
     @AfterViews
     protected void initViews() {
@@ -62,11 +62,13 @@ public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
     private void initBottomBar() {
         final BookFragment bookFragment = bookFragment();
         locationSlider.setMax(SEEK_BAR_RESOLUTION);
-        locationSlider.setOnValueChangedListener(new Slider.OnValueChangedListener() {
+        locationSlider.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
-            public void onValueChanged(int value) {
-                double percent = (double) value / SEEK_BAR_RESOLUTION;
-                bookFragment.goLocation(bookFragment.percentToLocation(percent));
+            public void onProgressChanged(DiscreteSeekBar discreteSeekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    double percent = (double) progress / SEEK_BAR_RESOLUTION;
+                    bookFragment.goLocation(bookFragment.percentToLocation(percent));
+                }
             }
         });
     }
@@ -89,7 +91,8 @@ public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
         if (currentLocation != null) {
             onLocationAvailable(bookFragment, currentLocation);
         } else {
-            bottomProgressBar.setVisibility(View.VISIBLE);
+            locationProgressBar.setVisibility(View.VISIBLE);
+            locationSlider.setVisibility(View.INVISIBLE);
             startCheckLocationAvailable();
         }
     }
@@ -108,8 +111,8 @@ public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
     @UiThread
     protected void onLocationAvailable(BookFragment bookFragment, BookLocation currentLocation) {
         double percent = bookFragment.locationToPercent(currentLocation);
-        locationSlider.setValue((int) (SEEK_BAR_RESOLUTION * percent));
-        bottomProgressBar.setVisibility(View.INVISIBLE);
+        locationSlider.setProgress((int) (SEEK_BAR_RESOLUTION * percent));
+        locationProgressBar.setVisibility(View.INVISIBLE);
         locationSlider.setVisibility(View.VISIBLE);
     }
 
