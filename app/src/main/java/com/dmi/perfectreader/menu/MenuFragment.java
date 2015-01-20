@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -51,7 +52,9 @@ public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
         ViewCompat.setElevation(toolbar, dipToPx(2));
         toolbar.setTitle("Alice's Adventures in Wonderland");
         toolbar.setSubtitle("Lewis Carroll");
-        toolbar.inflateMenu(R.menu.book);
+        MenuItem menuItem = toolbar.getMenu().add(R.string.bookMenuSettings);
+        menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        menuItem.setIcon(R.drawable.ic_settings_white_24dp);
         currentChapterText.setText("X — Alice's evidence");
         currentPageText.setText("302 / 2031");
     }

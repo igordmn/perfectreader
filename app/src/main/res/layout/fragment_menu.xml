@@ -40,6 +40,7 @@
                 android:textColor="@color/icons"
                 android:textStyle="italic"
                 android:textAppearance="?android:attr/textAppearanceSmall"
+                android:contentDescription="@string/bookMenuBookmarks"
                 tools:text="X — Alice's evidence"
                 tools:ignore="RtlHardcoded"/>
             <TextView
@@ -51,15 +52,18 @@
                 android:gravity="end"
                 android:textColor="@color/icons"
                 android:textAppearance="?android:attr/textAppearanceMedium"
+                android:contentDescription="@string/bookMenuGoto"
                 tools:text="302 / 2031"
                 tools:ignore="RtlHardcoded"/>
         </RelativeLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:background="@drawable/shadow_bottom" />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_below="@id/topBar"
+        android:background="@drawable/shadow_bottom"/>
 
     <FrameLayout
         android:id="@+id/middleSpace"
@@ -70,6 +74,12 @@
         android:background="@android:color/transparent"
         android:clickable="true"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_above="@id/bottomBar"
+        android:background="@drawable/shadow_top" />
+
     <LinearLayout
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
@@ -79,15 +89,13 @@
         android:background="@android:color/white"
         android:clickable="true">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:background="@drawable/shadow_top" />
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="4dp">
+            android:paddingTop="4dp"
+            android:paddingBottom="0dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp">
 
             <com.pnikosis.materialishprogress.ProgressWheel
                 android:id="@+id/bottomProgressBar"
@@ -107,6 +115,52 @@
                 android:visibility="invisible"/>
 
         </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <com.dmi.perfectreader.widget.HintedImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_search_grey600_24dp"
+                android:contentDescription="@string/bookMenuSearch"
+                android:background="?android:selectableItemBackground"/>
+
+            <com.dmi.perfectreader.widget.HintedImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_filter_b_and_w_grey600_24dp"
+                android:contentDescription="@string/bookMenuSwitchTheme"
+                android:background="?android:selectableItemBackground"/>
+
+            <com.dmi.perfectreader.widget.HintedImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_input_grey600_24dp"
+                android:contentDescription="@string/bookMenuAutoscroll"
+                android:background="?android:selectableItemBackground"/>
+
+            <com.dmi.perfectreader.widget.HintedImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_volume_up_grey600_24dp"
+                android:contentDescription="@string/bookMenuTextToSpeech"
+                android:background="?android:selectableItemBackground"/>
+
+            <com.dmi.perfectreader.widget.HintedImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_bookmark_outline_grey600_24dp"
+                android:contentDescription="@string/bookMenuAddBookmark"
+                android:background="?android:selectableItemBackground"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

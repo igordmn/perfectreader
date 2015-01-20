@@ -4,17 +4,18 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 
 public class Units {
-    private static DisplayMetrics displayMetrics;
+    private static float density;
 
     public static void init(Context context) {
-        displayMetrics = context.getApplicationContext().getResources().getDisplayMetrics();
+        DisplayMetrics displayMetrics = context.getApplicationContext().getResources().getDisplayMetrics();
+        density = displayMetrics.density;
     }
 
     public static float dipToPx(float dip) {
-        return dip * displayMetrics.density;
+        return dip * density;
     }
 
     public static float pxToDip(float px) {
-        return px / displayMetrics.density;
+        return px / density;
     }
 }
