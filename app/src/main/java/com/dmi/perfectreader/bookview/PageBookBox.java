@@ -138,6 +138,14 @@ public class PageBookBox extends FrameLayout {
         return true;
     }
 
+    public void setTextSelectEnabled(boolean enabled) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setLinkClickEnabled(boolean enabled) {
+        throw new UnsupportedOperationException();
+    }
+
     private static double touchDistance(MotionEvent event1, MotionEvent event2) {
         float dX = event1.getX() - event2.getX();
         float dY = event1.getY() - event2.getY();
