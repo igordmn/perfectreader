@@ -13,6 +13,8 @@ import android.widget.TextView;
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.BookFragment;
 import com.dmi.perfectreader.book.config.BookLocation;
+import com.dmi.perfectreader.setting.SettingsFragment;
+import com.dmi.perfectreader.setting.SettingsFragment_;
 import com.dmi.perfectreader.util.android.ExtFragment;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
@@ -55,6 +57,14 @@ public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
         MenuItem menuItem = toolbar.getMenu().add(R.string.bookMenuSettings);
         menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         menuItem.setIcon(R.drawable.ic_settings_white_24dp);
+        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                closeFragment();
+                showSettings();
+                return true;
+            }
+        });
         currentChapterText.setText("X — Alice's evidence");
         currentPageText.setText("302 / 2031");
     }
@@ -118,22 +128,32 @@ public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
 
     @Click(R.id.middleSpace)
     protected void onMiddleSpaceClick() {
-        closeMenu();
+        closeFragment();
     }
 
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            closeMenu();
+            closeFragment();
             return true;
         }
         return false;
     }
 
-    private void closeMenu() {
+    private void closeFragment() {
         getFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.anim.fadein, R.anim.fadeout)
-                .remove(MenuFragment.this)
+                .remove(this)
+                .commit();
+    }
+
+    private void showSettings() {
+        SettingsFragment fragment = SettingsFragment_.builder().build();
+        String tag = SettingsFragment.class.getName();
+        getFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.fadein, R.anim.fadeout)
+                .add(R.id.mainContainer, fragment, tag)
                 .commit();
     }
 

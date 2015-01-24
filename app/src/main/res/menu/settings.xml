@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/settingsText"
+          android:title="Текст" >
+        <menu>
+            <item android:id="@+id/settingsTextSymbol"
+                  android:title="Символ" />
+            <item android:id="@+id/settingsTextParagraph"
+                  android:title="Абзац" />
+            <item android:id="@+id/settingsTextColor"
+                  android:title="Цвет" />
+            <item android:id="@+id/settingsTextIntervals"
+                  android:title="Интервалы" />
+            <item android:id="@+id/settingsTextFont"
+                  android:title="Шрифт" />
+            <item android:id="@+id/settingsTextAlignment"
+                  android:title="Выравнивание" />
+            <item android:id="@+id/settingsTextTypographic"
+                  android:title="Типографика" />
+            <item android:id="@+id/settingsTextProofreading"
+                  android:title="Корректор текста" />
+        </menu>
+    </item>
+    <item android:id="@+id/settingsPage"
+          android:title="Страница" >
+        <menu>
+            <item android:id="@+id/settingsPageTheme"
+                  android:title="Тема" />
+            <item android:id="@+id/settingsPageBookBackground"
+                  android:title="Фон книги" />
+            <item android:id="@+id/settingsPageBackground"
+                  android:title="Фон страницы" />
+            <item android:id="@+id/settingsPageMargins"
+                  android:title="Поля" />
+            <item android:id="@+id/settingsPageSize"
+                  android:title="Размер страницы" />
+            <item android:id="@+id/settingsPageFlipAnimation"
+                  android:title="Анимация перелистывания" />
+            <item android:id="@+id/settingsPageFlipSound"
+                  android:title="Звук перелистывания" />
+        </menu>
+    </item>
+    <item android:id="@+id/settingsControl"
+          android:title="Управление" >
+        <menu>
+            <item android:id="@+id/settingsControlTapZones"
+                  android:title="Тап-зоны" />
+            <item android:id="@+id/settingsControlSlideZones"
+                  android:title="Слайд-зоны" />
+            <item android:id="@+id/settingsControlMultitouch"
+                  android:title="Мультитач" />
+            <item android:id="@+id/settingsControlHardkeys"
+                  android:title="Аппаратные кнопки" />
+            <item android:id="@+id/settingsControlQuickPanel"
+                  android:title="Панель быстрого доступа" />
+        </menu>
+    </item>
+    <item android:id="@+id/settingsSystem"
+          android:title="Системные" >
+        <menu>
+            <item android:id="@+id/settingsSystemFullscreen"
+                  android:title="Полноэкранный режим" />
+            <item android:id="@+id/settingsSystemBrightness"
+                  android:title="Яркость" />
+            <item android:id="@+id/settingsSystemScreenOff"
+                  android:title="Отключение экрана" />
+            <item android:id="@+id/settingsSystemHealth"
+                  android:title="Забота о здоровье" />
+            <item android:id="@+id/settingsSystemTTS"
+                  android:title="TTS" />
+        </menu>
+    </item>
+</menu>
