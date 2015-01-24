@@ -16,7 +16,7 @@ import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.setting.Settings;
 import com.dmi.perfectreader.userdata.UserData;
 import com.dmi.perfectreader.util.android.EventBus;
-import com.dmi.perfectreader.util.android.ExtFragment;
+import com.dmi.perfectreader.util.android.FragmentExt;
 import com.dmi.perfectreader.util.lang.IntegerPercent;
 
 import org.androidannotations.annotations.AfterViews;
@@ -37,7 +37,7 @@ import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 
 @EFragment(R.layout.fragment_book)
-public class BookFragment extends ExtFragment {
+public class BookFragment extends FragmentExt {
     private final static float TIME_FOR_ONE_SLIDE_IN_SECONDS = 0.4F;
 
     @FragmentArg

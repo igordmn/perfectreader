@@ -3,7 +3,7 @@ package com.dmi.perfectreader.util.android;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 
-public class ExtFragment extends Fragment implements KeyEvent.Callback {
+public class FragmentExt extends Fragment implements KeyEvent.Callback {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return false;

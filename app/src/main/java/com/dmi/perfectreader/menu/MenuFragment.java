@@ -15,7 +15,7 @@ import com.dmi.perfectreader.book.BookFragment;
 import com.dmi.perfectreader.book.config.BookLocation;
 import com.dmi.perfectreader.setting.SettingsFragment;
 import com.dmi.perfectreader.setting.SettingsFragment_;
-import com.dmi.perfectreader.util.android.ExtFragment;
+import com.dmi.perfectreader.util.android.FragmentExt;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -30,7 +30,7 @@ import org.androidannotations.api.BackgroundExecutor;
 import static com.dmi.perfectreader.util.android.Units.dipToPx;
 
 @EFragment(R.layout.fragment_menu)
-public class MenuFragment extends ExtFragment implements KeyEvent.Callback {
+public class MenuFragment extends FragmentExt implements KeyEvent.Callback {
     private static final int SEEK_BAR_RESOLUTION = 1024;
 
     @ViewById
