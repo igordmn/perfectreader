@@ -4,8 +4,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.dmi.perfectreader.bookview.PageBookBox;
-import com.dmi.perfectreader.command.Commands;
+import com.dmi.perfectreader.book.Book;
 import com.dmi.perfectreader.setting.Settings;
 
 import org.androidannotations.annotations.Bean;
@@ -17,7 +16,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 
-@EBean
+@EBean(scope = EBean.Scope.Singleton)
 public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
     private static final float TOUCH_SENSITIVITY = dipToPx(8);
     private static final float LEFT_SIDE_WIDTH_FOR_SLIDE = dipToPx(40);
@@ -29,27 +28,33 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
 
     @Bean
     protected Settings settings;
-    @Bean
-    protected Commands commands;
-    private PageBookBox bookBox;
+    private Book book;
 
+    private int width;
+    private int height;
     private float touchDownX;
     private float touchDownY;
     private float oldApplySlideActionTouchY;
     private boolean nowIsSlideByLeftSide = false;
 
-    public void setBookBox(PageBookBox bookBox) {
-        this.bookBox = bookBox;
+    public void setBook(Book book) {
+        this.book = book;
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            onTouchDown(event);
-        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            onTouchMove(event);
-        } else if (event.getAction() == MotionEvent.ACTION_UP) {
-            onTouchUp(event);
+    public boolean onTouch(View view, MotionEvent event) {
+        width = view.getWidth();
+        height = view.getHeight();
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                onTouchDown(event);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                onTouchMove(event);
+                break;
+            case MotionEvent.ACTION_UP:
+                onTouchUp(event);
+                break;
         }
         return true;
     }
@@ -74,7 +79,7 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
                 int fontSize = settings.format.FONT_SIZE.get();
                 fontSize = max(FONT_SIZE_MIN, min(FONT_SIZE_MAX, fontSize + count * FONT_SIZE_DELTA));
                 settings.format.FONT_SIZE.set(fontSize);
-                bookBox.configure().setFontSize(fontSize).commit();
+                book.configure().setFontSize(fontSize).commit();
                 oldApplySlideActionTouchY = motionEvent.getY();
             }
         }
@@ -82,7 +87,7 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
 
     private void onTouchUp(MotionEvent motionEvent) {
         if (!nowIsSlideByLeftSide) {
-            int thirdOfScreen = bookBox.getWidth() / 3;
+            int thirdOfScreen = width / 3;
             float touchOffsetX = motionEvent.getX() - touchDownX;
             float touchOffsetY = motionEvent.getY() - touchDownY;
             float touchOffset = (float) sqrt(touchOffsetX * touchOffsetX + touchOffsetY * touchOffsetY);
@@ -97,15 +102,11 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
                     !swipeRight && touchOffset <= TOUCH_SENSITIVITY;
 
             if (touchRightZone || swipeLeft) {
-                if (bookBox.canGoNextPage()) {
-                    bookBox.goNextPage();
-                }
+                book.goNextPage();
             } else if (touchLeftZone || swipeRight) {
-                if (bookBox.canGoPreviewPage()) {
-                    bookBox.goPreviewPage();
-                }
+                book.goPreviewPage();
             } else if (touchCenterZone) {
-                commands.toggleMenu();
+                book.toggleMenu();
             }
         }
     }
@@ -113,13 +114,9 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            if (bookBox.canGoNextPage()) {
-                bookBox.goNextPage();
-            }
+            book.goNextPage();
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            if (bookBox.canGoPreviewPage()) {
-                bookBox.goPreviewPage();
-            }
+            book.goPreviewPage();
         }
         return true;
     }

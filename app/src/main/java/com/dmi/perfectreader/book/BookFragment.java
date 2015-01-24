@@ -3,14 +3,18 @@ package com.dmi.perfectreader.book;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
 
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 import com.dmi.perfectreader.book.config.BookLocation;
+import com.dmi.perfectreader.bookview.BookConfigurator;
 import com.dmi.perfectreader.bookview.PageBookBox;
 import com.dmi.perfectreader.control.BookControl;
 import com.dmi.perfectreader.error.ErrorEvent;
+import com.dmi.perfectreader.main.ToggleMenuIntent;
 import com.dmi.perfectreader.setting.Settings;
 import com.dmi.perfectreader.userdata.UserData;
 import com.dmi.perfectreader.util.android.EventBus;
@@ -29,7 +33,7 @@ import java.io.File;
 import java.io.IOException;
 
 @EFragment(R.layout.fragment_book)
-public class BookFragment extends FragmentExt {
+public class BookFragment extends FragmentExt implements View.OnTouchListener, Book {
     private final static float TIME_FOR_ONE_SLIDE_IN_SECONDS = 0.4F;
 
     @FragmentArg
@@ -50,15 +54,51 @@ public class BookFragment extends FragmentExt {
     @AfterViews
     protected void initViews() {
         bookBox.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_SLIDE_IN_SECONDS));
-        bookBox.setOnTouchListener(bookControl);
+        bookBox.setOnTouchListener(this);
         bookBox.setOnLocationChangeListener(new OnLocationChangeListenerImpl());
-        bookControl.setBookBox(bookBox);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         loadBook();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        bookControl.setBook(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        bookControl.setBook(null);
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return bookControl.onTouch(v, event);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
+        return bookControl.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
+        return bookControl.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        return bookControl.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyMultiple(int keyCode, int count, KeyEvent event) {
+        return bookControl.onKeyMultiple(keyCode, count, event);
     }
 
     @Background
@@ -88,40 +128,48 @@ public class BookFragment extends FragmentExt {
         }
     }
 
+    @Override
     public BookLocation currentLocation() {
         return bookBox.currentLocation();
     }
 
+    @Override
     public void goLocation(BookLocation location) {
         bookBox.goLocation(location);
     }
 
+    @Override
     public BookLocation percentToLocation(double percent) {
         return bookBox.percentToLocation(percent);
     }
 
+    @Override
     public double locationToPercent(BookLocation location) {
         return bookBox.locationToPercent(location);
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
-        return bookControl.onKeyDown(keyCode, event);
+    public void toggleMenu() {
+        eventBus.post(new ToggleMenuIntent());
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
-        return bookControl.onKeyUp(keyCode, event);
+    public void goNextPage() {
+        if (bookBox.canGoNextPage()) {
+            bookBox.goNextPage();
+        }
     }
 
     @Override
-    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-        return false;
+    public void goPreviewPage() {
+        if (bookBox.canGoPreviewPage()) {
+            bookBox.goPreviewPage();
+        }
     }
 
     @Override
-    public boolean onKeyMultiple(int keyCode, int count, KeyEvent event) {
-        return false;
+    public BookConfigurator configure() {
+        return bookBox.configure();
     }
 
     private class OnLocationChangeListenerImpl implements PageBookBox.OnLocationChangeListener {

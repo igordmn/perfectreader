@@ -24,7 +24,6 @@ import android.widget.FrameLayout;
 
 import com.dmi.perfectreader.book.BookStorage;
 import com.dmi.perfectreader.book.config.BookLocation;
-import com.dmi.perfectreader.book.config.TextAlign;
 import com.dmi.perfectreader.error.ErrorEvent;
 import com.dmi.perfectreader.util.android.EventBus;
 import com.dmi.perfectreader.util.concurrent.Waiter;
@@ -39,7 +38,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static com.dmi.perfectreader.util.android.MainThreads.runOnMainThread;
 import static com.dmi.perfectreader.util.js.JavaScript.jsArray;
-import static com.dmi.perfectreader.util.js.JavaScript.jsValue;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Math.abs;
@@ -175,7 +173,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
 
     // todo вызывая постоянно эту команду, можно заDDOSить и все затормозит. нужно сделать проверку, выполнился ли прошлый вызов. если нет, то отложить.
     public BookConfigurator configure() {
-        return new BookConfigurator();
+        return new BookConfigurator(this);
     }
 
     public BookLocation percentToLocation(double percent) {
@@ -234,7 +232,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         webView.preventDefaultTouch();
     }
 
-    private void execJs(String js) {
+    void execJs(String js) {
         loadUrl("javascript:" + js);
     }
 
@@ -247,7 +245,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         });
     }
 
-    private void resetCanGoPages() {
+    void resetCanGoPages() {
         canGoNextPage = false;
         canGoPreviewPage = false;
     }
@@ -255,61 +253,6 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     private void updateStateByJsReader() {
         execJs("javaBridge.setCurrentLocation(reader.currentLocation.segmentIndex, reader.currentLocation.percent);\n" +
                "javaBridge.setCanGoPages(reader.canGoNextPage(), reader.canGoPreviewPage());\n");
-    }
-
-    public class BookConfigurator {
-        private final StringBuilder fullJs = new StringBuilder();
-
-        public BookConfigurator setPagePadding(int pageTopPaddingInPixels,
-                                               int pageRightPaddingInPixels,
-                                               int pageBottomPaddingInPixels,
-                                               int pageLeftPaddingInPixels) {
-            appendJs(
-                    format("reader.setPagePadding(%s, %s, %s, %s);",
-                            jsValue(pageTopPaddingInPixels),
-                            jsValue(pageRightPaddingInPixels),
-                            jsValue(pageBottomPaddingInPixels),
-                            jsValue(pageLeftPaddingInPixels)
-                    )
-            );
-            return this;
-        }
-
-        public BookConfigurator setTextAlign(TextAlign textAlign) {
-            appendJs(
-                    format("reader.setTextAlign(%s);",
-                            jsValue(textAlign.cssValue())
-                    )
-            );
-            return this;
-        }
-
-        public BookConfigurator setFontSize(int fontSizeInPercents) {
-            appendJs(
-                    format("reader.setFontSize(%s);",
-                            jsValue(fontSizeInPercents)
-                    )
-            );
-            return this;
-        }
-
-        public BookConfigurator setLineHeight(int lineHeightInPercents) {
-            appendJs(
-                    format("reader.setLineHeight(%s);",
-                            jsValue(lineHeightInPercents)
-                    )
-            );
-            return this;
-        }
-
-        public void commit() {
-            resetCanGoPages();
-            execJs(fullJs.toString());
-        }
-
-        private void appendJs(String js) {
-            fullJs.append(js).append('\n');
-        }
     }
 
     private class JavaBridge {

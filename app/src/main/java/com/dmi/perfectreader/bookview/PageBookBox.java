@@ -51,7 +51,7 @@ public class PageBookBox extends FrameLayout {
         pageBookView.load(bookFile);
     }
 
-    public PageBookView.BookConfigurator configure() {
+    public BookConfigurator configure() {
         return pageBookView.configure();
     }
 
