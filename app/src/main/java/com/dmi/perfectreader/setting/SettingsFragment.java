@@ -23,12 +23,8 @@ import org.androidannotations.annotations.ViewById;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import static com.dmi.perfectreader.util.android.Units.dipToPx;
-
 @EFragment(R.layout.fragment_settings)
 public class SettingsFragment extends Fragment {
-    private final static int BUTTON_WIDTH = (int) dipToPx(160);
-
     @ViewById
     protected PagerSlidingTabStrip tabs;
     @ViewById
