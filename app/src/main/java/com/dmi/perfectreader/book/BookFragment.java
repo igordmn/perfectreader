@@ -14,7 +14,6 @@ import com.dmi.perfectreader.bookview.BookConfigurator;
 import com.dmi.perfectreader.bookview.PageBookBox;
 import com.dmi.perfectreader.control.BookControl;
 import com.dmi.perfectreader.error.ErrorEvent;
-import com.dmi.perfectreader.main.ToggleMenuIntent;
 import com.dmi.perfectreader.setting.Settings;
 import com.dmi.perfectreader.userdata.UserData;
 import com.dmi.perfectreader.util.android.EventBus;
@@ -146,11 +145,6 @@ public class BookFragment extends FragmentExt implements View.OnTouchListener, B
     @Override
     public double locationToPercent(BookLocation location) {
         return bookBox.locationToPercent(location);
-    }
-
-    @Override
-    public void toggleMenu() {
-        eventBus.post(new ToggleMenuIntent());
     }
 
     @Override

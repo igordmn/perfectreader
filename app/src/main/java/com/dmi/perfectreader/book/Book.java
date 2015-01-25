@@ -12,8 +12,6 @@ public interface Book {
 
     double locationToPercent(BookLocation location);
 
-    void toggleMenu();
-
     void goNextPage();
 
     void goPreviewPage();

@@ -5,7 +5,10 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.dmi.perfectreader.book.Book;
+import com.dmi.perfectreader.main.GoBackIntent;
+import com.dmi.perfectreader.main.ToggleMenuIntent;
 import com.dmi.perfectreader.setting.Settings;
+import com.dmi.perfectreader.util.android.EventBus;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
@@ -26,6 +29,8 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
     private static final int FONT_SIZE_MIN = 20;
     private static final int FONT_SIZE_DELTA = 10;
 
+    @Bean
+    protected EventBus eventBus;
     @Bean
     protected Settings settings;
     private Book book;
@@ -95,7 +100,7 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
             if (isTap) {
                 float xPart = motionEvent.getX() / width;
                 float yPart = motionEvent.getY() / height;
-                TapZoneConfiguration configuration = settings.control.tapZones.configuration.get();
+                TapZoneConfiguration configuration = settings.control.tapZones.shortTaps.configuration.get();
                 TapZone tapZone = configuration.getAt(xPart, yPart);
                 Action action = settings.control.tapZones.shortTaps.action(tapZone).get();
                 performAction(action);
@@ -113,7 +118,7 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        HardKey hardKey = HardKey.fromKeyCode(event.getKeyCode());
+        HardKey hardKey = HardKey.fromKeyCode(keyCode);
         if (hardKey != HardKey.UNKNOWN) {
             Action action = settings.control.hardKeys.shortPress.action(hardKey).get();
             performAction(action);
@@ -141,7 +146,10 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
             case NONE:
                 break;
             case TOGGLE_MENU:
-                book.toggleMenu();
+                eventBus.post(new ToggleMenuIntent());
+                break;
+            case GO_BACK:
+                eventBus.post(new GoBackIntent());
                 break;
             case GO_NEXT_PAGE:
                 book.goNextPage();
@@ -149,6 +157,8 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
             case GO_PREVIEW_PAGE:
                 book.goPreviewPage();
                 break;
+            default:
+                throw new UnsupportedOperationException();
         }
     }
 }

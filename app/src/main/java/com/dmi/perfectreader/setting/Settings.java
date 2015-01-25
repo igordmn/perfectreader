@@ -27,9 +27,9 @@ public class Settings {
     public class Control {
         public final TapZones tapZones = new TapZones();
         public class TapZones {
-            public final Setting<TapZoneConfiguration> configuration = new Setting<>("control.tapZones.configuration", TapZoneConfiguration.NINE_SQUARES);
             public ShortTaps shortTaps = new ShortTaps();
             public class ShortTaps {
+                public final Setting<TapZoneConfiguration> configuration = new Setting<>("control.tapZones.configuration", TapZoneConfiguration.NINE_SQUARES);
                 private final Setting<Action> centerAction = new Setting<>("control.tapZones.shortTaps.centerAction", Action.TOGGLE_MENU);
                 private final Setting<Action> topAction = new Setting<>("control.tapZones.shortTaps.topAction", Action.TOGGLE_MENU);
                 private final Setting<Action> bottomAction = new Setting<>("control.tapZones.shortTaps.bottomAction", Action.TOGGLE_MENU);
@@ -73,7 +73,7 @@ public class Settings {
                 private final Setting<Action> volumeUpAction = new Setting<>("control.hardKeys.shortPress.volumeUpAction", Action.GO_PREVIEW_PAGE);
                 private final Setting<Action> volumeDownAction = new Setting<>("control.hardKeys.shortPress.volumeDownAction", Action.GO_NEXT_PAGE);
                 private final Setting<Action> menuAction = new Setting<>("control.hardKeys.shortPress.menuAction", Action.TOGGLE_MENU);
-                private final Setting<Action> backAction = new Setting<>("control.hardKeys.shortPress.backAction", Action.NONE);
+                private final Setting<Action> backAction = new Setting<>("control.hardKeys.shortPress.backAction", Action.GO_BACK);
                 private final Setting<Action> searchAction = new Setting<>("control.hardKeys.shortPress.searchAction", Action.NONE);
                 private final Setting<Action> cameraAction = new Setting<>("control.hardKeys.shortPress.cameraAction", Action.NONE);
                 private final Setting<Action> trackballPressAction = new Setting<>("control.hardKeys.shortPress.trackballPressAction", Action.NONE);

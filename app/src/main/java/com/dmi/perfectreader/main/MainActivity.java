@@ -2,10 +2,7 @@ package com.dmi.perfectreader.main;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBarActivity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -20,6 +17,7 @@ import com.dmi.perfectreader.init.ApplicationInitFinishEvent;
 import com.dmi.perfectreader.menu.MenuFragment;
 import com.dmi.perfectreader.menu.MenuFragment_;
 import com.dmi.perfectreader.userdata.UserData;
+import com.dmi.perfectreader.util.android.ActionBarActivityExt;
 import com.dmi.perfectreader.util.android.EventBus;
 import com.google.common.base.Objects;
 import com.squareup.otto.Subscribe;
@@ -34,7 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 @EActivity(R.layout.activity_book_reader)
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivityExt {
     @ViewById
     protected View bookNotLoadedView;
     @ViewById
@@ -97,35 +95,14 @@ public class MainActivity extends ActionBarActivity {
         super.onDestroy();
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
-        MenuFragment menuFragment = menuFragment();
-        BookFragment bookFragment = bookFragment();
-        if (menuFragment != null) {
-            return menuFragment.onKeyDown(keyCode, event);
-        } else if (bookFragment != null) {
-            return bookFragment.onKeyDown(keyCode, event);
-        } else {
-            return super.onKeyDown(keyCode, event);
-        }
-    }
-
-    @Override
-    public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
-        MenuFragment menuFragment = menuFragment();
-        BookFragment bookFragment = bookFragment();
-        if (menuFragment != null) {
-            return menuFragment.onKeyUp(keyCode, event);
-        } else if (bookFragment != null) {
-            return bookFragment.onKeyUp(keyCode, event);
-        } else {
-            return super.onKeyUp(keyCode, event);
-        }
-    }
-
     @Subscribe
     public void onToggleMenuIntent(ToggleMenuIntent intent) {
         toggleMenu();
+    }
+
+    @Subscribe
+    public void onGoBackIntent(GoBackIntent intent) {
+        goBack();
     }
 
     private void toggleMenu() {
@@ -148,12 +125,12 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private BookFragment bookFragment() {
-        return (BookFragment) getSupportFragmentManager().findFragmentByTag(BookFragment.class.getName());
+    private void goBack() {
+        finish();
     }
 
-    private MenuFragment menuFragment() {
-        return (MenuFragment) getSupportFragmentManager().findFragmentByTag(MenuFragment.class.getName());
+    private BookFragment bookFragment() {
+        return (BookFragment) getSupportFragmentManager().findFragmentByTag(BookFragment.class.getName());
     }
 
     private File bookFileFromIntent() {

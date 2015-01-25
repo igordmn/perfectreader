@@ -132,11 +132,10 @@ public class MenuFragment extends FragmentExt implements KeyEvent.Callback {
     }
 
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
+        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU) {
             closeFragment();
-            return true;
         }
-        return false;
+        return true;
     }
 
     private void closeFragment() {
