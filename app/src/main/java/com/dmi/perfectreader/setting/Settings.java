@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.dmi.perfectreader.book.config.TextAlign;
 import com.dmi.perfectreader.control.Action;
+import com.dmi.perfectreader.control.HardKey;
 import com.dmi.perfectreader.control.TapZone;
 import com.dmi.perfectreader.control.TapZoneConfiguration;
 
@@ -59,6 +60,52 @@ public class Settings {
                             return bottomLeftAction;
                         case BOTTOM_RIGHT:
                             return bottomRightAction;
+                        default:
+                            throw new IllegalArgumentException();
+                    }
+                }
+            }
+        }
+        public final HardKeys hardKeys = new HardKeys();
+        public class HardKeys {
+            public ShortPress shortPress = new ShortPress();
+            public class ShortPress {
+                private final Setting<Action> volumeUpAction = new Setting<>("control.hardKeys.shortPress.volumeUpAction", Action.GO_PREVIEW_PAGE);
+                private final Setting<Action> volumeDownAction = new Setting<>("control.hardKeys.shortPress.volumeDownAction", Action.GO_NEXT_PAGE);
+                private final Setting<Action> menuAction = new Setting<>("control.hardKeys.shortPress.menuAction", Action.TOGGLE_MENU);
+                private final Setting<Action> backAction = new Setting<>("control.hardKeys.shortPress.backAction", Action.NONE);
+                private final Setting<Action> searchAction = new Setting<>("control.hardKeys.shortPress.searchAction", Action.NONE);
+                private final Setting<Action> cameraAction = new Setting<>("control.hardKeys.shortPress.cameraAction", Action.NONE);
+                private final Setting<Action> trackballPressAction = new Setting<>("control.hardKeys.shortPress.trackballPressAction", Action.NONE);
+                private final Setting<Action> trackballLeftAction = new Setting<>("control.hardKeys.shortPress.trackballLeftAction", Action.NONE);
+                private final Setting<Action> trackballRightAction = new Setting<>("control.hardKeys.shortPress.trackballRightAction", Action.NONE);
+                private final Setting<Action> trackballUpAction = new Setting<>("control.hardKeys.shortPress.trackballUpAction", Action.NONE);
+                private final Setting<Action> trackballDownAction = new Setting<>("control.hardKeys.shortPress.trackballDownAction", Action.NONE);
+
+                public Setting<Action> action(HardKey hardKey) {
+                    switch (hardKey) {
+                        case VOLUME_UP:
+                            return volumeUpAction;
+                        case VOLUME_DOWN:
+                            return volumeDownAction;
+                        case MENU:
+                            return menuAction;
+                        case BACK:
+                            return backAction;
+                        case SEARCH:
+                            return searchAction;
+                        case CAMERA:
+                            return cameraAction;
+                        case TRACKBALL_PRESS:
+                            return trackballPressAction;
+                        case TRACKBALL_LEFT:
+                            return trackballLeftAction;
+                        case TRACKBALL_RIGHT:
+                            return trackballRightAction;
+                        case TRACKBALL_UP:
+                            return trackballUpAction;
+                        case TRACKBALL_DOWN:
+                            return trackballDownAction;
                         default:
                             throw new IllegalArgumentException();
                     }

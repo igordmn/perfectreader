@@ -113,10 +113,10 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            book.goNextPage();
-        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            book.goPreviewPage();
+        HardKey hardKey = HardKey.fromKeyCode(event.getKeyCode());
+        if (hardKey != HardKey.UNKNOWN) {
+            Action action = settings.control.hardKeys.shortPress.action(hardKey).get();
+            performAction(action);
         }
         return true;
     }
