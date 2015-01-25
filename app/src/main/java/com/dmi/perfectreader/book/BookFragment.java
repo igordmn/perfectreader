@@ -110,9 +110,9 @@ public class BookFragment extends FragmentExt implements View.OnTouchListener, B
         }
 
         bookBox.configure()
-                .setTextAlign(settings.format.TEXT_ALIGN.get())
-                .setFontSize(settings.format.FONT_SIZE.get())
-                .setLineHeight(settings.format.LINE_HEIGHT.get())
+                .setTextAlign(settings.format.textAlign.get())
+                .setFontSize(settings.format.fontSize.get())
+                .setLineHeight(settings.format.lineHeight.get())
                 .commit();
 
         BookLocation loadedLocation = userData.loadBookLocation(bookFile);

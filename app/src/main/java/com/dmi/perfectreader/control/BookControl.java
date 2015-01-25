@@ -76,9 +76,9 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
         if (nowIsSlideByLeftSide) {
             if (abs(oldApplySlideActionTouchY - motionEvent.getY()) >= SLIDE_SENSITIVITY) {
                 int count = (int) ((motionEvent.getY() - oldApplySlideActionTouchY) / SLIDE_SENSITIVITY);
-                int fontSize = settings.format.FONT_SIZE.get();
+                int fontSize = settings.format.fontSize.get();
                 fontSize = max(FONT_SIZE_MIN, min(FONT_SIZE_MAX, fontSize + count * FONT_SIZE_DELTA));
-                settings.format.FONT_SIZE.set(fontSize);
+                settings.format.fontSize.set(fontSize);
                 book.configure().setFontSize(fontSize).commit();
                 oldApplySlideActionTouchY = motionEvent.getY();
             }
@@ -87,26 +87,26 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
 
     private void onTouchUp(MotionEvent motionEvent) {
         if (!nowIsSlideByLeftSide) {
-            int thirdOfScreen = width / 3;
             float touchOffsetX = motionEvent.getX() - touchDownX;
             float touchOffsetY = motionEvent.getY() - touchDownY;
             float touchOffset = (float) sqrt(touchOffsetX * touchOffsetX + touchOffsetY * touchOffsetY);
-            boolean swipeLeft = touchOffsetX <= -TOUCH_SENSITIVITY;
-            boolean swipeRight = touchOffsetX >= TOUCH_SENSITIVITY;
-            boolean touchLeftZone = motionEvent.getX() < thirdOfScreen &&
-                                    !swipeLeft && touchOffset <= TOUCH_SENSITIVITY;
-            boolean touchRightZone = motionEvent.getX() > 2 * thirdOfScreen &&
-                                     !swipeRight && touchOffset <= TOUCH_SENSITIVITY;
-            boolean touchCenterZone =
-                    motionEvent.getX() >= thirdOfScreen && motionEvent.getX() <= 2 * thirdOfScreen &&
-                    !swipeRight && touchOffset <= TOUCH_SENSITIVITY;
+            boolean isTap = touchOffset <= TOUCH_SENSITIVITY;
 
-            if (touchRightZone || swipeLeft) {
-                book.goNextPage();
-            } else if (touchLeftZone || swipeRight) {
-                book.goPreviewPage();
-            } else if (touchCenterZone) {
-                book.toggleMenu();
+            if (isTap) {
+                float xPart = motionEvent.getX() / width;
+                float yPart = motionEvent.getY() / height;
+                TapZoneConfiguration configuration = settings.control.tapZones.configuration.get();
+                TapZone tapZone = configuration.getAt(xPart, yPart);
+                Action action = settings.control.tapZones.shortTaps.action(tapZone).get();
+                performAction(action);
+            } else {
+                boolean swipeLeft = touchOffsetX <= -TOUCH_SENSITIVITY;
+                boolean swipeRight = touchOffsetX >= TOUCH_SENSITIVITY;
+                if (swipeLeft) {
+                    book.goNextPage();
+                } else if (swipeRight) {
+                    book.goPreviewPage();
+                }
             }
         }
     }
@@ -134,5 +134,21 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
     @Override
     public boolean onKeyMultiple(int keyCode, int count, KeyEvent event) {
         return false;
+    }
+
+    private void performAction(Action action) {
+        switch (action) {
+            case NONE:
+                break;
+            case TOGGLE_MENU:
+                book.toggleMenu();
+                break;
+            case GO_NEXT_PAGE:
+                book.goNextPage();
+                break;
+            case GO_PREVIEW_PAGE:
+                book.goPreviewPage();
+                break;
+        }
     }
 }

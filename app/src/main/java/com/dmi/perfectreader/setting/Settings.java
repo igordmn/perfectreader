@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.dmi.perfectreader.book.config.TextAlign;
+import com.dmi.perfectreader.control.Action;
+import com.dmi.perfectreader.control.TapZone;
+import com.dmi.perfectreader.control.TapZoneConfiguration;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Background;
@@ -12,12 +15,57 @@ import org.androidannotations.annotations.RootContext;
 
 @EBean
 public class Settings {
-    public class Format {
-        public final Setting<TextAlign> TEXT_ALIGN = new Setting<>("format.textAlign", TextAlign.JUSTIFY);
-        public final Setting<Integer> FONT_SIZE = new Setting<>("format.fontSize", 200);
-        public final Setting<Integer> LINE_HEIGHT = new Setting<>("format.lineHeight", 100);
-    }
     public final Format format = new Format();
+    public class Format {
+        public final Setting<TextAlign> textAlign = new Setting<>("format.textAlign", TextAlign.JUSTIFY);
+        public final Setting<Integer> fontSize = new Setting<>("format.fontSize", 200);
+        public final Setting<Integer> lineHeight = new Setting<>("format.lineHeight", 100);
+    }
+
+    public final Control control = new Control();
+    public class Control {
+        public final TapZones tapZones = new TapZones();
+        public class TapZones {
+            public final Setting<TapZoneConfiguration> configuration = new Setting<>("control.tapZones.configuration", TapZoneConfiguration.NINE_SQUARES);
+            public ShortTaps shortTaps = new ShortTaps();
+            public class ShortTaps {
+                private final Setting<Action> centerAction = new Setting<>("control.tapZones.shortTaps.centerAction", Action.TOGGLE_MENU);
+                private final Setting<Action> topAction = new Setting<>("control.tapZones.shortTaps.topAction", Action.TOGGLE_MENU);
+                private final Setting<Action> bottomAction = new Setting<>("control.tapZones.shortTaps.bottomAction", Action.TOGGLE_MENU);
+                private final Setting<Action> leftAction = new Setting<>("control.tapZones.shortTaps.leftAction", Action.GO_PREVIEW_PAGE);
+                private final Setting<Action> rightAction = new Setting<>("control.tapZones.shortTaps.rightAction", Action.GO_NEXT_PAGE);
+                private final Setting<Action> topLeftAction = new Setting<>("control.tapZones.shortTaps.topLeftAction", Action.GO_PREVIEW_PAGE);
+                private final Setting<Action> topRightAction = new Setting<>("control.tapZones.shortTaps.topRightAction", Action.GO_NEXT_PAGE);
+                private final Setting<Action> bottomLeftAction = new Setting<>("control.tapZones.shortTaps.bottomLeftAction", Action.GO_PREVIEW_PAGE);
+                private final Setting<Action> bottomRightAction = new Setting<>("control.tapZones.shortTaps.bottomRightAction", Action.GO_NEXT_PAGE);
+
+                public Setting<Action> action(TapZone tapZone) {
+                    switch (tapZone) {
+                        case CENTER:
+                            return centerAction;
+                        case TOP:
+                            return topAction;
+                        case BOTTOM:
+                            return bottomAction;
+                        case LEFT:
+                            return leftAction;
+                        case RIGHT:
+                            return rightAction;
+                        case TOP_LEFT:
+                            return topLeftAction;
+                        case TOP_RIGHT:
+                            return topRightAction;
+                        case BOTTOM_LEFT:
+                            return bottomLeftAction;
+                        case BOTTOM_RIGHT:
+                            return bottomRightAction;
+                        default:
+                            throw new IllegalArgumentException();
+                    }
+                }
+            }
+        }
+    }
 
     @RootContext
     protected Context context;
