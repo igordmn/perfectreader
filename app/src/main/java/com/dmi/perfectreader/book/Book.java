@@ -16,5 +16,7 @@ public interface Book {
 
     void goPreviewPage();
 
+    void selectText();
+
     BookConfigurator configure();
 }

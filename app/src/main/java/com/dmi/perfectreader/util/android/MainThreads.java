@@ -3,6 +3,8 @@ package com.dmi.perfectreader.util.android;
 import android.os.Handler;
 import android.os.Looper;
 
+import static com.google.common.base.Preconditions.checkState;
+
 public abstract class MainThreads {
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -25,5 +27,9 @@ public abstract class MainThreads {
 
     public static void removeCallbacks(Runnable runnable) {
         mainHandler.removeCallbacks(runnable);
+    }
+
+    public static void checkInMainThread() {
+        checkState(Looper.getMainLooper() == Looper.myLooper());
     }
 }

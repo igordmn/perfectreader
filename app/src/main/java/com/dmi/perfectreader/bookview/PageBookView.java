@@ -68,13 +68,6 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
     public PageBookView(Context context) {
         super(context);
         webView = createWebView(context);
-        webView.setLongClickable(false);
-        webView.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                return false;
-            }
-        });
         addView(webView);
     }
 
@@ -232,6 +225,10 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         webView.preventDefaultTouch();
     }
 
+    public void selectText() {
+        webView.selectText();
+    }
+
     void execJs(String js) {
         loadUrl("javascript:" + js);
     }
@@ -307,8 +304,8 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         }
 
         @JavascriptInterface
-        public void onTouchStartAllowedElement() {
-            listener.onTouchStartAllowedElement();
+        public void onTouchStartNotInteractiveElement() {
+            listener.onTouchStartNotInteractiveElement();
         }
     }
 
@@ -316,6 +313,8 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         private boolean preventDefaultTouch = false;
         private long downTime;
         private boolean isDown = false;
+        private float touchX = 0;
+        private float touchY = 0;
 
         public MyWebView(Context context) {
             super(context);
@@ -345,8 +344,16 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
             listener.afterInvalidate();
         }
 
+        // todo реализовать
+        public void selectText() {
+
+        }
+
         @Override
         public boolean onTouchEvent(MotionEvent event) {
+            touchX = event.getX();
+            touchY = event.getY();
+
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 isDown = true;
                 downTime = event.getDownTime();
@@ -366,18 +373,18 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
         }
 
         public void preventDefaultTouch() {
-            if (isDown) {
-                super.onTouchEvent(MotionEvent.obtain(
+            if (isDown && !preventDefaultTouch) {
+                MotionEvent event = MotionEvent.obtain(
                         downTime,
                         SystemClock.uptimeMillis(),
-                        MotionEvent.ACTION_CANCEL, 0, 0, 0));
+                        MotionEvent.ACTION_CANCEL, 0, 0, 0);
+                try {
+                    super.onTouchEvent(event);
+                } finally {
+                    event.recycle();
+                }
                 preventDefaultTouch = true;
             }
-        }
-
-        @Override
-        public boolean performLongClick() {
-            return !preventDefaultTouch && super.performLongClick();
         }
 
         @Override
@@ -449,7 +456,7 @@ public class PageBookView extends FrameLayout implements PagesDrawer {
 
         void afterInvalidate();
 
-        void onTouchStartAllowedElement();
+        void onTouchStartNotInteractiveElement();
 
         void onSelectStart();
 

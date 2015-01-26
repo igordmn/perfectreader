@@ -162,6 +162,11 @@ public class BookFragment extends FragmentExt implements View.OnTouchListener, B
     }
 
     @Override
+    public void selectText() {
+        bookBox.selectText();
+    }
+
+    @Override
     public BookConfigurator configure() {
         return bookBox.configure();
     }

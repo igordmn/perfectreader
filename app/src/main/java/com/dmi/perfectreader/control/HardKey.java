@@ -2,6 +2,7 @@ package com.dmi.perfectreader.control;
 
 import android.view.KeyEvent;
 
+// todo добавить кнопок (см. Cool Reader и AlReader)
 public enum HardKey {
     UNKNOWN,
     VOLUME_UP,

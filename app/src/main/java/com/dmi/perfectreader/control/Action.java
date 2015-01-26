@@ -5,5 +5,6 @@ public enum Action {
     TOGGLE_MENU,
     GO_BACK,
     GO_NEXT_PAGE,
-    GO_PREVIEW_PAGE
+    GO_PREVIEW_PAGE,
+    SELECT_TEXT
 }

@@ -157,6 +157,9 @@ public class BookControl implements KeyEvent.Callback, View.OnTouchListener {
             case GO_PREVIEW_PAGE:
                 book.goPreviewPage();
                 break;
+            case SELECT_TEXT:
+                book.selectText();
+                break;
             default:
                 throw new UnsupportedOperationException();
         }

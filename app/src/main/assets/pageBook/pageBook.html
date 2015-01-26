@@ -331,11 +331,11 @@ window.onload = function() {
         var document = window.document;
 
         window.addEventListener("touchstart", function(event) {
-            if (isAllowedElement(event.target)) {
-                settings.callback.onTouchStartAllowedElement();
+            if (isNotInteractiveElement(event.target)) {
+                settings.callback.onTouchStartNotInteractiveElement();
             }
 
-            function isAllowedElement(element) {
+            function isNotInteractiveElement(element) {
                 for (var it = element; it != null; it = it.parentNode) {
                     if (["BUTTON", "INPUT", "SELECT", "TEXTAREA"].indexOf(it.nodeName) >= 0) {
                         return false;

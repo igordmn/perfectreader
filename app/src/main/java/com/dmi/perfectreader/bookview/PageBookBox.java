@@ -96,7 +96,11 @@ public class PageBookBox extends FrameLayout {
         this.onLocationChangeListener = onLocationChangeListener;
     }
 
-    // todo onTouchStartAllowedElement может вызваться уже после ACTION_UP на тормозящих девайсах
+    public void selectText() {
+        pageBookView.selectText();
+    }
+
+    // todo onTouchStartNotInteractiveElement может вызваться уже после ACTION_UP на тормозящих девайсах
     @Override
     public boolean dispatchTouchEvent(@NonNull MotionEvent event) {
         int action = event.getAction();
@@ -212,7 +216,7 @@ public class PageBookBox extends FrameLayout {
         }
 
         @Override
-        public void onTouchStartAllowedElement() {
+        public void onTouchStartNotInteractiveElement() {
             touchOnAllowedElement = true;
         }
 
