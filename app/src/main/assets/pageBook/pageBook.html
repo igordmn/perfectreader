@@ -33,7 +33,7 @@ var ONE_HUNDRED_PERCENT = 0x7fffffff;
 window.onload = function() {
     var settings = {
         segmentUrls: [],
-        callback: undefined,
+        callback: undefined
     };
 
     var bookConfig = {
@@ -48,7 +48,7 @@ window.onload = function() {
 
         deleteRedundantSpaces: true,
         replaceFixedSpaces: true
-    }
+    };
 
     var mainContainer = document.getElementById("mainContainer");
     var currentFrame = document.getElementById("firstFrame");
@@ -181,7 +181,7 @@ window.onload = function() {
             bookConfig.replaceFixedSpaces = replaceFixedSpaces;
             reload();
         }
-    }
+    };
 
     function currentUrl(location) {
         return settings.segmentUrls[location.segmentIndex];;
@@ -270,9 +270,9 @@ window.onload = function() {
         var nextReader = nextFrame.reader;
         var previewReader = previewFrame.reader;
 
-        currentStyle = currentFrame.parentNode.style;
-        nextStyle = nextFrame.parentNode.style;
-        previewStyle = previewFrame.parentNode.style;
+        var currentStyle = currentFrame.parentNode.style;
+        var nextStyle = nextFrame.parentNode.style;
+        var previewStyle = previewFrame.parentNode.style;
 
         currentStyle.width = 3 * screenWidth;
         nextStyle.width = screenWidth;
@@ -322,7 +322,7 @@ window.onload = function() {
             resetViewportForReflow();
             initFrameContent(frame, percent);
             frame.style.visibility = "";
-        }
+        };
         frame.src = segmentUrl;
     }
 

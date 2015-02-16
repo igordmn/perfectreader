@@ -66,7 +66,7 @@ function elementText(element) {
                         return {
                             element: elements[i],
                             offset: index - sum
-                        }
+                        };
                         break;
                     }
                     sum += strings[i].length;
