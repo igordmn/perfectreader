@@ -448,13 +448,13 @@ window.onload = function() {
             },
 
             refreshLineHeight: function() {
-                styles.p.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
-                styles.div.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
-                styles.td.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
-                styles.dt.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
-                styles.dd.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
-                styles.br.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
-                styles.li.setProperty("line-height", bookConfig.lineHeightInPercents + "%", "important");
+                styles.p.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
+                styles.div.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
+                styles.td.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
+                styles.dt.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
+                styles.dd.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
+                styles.br.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
+                styles.li.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
             },
 
             reflow: function() {
