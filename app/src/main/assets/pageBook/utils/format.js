@@ -6,6 +6,11 @@ function elementText(element) {
         "SUP", "TIME", "TT", "U", "VAR", "WBR"
     ]);
 
+    function isInlineElement(element) {
+        return INLINE_TEXT_ELEMENTS.contains(element.nodeName) ||
+            element.nodeName == "A" && element.src == undefined;
+    }
+
     return {
         find: function(regexp, callback) {
             var strings = [];
@@ -18,7 +23,7 @@ function elementText(element) {
                     strings.push(node.nodeValue);
                     elements.push(node);
                 } else if (node.nodeType == Node.ELEMENT_NODE) {
-                    if (INLINE_TEXT_ELEMENTS.contains(node.nodeName)) {
+                    if (isInlineElement(node)) {
                         iterateChildren(node, processNode);
                     } else {
                         strings.push(OBJECT_REPLACEMENT_CHARACTER);
@@ -44,11 +49,13 @@ function elementText(element) {
                     fullString: result[0],
                     subStrings: result.slice(1),
                     range: function(startIndex, endIndex) {
-                        if (startIndex > endIndex || endIndex > this.fullString.length) {
+                        if (startIndex === undefined) { startIndex = 0; }
+                        if (endIndex === undefined) { endIndex = this.fullString.length; }
+                        if (startIndex > endIndex || startIndex < 0 || endIndex > this.fullString.length) {
                             throw "wrong index";
                         }
-                        var start = indexToLocation(globalIndex + (startIndex !== undefined ? startIndex : 0));
-                        var end = indexToLocation(globalIndex + (endIndex !== undefined ? endIndex : this.fullString.length));
+                        var start = indexToLocation(globalIndex + startIndex, true);
+                        var end = indexToLocation(globalIndex + endIndex, false);
                         range.setStart(start.element, start.offset);
                         range.setEnd(end.element, end.offset);
                         return range;
@@ -56,20 +63,20 @@ function elementText(element) {
                 });
             });
 
-            function indexToLocation(index) {
-                if (index > text.length) {
+            function indexToLocation(index, isBeginLocation) {
+                if (index < 0 || index > text.length) {
                     throw "wrong index";
                 }
-                var sum = 0;
+                var begin = 0;
                 for (var i = 0; i < strings.length; i++) {
-                    if (sum + strings[i].length > index) {
+                    var end = begin + strings[i].length ;
+                    if ((isBeginLocation && end > index) || (!isBeginLocation && end >= index)) {
                         return {
                             element: elements[i],
-                            offset: index - sum
+                            offset: index - begin
                         };
-                        break;
                     }
-                    sum += strings[i].length;
+                    begin = end;
                 }
                 return {
                     element: elements[elements.length - 1],

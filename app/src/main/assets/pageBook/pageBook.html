@@ -18,7 +18,9 @@
 </div>
 
 <script type="text/javascript" src="utils/dom.js"></script>
+<script type="text/javascript" src="utils/error.js"></script>
 <script type="text/javascript" src="utils/format.js"></script>
+<script type="text/javascript" src="utils/map.js"></script>
 <script type="text/javascript" src="utils/string.js"></script>
 <script type="text/javascript" src="utils/style.js"></script>
 <script type="text/javascript" src="utils/regexp.js"></script>
@@ -45,6 +47,9 @@ window.onload = function() {
         textAlign: "justify",
         fontSizeInPercents: 100,
         lineHeightInPercents: 100,
+
+        hangingPunctuation: true,
+        hangingHyphens: true,
 
         deleteRedundantSpaces: true,
         replaceFixedSpaces: true
@@ -147,6 +152,7 @@ window.onload = function() {
             bookConfig.paddingBottomInPixels = paddingBottomInPixels;
             bookConfig.paddingLeftInPixels = paddingLeftInPixels;
             callReflow(function(reader) {
+                //todo неверено работает, т.к. все время создаются элементы
                 reader.refreshPageConfiguration();
             });
         },
@@ -170,6 +176,16 @@ window.onload = function() {
             callReflow(function(reader) {
                 reader.refreshLineHeight();
             });
+        },
+
+        setHangingPunctuation: function(hangingPunctuation) {
+            bookConfig.hangingPunctuation = hangingPunctuation;
+            reload();
+        },
+
+        setHangingHyphens: function(hangingHyphens) {
+            bookConfig.hangingHyphens = hangingHyphens;
+            reload();
         },
 
         setDeleteRedundantSpaces: function(deleteRedundantSpaces) {
@@ -235,7 +251,7 @@ window.onload = function() {
         loadActionCount++;
         settings.callback.beforeLoad();
     }
-    
+
     function afterLoad() {
         for (var i = 0; i < loadActionCount; i++) {
             settings.callback.afterLoad();
@@ -359,7 +375,8 @@ window.onload = function() {
             fixSpace: addCSSStyle(stylesheet, ".fixSpace", "display: inline-block; width: 0.25em; text-indent: 0; padding: 0; margin: 0")
         };
         var elements = {
-            touchLayer: undefined
+            touchLayer: undefined,
+            content: undefined
         };
 
         var frameReader = frame.reader = {
@@ -394,9 +411,9 @@ window.onload = function() {
 
             refreshPageConfiguration: function() {
                 var pageDiv = document.createElement("div");
-                var wrapDiv = document.createElement("div");
+                elements.content = document.createElement("div");
                 while (document.body.firstChild) {
-                    wrapDiv.appendChild(document.body.firstChild);
+                    elements.content.appendChild(document.body.firstChild);
                 }
 
                 pageDiv.style.setProperty("margin-top", bookConfig.paddingTopInPixels + "px", "important");
@@ -405,11 +422,11 @@ window.onload = function() {
                 pageDiv.style.setProperty("margin-left", "0px", "important");
                 pageDiv.style.setProperty("padding", "0px", "important");
 
-                wrapDiv.style.setProperty("margin-top", "0px", "important");
-                wrapDiv.style.setProperty("margin-bottom", "0px", "important");
-                wrapDiv.style.setProperty("margin-right", bookConfig.paddingRightInPixels + "px", "important");
-                wrapDiv.style.setProperty("margin-left", bookConfig.paddingLeftInPixels + "px", "important");
-                wrapDiv.style.setProperty("padding", "0px", "important");
+                elements.content.style.setProperty("margin-top", "0px", "important");
+                elements.content.style.setProperty("margin-bottom", "0px", "important");
+                elements.content.style.setProperty("margin-right", bookConfig.paddingRightInPixels + "px", "important");
+                elements.content.style.setProperty("margin-left", bookConfig.paddingLeftInPixels + "px", "important");
+                elements.content.style.setProperty("padding", "0px", "important");
 
                 var width = screenWidth;
                 var height = screenHeight - bookConfig.paddingTopInPixels - bookConfig.paddingBottomInPixels;
@@ -421,7 +438,7 @@ window.onload = function() {
                 document.body.style.setProperty("margin", "0px", "important");
                 document.body.style.setProperty("padding", "0px", "important");
 
-                pageDiv.appendChild(wrapDiv);
+                pageDiv.appendChild(elements.content);
                 document.body.appendChild(pageDiv);
 
                 elements.touchLayer = document.createElement("div");
@@ -465,7 +482,104 @@ window.onload = function() {
             }
         };
 
-        function refreshTextModification() {
+        // см. https://ru.wikipedia.org/wiki/%D0%9F%D1%83%D0%BD%D0%BA%D1%82%D1%83%D0%B0%D1%86%D0%B8%D1%8F
+
+        // Формат: [символ, смещение от 0.00 до 1.00]
+        var LEFT_HANG_INFO = [
+            ['(', 0.50],
+            ['[', 0.50],
+            ['{', 0.50],
+            ['<', 0.50],
+
+            ['"', 0.50],
+            ['\'', 0.50],
+            ['«', 0.50],
+            ['»', 0.50],
+            ['„', 0.50],
+            ['“', 0.50],
+            ['‘', 0.50],
+            ['‹', 0.50],
+            ['‚', 0.50],
+            ['「', 0.50],
+            ['『', 0.50]
+        ];
+
+        var RIGHT_HANG_INFO = [
+            [')', 0.50],
+            [']', 0.50],
+            ['}', 0.50],
+            ['>', 0.50],
+
+            ['"', 0.50],
+            ['\'', 0.50],
+            ['»', 0.50],
+            ['«', 0.50],
+            ['“', 0.50],
+            ['”', 0.50],
+            ['’', 0.50],
+            ['›', 0.50],
+            ['」', 0.50],
+            ['』', 0.50],
+
+            [',', 0.50],
+            ['.', 0.50],
+            ['…', 0.50],
+            [':', 0.50],
+            [';', 0.50],
+            ['!', 0.50],
+            ['‼', 0.50],
+            ['?', 0.50],
+
+            ['\u2010', 0.50],
+            ['\u2011', 0.50],
+            ['\u002D', 0.50],
+            ['\u2012', 0.50],
+            ['\u2013', 0.50],
+            ['\u2014', 0.50]
+        ];
+
+        function hangingSymbol(hangInfo) {
+            return hangInfo[0];
+        }
+
+        function hangingOffset(hangInfo) {
+            return hangInfo[1];
+        }
+
+        var postActions = create(function () {
+            var firstActions = [];
+            var secondActions = [];
+
+            return {
+                pushFirst: function (func) {
+                    firstActions.push(func);
+                },
+
+                pushSecond: function (func) {
+                    secondActions.push(func);
+                },
+
+                execAll: function () {
+                    firstActions.forEach(function (action) {
+                        action();
+                    });
+                    secondActions.forEach(function (action) {
+                        action();
+                    });
+                    firstActions.length = 0;
+                    secondActions.length = 0;
+                }
+            };
+        });
+
+        function applyModification() {
+            var FORMAT_ELEMENTS = stringSet([
+                "LABEL", "RUBY", "RT", "LI", "CAPTION", "TD", "TH", "INPUT", "BUTTON", "MARQUEE",
+                "ARTICLE", "BLOCKQUOTE", "CENTER", "DT", "DD", "DETAILS", "DIV", "FIGCAPTION",
+                "FOOTER", "H1", "H2", "H3", "H4", "H5", "H6", "HEADER", "LEGEND", "LISTING", "MAIN",
+                "NAV", "OL", "OPTION", "P", "SECTION", "SUMMARY", "UL", "XMP"
+            ]);
+
             var regexVars = {
                 spaces: "\u0020\u00A0\u2000\u2001\u2002\u2002\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u200B\u202F\u205F\u2060\u3000\u0009",
                 lineBreaks: "\n\r\f"
@@ -475,77 +589,167 @@ window.onload = function() {
                 return vregexp(pattern, flags, vars ? mergeObjects(regexVars, vars) : regexVars);
             }
 
-            var FORMAT_ELEMENTS = stringSet([
-                "LABEL", "RUBY", "RT", "LI", "CAPTION", "TD", "TH", "INPUT", "BUTTON", "MARQUEE",
-                "ARTICLE", "BLOCKQUOTE", "CENTER", "DT", "DD", "DETAILS", "DIV", "FIGCAPTION",
-                "FOOTER", "H1", "H2", "H3", "H4", "H5", "H6", "HEADER", "LEGEND", "LISTING", "MAIN",
-                "NAV", "OL", "OPTION", "P", "SECTION", "SUMMARY", "UL", "XMP"
-            ]);
-
-            iterateChildrenRecursively(document.body, function(node) {
+            iterateChildrenRecursively(elements.content, function (node) {
                 if (node.nodeType == Node.ELEMENT_NODE && FORMAT_ELEMENTS.contains(node.nodeName)) {
                     var text = elementText(node);
                     bookConfig.deleteRedundantSpaces && deleteRedundantSpaces(text);
                     bookConfig.replaceFixedSpaces && replaceFixedSpaces(text);
+                    bookConfig.hangingPunctuation && hangingPunctuation(text);
                 }
             });
 
             function deleteRedundantSpaces(text) {
-                deleteTrailingSpaces(text);
-                deleteLeadingSpaces(text);
+                safeCall(function () {
+                    deleteTrailingSpaces(text);
+                    deleteLeadingSpaces(text);
 
-                // Удаляются пробелы в начале строки
-                // "   Погода сегодня хорошая" будет заменно на "Погода сегодня хорошая"
-                function deleteLeadingSpaces(text) {
-                    text.find(
-                        fregexp("^[%spaces%lineBreaks]+", "g"),
-                        function(result) {
-                            result.range().deleteContents();
-                        }
-                    );
-                }
+                    // Удаляются пробелы в начале строки
+                    // "   Погода сегодня хорошая" будет заменно на "Погода сегодня хорошая"
+                    function deleteLeadingSpaces(text) {
+                        text.find(
+                                fregexp("^[%spaces%lineBreaks]+", "g"),
+                                function (result) {
+                                    result.range().deleteContents();
+                                }
+                        );
+                    }
 
-                // Удаляются пробелы в конце строки
-                function deleteTrailingSpaces(text) {
-                    text.find(
-                        fregexp("[%spaces%lineBreaks]+$", "g"),
-                        function(result) {
-                            result.range().deleteContents();
-                        }
-                    );
-                }
+                    // Удаляются пробелы в конце строки
+                    function deleteTrailingSpaces(text) {
+                        text.find(
+                                fregexp("[%spaces%lineBreaks]+$", "g"),
+                                function (result) {
+                                    result.range().deleteContents();
+                                }
+                        );
+                    }
+                });
             }
 
             function replaceFixedSpaces(text) {
-                replaceInDialog(text);
+                safeCall(function () {
+                    replaceInDialog(text);
 
-                // Заменяются пробелы в диалоге на фиксированные, чтобы при выравнивании по ширине они не разъезжались
-                // "    -  Как дела?" будет заменено на "    -<span class='fixSpace'></span>Как дела?"
-                function replaceInDialog(text) {
-                    return text.find(
-                        fregexp("(^[%spaces]*[%dashes])([%spaces]+)", "g", {
-                            dashes: "\u2013\u2014\u2015\u002D"
-                        }),
-                        function(result) {
-                            var range = result.range(result.subStrings[0].length);
-                           // range.deleteContents();
-                            //range.insertNode(document.createTextNode("&thinsp;"));
-                            var span = document.createElement("span");
-                            span.className = "fixSpace";
-                            span.textContent = "\u00A0";
-                            range.deleteContents();
-                            range.insertNode(span);
-                        }
+                    // Заменяются пробелы в диалоге на фиксированные, чтобы при выравнивании по ширине они не разъезжались
+                    // "    -  Как дела?" будет заменено на "    -<span class='fixSpace'></span>Как дела?"
+                    function replaceInDialog(text) {
+                        text.find(
+                                fregexp("(^[%spaces]*[%dashes])([%spaces]+)", "g", {
+                                    dashes: "\u2013\u2014\u2015\u002D"
+                                }),
+                                function (result) {
+                                    var range = result.range(result.subStrings[0].length);
+                                    var span = document.createElement("span");
+                                    span.className = "fixSpace";
+                                    span.textContent = "\u00A0";
+                                    range.deleteContents();
+                                    range.insertNode(span);
+                                }
+                        );
+                    }
+                });
+            }
+
+            function hangingPunctuation(text) {
+                safeCall(function () {
+                    var vars = {
+                        leftHangingChars: LEFT_HANG_INFO.map(hangingSymbol).join(""),
+                        rightHangingChars: RIGHT_HANG_INFO.map(hangingSymbol).join("")
+                    };
+
+                    var leftHangOffset = toMap(LEFT_HANG_INFO, hangingSymbol, hangingOffset);
+                    var rightHangOffset = toMap(RIGHT_HANG_INFO, hangingSymbol, hangingOffset);
+
+                    text.find(
+                            fregexp("[%spaces]([%leftHangingChars])[^%spaces]", "g", vars),
+                            function (result) {
+                                applyLeftHang(result, 1, 0);
+                            }
                     );
-                }
+
+                    text.find(
+                            fregexp("^([%leftHangingChars])[^%spaces]", "g", vars),
+                            function (result) {
+                                applyLeftHang(result, 0);
+                            }
+                    );
+
+                    text.find(
+                            fregexp("[^%spaces]([%rightHangingChars])[%spaces]", "g", vars),
+                            function (result) {
+                                applyRightHang(result, 1, 2);
+                            }
+                    );
+
+                    text.find(
+                            fregexp("[^%spaces]([%rightHangingChars])$", "g", vars),
+                            function (result) {
+                                applyRightHang(result, 1);
+                            }
+                    );
+
+                    function applyLeftHang(result, charIndex, spaceIndex) {
+                        var char = result.subStrings[0];
+                        var offsetInPercent = leftHangOffset[char];
+                        var spaceSpan, charSpan;
+                        charSpan = document.createElement("span");
+                        result.range(charIndex, charIndex + 1).surroundContents(charSpan);
+                        if (spaceIndex !== undefined) {
+                            spaceSpan = document.createElement("span");
+                            result.range(spaceIndex, spaceIndex + 1).surroundContents(spaceSpan);
+                        }
+                        postActions.pushFirst(function () {
+                            var width = charSpan.offsetWidth;
+                            var offset = offsetInPercent * width;
+                            postActions.pushSecond(function () {
+                                charSpan.style.marginLeft = -offset + "px";
+                                if (spaceSpan) {
+                                    spaceSpan.style.marginRight = offset + "px";
+                                }
+                            });
+                        });
+                    }
+
+                    function applyRightHang(result, charIndex, spaceIndex) {
+                        var char = result.subStrings[0];
+                        var offsetInPercent = rightHangOffset[char];
+                        var spaceSpan, charSpan;
+                        if (spaceIndex !== undefined) {
+                            spaceSpan = document.createElement("span");
+                            result.range(spaceIndex, spaceIndex + 1).surroundContents(spaceSpan);
+                        }
+                        charSpan = document.createElement("span");
+                        result.range(charIndex, charIndex + 1).surroundContents(charSpan);
+                        postActions.pushFirst(function () {
+                            var width = charSpan.offsetWidth;
+                            var offset = offsetInPercent * width;
+                            postActions.pushSecond(function () {
+                                charSpan.style.marginRight = -offset + "px";
+                                if (spaceSpan) {
+                                    spaceSpan.style.marginRight = offset + "px";
+                                }
+                            });
+                        });
+                    }
+                });
             }
         }
-
+        
+        var startTime = new Date().getTime();
         frameReader.refreshPageConfiguration();
         frameReader.refreshTextAlign();
         frameReader.refreshFontSize();
         frameReader.refreshLineHeight();
-        refreshTextModification();
+        console.log("preModification time: " + (new Date().getTime() - startTime));
+
+        startTime = new Date().getTime();
+        applyModification();
+        console.log("modification time: " + (new Date().getTime() - startTime));
+
+        startTime = new Date().getTime();
+        postActions.execAll();
+        console.log("postActions time: " + (new Date().getTime() - startTime));
+        
         frameReader.reflow();
 
         function refreshPageCount() {

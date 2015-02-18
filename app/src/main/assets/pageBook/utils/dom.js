@@ -1,8 +1,9 @@
 function iterateChildrenRecursively(node, callback) {
-    iterateChildren(node, function(child) {
+    var iterateChildrenCallback = function(child) {
         callback(child);
-        iterateChildren(child, callback);
-    });
+        iterateChildren(child, iterateChildrenCallback);
+    };
+    iterateChildren(node, iterateChildrenCallback);
 }
 
 function iterateChildren(node, callback) {

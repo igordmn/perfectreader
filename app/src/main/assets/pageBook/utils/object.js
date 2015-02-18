@@ -8,3 +8,7 @@ function mergeObjects(obj1, obj2){
     }
     return obj3;
 }
+
+function create(constructor) {
+    return constructor();
+}
