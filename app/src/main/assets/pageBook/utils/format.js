@@ -54,8 +54,8 @@ function elementText(element) {
                         if (startIndex > endIndex || startIndex < 0 || endIndex > this.fullString.length) {
                             throw "wrong index";
                         }
-                        var start = indexToLocation(globalIndex + startIndex, true);
-                        var end = indexToLocation(globalIndex + endIndex, false);
+                        var start = indexToLocation(globalIndex + startIndex);
+                        var end = indexToLocation(globalIndex + endIndex, globalIndex + startIndex);
                         range.setStart(start.element, start.offset);
                         range.setEnd(end.element, end.offset);
                         return range;
@@ -63,14 +63,14 @@ function elementText(element) {
                 });
             });
 
-            function indexToLocation(index, isBeginLocation) {
+            function indexToLocation(index, startIndex) {
                 if (index < 0 || index > text.length) {
                     throw "wrong index";
                 }
                 var begin = 0;
                 for (var i = 0; i < strings.length; i++) {
                     var end = begin + strings[i].length ;
-                    if ((isBeginLocation && end > index) || (!isBeginLocation && end >= index)) {
+                    if ((startIndex === undefined && end > index) || (startIndex !== undefined && end >= index && end > startIndex)) {
                         return {
                             element: elements[i],
                             offset: index - begin

@@ -48,6 +48,7 @@ window.onload = function() {
         fontSizeInPercents: 100,
         lineHeightInPercents: 100,
 
+        hyphens: true,
         hangingPunctuation: true,
         hangingHyphens: true,
 
@@ -178,6 +179,11 @@ window.onload = function() {
             });
         },
 
+        setHyphens: function(hyphens) {
+            bookConfig.hyphens = hyphens;
+            reload();
+        },
+
         setHangingPunctuation: function(hangingPunctuation) {
             bookConfig.hangingPunctuation = hangingPunctuation;
             reload();
@@ -216,6 +222,7 @@ window.onload = function() {
     }
 
     function callReflow(refreshFunction) {
+        // todo beforeload сработает, но ек сработает afterload, если currentFrame.reader) и т.д. будут undefined
         beforeLoad();
         resetViewportForReflow();
         if (currentFrame.reader) {
@@ -233,7 +240,9 @@ window.onload = function() {
     }
 
     function reload() {
-        reader.goLocation(reader.currentLocation);
+        if (reader.currentLocation !== undefined) {
+            reader.goLocation(reader.currentLocation);
+        }
     }
 
     function onSegmentPageChanged() {
@@ -482,70 +491,6 @@ window.onload = function() {
             }
         };
 
-        // см. https://ru.wikipedia.org/wiki/%D0%9F%D1%83%D0%BD%D0%BA%D1%82%D1%83%D0%B0%D1%86%D0%B8%D1%8F
-
-        // Формат: [символ, смещение от 0.00 до 1.00]
-        var LEFT_HANG_INFO = [
-            ['(', 0.50],
-            ['[', 0.50],
-            ['{', 0.50],
-            ['<', 0.50],
-
-            ['"', 0.50],
-            ['\'', 0.50],
-            ['«', 0.50],
-            ['»', 0.50],
-            ['„', 0.50],
-            ['“', 0.50],
-            ['‘', 0.50],
-            ['‹', 0.50],
-            ['‚', 0.50],
-            ['「', 0.50],
-            ['『', 0.50]
-        ];
-
-        var RIGHT_HANG_INFO = [
-            [')', 0.50],
-            [']', 0.50],
-            ['}', 0.50],
-            ['>', 0.50],
-
-            ['"', 0.50],
-            ['\'', 0.50],
-            ['»', 0.50],
-            ['«', 0.50],
-            ['“', 0.50],
-            ['”', 0.50],
-            ['’', 0.50],
-            ['›', 0.50],
-            ['」', 0.50],
-            ['』', 0.50],
-
-            [',', 0.50],
-            ['.', 0.50],
-            ['…', 0.50],
-            [':', 0.50],
-            [';', 0.50],
-            ['!', 0.50],
-            ['‼', 0.50],
-            ['?', 0.50],
-
-            ['\u2010', 0.50],
-            ['\u2011', 0.50],
-            ['\u002D', 0.50],
-            ['\u2012', 0.50],
-            ['\u2013', 0.50],
-            ['\u2014', 0.50]
-        ];
-
-        function hangingSymbol(hangInfo) {
-            return hangInfo[0];
-        }
-
-        function hangingOffset(hangInfo) {
-            return hangInfo[1];
-        }
-
         var postActions = create(function () {
             var firstActions = [];
             var secondActions = [];
@@ -581,7 +526,9 @@ window.onload = function() {
             ]);
 
             var regexVars = {
-                spaces: "\u0020\u00A0\u2000\u2001\u2002\u2002\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u200B\u202F\u205F\u2060\u3000\u0009",
+                // todo zero width space \u200B и Word-Joiner \u2060 сюда не вписывается
+                // todo проверить \u200C \u200D
+                spaces: "\u0020\u00A0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u200B\u202F\u205F\u2060\u3000\u0009", // включает табуляцию
                 lineBreaks: "\n\r\f"
             };
 
@@ -594,6 +541,7 @@ window.onload = function() {
                     var text = elementText(node);
                     bookConfig.deleteRedundantSpaces && deleteRedundantSpaces(text);
                     bookConfig.replaceFixedSpaces && replaceFixedSpaces(text);
+                    bookConfig.hyphens && hyphens(text);
                     bookConfig.hangingPunctuation && hangingPunctuation(text);
                 }
             });
@@ -650,8 +598,74 @@ window.onload = function() {
                 });
             }
 
+            function hyphens(text) {
+                safeCall(function () {
+
+                });
+            }
+
             function hangingPunctuation(text) {
                 safeCall(function () {
+                    // см. https://ru.wikipedia.org/wiki/%D0%9F%D1%83%D0%BD%D0%BA%D1%82%D1%83%D0%B0%D1%86%D0%B8%D1%8F
+
+                    // Формат: [символ, смещение от 0.00 до 1.00]
+                    var LEFT_HANG_INFO = [
+                        ['(', 0.50],
+                        ['[', 0.50],
+                        ['{', 0.50],
+                        ['<', 0.50],
+
+                        ['"', 0.50],
+                        ['\'', 0.50],
+                        ['«', 0.50],
+                        ['»', 0.50],
+                        ['„', 0.50],
+                        ['“', 0.50],
+                        ['‘', 0.50],
+                        ['‹', 0.50],
+                        ['‚', 0.50]
+                    ];
+
+                    var RIGHT_HANG_INFO = [
+                        [')', 0.50],
+                        [']', 0.50],
+                        ['}', 0.50],
+                        ['>', 0.50],
+
+                        ['"', 0.50],
+                        ['\'', 0.50],
+                        ['»', 0.50],
+                        ['«', 0.50],
+                        ['“', 0.50],
+                        ['”', 0.50],
+                        ['’', 0.50],
+                        ['›', 0.50],
+
+                        [',', 0.50],
+                        ['.', 0.50],
+                        ['…', 0.50],
+                        [':', 0.50],
+                        [';', 0.50],
+                        ['!', 0.50],
+                        ['‼', 0.50],
+                        ['?', 0.50],
+
+                        ['\u2010', 0.50],
+                        ['\u2011', 0.50],
+                        ['\u002D', 0.50],
+                        ['\u2012', 0.50],
+                        ['\u2013', 0.50],
+                        ['\u2014', 0.50]
+                    ];
+
+                    function hangingSymbol(hangInfo) {
+                        return hangInfo[0];
+                    }
+
+                    function hangingOffset(hangInfo) {
+                        return hangInfo[1];
+                    }
+
                     var vars = {
                         leftHangingChars: LEFT_HANG_INFO.map(hangingSymbol).join(""),
                         rightHangingChars: RIGHT_HANG_INFO.map(hangingSymbol).join("")
@@ -699,7 +713,7 @@ window.onload = function() {
                             result.range(spaceIndex, spaceIndex + 1).surroundContents(spaceSpan);
                         }
                         postActions.pushFirst(function () {
-                            var width = charSpan.offsetWidth;
+                            var width = charSpan.getBoundingClientRect().width;
                             var offset = offsetInPercent * width;
                             postActions.pushSecond(function () {
                                 charSpan.style.marginLeft = -offset + "px";
@@ -721,7 +735,7 @@ window.onload = function() {
                         charSpan = document.createElement("span");
                         result.range(charIndex, charIndex + 1).surroundContents(charSpan);
                         postActions.pushFirst(function () {
-                            var width = charSpan.offsetWidth;
+                            var width = charSpan.getBoundingClientRect().width;
                             var offset = offsetInPercent * width;
                             postActions.pushSecond(function () {
                                 charSpan.style.marginRight = -offset + "px";
