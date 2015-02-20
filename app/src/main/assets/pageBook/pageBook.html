@@ -755,10 +755,10 @@ window.onload = function() {
                     function applyRightHang(result, charIndex, spaceIndex) {
                         var char = result.subStrings[0];
                         var offsetInPercent = rightHangOffset[char];
-                        var spaceSpan, charSpan;
+                        var rightSpan, charSpan;
                         if (spaceIndex !== undefined) {
-                            spaceSpan = document.createElement("span");
-                            result.range(spaceIndex, spaceIndex + 1).surroundContents(spaceSpan);
+                            rightSpan = document.createElement("span");
+                            result.range(spaceIndex, spaceIndex).insertNode(rightSpan);
                         }
                         charSpan = document.createElement("span");
                         result.range(charIndex, charIndex + 1).surroundContents(charSpan);
@@ -767,8 +767,8 @@ window.onload = function() {
                             var offset = offsetInPercent * width;
                             postActions.pushSecond(function () {
                                 charSpan.style.marginRight = -offset + "px";
-                                if (spaceSpan) {
-                                    spaceSpan.style.marginRight = offset + "px";
+                                if (rightSpan) {
+                                    rightSpan.style.marginRight = offset + "px";
                                 }
                             });
                         });
