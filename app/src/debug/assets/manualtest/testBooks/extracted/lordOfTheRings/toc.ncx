@@ -1,0 +1,459 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">
+<ncx version="2005-1" xmlns="http://www.daisy.org/z3986/2005/ncx/">
+  <head>
+    <meta name="dtb:uid" content="FB2BookID" />
+    <meta name="dtb:depth" content="2" />
+    <meta name="dtb:totalPageCount" content="0" />
+    <meta name="dtb:maxPageNumber" content="0" />
+  </head>
+  <docTitle>
+    <text>Властелин Колец вк-</text>
+  </docTitle>
+  <navMap>
+    <navPoint id="NavPoint-1" playOrder="1">
+      <navLabel>
+        <text>Дж. Р. Р. Толкиен  ВЛАСТЕЛИН КОЛЕЦ</text>
+      </navLabel>
+      <content src="section1.xhtml" />
+    </navPoint>
+    <navPoint id="NavPoint-2" playOrder="2">
+      <navLabel>
+        <text>ПРОЛОГ</text>
+      </navLabel>
+      <content src="section2.xhtml" />
+      <navPoint id="NavPoint-3" playOrder="3">
+        <navLabel>
+          <text>1. О ХОББИТАХ</text>
+        </navLabel>
+        <content src="section3.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-4" playOrder="4">
+        <navLabel>
+          <text>2. О ТРУБОЧНОМ ЗЕЛЬЕ</text>
+        </navLabel>
+        <content src="section4.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-5" playOrder="5">
+        <navLabel>
+          <text>3. О БЛАГОУСТРОЙСТВЕ ХОББИТАНИИ</text>
+        </navLabel>
+        <content src="section5.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-6" playOrder="6">
+        <navLabel>
+          <text>4. О ТОМ, КАК НАШЛОСЬ КОЛЬЦО</text>
+        </navLabel>
+        <content src="section6.xhtml" />
+      </navPoint>
+    </navPoint>
+    <navPoint id="NavPoint-7" playOrder="7">
+      <navLabel>
+        <text>КНИГА I</text>
+      </navLabel>
+      <content src="section7.xhtml" />
+      <navPoint id="NavPoint-8" playOrder="8">
+        <navLabel>
+          <text>Глава I. ДОЛГОЖДАННОЕ УГОЩЕНИЕ</text>
+        </navLabel>
+        <content src="section8.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-9" playOrder="9">
+        <navLabel>
+          <text>Глава II. ТЕНЬ ПРОШЛОГО</text>
+        </navLabel>
+        <content src="section9.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-10" playOrder="10">
+        <navLabel>
+          <text>Глава III. ДОРОГА ВТРОЕМ</text>
+        </navLabel>
+        <content src="section10.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-11" playOrder="11">
+        <navLabel>
+          <text>Глава IV. НАПРЯМИК ПО ГРИБЫ</text>
+        </navLabel>
+        <content src="section11.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-12" playOrder="12">
+        <navLabel>
+          <text>Глава V. РАСКРЫТЫЙ ЗАГОВОР</text>
+        </navLabel>
+        <content src="section12.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-13" playOrder="13">
+        <navLabel>
+          <text>Глава VI. ВЕКОВЕЧНЫЙ ЛЕС</text>
+        </navLabel>
+        <content src="section13.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-14" playOrder="14">
+        <navLabel>
+          <text>Глава VII. У ТОМА БОМБАДИЛА</text>
+        </navLabel>
+        <content src="section14.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-15" playOrder="15">
+        <navLabel>
+          <text>Глава VIII. МГЛА НАД МОГИЛЬНИКАМИ</text>
+        </navLabel>
+        <content src="section15.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-16" playOrder="16">
+        <navLabel>
+          <text>Глава IX. "ГАРЦУЮЩИЙ ПОНИ"</text>
+        </navLabel>
+        <content src="section16.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-17" playOrder="17">
+        <navLabel>
+          <text>Глава Х. БРОДЯЖНИК</text>
+        </navLabel>
+        <content src="section17.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-18" playOrder="18">
+        <navLabel>
+          <text>Глава XI. КЛИНОК В НОЧИ</text>
+        </navLabel>
+        <content src="section18.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-19" playOrder="19">
+        <navLabel>
+          <text>Глава XII. ПЕРЕПРАВА</text>
+        </navLabel>
+        <content src="section19.xhtml" />
+      </navPoint>
+    </navPoint>
+    <navPoint id="NavPoint-20" playOrder="20">
+      <navLabel>
+        <text>КНИГА II</text>
+      </navLabel>
+      <content src="section20.xhtml" />
+      <navPoint id="NavPoint-21" playOrder="21">
+        <navLabel>
+          <text>Глава I. НЕОЖИДАННЫЕ ГОСТИ</text>
+        </navLabel>
+        <content src="section21.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-22" playOrder="22">
+        <navLabel>
+          <text>Глава II. СОВЕТ</text>
+        </navLabel>
+        <content src="section22.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-23" playOrder="23">
+        <navLabel>
+          <text>Глава III. ПУТЬ НА ЮГ</text>
+        </navLabel>
+        <content src="section23.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-24" playOrder="24">
+        <navLabel>
+          <text>Глава IV. ПУТЕШЕСТВИЕ ВО ТЬМЕ</text>
+        </navLabel>
+        <content src="section24.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-25" playOrder="25">
+        <navLabel>
+          <text>Глава V. МОРИЙСКИЙ МОСТ</text>
+        </navLabel>
+        <content src="section25.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-26" playOrder="26">
+        <navLabel>
+          <text>Глава VI. КВЕТЛОРИЭН</text>
+        </navLabel>
+        <content src="section26.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-27" playOrder="27">
+        <navLabel>
+          <text>Глава VII. ЗЕРКАЛО ГАЛАДРИЭЛИ</text>
+        </navLabel>
+        <content src="section27.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-28" playOrder="28">
+        <navLabel>
+          <text>Глава VIII. ПРОЩАНИЕ С ЛОРИЭНОМ</text>
+        </navLabel>
+        <content src="section28.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-29" playOrder="29">
+        <navLabel>
+          <text>Глава IX. ВЕЛИКАЯ РЕКА</text>
+        </navLabel>
+        <content src="section29.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-30" playOrder="30">
+        <navLabel>
+          <text>Глава Х. РАЗБРОД</text>
+        </navLabel>
+        <content src="section30.xhtml" />
+      </navPoint>
+    </navPoint>
+    <navPoint id="NavPoint-31" playOrder="31">
+      <navLabel>
+        <text>КНИГА III</text>
+      </navLabel>
+      <content src="section31.xhtml" />
+      <navPoint id="NavPoint-32" playOrder="32">
+        <navLabel>
+          <text>Глава I. ОТПЛЫТИЕ БОРОМИРА</text>
+        </navLabel>
+        <content src="section32.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-33" playOrder="33">
+        <navLabel>
+          <text>Глава II. КОННИКИ РИСТАНИИ</text>
+        </navLabel>
+        <content src="section33.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-34" playOrder="34">
+        <navLabel>
+          <text>Глава III. УРУКХАЙ</text>
+        </navLabel>
+        <content src="section34.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-35" playOrder="35">
+        <navLabel>
+          <text>Глава IV. ДРЕВЕНЬ</text>
+        </navLabel>
+        <content src="section35.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-36" playOrder="36">
+        <navLabel>
+          <text>Глава V. БЕЛЫЙ ВСАДНИК</text>
+        </navLabel>
+        <content src="section36.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-37" playOrder="37">
+        <navLabel>
+          <text>Глава VI. КОНУНГ В ЗОЛОТОМ ЧЕРТОГЕ</text>
+        </navLabel>
+        <content src="section37.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-38" playOrder="38">
+        <navLabel>
+          <text>Глава VII. ХЕЛЬМОВО УЩЕЛЬЕ</text>
+        </navLabel>
+        <content src="section38.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-39" playOrder="39">
+        <navLabel>
+          <text>Глава VIII. ДОРОГА НА ИЗЕНГАРД</text>
+        </navLabel>
+        <content src="section39.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-40" playOrder="40">
+        <navLabel>
+          <text>Глава IX. ХЛАМ И КРОШЕВО</text>
+        </navLabel>
+        <content src="section40.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-41" playOrder="41">
+        <navLabel>
+          <text>Глава X. КРАСНОРЕЧИЕ САРУМАНА</text>
+        </navLabel>
+        <content src="section41.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-42" playOrder="42">
+        <navLabel>
+          <text>Глава XI. ПАЛАНТИР</text>
+        </navLabel>
+        <content src="section42.xhtml" />
+      </navPoint>
+    </navPoint>
+    <navPoint id="NavPoint-43" playOrder="43">
+      <navLabel>
+        <text>КНИГА IV</text>
+      </navLabel>
+      <content src="section43.xhtml" />
+      <navPoint id="NavPoint-44" playOrder="44">
+        <navLabel>
+          <text>Глава I. ПРИРУЧЕНИЕ СМЕАГОРЛА</text>
+        </navLabel>
+        <content src="section44.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-45" playOrder="45">
+        <navLabel>
+          <text>Глава II. ТРОПА ЧЕРЕЗ ТОПИ</text>
+        </navLabel>
+        <content src="section45.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-46" playOrder="46">
+        <navLabel>
+          <text>Глава III. У ЗАПРЕТНЫХ ВОРОТ</text>
+        </navLabel>
+        <content src="section46.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-47" playOrder="47">
+        <navLabel>
+          <text>Глава IV. КРОЛИК, ТУШЕННЫЙ С ПРИПРАВАМИ</text>
+        </navLabel>
+        <content src="section47.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-48" playOrder="48">
+        <navLabel>
+          <text>Глава V. ЗАКАТНОЕ ОКНО</text>
+        </navLabel>
+        <content src="section48.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-49" playOrder="49">
+        <navLabel>
+          <text>Глава VI. ЗАПРЕТНЫЙ ПРУД</text>
+        </navLabel>
+        <content src="section49.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-50" playOrder="50">
+        <navLabel>
+          <text>Глава VII. К РАЗВИЛКУ ДОРОГ</text>
+        </navLabel>
+        <content src="section50.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-51" playOrder="51">
+        <navLabel>
+          <text>Глава VIII. БЛИЗ КИРИТ-УНГОЛА</text>
+        </navLabel>
+        <content src="section51.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-52" playOrder="52">
+        <navLabel>
+          <text>Глава IX. ЛОГОВО ШЕЛОБ</text>
+        </navLabel>
+        <content src="section52.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-53" playOrder="53">
+        <navLabel>
+          <text>Глава X. ВЫБОР СЭММИУМА СКРОМБИ</text>
+        </navLabel>
+        <content src="section53.xhtml" />
+      </navPoint>
+    </navPoint>
+    <navPoint id="NavPoint-54" playOrder="54">
+      <navLabel>
+        <text>КНИГА V</text>
+      </navLabel>
+      <content src="section54.xhtml" />
+      <navPoint id="NavPoint-55" playOrder="55">
+        <navLabel>
+          <text>ГЛАВА I. МИНАС-ТИРИТ</text>
+        </navLabel>
+        <content src="section55.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-56" playOrder="56">
+        <navLabel>
+          <text>ГЛАВА II. ШЕСТВИЕ СЕРОЙ ДРУЖИНЫ</text>
+        </navLabel>
+        <content src="section56.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-57" playOrder="57">
+        <navLabel>
+          <text>ГЛАВА III. ВОЙСКОВОЙ СБОР</text>
+        </navLabel>
+        <content src="section57.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-58" playOrder="58">
+        <navLabel>
+          <text>ГЛАВА IV. НАШЕСТВИЕ НА ГОНДОР</text>
+        </navLabel>
+        <content src="section58.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-59" playOrder="59">
+        <navLabel>
+          <text>ГЛАВА V. ПОХОД МУСТАНГРИМЦЕВ</text>
+        </navLabel>
+        <content src="section59.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-60" playOrder="60">
+        <navLabel>
+          <text>ГЛАВА VI. БИТВА НА ПЕЛЕННОРРСКОЙ РАВНИНЕ</text>
+        </navLabel>
+        <content src="section60.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-61" playOrder="61">
+        <navLabel>
+          <text>ГЛАВА VII. ПОГРЕБАЛЬНЫЙ КОСТЕР</text>
+        </navLabel>
+        <content src="section61.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-62" playOrder="62">
+        <navLabel>
+          <text>ГЛАВА VIII. ПАЛАТЫ ВРАЧЕВАНЬЯ</text>
+        </navLabel>
+        <content src="section62.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-63" playOrder="63">
+        <navLabel>
+          <text>ГЛАВА IX. НА ПОСЛЕДНЕМ СОВЕТЕ</text>
+        </navLabel>
+        <content src="section63.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-64" playOrder="64">
+        <navLabel>
+          <text>ГЛАВА X. ВОРОТА ОТВОРЯЮТСЯ</text>
+        </navLabel>
+        <content src="section64.xhtml" />
+      </navPoint>
+    </navPoint>
+    <navPoint id="NavPoint-65" playOrder="65">
+      <navLabel>
+        <text>КНИГА VI</text>
+      </navLabel>
+      <content src="section65.xhtml" />
+      <navPoint id="NavPoint-66" playOrder="66">
+        <navLabel>
+          <text>ГЛАВА I. БАШНЯ НА ПЕРЕВАЛЕ</text>
+        </navLabel>
+        <content src="section66.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-67" playOrder="67">
+        <navLabel>
+          <text>ГЛАВА II. В СУМРАЧНОМ КРАЮ</text>
+        </navLabel>
+        <content src="section67.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-68" playOrder="68">
+        <navLabel>
+          <text>ГЛАВА III. РОКОВАЯ ГОРА</text>
+        </navLabel>
+        <content src="section68.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-69" playOrder="69">
+        <navLabel>
+          <text>ГЛАВА IV. НА КОРМАЛЛЕНСКОМ ПОЛЕ</text>
+        </navLabel>
+        <content src="section69.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-70" playOrder="70">
+        <navLabel>
+          <text>ГЛАВА V. НАМЕСТНИК И ГОСУДАРЬ</text>
+        </navLabel>
+        <content src="section70.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-71" playOrder="71">
+        <navLabel>
+          <text>ГЛАВА VI. РАССТАВАНИЯ</text>
+        </navLabel>
+        <content src="section71.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-72" playOrder="72">
+        <navLabel>
+          <text>ГЛАВА VII. ДОМОЙ</text>
+        </navLabel>
+        <content src="section72.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-73" playOrder="73">
+        <navLabel>
+          <text>ГЛАВА VIII. ОСКВЕРНЕННАЯ ХОББИТАНИЯ</text>
+        </navLabel>
+        <content src="section73.xhtml" />
+      </navPoint>
+      <navPoint id="NavPoint-74" playOrder="74">
+        <navLabel>
+          <text>ГЛАВА IX. СЕРЕБРИСТАЯ ГАВАНЬ</text>
+        </navLabel>
+        <content src="section74.xhtml" />
+      </navPoint>
+    </navPoint>
+  </navMap>
+</ncx>

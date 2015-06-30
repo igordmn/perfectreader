@@ -1,18 +1,6 @@
-buildscript {
-    dependencies {
-        classpath 'com.dmi.hugo:hugo-plugin:1.1.1-SNAPSHOT'
-    }
-}
-
 apply plugin: 'java'
-apply plugin: 'groovy'
-apply plugin: 'hugo'
+apply plugin: 'me.tatarka.retrolambda'
 
 dependencies {
-    compile 'com.google.code.findbugs:jsr305:3.0.0'
-    compile 'com.google.guava:guava:18.0'
-    compile 'net.sf.trove4j:trove4j:3.0.3'
-    compile 'com.dmi.hugo:hugo-runtime:1.1.1-SNAPSHOT'
-
-    testCompile project(':util:test')
+    compile project(':util:java')
 }

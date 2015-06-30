@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".main.MainActivity_"
+            android:name=".bookreader.BookReaderActivity_"
             android:label="@string/appName">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

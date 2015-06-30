@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    android:orientation="vertical"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.dmi.perfectreader.book.BookFragment_">
 
-    <com.dmi.perfectreader.bookview.PageBookBox
-        android:id="@+id/bookBox"
+    <com.dmi.perfectreader.book.PageBookView
+        android:id="@+id/pageBookView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-</FrameLayout>
+</RelativeLayout>

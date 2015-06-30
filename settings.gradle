@@ -1,2 +1,4 @@
 rootProject.name = 'perfectreader'
-include ':lib:discreteSeekBar', ':lib:materialWidget', ':lib:readiumSdk', ':util:test', ':core', ':app'
+include ':lib:android:discreteSeekBar', ':lib:android:materialWidget', ':lib:android:readiumSdk',
+        ':util:java', 'util:android',
+        ':core', ':app', ':typoweb'

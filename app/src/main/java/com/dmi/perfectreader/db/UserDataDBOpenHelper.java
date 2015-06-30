@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class UserDataDBOpenHelper extends SQLiteOpenHelper {
-    private static final int VERSION = 5;
+    private static final int VERSION = 7;
 
     public UserDataDBOpenHelper(Context context) {
         super(context, "userData", null, VERSION);
@@ -14,9 +14,9 @@ public class UserDataDBOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE bookLocation (path TEXT PRIMARY KEY NOT NULL,\n" +
-                   "                           segmentIndex INTEGER NOT NULL,\n" +
-                   "                           percent INTEGER NOT NULL);");
-        db.execSQL("CREATE TABLE lastBook (path TEXT PRIMARY KEY NOT NULL);");
+                   "                           integerPercent INTEGER NOT NULL);");
+        db.execSQL("CREATE TABLE lastBook (id INTEGER PRIMARY KEY NOT NULL,\n" +
+                   "                       path TEXT NOT NULL);");
     }
 
     @Override

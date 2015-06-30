@@ -6,15 +6,25 @@ import gnu.trove.list.array.TIntArrayList;
 public class PageAnimationState {
     private final TIntArrayList relativeIndices = new TIntArrayList();
     private final TFloatArrayList xPositions = new TFloatArrayList();
+    private int minRelativeIndex = 0;
+    private int maxRelativeIndex = 0;
 
-    public void clear() {
+    void clear() {
         relativeIndices.clear();
         xPositions.clear();
+        minRelativeIndex = 0;
+        maxRelativeIndex = 0;
     }
 
-    public void add(int relativeIndex, float xPosition) {
+    void add(int relativeIndex, float xPosition) {
         relativeIndices.add(relativeIndex);
         xPositions.add(xPosition);
+        if (relativeIndex < minRelativeIndex) {
+            minRelativeIndex = relativeIndex;
+        }
+        if (relativeIndex > maxRelativeIndex) {
+            maxRelativeIndex = relativeIndex;
+        }
     }
 
     public int pageCount() {
@@ -27,5 +37,13 @@ public class PageAnimationState {
 
     public float pagePositionX(int index) {
         return xPositions.get(index);
+    }
+
+    public int minRelativeIndex() {
+        return minRelativeIndex;
+    }
+
+    public int maxRelativeIndex() {
+        return maxRelativeIndex;
     }
 }

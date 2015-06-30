@@ -3,361 +3,169 @@
 <head>
     <meta HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8"/>
 </head>
-<body style="padding: 0; margin: 0; overflow:hidden;">
+<body style="padding: 0; margin: 0; overflow: hidden;">
 
-<div id="mainContainer" style="position: relative; overflow: hidden; padding: 0; margin: 0;">
-    <div style="position: absolute; padding: 0; margin: 0; color: white">
-        <iframe id="firstFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0"></iframe>
-    </div>
-    <div style="position: absolute; padding: 0; margin: 0; color: white">
-        <iframe id="secondFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0"></iframe>
-    </div>
-    <div style="position: absolute; padding: 0; margin: 0; color: white">
-        <iframe id="thirdFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0"></iframe>
-    </div>
-</div>
+<iframe id="firstFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0; position: absolute; padding: 0; margin: 0; z-index: 1"></iframe>
+<iframe id="secondFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0; position: absolute; padding: 0; margin: 0; z-index: 0"></iframe>
+<iframe id="thirdFrame" scrolling="no" style="visibility: hidden; width: 100%; height: 100%; border: 0; position: absolute; padding: 0; margin: 0; z-index: 1"></iframe>
 
-<script type="text/javascript" src="utils/dom.js"></script>
-<script type="text/javascript" src="utils/error.js"></script>
-<script type="text/javascript" src="utils/format.js"></script>
-<script type="text/javascript" src="utils/map.js"></script>
-<script type="text/javascript" src="utils/string.js"></script>
 <script type="text/javascript" src="utils/style.js"></script>
-<script type="text/javascript" src="utils/regexp.js"></script>
-<script type="text/javascript" src="utils/object.js"></script>
-<script type="text/javascript" src="utils/set.js"></script>
-<script type="text/javascript" src="utils/render.js"></script>
 <script type="text/javascript">
 
-var ZERO_PERCENT = 0;
-var ONE_HUNDRED_PERCENT = 0x7fffffff;
-
 window.onload = function() {
-    var settings = {
-        segmentUrls: [],
-        callback: undefined
-    };
+    // задержка обновления соседних фреймов (содержащих предыдущий и следующих сегменты)
+    // необходима для оптимизации "непрерывного конфигурирования"
+    // (например, когда пользователь изменяет размер шрифта, и configure вызывается каждые 100 мс)
+    var NEIGHBOR_FRAME_REFRESH_DELAY_MILLIS = 1000;
 
-    var bookConfig = {
-        paddingTopInPixels: 10,
-        paddingRightInPixels: 10,
-        paddingBottomInPixels: 10,
-        paddingLeftInPixels: 10,
+    var segmentUrls_ = [];
+    var segmentCount_ = 0;
+    var client_;
+    
+    var segmentIndex_;
+    var segmentPercent_;
+    
+    var bookConfig_ = {
+        pageWidth: 100,
+        pageHeight: 200,
+        
+        paddingTop: 10,
+        paddingRight: 10,
+        paddingBottom: 10,
+        paddingLeft: 10,
 
         textAlign: "justify",
-        fontSizeInPercents: 100,
-        lineHeightInPercents: 100,
-
-        hyphens: true,
-        hangingPunctuation: true,
-        hangingHyphens: true,
-
-        deleteRedundantSpaces: true,
-        replaceFixedSpaces: true
+        fontSizePercents: 100,
+        lineHeightPercents: 100,
     };
 
-    var mainContainer = document.getElementById("mainContainer");
     var currentFrame = document.getElementById("firstFrame");
     var nextFrame = document.getElementById("secondFrame");
     var previewFrame = document.getElementById("thirdFrame");
-    var screenWidth = window.innerWidth;
-    var screenHeight = window.innerHeight;
 
-    initViewport();
-
-    var loadActionCount = 0;
-
-    var reader = window.reader = {
-        currentLocation: undefined,
-
-        setSegmentUrls: function(segmentUrls) {
-            settings.segmentUrls = segmentUrls;
+    window.reader = {
+        setClient: function(client) {
+            client_ = client;
         },
 
-        setCallback: function(callback) {
-            settings.callback = callback;
+        load: function(segmentUrls) {
+            segmentUrls_ = segmentUrls;
+            segmentCount_ = segmentUrls.length;
+            segmentIndex_ = undefined;
+            segmentPercent_ = undefined;
         },
 
-        canGoNextPage: function() {
-            return currentFrame.reader &&
-                    (
-                        this.currentLocation && this.currentLocation.segmentIndex < settings.segmentUrls.length - 1 ||
-                        currentFrame.reader.canGoNextPage()
-                    );
-        },
-
-        canGoPreviewPage: function() {
-            return currentFrame.reader &&
-                    (
-                        this.currentLocation && this.currentLocation.segmentIndex > 0 ||
-                        currentFrame.reader.canGoPreviewPage()
-                    );
-        },
-
-        goLocation: function(location) {
-            settings.callback.beforeGoLocation();
-            beforeLoad();
-            this.currentLocation = location;
-            loadSegment(currentFrame, currentUrl(this.currentLocation), this.currentLocation.percent);
-            loadSegment(nextFrame, nextUrl(this.currentLocation), ZERO_PERCENT);
-            loadSegment(previewFrame, previewUrl(this.currentLocation), ONE_HUNDRED_PERCENT);
-        },
-
-        goNextPage: function() {
-            if (this.canGoNextPage()) {
-                settings.callback.beforeGoNextPage();
-                beforeLoad();
-
-                var currentReader = currentFrame.reader;
-                if (currentReader.canGoNextPage()) {
-                    currentReader.goNextPage();
-                    this.currentLocation.percent = currentReader.currentPercent;
-                } else {
-                    var oldCurrentFrame = currentFrame;
-                    currentFrame = nextFrame;
-                    nextFrame = previewFrame;
-                    previewFrame = oldCurrentFrame;
-                    this.currentLocation.segmentIndex++;
-                    this.currentLocation.percent = ZERO_PERCENT;
-
-                    loadSegment(nextFrame, nextUrl(this.currentLocation), ZERO_PERCENT);
-                }
+        configure: function(config) {
+            for (var i in config) {
+                bookConfig_[i] = config[i];
             }
+            refreshSegmentNow(currentFrame);
+            refreshSegmentDelayed(nextFrame, NEIGHBOR_FRAME_REFRESH_DELAY_MILLIS);
+            refreshSegmentDelayed(previewFrame, NEIGHBOR_FRAME_REFRESH_DELAY_MILLIS);
         },
 
-        goPreviewPage: function() {
-            if (this.canGoPreviewPage()) {
-                settings.callback.beforeGoPreviewPage();
-                beforeLoad();
+        goLocation: function(segmentIndex, segmentPercent) { var oldSegmentIndex = segmentIndex_;
+            segmentIndex_ = segmentIndex;
+            segmentPercent_ = segmentPercent;
 
-                var currentReader = currentFrame.reader;
-                if (currentReader.canGoPreviewPage()) {
-                    currentReader.goPreviewPage();
-                    this.currentLocation.percent = currentReader.currentPercent;
-                } else {
-                    var oldCurrentFrame = currentFrame;
-                    currentFrame = previewFrame;
-                    previewFrame = nextFrame;
-                    nextFrame = oldCurrentFrame;
-                    this.currentLocation.segmentIndex--;
-                    this.currentLocation.percent = ONE_HUNDRED_PERCENT;
-
-                    loadSegment(previewFrame, previewUrl(this.currentLocation), ONE_HUNDRED_PERCENT);
-                }
+            var currentUrl = segmentUrls_[segmentIndex_];
+            var nextUrl = segmentIndex_ < segmentCount_ - 1 ? segmentUrls_[segmentIndex_ + 1] : "about:blank";
+            var previewUrl = segmentIndex_ > 0 ? segmentUrls_[segmentIndex_ - 1] : "about:blank";
+            if (segmentIndex_ == oldSegmentIndex + 1) {
+                var oldCurrentFrame = currentFrame;
+                currentFrame = nextFrame;
+                nextFrame = previewFrame;
+                previewFrame = oldCurrentFrame;
+                loadSegment(nextFrame, nextUrl);
+            } else if (segmentIndex_ == oldSegmentIndex - 1) {
+                var oldCurrentFrame = currentFrame;
+                currentFrame = previewFrame;
+                previewFrame = nextFrame;
+                nextFrame = oldCurrentFrame;
+                loadSegment(previewFrame, previewUrl);
+            } else if (segmentIndex_ != oldSegmentIndex) {
+                loadSegment(currentFrame, currentUrl);
+                loadSegment(nextFrame, nextUrl);
+                loadSegment(previewFrame, previewUrl);
             }
-        },
-
-        setPadding: function(textAlign) {
-            bookConfig.paddingTopInPixels = paddingTopInPixels;
-            bookConfig.paddingRightInPixels = paddingRightInPixels;
-            bookConfig.paddingBottomInPixels = paddingBottomInPixels;
-            bookConfig.paddingLeftInPixels = paddingLeftInPixels;
-            callReflow(function(reader) {
-                //todo неверено работает, т.к. все время создаются элементы
-                reader.refreshPageConfiguration();
-            });
-        },
-
-        setTextAlign: function(textAlign) {
-            bookConfig.textAlign = textAlign;
-            callReflow(function(reader) {
-                reader.refreshTextAlign();
-            });
-        },
-
-        setFontSize: function(fontSizeInPercents) {
-            bookConfig.fontSizeInPercents = fontSizeInPercents;
-            callReflow(function(reader) {
-                reader.refreshFontSize();
-            });
-        },
-
-        setLineHeight: function(lineHeightInPercents) {
-            bookConfig.lineHeightInPercents = lineHeightInPercents;
-            callReflow(function(reader) {
-                reader.refreshLineHeight();
-            });
-        },
-
-        setHyphens: function(hyphens) {
-            bookConfig.hyphens = hyphens;
-            reload();
-        },
-
-        setHangingPunctuation: function(hangingPunctuation) {
-            bookConfig.hangingPunctuation = hangingPunctuation;
-            reload();
-        },
-
-        setHangingHyphens: function(hangingHyphens) {
-            bookConfig.hangingHyphens = hangingHyphens;
-            reload();
-        },
-
-        setDeleteRedundantSpaces: function(deleteRedundantSpaces) {
-            bookConfig.deleteRedundantSpaces = deleteRedundantSpaces;
-            reload();
-        },
-
-        setReplaceFixedSpaces: function(replaceFixedSpaces) {
-            bookConfig.replaceFixedSpaces = replaceFixedSpaces;
-            reload();
+            refreshViewport();
         }
     };
 
-    function currentUrl(location) {
-        return settings.segmentUrls[location.segmentIndex];;
+    function refreshViewport() {
+        notifyPageCounts();
+        var currentStyle = currentFrame.style;
+        var nextStyle = nextFrame.style;
+        var previewStyle = previewFrame.style;
+        currentStyle.width = bookConfig_.pageWidth + "px";
+        currentStyle.height = bookConfig_.pageHeight + "px";
+        currentStyle.left = 0 + "px";
+        nextStyle.width = bookConfig_.pageWidth + "px";
+        nextStyle.height = bookConfig_.pageHeight + "px";
+        nextStyle.left = -bookConfig_.pageWidth + "px";
+        previewStyle.width = bookConfig_.pageWidth + "px";
+        previewStyle.height = bookConfig_.pageHeight + "px";
+        previewStyle.left = -bookConfig_.pageWidth + "px";
+        currentFrame.reader && currentFrame.reader.scrollToPercent(segmentPercent_);
     }
 
-    function nextUrl(location) {
-        return location.segmentIndex < settings.segmentUrls.length - 1 ?
-                settings.segmentUrls[location.segmentIndex + 1] :
-                "about:blank";
+    function notifyPageCounts() {
+        var previewPageCounts = previewFrame.reader ? previewFrame.reader.pageCount() : null;
+        var currentPageCounts = currentFrame.reader ? currentFrame.reader.pageCount() : null;
+        var nextPageCounts = nextFrame.reader ? nextFrame.reader.pageCount() : null;
+        client_.notifyPageCounts(previewPageCounts, currentPageCounts, nextPageCounts);
     }
 
-    function previewUrl(location) {
-        return location.segmentIndex > 0 ?
-                settings.segmentUrls[location.segmentIndex - 1] :
-                "about:blank";
+    function refreshSegmentNow(frame) {
+        clearTimeout(frame.refreshId);
+        frame.reader && frame.reader.refreshConfig();
     }
 
-    function callReflow(refreshFunction) {
-        // todo beforeload сработает, но ек сработает afterload, если currentFrame.reader) и т.д. будут undefined
-        beforeLoad();
-        resetViewportForReflow();
-        if (currentFrame.reader) {
-            refreshFunction(currentFrame.reader);
-            currentFrame.reader.reflow();
-        }
-        if (nextFrame.reader) {
-            refreshFunction(nextFrame.reader);
-            nextFrame.reader.reflow();
-        }
-        if (previewFrame.reader) {
-            refreshFunction(previewFrame.reader);
-            previewFrame.reader.reflow();
-        }
-    }
-
-    function reload() {
-        if (reader.currentLocation !== undefined) {
-            reader.goLocation(reader.currentLocation);
-        }
-    }
-
-    function onSegmentPageChanged() {
-        updateViewport();
-        if (isAfterLoad()) {
-            afterLoad();
-        }
-    }
-
-    function isAfterLoad() {
-        return loadActionCount > 0 && currentFrame.reader && nextFrame.reader && previewFrame.reader;
-    }
-
-    function beforeLoad() {
-        loadActionCount++;
-        settings.callback.beforeLoad();
-    }
-
-    function afterLoad() {
-        for (var i = 0; i < loadActionCount; i++) {
-            settings.callback.afterLoad();
-        }
-        loadActionCount = 0;
-        repaint(document.body); // для того, чтобы вызвался invalidate для WebView в Android (см. com.dmi.perfectreader.bookview.PageBookView.MyWebView.invalidate)
-    }
-
-    function initViewport() {
-        currentFrame.parentNode.style.width = 0;
-        currentFrame.parentNode.style.height = screenHeight;
-        currentFrame.parentNode.style.left = -3 * screenWidth;
-        currentFrame.parentNode.style.top = 0;
-        currentFrame.parentNode.style.zIndex = 0;
-        nextFrame.parentNode.style.width = screenWidth;
-        nextFrame.parentNode.style.height = screenHeight;
-        nextFrame.parentNode.style.left = -screenWidth;
-        nextFrame.parentNode.style.top = 0;
-        nextFrame.parentNode.style.zIndex = 1;
-        previewFrame.parentNode.style.width = screenWidth;
-        previewFrame.parentNode.style.height = screenHeight;
-        previewFrame.parentNode.style.left = -screenWidth;
-        previewFrame.parentNode.style.top = 0;
-        previewFrame.parentNode.style.zIndex = 1;
-        mainContainer.style.width = 3 * screenWidth;
-        mainContainer.style.height = screenHeight;
-        window.scrollTo(screenWidth, 0);
-    }
-
-    function updateViewport() {
-        var currentReader = currentFrame.reader;
-        var nextReader = nextFrame.reader;
-        var previewReader = previewFrame.reader;
-
-        var currentStyle = currentFrame.parentNode.style;
-        var nextStyle = nextFrame.parentNode.style;
-        var previewStyle = previewFrame.parentNode.style;
-
-        currentStyle.width = 3 * screenWidth;
-        nextStyle.width = screenWidth;
-        previewStyle.width = screenWidth;
-
-        if (currentReader) {
-            var page = currentReader.currentPage;
-            var pageCount = currentReader.pageCount;
-            var onFirstPartOfFrame = page == 0;
-            var onThirdPartOfFrame = (pageCount >= 3 && page == pageCount - 1);
-            if (onFirstPartOfFrame) {
-                currentStyle.left = screenWidth;
-            } else if (onThirdPartOfFrame) {
-                currentStyle.left = -screenWidth;
-            } else {
-                currentStyle.left = 0;
-            }
-        } else {
-            currentStyle.left = -3 * screenWidth;
-        }
-
-        if (nextReader && (currentReader && !currentReader.canGoNextPage() || !currentReader)) {
-            nextStyle.left = 2 * screenWidth;
-        } else {
-            nextStyle.left = -screenWidth;
-        }
-
-        if (previewReader && (currentReader && !currentReader.canGoPreviewPage() || !currentReader)) {
-            previewStyle.left = 0;
-        } else {
-            previewStyle.left = -screenWidth;
-        }
-
-        currentReader && currentFrame.contentWindow.scrollTo(currentReader && (page - 1) * screenWidth, 0);
-        nextReader && nextFrame.contentWindow.scrollTo(nextReader.currentPage * screenWidth, 0);
-        previewReader && previewFrame.contentWindow.scrollTo(previewReader.currentPage * screenWidth, 0);
-    }
-
-    function resetViewportForReflow() {
-        currentFrame.parentNode.style.width = screenWidth;
-    }
-
-    function loadSegment(frame, segmentUrl, percent) {
+    function refreshSegmentDelayed(frame, delay) {
         frame.style.visibility = "hidden";
-        frame.reader = undefined;
+        if (frame.reader) {
+            var reader = frame.reader;
+            frame.reader = null;
+            clearTimeout(frame.refreshId);
+            frame.refreshId = setTimeout(function() {
+                frame.reader = reader;
+                frame.reader.refreshConfig();
+                frame.style.visibility = "";
+            }, delay);
+        }
+    }
+
+    function loadSegment(frame, segmentUrl) {
+        frame.style.visibility = "hidden";
+        frame.reader = null;
+        clearTimeout(frame.refreshId);
         frame.onload = function() {
-            resetViewportForReflow();
-            initFrameContent(frame, percent);
+            initFrame(frame);
+            afterFrameLoad(frame);
             frame.style.visibility = "";
-        };
+        }
         frame.src = segmentUrl;
     }
 
-    function initFrameContent(frame, percent) {
-        var window = frame.contentWindow;
-        var document = window.document;
+    function afterFrameLoad(frame) {
+        frame.reader.onPageCountChange = function() {
+            refreshViewport();
+        }
+        refreshViewport();
+    }
 
-        window.addEventListener("touchstart", function(event) {
+    function initFrame(frame) {
+        var win = frame.contentWindow;
+        var doc = win.document;
+
+        win.addEventListener("click", function(event) {
             if (isNotInteractiveElement(event.target)) {
-                settings.callback.onTouchStartNotInteractiveElement();
+                event.stopPropagation();
+                event.preventDefault();
+                client_.handleTap();
+                return false;
+            } else {
+                return true;
             }
 
             function isNotInteractiveElement(element) {
@@ -370,9 +178,9 @@ window.onload = function() {
                 }
                 return true;
             }
-        }, false);
+        }, true);
 
-        var stylesheet = createStylesheet(document);
+        var stylesheet = createStylesheet(doc);
         var styles = {
             p: addCSSStyle(stylesheet, "p"),
             div: addCSSStyle(stylesheet, "div"),
@@ -383,429 +191,106 @@ window.onload = function() {
             li: addCSSStyle(stylesheet, "li"),
             fixSpace: addCSSStyle(stylesheet, ".fixSpace", "display: inline-block; width: 0.25em; text-indent: 0; padding: 0; margin: 0")
         };
+
         var elements = {
-            touchLayer: undefined,
-            content: undefined
+            pageDiv: doc.createElement("div"),
+            content: doc.createElement("div"),
+            touchLayer: doc.createElement("div")
         };
+
+        while (doc.body.firstChild) {
+            elements.content.appendChild(doc.body.firstChild);
+        }
+        elements.pageDiv.appendChild(elements.content);
+
+        // touchLayer necessary to be possible clicking on the end of the segment
+        elements.touchLayer.style.width = "100%";
+        elements.touchLayer.style.height = "100%";
+        elements.touchLayer.style.position = "absolute";
+        elements.touchLayer.style.left = "0px";
+        elements.touchLayer.style.top = "0px";
+        elements.touchLayer.style.zIndex = "-1";
+        doc.body.appendChild(elements.touchLayer);
+
+        doc.body.appendChild(elements.pageDiv);
 
         var frameReader = frame.reader = {
-            pageCount: 0,
-            currentPage: 0,
-            currentPercent: percent,
+            onPageCountChange: undefined,
 
-            goPercent: function(percent) {
-                this.currentPercent = percent;
-                refreshCurrentPage();
+            pageCount: function() {
+                return Math.round(doc.body.scrollWidth / bookConfig_.pageWidth);
             },
 
-            goPage: function(page) {
-                this.goPercent((page / this.pageCount) * ONE_HUNDRED_PERCENT);
+            refreshConfig: function() {
+                refreshConfig();
             },
 
-            canGoNextPage: function() {
-                return this.currentPage < this.pageCount - 1;
-            },
-
-            canGoPreviewPage: function() {
-                return this.currentPage > 0;
-            },
-
-            goNextPage: function() {
-                this.goPage(this.currentPage + 1);
-            },
-
-            goPreviewPage: function() {
-                this.goPage(this.currentPage - 1);
-            },
-
-            refreshPageConfiguration: function() {
-                var pageDiv = document.createElement("div");
-                elements.content = document.createElement("div");
-                while (document.body.firstChild) {
-                    elements.content.appendChild(document.body.firstChild);
-                }
-
-                pageDiv.style.setProperty("margin-top", bookConfig.paddingTopInPixels + "px", "important");
-                pageDiv.style.setProperty("margin-bottom", bookConfig.paddingBottomInPixels + "px", "important");
-                pageDiv.style.setProperty("margin-right", "0px", "important");
-                pageDiv.style.setProperty("margin-left", "0px", "important");
-                pageDiv.style.setProperty("padding", "0px", "important");
-
-                elements.content.style.setProperty("margin-top", "0px", "important");
-                elements.content.style.setProperty("margin-bottom", "0px", "important");
-                elements.content.style.setProperty("margin-right", bookConfig.paddingRightInPixels + "px", "important");
-                elements.content.style.setProperty("margin-left", bookConfig.paddingLeftInPixels + "px", "important");
-                elements.content.style.setProperty("padding", "0px", "important");
-
-                var width = screenWidth;
-                var height = screenHeight - bookConfig.paddingTopInPixels - bookConfig.paddingBottomInPixels;
-                pageDiv.style.setProperty("width", width + "px", "important");
-                pageDiv.style.setProperty("height", height + "px", "important");
-                pageDiv.style.setProperty("-webkit-column-width", width + "px", "important");
-                pageDiv.style.setProperty("-webkit-column-gap", "0px", "important");
-
-                document.body.style.setProperty("margin", "0px", "important");
-                document.body.style.setProperty("padding", "0px", "important");
-
-                pageDiv.appendChild(elements.content);
-                document.body.appendChild(pageDiv);
-
-                elements.touchLayer = document.createElement("div");
-                elements.touchLayer.style.setProperty("height", screenHeight + "px", "important");
-                elements.touchLayer.style.setProperty("position", "absolute", "important");
-                elements.touchLayer.style.setProperty("left", "0px", "important");
-                elements.touchLayer.style.setProperty("top", "0px", "important");
-                elements.touchLayer.style.setProperty("z-index", "-1000", "important");
-                document.body.appendChild(elements.touchLayer);
-            },
-
-            refreshTextAlign: function() {
-                styles.p.setProperty("text-align", bookConfig.textAlign, "important");
-                styles.div.setProperty("text-align", bookConfig.textAlign, "important");
-                styles.td.setProperty("text-align", bookConfig.textAlign, "important");
-                styles.dt.setProperty("text-align", bookConfig.textAlign, "important");
-                styles.dd.setProperty("text-align", bookConfig.textAlign, "important");
-                styles.br.setProperty("text-align", bookConfig.textAlign, "important");
-                styles.li.setProperty("text-align", bookConfig.textAlign, "important");
-            },
-
-            refreshFontSize: function() {
-                document.body.style.setProperty("font-size", bookConfig.fontSizeInPercents + "%", "important");
-            },
-
-            refreshLineHeight: function() {
-                styles.p.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
-                styles.div.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
-                styles.td.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
-                styles.dt.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
-                styles.dd.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
-                styles.br.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
-                styles.li.setProperty("line-height", bookConfig.lineHeightInPercents / 100, "important");
-            },
-
-            reflow: function() {
-                elements.touchLayer.style.setProperty("width", "0px", "important");
-                refreshPageCount();
-                refreshCurrentPage();
-                elements.touchLayer.style.setProperty("width", document.body.scrollWidth + "px", "important");
+            scrollToPercent: function(percent) {
+                var page = parseInt(client_.percentToPage(this.pageCount(), percent));
+                currentFrame.contentWindow.scrollTo(page * bookConfig_.pageWidth, 0);
+                elements.touchLayer.style.left = page * bookConfig_.pageWidth + "px";
             }
         };
 
-        var postActions = create(function () {
-            var firstActions = [];
-            var secondActions = [];
+        refreshConfig();
 
-            return {
-                pushFirst: function (func) {
-                    firstActions.push(func);
-                },
+        doc.addEventListener("typoContentSizeChange", function(event) {
+            frameReader.onPageCountChange();
+        }, false);
 
-                pushSecond: function (func) {
-                    secondActions.push(func);
-                },
-
-                execAll: function () {
-                    firstActions.forEach(function (action) {
-                        action();
-                    });
-                    secondActions.forEach(function (action) {
-                        action();
-                    });
-                    firstActions.length = 0;
-                    secondActions.length = 0;
-                }
-            };
-        });
-
-        function applyModification() {
-            var FORMAT_ELEMENTS = stringSet([
-                "LABEL", "RUBY", "RT", "LI", "CAPTION", "TD", "TH", "INPUT", "BUTTON", "MARQUEE",
-                "ARTICLE", "BLOCKQUOTE", "CENTER", "DT", "DD", "DETAILS", "DIV", "FIGCAPTION",
-                "FOOTER", "H1", "H2", "H3", "H4", "H5", "H6", "HEADER", "LEGEND", "LISTING", "MAIN",
-                "NAV", "OL", "OPTION", "P", "SECTION", "SUMMARY", "UL", "XMP"
-            ]);
-
-            var regexVars = {
-                // todo zero width space \u200B и Word-Joiner \u2060 сюда не вписывается
-                // todo проверить \u200C \u200D
-                spaces: "\u0020\u00A0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u200B\u202F\u205F\u2060\u3000\u0009", // включает табуляцию
-                lineBreaks: "\n\r\f"
-            };
-
-            function fregexp(pattern, flags, vars) {
-                return vregexp(pattern, flags, vars ? mergeObjects(regexVars, vars) : regexVars);
-            }
-
-            iterateChildrenRecursively(elements.content, function (node) {
-                if (node.nodeType == Node.ELEMENT_NODE && FORMAT_ELEMENTS.contains(node.nodeName)) {
-                    var text = elementText(node);
-                    bookConfig.deleteRedundantSpaces && deleteRedundantSpaces(text);
-                    bookConfig.replaceFixedSpaces && replaceFixedSpaces(text);
-                    bookConfig.hyphens && hyphens(text);
-                    bookConfig.hangingPunctuation && hangingPunctuation(text);
-                }
-            });
-
-            function deleteRedundantSpaces(text) {
-                safeCall(function () {
-                    deleteTrailingSpaces(text);
-                    deleteLeadingSpaces(text);
-
-                    // Удаляются пробелы в начале строки
-                    // "   Погода сегодня хорошая" будет заменно на "Погода сегодня хорошая"
-                    function deleteLeadingSpaces(text) {
-                        text.find(
-                                fregexp("^[%spaces%lineBreaks]+", "g"),
-                                function (result) {
-                                    result.range().deleteContents();
-                                }
-                        );
-                    }
-
-                    // Удаляются пробелы в конце строки
-                    function deleteTrailingSpaces(text) {
-                        text.find(
-                                fregexp("[%spaces%lineBreaks]+$", "g"),
-                                function (result) {
-                                    result.range().deleteContents();
-                                }
-                        );
-                    }
-                });
-            }
-
-            function replaceFixedSpaces(text) {
-                safeCall(function () {
-                    replaceInDialog(text);
-
-                    // Заменяются пробелы в диалоге на фиксированные, чтобы при выравнивании по ширине они не разъезжались
-                    // "    -  Как дела?" будет заменено на "    -<span class='fixSpace'></span>Как дела?"
-                    function replaceInDialog(text) {
-                        text.find(
-                                fregexp("(^[%spaces]*[%dashes])([%spaces]+)", "g", {
-                                    dashes: "\u2013\u2014\u2015\u002D"
-                                }),
-                                function (result) {
-                                    var range = result.range(result.subStrings[0].length);
-                                    var span = document.createElement("span");
-                                    span.className = "fixSpace";
-                                    span.textContent = "\u00A0";
-                                    range.deleteContents();
-                                    range.insertNode(span);
-                                }
-                        );
-                    }
-                });
-            }
-
-            function hyphens(text) {
-                // todo избегать object symbols
-                safeCall(function () {
-                    var HYPHEN_OFFSET_IN_PERCENT = 0.5;
-
-                    text.find(fregexp("([^%spaces]+)", "g"), insertHyphens);
-
-                    function insertHyphens(result) {
-                        var word = result.subStrings[0];
-                        for (var i = word.length - 1; i >=1; i -= 2) {
-                            var hyphenSpan = document.createElement("span");
-                            hyphenSpan.textContent = "-";
-                            hyphenSpan.style.visibility = "hidden";
-                            var rightSpan = document.createElement("span");
-                            result.range(i, i).insertNode(rightSpan);
-                            result.range(i, i).insertNode(hyphenSpan);
-
-                            postConfigure(hyphenSpan, rightSpan);
-                        }
-
-                        function postConfigure(hyphenSpan, rightSpan) {
-                            postActions.pushFirst(function () {
-                                var hyphenWidth = hyphenSpan.getBoundingClientRect().width;
-                                var offset = HYPHEN_OFFSET_IN_PERCENT * hyphenWidth;
-                                postActions.pushSecond(function () {
-                                    hyphenSpan.style.marginRight = -offset + "px";
-                                    rightSpan.style.marginLeft = -(hyphenWidth - offset) + "px";
-                                });
-                            });
-                        }
-                    }
-                });
-            }
-
-            function hangingPunctuation(text) {
-                safeCall(function () {
-                    // см. https://ru.wikipedia.org/wiki/%D0%9F%D1%83%D0%BD%D0%BA%D1%82%D1%83%D0%B0%D1%86%D0%B8%D1%8F
-
-                    // Формат: [символ, смещение от 0.00 до 1.00]
-                    var LEFT_HANG_INFO = [
-                        ['(', 0.50],
-                        ['[', 0.50],
-                        ['{', 0.50],
-                        ['<', 0.50],
-
-                        ['"', 0.50],
-                        ['\'', 0.50],
-                        ['«', 0.50],
-                        ['»', 0.50],
-                        ['„', 0.50],
-                        ['“', 0.50],
-                        ['‘', 0.50],
-                        ['‹', 0.50],
-                        ['‚', 0.50]
-                    ];
-
-                    var RIGHT_HANG_INFO = [
-                        [')', 0.50],
-                        [']', 0.50],
-                        ['}', 0.50],
-                        ['>', 0.50],
-
-                        ['"', 0.50],
-                        ['\'', 0.50],
-                        ['»', 0.50],
-                        ['«', 0.50],
-                        ['“', 0.50],
-                        ['”', 0.50],
-                        ['’', 0.50],
-                        ['›', 0.50],
-
-                        [',', 0.50],
-                        ['.', 0.50],
-                        ['…', 0.50],
-                        [':', 0.50],
-                        [';', 0.50],
-                        ['!', 0.50],
-                        ['‼', 0.50],
-                        ['?', 0.50],
-
-                        ['\u2010', 0.50],
-                        ['\u2011', 0.50],
-                        ['\u002D', 0.50],
-                        ['\u2012', 0.50],
-                        ['\u2013', 0.50],
-                        ['\u2014', 0.50]
-                    ];
-
-                    function hangingSymbol(hangInfo) {
-                        return hangInfo[0];
-                    }
-
-                    function hangingOffset(hangInfo) {
-                        return hangInfo[1];
-                    }
-
-                    var vars = {
-                        leftHangingChars: LEFT_HANG_INFO.map(hangingSymbol).join(""),
-                        rightHangingChars: RIGHT_HANG_INFO.map(hangingSymbol).join("")
-                    };
-
-                    var leftHangOffset = toMap(LEFT_HANG_INFO, hangingSymbol, hangingOffset);
-                    var rightHangOffset = toMap(RIGHT_HANG_INFO, hangingSymbol, hangingOffset);
-
-                    text.find(
-                            fregexp("[%spaces]([%leftHangingChars])[^%spaces]", "g", vars),
-                            function (result) {
-                                applyLeftHang(result, 1, 0);
-                            }
-                    );
-
-                    text.find(
-                            fregexp("^([%leftHangingChars])[^%spaces]", "g", vars),
-                            function (result) {
-                                applyLeftHang(result, 0);
-                            }
-                    );
-
-                    text.find(
-                            fregexp("[^%spaces]([%rightHangingChars])[%spaces]", "g", vars),
-                            function (result) {
-                                applyRightHang(result, 1, 2);
-                            }
-                    );
-
-                    text.find(
-                            fregexp("[^%spaces]([%rightHangingChars])$", "g", vars),
-                            function (result) {
-                                applyRightHang(result, 1);
-                            }
-                    );
-
-                    function applyLeftHang(result, charIndex, spaceIndex) {
-                        var char = result.subStrings[0];
-                        var offsetInPercent = leftHangOffset[char];
-                        var spaceSpan, charSpan;
-                        charSpan = document.createElement("span");
-                        result.range(charIndex, charIndex + 1).surroundContents(charSpan);
-                        if (spaceIndex !== undefined) {
-                            spaceSpan = document.createElement("span");
-                            result.range(spaceIndex, spaceIndex + 1).surroundContents(spaceSpan);
-                        }
-                        postActions.pushFirst(function () {
-                            var width = charSpan.getBoundingClientRect().width;
-                            var offset = offsetInPercent * width;
-                            postActions.pushSecond(function () {
-                                charSpan.style.marginLeft = -offset + "px";
-                                if (spaceSpan) {
-                                    spaceSpan.style.marginRight = offset + "px";
-                                }
-                            });
-                        });
-                    }
-
-                    function applyRightHang(result, charIndex, spaceIndex) {
-                        var char = result.subStrings[0];
-                        var offsetInPercent = rightHangOffset[char];
-                        var rightSpan, charSpan;
-                        if (spaceIndex !== undefined) {
-                            rightSpan = document.createElement("span");
-                            result.range(spaceIndex, spaceIndex).insertNode(rightSpan);
-                        }
-                        charSpan = document.createElement("span");
-                        result.range(charIndex, charIndex + 1).surroundContents(charSpan);
-                        postActions.pushFirst(function () {
-                            var width = charSpan.getBoundingClientRect().width;
-                            var offset = offsetInPercent * width;
-                            postActions.pushSecond(function () {
-                                charSpan.style.marginRight = -offset + "px";
-                                if (rightSpan) {
-                                    rightSpan.style.marginRight = offset + "px";
-                                }
-                            });
-                        });
-                    }
-                });
-            }
-        }
-        
-        var startTime = new Date().getTime();
-        frameReader.refreshPageConfiguration();
-        frameReader.refreshTextAlign();
-        frameReader.refreshFontSize();
-        frameReader.refreshLineHeight();
-        console.log("preModification time: " + (new Date().getTime() - startTime));
-
-        startTime = new Date().getTime();
-        applyModification();
-        console.log("modification time: " + (new Date().getTime() - startTime));
-
-        startTime = new Date().getTime();
-        postActions.execAll();
-        console.log("postActions time: " + (new Date().getTime() - startTime));
-        
-        frameReader.reflow();
-
-        function refreshPageCount() {
-            var totalWidth = document.body.scrollWidth;
-            frameReader.pageCount = screenWidth > 0 ? Math.round(totalWidth / screenWidth) : 0;
+        function refreshConfig() {
+            refreshPageConfiguration();
+            refreshTextAlign();
+            refreshFontSize();
+            refreshLineHeight();
         }
 
-        function refreshCurrentPage() {
-            var totalWidth = document.body.scrollWidth;
-            frameReader.currentPage = screenWidth > 0 ?
-                    Math.min(Math.round(frameReader.currentPercent / ONE_HUNDRED_PERCENT * totalWidth / screenWidth),
-                             frameReader.pageCount - 1) :
-                    0;
-            onSegmentPageChanged();
+        function refreshPageConfiguration() {
+            elements.pageDiv.style.setProperty("margin-top", bookConfig_.paddingTop + "px", "important");
+            elements.pageDiv.style.setProperty("margin-bottom", bookConfig_.paddingBottom + "px", "important");
+            elements.pageDiv.style.setProperty("margin-right", "0px", "important");
+            elements.pageDiv.style.setProperty("margin-left", "0px", "important");
+            elements.pageDiv.style.setProperty("padding", "0px", "important");
+
+            elements.content.style.setProperty("margin-top", "0px", "important");
+            elements.content.style.setProperty("margin-bottom", "0px", "important");
+            elements.content.style.setProperty("margin-right", bookConfig_.paddingRight + "px", "important");
+            elements.content.style.setProperty("margin-left", bookConfig_.paddingLeft + "px", "important");
+            elements.content.style.setProperty("padding", "0px", "important");
+
+            var width = bookConfig_.pageWidth;
+            var height = bookConfig_.pageHeight - bookConfig_.paddingTop - bookConfig_.paddingBottom;
+            elements.pageDiv.style.setProperty("width", width + "px", "important");
+            elements.pageDiv.style.setProperty("height", height + "px", "important");
+            elements.pageDiv.style.setProperty("-webkit-column-width", width + "px", "important");
+            elements.pageDiv.style.setProperty("-webkit-column-gap", "0px", "important");
+
+            doc.body.style.setProperty("margin", "0px", "important");
+            doc.body.style.setProperty("padding", "0px", "important");
+        }
+
+        function refreshTextAlign() {
+            styles.p.setProperty("text-align", bookConfig_.textAlign, "important");
+            styles.div.setProperty("text-align", bookConfig_.textAlign, "important");
+            styles.td.setProperty("text-align", bookConfig_.textAlign, "important");
+            styles.dt.setProperty("text-align", bookConfig_.textAlign, "important");
+            styles.dd.setProperty("text-align", bookConfig_.textAlign, "important");
+            styles.br.setProperty("text-align", bookConfig_.textAlign, "important");
+            styles.li.setProperty("text-align", bookConfig_.textAlign, "important");
+        }
+
+        function refreshFontSize() {
+            doc.body.style.setProperty("font-size", bookConfig_.fontSizePercents + "%", "important");
+        }
+
+        function refreshLineHeight() {
+            styles.p.setProperty("line-height", bookConfig_.lineHeightPercents / 100, "important");
+            styles.div.setProperty("line-height", bookConfig_.lineHeightPercents / 100, "important");
+            styles.td.setProperty("line-height", bookConfig_.lineHeightPercents / 100, "important");
+            styles.dt.setProperty("line-height", bookConfig_.lineHeightPercents / 100, "important");
+            styles.dd.setProperty("line-height", bookConfig_.lineHeightPercents / 100, "important");
+            styles.br.setProperty("line-height", bookConfig_.lineHeightPercents / 100, "important");
+            styles.li.setProperty("line-height", bookConfig_.lineHeightPercents / 100, "important");
         }
     }
 };

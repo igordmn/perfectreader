@@ -3,7 +3,7 @@ package com.dmi.perfectreader.book.animation;
 public interface PageAnimation {
     void setPageWidth(float pageWidth);
 
-    boolean isPagesMoving();
+    boolean isAnimate();
 
     void reset();
 
@@ -13,5 +13,5 @@ public interface PageAnimation {
 
     void update(float dt);
 
-    PageAnimationState currentState();
+    PageAnimationState state();
 }

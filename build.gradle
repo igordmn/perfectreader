@@ -1,48 +1,115 @@
-import Utils
-
-apply plugin: 'sonar-runner'
-
-ext {
-    buildCounter = Integer.getInteger('build.counter', 0)
-    signProperties = Utils.rootProperties('.sign/sign.properties')
-}
-
-allprojects {
-    buildscript {
-        repositories {
-            jcenter()
-            maven {
-                url 'https://oss.sonatype.org/content/repositories/snapshots/'
-            }
-            maven {
-                url 'https://github.com/igordmn/mvn-repo/raw/master/releases'
-            }
-            maven {
-                url 'https://github.com/igordmn/mvn-repo/raw/master/snapshots'
-            }
-        }
-    }
-
+buildscript {
     repositories {
         jcenter()
         maven {
             url 'https://oss.sonatype.org/content/repositories/snapshots/'
         }
         maven {
-            url 'https://github.com/igordmn/mvn-repo/raw/master/releases'
-        }
-        maven {
-            url 'https://github.com/igordmn/mvn-repo/raw/master/snapshots'
+            url 'https://dl.bintray.com/igordmn/maven'
         }
     }
 
-    sonarRunner {
-        sonarProperties {
-            property 'sonar.sourceEncoding', 'UTF-8'
+    dependencies {
+        classpath "com.android.tools.build:gradle:1.2.3"
+        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
+        classpath 'com.jakewharton.hugo:hugo-plugin:1.2.1'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath "me.tatarka:gradle-retrolambda:3.1.0"
+        classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
+        classpath 'org.codehaus.groovy:gradle-groovy-android-plugin:0.3.6'
+        configurations.classpath.exclude group: 'com.android.tools.external.lombok'
+    }
+}
+
+apply plugin: 'android-sdk-manager'
+apply plugin: 'sonar-runner'
+
+def androidProjects = [project(':app'), project(':typoweb'), project(':util:android')]
+def javaProjects = [project(':core'), project(':util:java')]
+
+configure(androidProjects + javaProjects) {
+    afterEvaluate { project ->
+        repositories {
+            jcenter()
+            maven {
+                url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            }
+            maven {
+                url 'https://dl.bintray.com/igordmn/maven'
+            }
+        }
+
+        sonarRunner {
+            sonarProperties {
+                property 'sonar.sourceEncoding', 'UTF-8'
+            }
+        }
+
+        tasks.withType(JavaCompile) {
+            options.encoding = 'UTF-8'
+        }
+
+        dependencies {
+            compile 'com.google.code.findbugs:jsr305:3.0.0'
+            compile 'com.google.guava:guava:18.0'
+            compile 'net.sf.trove4j:trove4j:3.0.3'
+            compile 'net.sourceforge.streamsupport:streamsupport:1.2.1'
+            testCompile ('org.spockframework:spock-core:1.0-groovy-2.4') {
+                exclude group: 'org.codehaus.groovy'
+            }
+        }
+
+        retrolambda {
+            defaultMethods true
         }
     }
+}
 
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
+configure(androidProjects) {
+    afterEvaluate { project ->
+        android {
+            compileSdkVersion 21
+            buildToolsVersion '22.0.1'
+
+            defaultConfig {
+                minSdkVersion 15
+                targetSdkVersion 21
+            }
+
+            lintOptions {
+                disable 'InvalidPackage'
+            }
+
+            compileOptions {
+                sourceCompatibility JavaVersion.VERSION_1_8
+                targetCompatibility JavaVersion.VERSION_1_8
+            }
+        }
+
+        sonarRunner {
+            sonarProperties {
+                properties['sonar.sources'] = 'src/main/java'
+                properties['sonar.binaries'] = 'build/intermediates/classes/debug'
+                properties['sonar.profile'] = 'Android Lint'
+            }
+        }
+
+        dependencies {
+            compile 'com.android.support:appcompat-v7:22.2.0'
+            compile 'com.android.support:support-annotations:22.2.0'
+            compile 'com.android.support:cardview-v7:22.2.0'
+            compile 'com.android.support:recyclerview-v7:22.2.0'
+            compile 'com.android.support:palette-v7:22.2.0'
+            compile 'com.android.support:design:22.2.0'
+            compile 'com.jakewharton.hugo:hugo-runtime:1.2.1'
+            compile 'org.androidannotations:androidannotations-api:3.3.1'
+            compile 'com.squareup:otto:1.3.5'
+            compile 'com.rengwuxian.materialedittext:library:1.8.2'
+            compile 'com.pnikosis:materialish-progress:1.3'
+            compile 'com.jpardogo.materialtabstrip:library:1.0.8'
+            compile 'com.mikepenz:materialdrawer:3.0.8'
+//            compile 'com.github.navasmdc:MaterialDesign:1.5@aar'
+            testCompile 'org.codehaus.groovy:groovy:2.4.3:grooid'
+        }
     }
 }

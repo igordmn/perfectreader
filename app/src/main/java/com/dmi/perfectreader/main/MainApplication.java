@@ -14,7 +14,7 @@ public class MainApplication extends Application {
 
     @Override
     public void onCreate() {
-        applicationInitializer.runInit();
+        applicationInitializer.init();
         super.onCreate();
     }
 }

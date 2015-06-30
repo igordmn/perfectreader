@@ -8,62 +8,19 @@
     tools:context="com.dmi.perfectreader.main.BookActivity_">
 
     <RelativeLayout
-        android:id="@+id/mainContainer"
+        android:id="@+id/bookFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <LinearLayout
-        android:id="@+id/bookNotLoadedView"
-        android:layout_width="240dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:visibility="visible">
+    <fragment
+        android:id="@+id/bookControlFragment"
+        android:name="com.dmi.perfectreader.control.BookControlFragment_"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/bookNotLoaded1"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:text="@string/bookNotLoaded2"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/bookOpenErrorView"
-        android:layout_width="240dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:visibility="gone">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/bookOpenError"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
-
-        <TextView
-            android:id="@+id/bookOpenErrorDetailTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-    </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/subFragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

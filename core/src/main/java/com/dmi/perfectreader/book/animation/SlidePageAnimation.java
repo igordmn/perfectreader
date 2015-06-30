@@ -24,7 +24,7 @@ public class SlidePageAnimation implements PageAnimation {
     }
 
     @Override
-    public boolean isPagesMoving() {
+    public boolean isAnimate() {
         return distance != 0;
     }
 
@@ -80,7 +80,7 @@ public class SlidePageAnimation implements PageAnimation {
     }
 
     @Override
-    public PageAnimationState currentState() {
+    public PageAnimationState state() {
         return state;
     }
 }

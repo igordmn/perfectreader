@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.dmi.perfectreader">
+
+    <application>
+        <activity android:exported="true" android:name=".manualtest.TypoWebTestActivity"/>
+        <activity android:exported="true" android:name=".manualtest.PageBookViewTestActivity"/>
+        <activity android:exported="true" android:name=".manualtest.WebPageBookTestActivity"/>
+        <activity android:exported="true" android:name=".manualtest.BookFragmentTestActivity_"/>
+        <activity android:exported="true" android:name=".manualtest.BookControlFragmentTestActivity_"/>
+    </application>
+
+</manifest> 

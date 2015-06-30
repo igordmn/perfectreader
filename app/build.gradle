@@ -1,45 +1,29 @@
-buildscript {
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.1'
-        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
-        classpath 'com.dmi.hugo:hugo-plugin:1.1.1-SNAPSHOT'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
-    }
-}
+import com.android.build.OutputFile
+import Utils
+import AndroidUtils
 
-apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
-apply plugin: 'hugo'
+apply plugin: 'groovyx.grooid.groovy-android'
+apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'android-apt'
+apply plugin: 'hugo'
 
-configurations {
-    apt
-}
+def buildCounter = Integer.getInteger('build.counter', 0)
+def signProperties = Utils.rootProperties('.sign/sign.properties')
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '21.1.2'
-
     defaultConfig {
         applicationId 'com.dmi.perfectreader'
-        versionCode rootProject.buildCounter
         versionName rootProject.version.toString()
-        minSdkVersion 15
-        targetSdkVersion 21
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
-
-    if (rootProject.signProperties != null) {
+    if (signProperties != null) {
         signingConfigs {
             main {
-                storeFile new File(rootProject.projectDir, '.sign/' + rootProject.signProperties['store.file'])
-                storePassword rootProject.signProperties['store.password']
-                keyAlias rootProject.signProperties['key.alias']
-                keyPassword rootProject.signProperties['key.password']
+                storeFile new File(rootProject.projectDir, '.sign/' + signProperties['store.file'])
+                storePassword signProperties['store.password']
+                keyAlias signProperties['key.alias']
+                keyPassword signProperties['key.password']
             }
         }
     }
@@ -48,50 +32,59 @@ android {
         debug {
             debuggable true
             jniDebuggable true
-            signingConfig rootProject.signProperties ? signingConfigs.main : null
+            minifyEnabled true
+            signingConfig signProperties ? signingConfigs.main : null
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
-            signingConfig rootProject.signProperties ? signingConfigs.main : null
+            minifyEnabled true
+            shrinkResources true
+            signingConfig signProperties ? signingConfigs.main : null
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'mips', 'x86'
+        }
+    }
+
+    // Each APK must have a different version code
+    // (see "Rules for multiple APKs" at http://developer.android.com/intl/ru/google/play/publishing/multiple-apks.html)
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def buildNumber = buildCounter
+            def abi = output.getFilter(OutputFile.ABI)
+            output.versionCodeOverride = AndroidUtils.computeVersionCode(buildNumber, abi)
+        }
+    }
+}
+
+configurations {
+    apt
 }
 
 apt {
     arguments {
         androidManifestFile variant.outputs[0].processResources.manifestFile
         resourcePackageName variant.applicationId
+        logFile "$project.buildDir/outputs/logs/androidannotations.log"
     }
 }
 
 dependencies {
+    compile project(':lib:android:discreteSeekBar')
+    compile project(':lib:android:materialWidget')
+    compile project(':lib:android:readiumSdk')
+    compile project(':util:android')
     compile project(':core')
-    compile project(':lib:discreteSeekBar')
-    compile project(':lib:materialWidget')
-    compile project(':lib:readiumSdk')
-    compile 'com.android.support:support-annotations:20.0.0'
-    compile 'com.squareup:otto:1.3.5'
-    compile 'org.androidannotations:androidannotations-api:3.2'
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'com.android.support:cardview-v7:21.0.3'
-    compile 'com.android.support:recyclerview-v7:21.0.3'
-    compile 'com.android.support:palette-v7:21.0.3'
-    compile 'com.github.navasmdc:MaterialDesign:1.3'
-    compile 'it.neokree:MaterialNavigationDrawer:1.2.9'
-    compile 'com.rengwuxian.materialedittext:library:1.8.2'
-    compile 'com.pnikosis:materialish-progress:1.3'
-    compile 'com.jpardogo.materialtabstrip:library:1.0.8'
-
-    apt 'org.androidannotations:androidannotations:3.2'
+    compile project(':typoweb')
+    apt 'org.androidannotations:androidannotations:3.3.1'
 }
 
 ext {
-    archivesBaseName = rootProject.name + '-' + rootProject.version + '-b' + rootProject.buildCounter
-}
-
-sonarRunner {
-    sonarProperties {
-        properties['sonar.sources'] = 'src/main/java'
-        properties['sonar.binaries'] = 'build/intermediates/classes/debug'
-        properties['sonar.profile'] = 'Android Lint'
-    }
+    archivesBaseName = rootProject.name + '-' + rootProject.version + '-b' + buildCounter
 }

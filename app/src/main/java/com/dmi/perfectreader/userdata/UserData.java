@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.dmi.perfectreader.book.config.BookLocation;
 import com.dmi.perfectreader.db.Databases;
 
 import org.androidannotations.annotations.Background;
@@ -22,7 +21,7 @@ public class UserData {
     @SuppressLint("NewApi")
     public File loadLastBookFile() {
         SQLiteDatabase db = databases.userData().getReadableDatabase();
-        try (Cursor cursor = db.rawQuery("SELECT path FROM lastBook", null)) {
+        try (Cursor cursor = db.rawQuery("SELECT path FROM lastBook where id = 1", null)) {
             if (cursor.moveToFirst()) {
                 String path = cursor.getString(0);
                 return new File(path);
@@ -36,18 +35,17 @@ public class UserData {
     public void saveLastBookFile(File bookFile) {
         SQLiteDatabase db = databases.userData().getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put("id", 1);
         values.put("path", bookFile.getAbsolutePath());
         db.insertWithOnConflict("lastBook", null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     @SuppressLint("NewApi")
-    public BookLocation loadBookLocation(File bookFile) {
+    public Integer loadBookLocation(File bookFile) {
         SQLiteDatabase db = databases.userData().getReadableDatabase();
-        try (Cursor cursor = db.rawQuery("SELECT segmentIndex, percent FROM bookLocation WHERE path = ?", new String[]{bookFile.getAbsolutePath()})) {
+        try (Cursor cursor = db.rawQuery("SELECT integerPercent FROM bookLocation WHERE path = ?", new String[]{bookFile.getAbsolutePath()})) {
             if (cursor.moveToFirst()) {
-                int segmentIndex = cursor.getInt(0);
-                int percent = cursor.getInt(1);
-                return new BookLocation(segmentIndex, percent);
+                return cursor.getInt(0);
             } else {
                 return null;
             }
@@ -55,12 +53,11 @@ public class UserData {
     }
 
     @Background
-    public void saveBookLocation(File bookFile, BookLocation location) {
+    public void saveBookLocation(File bookFile, int integerPercent) {
         SQLiteDatabase db = databases.userData().getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("path", bookFile.getAbsolutePath());
-        values.put("segmentIndex", location.segmentIndex());
-        values.put("percent", location.percent());
+        values.put("integerPercent", integerPercent);
         db.insertWithOnConflict("bookLocation", null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 }

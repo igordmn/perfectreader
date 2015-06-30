@@ -1,25 +1,22 @@
 package com.dmi.perfectreader.book;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
+import android.widget.Toast;
 
 import com.dmi.perfectreader.R;
-import com.dmi.perfectreader.asset.AssetPaths;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
-import com.dmi.perfectreader.book.config.BookLocation;
-import com.dmi.perfectreader.bookview.BookConfigurator;
-import com.dmi.perfectreader.bookview.PageBookBox;
-import com.dmi.perfectreader.control.BookControl;
-import com.dmi.perfectreader.error.ErrorEvent;
-import com.dmi.perfectreader.setting.Settings;
+import com.dmi.perfectreader.bookstorage.EPUBBookStorage;
+import com.dmi.perfectreader.facade.BookFacade;
+import com.dmi.perfectreader.setting.AppSettings;
 import com.dmi.perfectreader.userdata.UserData;
-import com.dmi.perfectreader.util.android.EventBus;
-import com.dmi.perfectreader.util.android.FragmentExt;
-import com.dmi.perfectreader.util.lang.IntegerPercent;
+import com.dmi.util.FragmentExt;
+import com.dmi.util.lang.IntegerPercent;
+import com.dmi.util.setting.AbstractSettingsApplier;
+import com.dmi.util.setting.SettingListener;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
@@ -31,150 +28,201 @@ import org.androidannotations.annotations.ViewById;
 import java.io.File;
 import java.io.IOException;
 
+import static android.util.Log.getStackTraceString;
+
 @EFragment(R.layout.fragment_book)
-public class BookFragment extends FragmentExt implements View.OnTouchListener, Book {
-    private final static float TIME_FOR_ONE_SLIDE_IN_SECONDS = 0.4F;
+public class BookFragment extends FragmentExt implements BookFacade {
+    private static final String LOG_TAG = BookFragment.class.getName();
+    private static final float TIME_FOR_ONE_SLIDE_IN_SECONDS = 0.4F;
 
     @FragmentArg
     protected File bookFile;
+
     @ViewById
-    protected PageBookBox bookBox;
-    @Bean
-    protected AssetPaths assetPaths;
-    @Bean
-    protected EventBus eventBus;
+    protected PageBookView pageBookView;
+
     @Bean
     protected UserData userData;
     @Bean
-    protected Settings settings;
+    protected AppSettings appSettings;
     @Bean
-    protected BookControl bookControl;
+    protected EPUBBookStorage bookStorage;
+
+    private final SettingsApplier settingsApplier = new SettingsApplier();
+    private WebPageBook pageBook;
+    private BookFacade.TapHandler tapHandler = null;
+
+    @AfterInject
+    protected void init() {
+        setRetainInstance(true);
+    }
 
     @AfterViews
     protected void initViews() {
-        bookBox.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_SLIDE_IN_SECONDS));
-        bookBox.setOnTouchListener(this);
-        bookBox.setOnLocationChangeListener(new OnLocationChangeListenerImpl());
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        loadBook();
+        pageBookView.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_SLIDE_IN_SECONDS));
+        pageBookView.setPageBook(pageBook);
+        pageBookView.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                pageBookView.queueEvent(
+                        () -> pageBook.tap(event.getX(), event.getY(), event.getTouchMajor())
+                );
+            }
+            return true;
+        });
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bookControl.setBook(this);
+        settingsApplier.startListen();
+        pageBook = new WebPageBook(new WebPageBookClient(), getActivity());
+        if (bookFile != null) {
+            pageBook.goPercent(loadLocation());
+            loadBook();
+        } else {
+            Toast.makeText(getActivity(), R.string.bookNotLoaded, Toast.LENGTH_SHORT).show();
+        }
     }
 
-    @Override
-    public void onDestroy() {
-        bookControl.setBook(null);
-        super.onDestroy();
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        return bookControl.onTouch(v, event);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
-        return bookControl.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
-        return bookControl.onKeyUp(keyCode, event);
-    }
-
-    @Override
-    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-        return bookControl.onKeyLongPress(keyCode, event);
-    }
-
-    @Override
-    public boolean onKeyMultiple(int keyCode, int count, KeyEvent event) {
-        return bookControl.onKeyMultiple(keyCode, count, event);
+    private int loadLocation() {
+        Integer savedLocation = userData.loadBookLocation(bookFile);
+        if (savedLocation != null) {
+            return savedLocation;
+        } else {
+            return IntegerPercent.ZERO;
+        }
     }
 
     @Background
     protected void loadBook() {
         try {
-            bookBox.load(bookFile);
+            bookStorage.load(bookFile);
+            initBook();
         } catch (IOException e) {
-            eventBus.postOnMainThread(new ErrorEvent(e));
+            Log.e(LOG_TAG, getStackTraceString(e));
+            Toast.makeText(getActivity(), R.string.bookOpenError, Toast.LENGTH_SHORT).show();
         }
-
-        bookBox.configure()
-                .setTextAlign(settings.format.textAlign.get())
-                .setFontSize(settings.format.fontSize.get())
-                .setLineHeight(settings.format.lineHeight.get())
-                .commit();
-
-        BookLocation loadedLocation = userData.loadBookLocation(bookFile);
-        goLoadedLocation(loadedLocation);
     }
 
     @UiThread
-    protected void goLoadedLocation(BookLocation loadedLocation) {
-        if (loadedLocation != null) {
-            bookBox.goLocation(loadedLocation);
-        } else {
-            bookBox.goLocation(new BookLocation(0, IntegerPercent.ZERO));
-        }
+    protected void initBook() {
+        pageBookView.queueEvent(() -> {
+            settingsApplier.applyAll();
+            pageBook.load(bookStorage);
+            pageBook.goPercent(loadLocation());
+        });
+    }
+
+    private void saveLocation(int integerPercent) {
+        userData.saveBookLocation(bookFile, integerPercent);
+    }
+
+    // todo если во время поворота pageBookView унижтожится, то действие не сработает
+    // сделать очередь из одного элемента. если при добавлении задания, в очереди что-то есть, очищать очередь
+    @UiThread
+    protected void saveCurrentLocation() {
+        pageBookView.queueEvent(() -> saveLocation(pageBook.currentPercent()));
     }
 
     @Override
-    public BookLocation currentLocation() {
-        return bookBox.currentLocation();
+    public void onDestroy() {
+        settingsApplier.stopListen();
+        pageBook.destroy();
+        super.onDestroy();
     }
 
     @Override
-    public void goLocation(BookLocation location) {
-        bookBox.goLocation(location);
+    public void onResume() {
+        super.onResume();
+        pageBook.resume();
+        pageBookView.onResume();
     }
 
     @Override
-    public BookLocation percentToLocation(double percent) {
-        return bookBox.percentToLocation(percent);
+    public void onPause() {
+        pageBookView.onPause();
+        pageBook.pause();
+        super.onPause();
     }
 
     @Override
-    public double locationToPercent(BookLocation location) {
-        return bookBox.locationToPercent(location);
+    public int currentPercent() {
+        return pageBook.currentPercent();
+    }
+
+    @Override
+    public void tap(float x, float y, float tapDiameter, BookFacade.TapHandler tapHandler) {
+        pageBookView.queueEvent(() -> {
+            this.tapHandler = tapHandler;
+            pageBook.tap(x, y, tapDiameter);
+        });
+    }
+
+    // todo если во время поворота pageBookView унижтожится, то действие не сработает
+    private void handleTap() {
+        pageBookView.queueEvent(() -> {
+            if (tapHandler != null) {
+                tapHandler.handleTap();
+                tapHandler = null;
+            }
+        });
+    }
+
+    @Override
+    public void goPercent(int percent) {
+        pageBookView.goPercent(percent);
     }
 
     @Override
     public void goNextPage() {
-        if (bookBox.canGoNextPage()) {
-            bookBox.goNextPage();
-        }
+        pageBookView.goNextPage();
     }
 
     @Override
     public void goPreviewPage() {
-        if (bookBox.canGoPreviewPage()) {
-            bookBox.goPreviewPage();
+        pageBookView.goPreviewPage();
+    }
+
+    private class WebPageBookClient implements WebPageBook.Client {
+        @Override
+        public void afterAnimate() {
+            if (pageBookView != null) {
+                pageBookView.refresh();
+            }
+        }
+
+        @Override
+        public void afterLocationChanged() {
+            saveCurrentLocation();
+        }
+
+        @Override
+        public void handleTap() {
+            BookFragment.this.handleTap();
         }
     }
 
-    @Override
-    public void selectText() {
-        bookBox.selectText();
-    }
+    private class SettingsApplier extends AbstractSettingsApplier {
+        public void applyAll() {
+            WebPageBook.Settings settings = pageBook.settings();
+            settings.setTextAlign(appSettings.format.textAlign.get());
+            settings.setFontSizePercents(appSettings.format.fontSizePercents.get());
+            settings.setLineHeightPercents(appSettings.format.lineHeightPercents.get());
+        }
 
-    @Override
-    public BookConfigurator configure() {
-        return bookBox.configure();
-    }
-
-    private class OnLocationChangeListenerImpl implements PageBookBox.OnLocationChangeListener {
         @Override
-        public void onBookLocationChange() {
-            userData.saveBookLocation(bookFile, bookBox.currentLocation());
+        protected void listen() {
+            listenWrapped(appSettings.format.textAlign, value -> pageBook.settings().setTextAlign(value));
+            listenWrapped(appSettings.format.fontSizePercents, value -> pageBook.settings().setFontSizePercents(value));
+            listenWrapped(appSettings.format.lineHeightPercents, value -> pageBook.settings().setLineHeightPercents(value));
+        }
+
+        private <T> void listenWrapped(AppSettings.Setting<T> setting, SettingListener<T> listener) {
+            listen(setting, wrap(listener));
+        }
+
+        private <T> SettingListener<T> wrap(SettingListener<T> listener) {
+            return value -> pageBookView.queueEvent(() -> listener.onValueSet(value));
         }
     }
 }

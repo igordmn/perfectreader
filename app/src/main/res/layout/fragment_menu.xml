@@ -97,16 +97,6 @@
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp">
 
-            <com.pnikosis.materialishprogress.ProgressWheel
-                android:id="@+id/locationProgressBar"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_centerInParent="true"
-                android:visibility="invisible"
-                app:matProg_progressIndeterminate="true"
-                app:matProg_fillRadius="true"
-                app:matProg_barColor="@color/accent"/>
-
             <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
                 android:id="@+id/locationSlider"
                 android:layout_width="match_parent"

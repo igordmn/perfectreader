@@ -10,7 +10,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import static android.text.TextUtils.isEmpty;
-import static com.dmi.perfectreader.util.android.Units.dipToPx;
+import static com.dmi.util.Units.dipToPx;
 
 public class HintedImageButton extends ImageButton {
     public HintedImageButton(Context context) {
