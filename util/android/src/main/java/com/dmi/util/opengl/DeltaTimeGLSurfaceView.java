@@ -56,9 +56,9 @@ public abstract class DeltaTimeGLSurfaceView extends GLSurfaceView {
     }
 
     private float deltaTimeSeconds() {
-        long nowTime = System.currentTimeMillis();
+        long nowTime = System.nanoTime();
         if (previewTime != -1) {
-            float deltaTimeSeconds = min((nowTime - previewTime) / 1000F, MAX_DELTA_TIME_SECONDS);
+            float deltaTimeSeconds = min((nowTime - previewTime) / 1E9F, MAX_DELTA_TIME_SECONDS);
             averageDeltaTime.put(deltaTimeSeconds);
         } else {
             averageDeltaTime.reset();

@@ -135,8 +135,8 @@ public class PageBookViewTestActivity extends Activity {
         }
 
         private void updateLoop() {
-            long nowTime = System.currentTimeMillis();
-            float dt = previewTime != -1 ? (nowTime - previewTime) / 1000F : 0;
+            long nowTime = System.nanoTime();
+            float dt = previewTime != -1 ? (nowTime - previewTime) / 1E9F : 0;
             previewTime = nowTime;
             update(dt);
             if (!stopped) {

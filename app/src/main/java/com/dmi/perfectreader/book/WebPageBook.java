@@ -90,7 +90,7 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
     }
 
     public void tap(float x, float y, float tapDiameter) {
-        typoWeb.tap(x, y, x, y, tapDiameter, System.currentTimeMillis());
+        typoWeb.tap(x, y, x, y, tapDiameter, System.nanoTime() / 1E6F);
     }
 
     @Override
