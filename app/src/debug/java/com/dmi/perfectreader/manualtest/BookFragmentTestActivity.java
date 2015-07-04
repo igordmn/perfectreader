@@ -22,7 +22,7 @@ import java.io.InputStream;
 
 @EActivity(R.layout.activity_fragment_container)
 public class BookFragmentTestActivity extends FragmentActivity {
-    private static final String TEST_BOOK = TestBooks.ALICE_IN_WONDERLAND;
+    private static final String TEST_BOOK = TestBooks.PRATCHETT_INTERESTING_TIMES;
     private BookFragment bookFragment;
 
     @Override
