@@ -277,6 +277,13 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
                     format("reader.configure({%s: %s})", settingName, jsValue(settingValue))
             );
         }
+
+        private void configure(String settingName, boolean settingValue) {
+            currentLocation.resetPageCounts();
+            typoWeb.execJavaScript(
+                    format("reader.configure({%s: %s})", settingName, jsValue(settingValue))
+            );
+        }
     }
 }
 

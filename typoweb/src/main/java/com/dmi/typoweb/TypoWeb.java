@@ -20,6 +20,8 @@ import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_ELEMENT_ARRAY_BUFFER;
 import static android.opengl.GLES20.glBindBuffer;
 import static com.dmi.typoweb.TypoWebLibrary.mainThread;
+import static com.dmi.util.TypeConverters.stringToType;
+import static com.dmi.util.TypeConverters.typeToString;
 import static com.dmi.util.opengl.Graphics.getFrameBufferBinding;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
@@ -248,52 +250,6 @@ public class TypoWeb {
         return Joiner.on(", ").join(formattedArguments);
     }
 
-    private static Object stringToType(String value, Class<?> type) {
-        try {
-            if (value == null || String.class.equals(type) || Void.TYPE.equals(type)) {
-                return value;
-            } else if (Long.class.equals(type) || Long.TYPE.equals(type)) {
-                return Long.valueOf(value);
-            } else if (Integer.class.equals(type) || Integer.TYPE.equals(type)) {
-                return Integer.valueOf(value);
-            } else if (Short.class.equals(type) || Short.TYPE.equals(type)) {
-                return Short.valueOf(value);
-            } else if (Double.class.equals(type) || Double.TYPE.equals(type)) {
-                return Double.valueOf(value);
-            } else if (Float.class.equals(type) || Float.TYPE.equals(type)) {
-                return Float.valueOf(value);
-            } else if (Boolean.class.equals(type) || Boolean.TYPE.equals(type)) {
-                return Boolean.valueOf(value);
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
-        throw new IllegalArgumentException();
-    }
-
-    private static String typeToString(Object value, Class<?> type) {
-        try {
-            if (value == null || String.class.equals(type) || Void.TYPE.equals(type)) {
-                return (String) value;
-            } else if (Long.class.equals(type) || Long.TYPE.equals(type)) {
-                return String.valueOf((long) value);
-            } else if (Integer.class.equals(type) || Integer.TYPE.equals(type)) {
-                return String.valueOf((int) value);
-            } else if (Short.class.equals(type) || Short.TYPE.equals(type)) {
-                return String.valueOf((short) value);
-            } else if (Double.class.equals(type) || Double.TYPE.equals(type)) {
-                return String.valueOf((double) value);
-            } else if (Float.class.equals(type) || Float.TYPE.equals(type)) {
-                return String.valueOf((float) value);
-            } else if (Boolean.class.equals(type) || Boolean.TYPE.equals(type)) {
-                return String.valueOf((boolean) value);
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
-        throw new IllegalArgumentException();
-    }
-
     private void checkNotDestroyed() {
         checkState(!destroyed, "Already destroyed");
     }
@@ -315,6 +271,6 @@ public class TypoWeb {
                                                             Object javaObject, Method[] javaMethods);
 
     public interface Client {
-        default void afterAnimate() {};
+        default void afterAnimate() {}
     }
 }

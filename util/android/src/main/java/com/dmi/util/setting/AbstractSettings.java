@@ -4,7 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.dmi.util.TypeConverters;
+
 import static android.util.Log.getStackTraceString;
+import static com.dmi.util.TypeConverters.stringToType;
+import static com.dmi.util.TypeConverters.typeToString;
 
 public abstract class AbstractSettings {
     private static final String LOG_TAG = AbstractSettings.class.getName();
@@ -20,7 +24,8 @@ public abstract class AbstractSettings {
         String valueString = sharedPreferences.getString(setting.name(), defValue);
         try {
             return setting.parseString(valueString);
-        } catch (ParseException e) {
+        } catch (TypeConverters.ParseException e) {
+            Log.w(LOG_TAG, getStackTraceString(e));
             return setting.defaultValue();
         }
     }
@@ -37,7 +42,7 @@ public abstract class AbstractSettings {
     public class Setting<T> {
         private final String name;
         private final T defaultValue;
-        private final Class valueClass;
+        private final Class<?> valueClass;
         private volatile T cachedValue = null;
         private SettingListener<T> listener = null;
 
@@ -56,35 +61,11 @@ public abstract class AbstractSettings {
         }
 
         String toString(T value) {
-            if (Integer.class.isAssignableFrom(valueClass)) {
-                return value.toString();
-            } else if (Float.class.isAssignableFrom(valueClass)) {
-                return value.toString();
-            }  else if (String.class.isAssignableFrom(valueClass)) {
-                return (String) value;
-            } else if (Enum.class.isAssignableFrom(valueClass)) {
-                return ((Enum) value).name();
-            }
-            throw new UnsupportedOperationException();
+            return typeToString(value, valueClass);
         }
 
-        @SuppressWarnings("unchecked")
-        T parseString(String string) throws ParseException {
-            try {
-                if (Integer.class.isAssignableFrom(valueClass)) {
-                    return (T) Integer.valueOf(Integer.parseInt(string));
-                } else if (Float.class.isAssignableFrom(valueClass)) {
-                    return (T) Float.valueOf(Float.parseFloat(string));
-                } else if (String.class.isAssignableFrom(valueClass)) {
-                    return (T) string;
-                } else if (Enum.class.isAssignableFrom(valueClass)) {
-                    return (T) Enum.valueOf(valueClass, string);
-                }
-            } catch (Exception e) {
-                Log.w(LOG_TAG, getStackTraceString(e));
-                throw new ParseException();
-            }
-            throw new UnsupportedOperationException();
+        T parseString(String string) throws TypeConverters.ParseException {
+            return stringToType(string, valueClass);
         }
 
         public synchronized T get() {
@@ -102,11 +83,6 @@ public abstract class AbstractSettings {
 
         public synchronized void setListener(SettingListener<T> listener) {
             this.listener = listener;
-        }
-    }
-
-    private static class ParseException extends Exception {
-        public ParseException() {
         }
     }
 }

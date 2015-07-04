@@ -30,6 +30,10 @@ public abstract class JavaScript {
         return String.valueOf(value);
     }
 
+    public static String jsValue(boolean value) {
+        return String.valueOf(value);
+    }
+
     public static class ObjectBuilder {
         private final StringBuilder js = new StringBuilder();
 
