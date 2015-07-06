@@ -4,3 +4,27 @@ typoContentSizeChange for document. Fired when scrollWidth/scrollHeight changed
 (see TypoWeb.cpp#checkContentsSize)
 
 	CSS
+-typo-hanging-punctuation: on | off
+hanging punctuation for text.
+(see RenderBlockLineLayout.cpp#applyHangingPunctuation)
+
+	Settings
+document.typoConfigure({
+	hangingPunctuation: {
+        hangingPunctuation: {
+            startChars: [
+                { charCode: "(".charCodeAt(0), hangFactor: 1.0 },
+                { charCode: "\"".charCodeAt(0), hangFactor: 1.0 },
+            ],
+            endChars: [
+                { charCode: ")".charCodeAt(0), hangFactor: 1.0},
+                { charCode: "\"".charCodeAt(0), hangFactor: 1.0 },
+                { charCode: ",".charCodeAt(0), hangFactor: 1.0 },
+                { charCode: ".".charCodeAt(0), hangFactor: 1.0 },
+            ]
+        }
+	},
+	hyphens: {
+		patternUrl: "assets://hyphens/{lang}?timestamp=1245345345"
+	},
+});

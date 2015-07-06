@@ -264,6 +264,10 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
             configure("lineHeightPercents", value);
         }
 
+        public void setHangingPunctuation(boolean value) {
+            configure("hangingPunctuation", value);
+        }
+
         private void configure(String settingName, int settingValue) {
             currentLocation.resetPageCounts();
             typoWeb.execJavaScript(

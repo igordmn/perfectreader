@@ -21,6 +21,7 @@ public class AppSettings extends AbstractSettings {
         public final Setting<TextAlign> textAlign = setting("format.textAlign", TextAlign.JUSTIFY);
         public final Setting<Integer> fontSizePercents = setting("format.fontSizePercents", 200);
         public final Setting<Integer> lineHeightPercents = setting("format.lineHeightPercents", 100);
+        public final Setting<Boolean> hangingPunctuation = setting("format.hangingPunctuation", true);
     }
 
     public final Control control = new Control();

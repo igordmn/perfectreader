@@ -37,6 +37,7 @@ window.onload = function() {
         textAlign: "justify",
         fontSizePercents: 100,
         lineHeightPercents: 100,
+        hangingPunctuation: true,
     };
 
     var currentFrame = document.getElementById("firstFrame");
@@ -214,6 +215,64 @@ window.onload = function() {
 
         doc.body.appendChild(elements.pageDiv);
 
+        doc.typoConfigure && doc.typoConfigure({
+            hangingPunctuation: {
+                startChars: [
+                    // скобки
+                    { charCode: '('.charCodeAt(0), hangFactor: 0.5 },
+                    { charCode: '['.charCodeAt(0), hangFactor: 0.5 },
+                    { charCode: '{'.charCodeAt(0), hangFactor: 0.5 },
+
+                    // кавычки
+                    { charCode: '"'.charCodeAt(0), hangFactor: 0.5 },
+                    { charCode: '\''.charCodeAt(0), hangFactor: 0.5 },
+                    { charCode: '«'.charCodeAt(0), hangFactor: 0.5 },
+                    { charCode: '»'.charCodeAt(0), hangFactor: 0.5 },
+                    { charCode: '„'.charCodeAt(0), hangFactor: 0.5 },
+                    { charCode: '“'.charCodeAt(0), hangFactor: 0.5 },
+                    { charCode: '‘'.charCodeAt(0), hangFactor: 0.5 },
+                    { charCode: '‹'.charCodeAt(0), hangFactor: 0.5 },
+                    { charCode: '‚'.charCodeAt(0), hangFactor: 0.5 },
+                ],
+                endChars: [
+                    // скобки
+                    { charCode: ')'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: ']'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '}'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '>'.charCodeAt(0), hangFactor: 0.50 },
+
+                    // кавычки
+                    { charCode: '"'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '\''.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '»'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '«'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '“'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '”'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '’'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '›'.charCodeAt(0), hangFactor: 0.50 },
+
+                    // знаки препинания
+                    { charCode: ','.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '.'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '…'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: ':'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: ';'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '!'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '‼'.charCodeAt(0), hangFactor: 0.50 },
+                    { charCode: '?'.charCodeAt(0), hangFactor: 0.50 },
+
+                    // тире, дефисы, мягкий перенос
+                    { charCode: 0x2010, hangFactor: 0.50 },
+                    { charCode: 0x2011, hangFactor: 0.50 },
+                    { charCode: 0x2012, hangFactor: 0.25 },
+                    { charCode: 0x2013, hangFactor: 0.25 },
+                    { charCode: 0x2014, hangFactor: 0.25 },
+                    { charCode: 0x00AD, hangFactor: 0.50 },
+                    { charCode: 0x002D, hangFactor: 0.50 },
+                ]
+            }
+        });
+
         var frameReader = frame.reader = {
             onPageCountChange: undefined,
 
@@ -243,6 +302,7 @@ window.onload = function() {
             refreshTextAlign();
             refreshFontSize();
             refreshLineHeight();
+            refreshHangingPunctuation();
         }
 
         function refreshPageConfiguration() {
@@ -291,6 +351,16 @@ window.onload = function() {
             styles.dd.setProperty("line-height", bookConfig_.lineHeightPercents / 100, "important");
             styles.br.setProperty("line-height", bookConfig_.lineHeightPercents / 100, "important");
             styles.li.setProperty("line-height", bookConfig_.lineHeightPercents / 100, "important");
+        }
+
+        function refreshHangingPunctuation() {
+            styles.p.setProperty("-typo-hanging-punctuation", bookConfig_.hangingPunctuation ? "on" : "off", "important");
+            styles.div.setProperty("line-height", bookConfig_.hangingPunctuation ? "on" : "off", "important");
+            styles.td.setProperty("line-height", bookConfig_.hangingPunctuation ? "on" : "off", "important");
+            styles.dt.setProperty("line-height", bookConfig_.hangingPunctuation ? "on" : "off", "important");
+            styles.dd.setProperty("line-height", bookConfig_.hangingPunctuation ? "on" : "off", "important");
+            styles.br.setProperty("line-height", bookConfig_.hangingPunctuation ? "on" : "off", "important");
+            styles.li.setProperty("line-height", bookConfig_.hangingPunctuation ? "on" : "off", "important");
         }
     }
 };
