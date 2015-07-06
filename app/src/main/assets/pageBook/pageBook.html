@@ -141,9 +141,11 @@ window.onload = function() {
         frame.reader = null;
         clearTimeout(frame.refreshId);
         frame.onload = function() {
-            initFrame(frame);
-            afterFrameLoad(frame);
-            frame.style.visibility = "";
+            frame.contentWindow.document.fonts.ready.then(function() {
+                initFrame(frame);
+                afterFrameLoad(frame);
+                frame.style.visibility = "";
+            });
         }
         frame.src = segmentUrl;
     }
