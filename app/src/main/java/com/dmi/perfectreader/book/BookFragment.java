@@ -209,6 +209,7 @@ public class BookFragment extends FragmentExt implements BookFacade {
             settings.setFontSizePercents(appSettings.format.fontSizePercents.get());
             settings.setLineHeightPercents(appSettings.format.lineHeightPercents.get());
             settings.setHangingPunctuation(appSettings.format.hangingPunctuation.get());
+            settings.setHyphenation(appSettings.format.hyphenation.get());
         }
 
         @Override
@@ -217,6 +218,7 @@ public class BookFragment extends FragmentExt implements BookFacade {
             listenWrapped(appSettings.format.fontSizePercents, value -> pageBook.settings().setFontSizePercents(value));
             listenWrapped(appSettings.format.lineHeightPercents, value -> pageBook.settings().setLineHeightPercents(value));
             listenWrapped(appSettings.format.hangingPunctuation, value -> pageBook.settings().setHangingPunctuation(value));
+            listenWrapped(appSettings.format.hyphenation, value -> pageBook.settings().setHyphenation(value));
         }
 
         private <T> void listenWrapped(AppSettings.Setting<T> setting, SettingListener<T> listener) {

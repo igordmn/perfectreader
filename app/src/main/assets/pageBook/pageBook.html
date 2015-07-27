@@ -38,6 +38,7 @@ window.onload = function() {
         fontSizePercents: 100,
         lineHeightPercents: 100,
         hangingPunctuation: true,
+        hyphenation: true,
     };
 
     var currentFrame = document.getElementById("firstFrame");
@@ -318,6 +319,7 @@ window.onload = function() {
             refreshFontSize();
             refreshLineHeight();
             refreshHangingPunctuation();
+            refreshHyphenation();
         }
 
         function refreshPageConfiguration() {
@@ -376,6 +378,16 @@ window.onload = function() {
             styles.dd.setProperty("line-height", bookConfig_.hangingPunctuation ? "on" : "off", "important");
             styles.br.setProperty("line-height", bookConfig_.hangingPunctuation ? "on" : "off", "important");
             styles.li.setProperty("line-height", bookConfig_.hangingPunctuation ? "on" : "off", "important");
+        }
+
+        function refreshHyphenation() {
+            styles.p.setProperty("-typo-hyphens", bookConfig_.hyphenation ? "on" : "off", "important");
+            styles.div.setProperty("-typo-hyphens", bookConfig_.hyphenation ? "on" : "off", "important");
+            styles.td.setProperty("-typo-hyphens", bookConfig_.hyphenation ? "on" : "off", "important");
+            styles.dt.setProperty("-typo-hyphens", bookConfig_.hyphenation ? "on" : "off", "important");
+            styles.dd.setProperty("-typo-hyphens", bookConfig_.hyphenation ? "on" : "off", "important");
+            styles.br.setProperty("-typo-hyphens", bookConfig_.hyphenation ? "on" : "off", "important");
+            styles.li.setProperty("-typo-hyphens", bookConfig_.hyphenation ? "on" : "off", "important");
         }
     }
 };

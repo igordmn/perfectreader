@@ -41,6 +41,7 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
                 throw new SecurityException();
             }
         });
+        typoWeb.setHyphenationPatternsLoader(new TexHyphenationPatternsLoader(context));
         typoWeb.addJavascriptInterface("__javaBridge", new JavaBridge());
         typoWeb.loadUrl("assets://pageBook/pageBook.html");
         typoWeb.execJavaScript("reader.setClient(__javaBridge);");
@@ -266,6 +267,10 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
 
         public void setHangingPunctuation(boolean value) {
             configure("hangingPunctuation", value);
+        }
+
+        public void setHyphenation(boolean value) {
+            configure("hyphenation", value);
         }
 
         private void configure(String settingName, int settingValue) {
