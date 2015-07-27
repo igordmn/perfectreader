@@ -54,15 +54,15 @@ BlinkPlatformImpl::BlinkPlatformImpl(string userAgent) :
 BlinkPlatformImpl::~BlinkPlatformImpl() {}
 
 void BlinkPlatformImpl::pause() {
-    paused = true;
+    paused_ = true;
 }
 
 void BlinkPlatformImpl::resume() {
-    paused = false;
-    if (startSharedTimerOnResume) {
+    paused_ = false;
+    if (startSharedTimerOnResume_) {
         sharedTimerTask_ = new SharedTimerTask(sharedTimerFunc_);
         TypoWebLibrary::mainThread()->postDelayedTask(blink::WebTraceLocation(), sharedTimerTask_, sharedTimerIntervalMilliseconds_);
-        startSharedTimerOnResume = false;
+        startSharedTimerOnResume_ = false;
     }
 }
 
@@ -109,8 +109,8 @@ void BlinkPlatformImpl::setSharedTimerFiredFunction(void (*func)()) {
 void BlinkPlatformImpl::setSharedTimerFireInterval(double intervalSeconds) {
     TypoWebLibrary::mainThread()->cancelTask(sharedTimerTask_);
     sharedTimerIntervalMilliseconds_ = ceil(intervalSeconds * 1000);
-    if (paused) {
-        startSharedTimerOnResume = true;
+    if (paused_) {
+        startSharedTimerOnResume_ = true;
     } else {
         sharedTimerTask_ = new SharedTimerTask(sharedTimerFunc_);
         TypoWebLibrary::mainThread()->postDelayedTask(blink::WebTraceLocation(), sharedTimerTask_, sharedTimerIntervalMilliseconds_);

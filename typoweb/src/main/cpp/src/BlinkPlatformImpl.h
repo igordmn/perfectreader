@@ -36,7 +36,7 @@ public:
     virtual blink::WebMimeRegistry* mimeRegistry() override;
     virtual blink::WebString defaultLocale() override;
     virtual bool canAccelerate2dCanvas() override;
-    virtual void cryptographicallyRandomValues(unsigned char* buffer, size_t length) {};
+    virtual void cryptographicallyRandomValues(unsigned char* buffer, size_t length) override {};
 
 private:
     class SharedTimerTask;
@@ -44,12 +44,12 @@ private:
 
     std::string userAgent_;
 
-    bool paused = false;
+    bool paused_ = false;
 
     SharedTimerTask* sharedTimerTask_ = 0;
     void (*sharedTimerFunc_)();
     long long sharedTimerIntervalMilliseconds_ = 0;
-    bool startSharedTimerOnResume = false;
+    bool startSharedTimerOnResume_ = false;
 
     blink::WebThemeEngine webThemeEngine_;
     WebMimeRegistryImpl mimeRegistry_;

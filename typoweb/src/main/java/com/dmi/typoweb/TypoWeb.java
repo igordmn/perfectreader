@@ -98,7 +98,7 @@ public class TypoWeb {
 
     public void setSize(float width, float height) {
         checkNotDestroyed();
-            mainThread().postTask(() -> nativeResize(nativeTypoWeb, width, height));
+        mainThread().postTask(() -> nativeResize(nativeTypoWeb, width, height));
     }
 
     public void loadUrl(String url) {
