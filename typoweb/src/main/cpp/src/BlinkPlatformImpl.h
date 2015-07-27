@@ -2,6 +2,7 @@
 
 #include "WebMimeRegistryImpl.h"
 #include "WebSchedulerImpl.h"
+#include "extensions/TypoExtensionsImpl.h"
 #include <string>
 #include "third_party/WebKit/public/platform/Platform.h"
 #include "third_party/WebKit/public/platform/WebThemeEngine.h"
@@ -37,6 +38,7 @@ public:
     virtual blink::WebString defaultLocale() override;
     virtual bool canAccelerate2dCanvas() override;
     virtual void cryptographicallyRandomValues(unsigned char* buffer, size_t length) override {};
+    virtual blink::TypoExtensions& typoExtensions() override { return typoExtensionsImpl_; }
 
 private:
     class SharedTimerTask;
@@ -54,6 +56,7 @@ private:
     blink::WebThemeEngine webThemeEngine_;
     WebMimeRegistryImpl mimeRegistry_;
     WebSchedulerImpl webScheduler_;
+    TypoExtensionsImpl typoExtensionsImpl_;
 };
 
 }

@@ -5,6 +5,7 @@
 #include "BlinkResourceLoader.h"
 #include "RenderContext.h"
 #include "TypoWebLibrary.h"
+#include "extensions/TypoHyphenatorImpl.h"
 #include "util/JniUtils.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 
@@ -19,6 +20,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     TypoWebLibrary::registerJni();
     RenderContext::registerJni();
     BlinkResourceLoader::registerJni();
+    TypoHyphenatorImpl::registerJni();
 
     SkGraphics::SetFontCacheLimit(8 * 1024 * 1024);
     SkGraphics::SetResourceCacheSingleAllocationByteLimit(64 * 1024 * 1024);

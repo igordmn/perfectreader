@@ -76,6 +76,7 @@ public class TypoWeb {
             nativeTypoWeb = 0;
         });
         WebURLLoaderImpl.setUrlHandler(null);
+        TypoHyphenatorImpl.setPatternsLoader(null);
         instanceCreated = false;
     }
 
@@ -94,6 +95,10 @@ public class TypoWeb {
 
     public void setURLHandler(URLHandler urlHandler) {
         WebURLLoaderImpl.setUrlHandler(urlHandler);
+    }
+
+    public void setHyphenationPatternsLoader(HyphenationPatternsLoader loader) {
+        TypoHyphenatorImpl.setPatternsLoader(loader);
     }
 
     public void setSize(float width, float height) {

@@ -24,6 +24,10 @@
         '../src/WebSchedulerImpl.cpp',
         '../src/WebURLLoaderImpl.cpp',
         '../src/TypoWeb.cpp',
+        '../src/extensions/WordHyphenator.cpp',
+        '../src/extensions/TypoExtensionsImpl.cpp',
+        '../src/extensions/TypoHyphenatorImpl.cpp',
+        '../src/extensions/TypoHangingPunctuationImpl.cpp',
       ],
       'ldflags': [
         '-Wl,--no-fatal-warnings',

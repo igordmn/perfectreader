@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 
 import com.dmi.perfectreader.R;
+import com.dmi.perfectreader.book.TexHyphenationPatternsLoader;
 import com.dmi.typoweb.RenderContext;
 import com.dmi.typoweb.TypoWeb;
 
@@ -22,8 +23,11 @@ import static android.opengl.GLES20.glViewport;
 
 // NOTE: pause, resume, destroy not calling because we are not test it
 public class ExtBlinkTestActivity extends Activity {
+    @SuppressWarnings("unused")
     private static final String HANGING_PUNCTUATION = "assets://manualtest/extBlink/hangingpunctuation.html";
-    private static final String FILE = HANGING_PUNCTUATION;
+    @SuppressWarnings("unused")
+    private static final String HYPHENS = "assets://manualtest/extBlink/hyphens.html";
+    private static final String FILE = HYPHENS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,7 @@ public class ExtBlinkTestActivity extends Activity {
                     throw new SecurityException();
                 }
             });
+            typoWeb.setHyphenationPatternsLoader(new TexHyphenationPatternsLoader(context));
             typoWeb.loadUrl(FILE);
 
             setEGLContextClientVersion(2);
@@ -83,6 +88,5 @@ public class ExtBlinkTestActivity extends Activity {
             }
             return true;
         }
-
     }
 }

@@ -1,0 +1,41 @@
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body style="margin: 0; padding: 0">
+
+<div lang="ru" style="font-size: 50%; text-align: justify; position: absolute; left: 10px; width: 130px; border-left: thin solid #ff0000; border-right: thin solid #ff0000; -typo-hyphens: on">
+    <p>здесь просто тестируем переносы, переносы должны появляться, а слова переноситься</p>
+     <!--атрибуты word-wrap: break-word и word-break: break-all; должны игнорироваться-->
+    <p style="word-wrap: break-word; word-break: break-all;">тестируем длинные слова, словасловасловасловасловадлинныесловадлинныесловасловасловадлинные длинные слова xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+    <p>большиепребольшиеоченьбольшие киломегагигатерапетаслова</p>
+    <p>когда пробел после xxxxxxxxx влезает в строку</p>
+    <p>когда пробел после xxxxxxxxxx не влезает в строку</p>
+    <p lang="en">English hyphens hyphen englishwords and bigveryhugebigveryhugebigveryhugebigbigveryhugebigwordstoo</p>
+    <p lang="hu">Hungarian text: domain igénylőket közvetlenül nemszolgálhat ki, velük közvetlenül nem tárgyalhat.</p>
+    <p lang="">emptylang emptylang emptylang emptylang emptylang</p>
+    <p lang="abcd">wronglang wronglang wronglang wronglang wronglang</p>
+    <p>вручную п&shy;роставленныепереносы</p>
+    <p>вручную п<wbr>роставленныепереносы</p>
+    <p>вручную п<br>роставленныепереносы</p>
+    <p style="word-spacing: 20px;">когда установл другие интервалыинтервалыинтервалыинтервалы1</p>
+    <p style="word-spacing: 20px;"> когдаустановленыдругиеинтервалыинтервалыинтервалыинтервалы2</p>
+    <p style="letter-spacing: 2px;">когда установленыдругие интервалыдругиеинтервалы3</p>
+</div>
+
+<div lang="ru" style="font-size: 50%; text-align: justify; position: absolute; left: 150px; width: 130px; border-left: thin solid #ff0000; border-right: thin solid #ff0000; -typo-hyphens: on">
+    <pre style="width: 0px"> pre text не должен переноситься автоматом.
+    только обычное поведение должно быть.</pre>
+    <p style="white-space: pre-wrap">                                     переносы переносы переносыпереносыпереносыпереносы в pre-wrap тексте</p>
+    <p>переносыпереносы... <span>переносыпереносы</span> в span'е 1</p>
+    <p>переносыпереносы... <span>п ереносыпереносы</span> в span'е 2</p>
+    <p>переносыпереносы... <span>переносыперенос ы</span> в span'е 3</p>
+    <p>переносыпереносы... <span>переносы</span><span>переносы</span> на границе span'а 1</p>
+    <p>переносыпереносы... <span>ппппереносы</span><span>переносы</span> на границе span'а 2</p>
+    <p>переносыпереносы... <span style="display: inline-block">переносы</span><span>переносы</span> на границе inline-block'а</p>
+    <p style="width: 0px"> zer w i- d</p>
+    <p style="width: 0px; white-space: pre-wrap"> zer w i- d</p>
+    <p style="width: 7px">on-e w i d</p>
+</div>
+
+</body></html>
