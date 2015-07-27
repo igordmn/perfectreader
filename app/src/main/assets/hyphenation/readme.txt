@@ -1,0 +1,1 @@
+Patterns downloaded from http://tug.org/svn/texhyphen/trunk/hyph-utf8/tex/generic/hyph-utf8/patterns/txt/
