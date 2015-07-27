@@ -47,7 +47,8 @@ public class BookFragmentTestActivity extends FragmentActivity {
     private File tempBook(String path) {
         path = path.substring("assets://".length());
         try {
-            File tempFile = new File(getCacheDir(), "testbook.epub");
+            String fileName = new File(path).getName();
+            File tempFile = new File(getCacheDir(),fileName);
             try (InputStream is = getAssets().open(path)) {
                 try (FileOutputStream os = new FileOutputStream(tempFile)) {
                     ByteStreams.copy(is, os);
