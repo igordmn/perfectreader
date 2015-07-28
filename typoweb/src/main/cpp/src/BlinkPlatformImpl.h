@@ -44,7 +44,7 @@ public:
     virtual blink::WebString defaultLocale() override;
     virtual bool canAccelerate2dCanvas() override;
     virtual void cryptographicallyRandomValues(unsigned char* buffer, size_t length) override {};
-    virtual blink::TypoExtensions& typoExtensions() override { return typoExtensionsImpl_; }
+    virtual blink::TypoExtensions* typoExtensions() override { return &typoExtensionsImpl_; }
 
 private:
     class SharedTimerTask;
