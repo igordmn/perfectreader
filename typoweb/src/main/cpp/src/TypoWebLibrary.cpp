@@ -42,7 +42,9 @@ void TypoWebLibrary::registerJni() {
         {"nativeLowMemoryNotification", "(Z)V", (void*) &nativeLowMemoryNotification},
         {"nativePause", "()V", (void*) &nativePause},
         {"nativeResume", "()V", (void*) &nativeResume},
+        {"nativeSetURLHandler", "(Lcom/dmi/typoweb/URLHandler;)V", (void*) &nativeSetURLHandler},
         {"nativeSetHangingPunctuationConfig", "(Lcom/dmi/typoweb/HangingPunctuationConfig;)V", (void*) &nativeSetHangingPunctuationConfig},
+        {"nativeSetHyphenationPatternsLoader", "(Lcom/dmi/typoweb/HyphenationPatternsLoader;)V", (void*) &nativeSetHyphenationPatternsLoader},
     };
     env->RegisterNatives(cls, nativeMethods, sizeof(nativeMethods) / sizeof(nativeMethods[0]));
 }
@@ -143,8 +145,16 @@ void TypoWebLibrary::nativeResume(JNIEnv*, jclass) {
     blinkPlatform_->resume();
 }
 
-void TypoWebLibrary::nativeSetHangingPunctuationConfig(JNIEnv*, jclass, jobject config) {
-    blinkPlatform_->setHangingPunctuationConfig(config);
+void TypoWebLibrary::nativeSetURLHandler(JNIEnv* env, jclass, jobject urlHandler) {
+    blinkPlatform_->setURLHandler(env, urlHandler);
+}
+
+void TypoWebLibrary::nativeSetHangingPunctuationConfig(JNIEnv* env, jclass, jobject config) {
+    blinkPlatform_->setHangingPunctuationConfig(env, config);
+}
+
+void TypoWebLibrary::nativeSetHyphenationPatternsLoader(JNIEnv* env, jclass, jobject loader) {
+    blinkPlatform_->setHyphenationPatternsLoader(env, loader);
 }
 
 }

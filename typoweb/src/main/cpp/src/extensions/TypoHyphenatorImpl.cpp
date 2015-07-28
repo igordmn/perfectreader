@@ -10,6 +10,7 @@ namespace {
 struct JMethods {
     jclass cls;
     jmethodID constructor;
+    jmethodID setPatternsLoader;
     jmethodID loadPatterns;
 };
 
@@ -22,6 +23,7 @@ void TypoHyphenatorImpl::registerJni() {
     JNIEnv* env = jniScope.getEnv();
     jmethods.cls = (jclass) env->NewGlobalRef(env->FindClass("com/dmi/typoweb/TypoHyphenatorImpl"));
     jmethods.constructor = env->GetMethodID(jmethods.cls, "<init>", "()V");
+    jmethods.setPatternsLoader = env->GetMethodID(jmethods.cls, "setPatternsLoader", "(Lcom/dmi/typoweb/HyphenationPatternsLoader;)V");
     jmethods.loadPatterns = env->GetMethodID(jmethods.cls, "loadPatterns", "(JLjava/lang/String;)Z");
     static JNINativeMethod nativeMethods[] = {
         {"nativeAddPattern", "(JLjava/lang/String;)V", (void*) &nativeAddPattern},
@@ -45,6 +47,11 @@ TypoHyphenatorImpl::~TypoHyphenatorImpl() {
     JNIScope jniScope;
     JNIEnv* env = jniScope.getEnv();
     env->DeleteGlobalRef(jobj_);
+}
+
+void TypoHyphenatorImpl::setHyphenationPatternsLoader(JNIEnv* env, jobject config) {
+   WordHyphenator::Builder hyphenatorBuilder;
+   env->CallVoidMethod(jobj_, jmethods.setPatternsLoader, config);
 }
 
 int TypoHyphenatorImpl::hyphenateText(const blink::WebString& locale,

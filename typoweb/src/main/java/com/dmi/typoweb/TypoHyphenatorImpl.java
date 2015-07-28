@@ -14,14 +14,15 @@ import java.io.InputStreamReader;
 class TypoHyphenatorImpl {
     private static final String LOG_TAG = TypoHyphenatorImpl.class.getName();
 
-    private static HyphenationPatternsLoader patternsLoader;
-
-    public static void setPatternsLoader(HyphenationPatternsLoader patternsLoader) {
-        TypoHyphenatorImpl.patternsLoader = patternsLoader;
-    }
+    private HyphenationPatternsLoader patternsLoader;
 
     @UsedByNative
     public TypoHyphenatorImpl() {
+    }
+
+    @UsedByNative
+    public void setPatternsLoader(HyphenationPatternsLoader patternsLoader) {
+        this.patternsLoader = patternsLoader;
     }
 
     @UsedByNative

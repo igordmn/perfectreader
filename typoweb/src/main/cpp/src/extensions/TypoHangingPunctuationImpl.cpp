@@ -44,10 +44,7 @@ float TypoHangingPunctuationImpl::endHangFactor(blink::WebUChar ch) {
     return it != endHangFactors_.end() ? it->second : 0;
 }
 
-void TypoHangingPunctuationImpl::setHangingPunctuationConfig(jobject config) {
-    JNIScope jniScope;
-    JNIEnv* env = jniScope.getEnv();
-
+void TypoHangingPunctuationImpl::setHangingPunctuationConfig(JNIEnv* env, jobject config) {
     jcharArray jStartChars = (jcharArray) env->GetObjectField(config, jConfigMeta.startChars);
     jfloatArray jStartCharsHangFactors = (jfloatArray) env->GetObjectField(config, jConfigMeta.startCharsHangFactors);
     jcharArray jEndChars = (jcharArray) env->GetObjectField(config, jConfigMeta.endChars);

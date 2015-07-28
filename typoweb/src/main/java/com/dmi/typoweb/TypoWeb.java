@@ -75,8 +75,8 @@ public class TypoWeb {
             nativeDestroyTypoWeb(nativeTypoWeb);
             nativeTypoWeb = 0;
         });
-        WebURLLoaderImpl.setUrlHandler(null);
-        TypoHyphenatorImpl.setPatternsLoader(null);
+        TypoWebLibrary.setURLHandler(null);
+        TypoWebLibrary.setHyphenationPatternsLoader(null);
         TypoWebLibrary.setHangingPunctuationConfig(null);
         instanceCreated = false;
     }
@@ -95,11 +95,11 @@ public class TypoWeb {
     }
 
     public void setURLHandler(URLHandler urlHandler) {
-        WebURLLoaderImpl.setUrlHandler(urlHandler);
+        TypoWebLibrary.setURLHandler(urlHandler);
     }
 
     public void setHyphenationPatternsLoader(HyphenationPatternsLoader loader) {
-        TypoHyphenatorImpl.setPatternsLoader(loader);
+        TypoWebLibrary.setHyphenationPatternsLoader(loader);
     }
 
     public void setHangingPunctuationConfig(HangingPunctuationConfig config) {

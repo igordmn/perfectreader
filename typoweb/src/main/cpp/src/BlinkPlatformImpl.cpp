@@ -51,7 +51,13 @@ BlinkPlatformImpl::BlinkPlatformImpl(string userAgent) :
         userAgent_(userAgent)
 {}
 
-BlinkPlatformImpl::~BlinkPlatformImpl() {}
+BlinkPlatformImpl::~BlinkPlatformImpl() {
+    JNIScope jniScope;
+    JNIEnv* env = jniScope.getEnv();
+    if (urlHandler_) {
+        env->DeleteGlobalRef(urlHandler_);
+    }
+}
 
 void BlinkPlatformImpl::pause() {
     paused_ = true;
@@ -66,12 +72,20 @@ void BlinkPlatformImpl::resume() {
     }
 }
 
-void BlinkPlatformImpl::setHangingPunctuationConfig(jobject config) {
-    typoExtensionsImpl_.hangingPunctuation().setHangingPunctuationConfig(config);
+void BlinkPlatformImpl::setURLHandler(JNIEnv* env, jobject urlHandler) {
+    urlHandler_ = env->NewGlobalRef(urlHandler);
+}
+
+void BlinkPlatformImpl::setHangingPunctuationConfig(JNIEnv* env, jobject config) {
+    typoExtensionsImpl_.hangingPunctuation().setHangingPunctuationConfig(env, config);
+}
+
+void BlinkPlatformImpl::setHyphenationPatternsLoader(JNIEnv* env, jobject patternsLoader) {
+    typoExtensionsImpl_.hyphenator().setHyphenationPatternsLoader(env, patternsLoader);
 }
 
 WebURLLoader* BlinkPlatformImpl::createURLLoader() {
-    return new WebURLLoaderImpl();
+    return new WebURLLoaderImpl(urlHandler_);
 }
 
 WebString BlinkPlatformImpl::userAgent() {

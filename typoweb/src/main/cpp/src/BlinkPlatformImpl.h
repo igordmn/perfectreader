@@ -19,7 +19,9 @@ public:
 
     void pause();
     void resume();
-    void setHangingPunctuationConfig(jobject config);
+    void setURLHandler(JNIEnv* env, jobject urlHandler);
+    void setHangingPunctuationConfig(JNIEnv* env, jobject config);
+    void setHyphenationPatternsLoader(JNIEnv* env, jobject patternsLoader);
 
     virtual blink::WebURLLoader* createURLLoader() override;
     virtual blink::WebString userAgent() override;
@@ -61,6 +63,7 @@ private:
     WebMimeRegistryImpl mimeRegistry_;
     WebSchedulerImpl webScheduler_;
     TypoExtensionsImpl typoExtensionsImpl_;
+    jobject urlHandler_ = 0;
 };
 
 }

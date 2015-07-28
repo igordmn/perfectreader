@@ -37,7 +37,7 @@ void WebURLLoaderImpl::registerJni() {
     JNIEnv* env = jniScope.getEnv();
 
     jmethods.cls = (jclass) env->NewGlobalRef(env->FindClass("com/dmi/typoweb/WebURLLoaderImpl"));
-    jmethods.constructor = env->GetMethodID(jmethods.cls, "<init>", "(J)V");
+    jmethods.constructor = env->GetMethodID(jmethods.cls, "<init>", "(JLcom/dmi/typoweb/URLHandler;)V");
     jmethods.load = env->GetMethodID(jmethods.cls, "load", "(Ljava/lang/String;)V");
     jmethods.cancel = env->GetMethodID(jmethods.cls, "cancel", "()V");
 
@@ -66,10 +66,10 @@ public:
     }
 };
 
-WebURLLoaderImpl::WebURLLoaderImpl() : processDataURLTask_(0) {
+WebURLLoaderImpl::WebURLLoaderImpl(jobject urlHandler) : processDataURLTask_(0) {
     JNIScope jniScope;
     JNIEnv* env = jniScope.getEnv();
-    jobj_ = env->NewGlobalRef(env->NewObject(jmethods.cls, jmethods.constructor, (jlong) this));
+    jobj_ = env->NewGlobalRef(env->NewObject(jmethods.cls, jmethods.constructor, (jlong) this, urlHandler));
 }
 
 WebURLLoaderImpl::~WebURLLoaderImpl() {

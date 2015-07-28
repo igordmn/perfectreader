@@ -24,7 +24,6 @@ class WebURLLoaderImpl {
     private static final String LOG_TAG = "WebURLRequestHandler";
     private static final int BUFFER_SIZE = 8192;
 
-    private static URLHandler urlHandler;
     private static ExecutorService taskExecutor = Executors.newSingleThreadExecutor();
 
     private long nativeWebURLLoaderImpl;
@@ -33,13 +32,12 @@ class WebURLLoaderImpl {
     private Future<?> loadTask;
     private ReceiveDataTask receiveDataTask = new ReceiveDataTask();
 
-    public WebURLLoaderImpl(long nativeWebURLLoaderImpl) {
+    public WebURLLoaderImpl(long nativeWebURLLoaderImpl, URLHandler urlHandler) {
         this.nativeWebURLLoaderImpl = nativeWebURLLoaderImpl;
+        this.urlHandler = urlHandler;
     }
 
-    public static void setUrlHandler(URLHandler urlHandler) {
-        WebURLLoaderImpl.urlHandler = urlHandler;
-    }
+    private final URLHandler urlHandler;
 
     @UsedByNative
     private void load(String url) {

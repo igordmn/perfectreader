@@ -7,6 +7,8 @@
 
 namespace typo {
 
+class BlinkPlatformImpl;
+
 class TypoHyphenatorImpl : public blink::TypoHyphenator {
 public:
     static void registerJni();
@@ -18,6 +20,8 @@ public:
             const blink::WebString& text, unsigned int start, unsigned int end,
             unsigned int minBreakIndex, unsigned int maxBreakIndex) override;
 private:
+    void setHyphenationPatternsLoader(JNIEnv* env, jobject config);
+
     WordHyphenator* hyphenatorForLocale(const blink::WebString& locale);
     WordHyphenator* loadHyphenator(const blink::WebString& locale);
 
@@ -29,6 +33,8 @@ private:
     WordHyphenator* previewHyphenator_ = 0;
     blink::WebString currentLocale_;
     blink::WebString previewLocale_;
+
+    friend BlinkPlatformImpl;
 };
 
 }

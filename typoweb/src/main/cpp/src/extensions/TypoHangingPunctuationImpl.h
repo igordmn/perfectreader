@@ -19,7 +19,7 @@ public:
     virtual float endHangFactor(blink::WebUChar ch) override;
 
 private:
-    void setHangingPunctuationConfig(jobject config);
+    void setHangingPunctuationConfig(JNIEnv* env, jobject config);
     void convertFactors(JNIEnv* env, jcharArray jChars, jfloatArray jHangFactors, std::hash_map<blink::WebUChar, float>& destination);
 
     std::hash_map<blink::WebUChar, float> startHangFactors_;

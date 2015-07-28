@@ -10,7 +10,7 @@ class WebURLLoaderImpl : public blink::WebURLLoader {
 public:
     static void registerJni();
 
-    WebURLLoaderImpl();
+    WebURLLoaderImpl(jobject urlHandler);
     virtual ~WebURLLoaderImpl();
 
     // implements blink::WebURLLoader
