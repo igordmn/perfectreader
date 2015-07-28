@@ -77,6 +77,7 @@ public class TypoWeb {
         });
         WebURLLoaderImpl.setUrlHandler(null);
         TypoHyphenatorImpl.setPatternsLoader(null);
+        TypoWebLibrary.setHangingPunctuationConfig(null);
         instanceCreated = false;
     }
 
@@ -99,6 +100,10 @@ public class TypoWeb {
 
     public void setHyphenationPatternsLoader(HyphenationPatternsLoader loader) {
         TypoHyphenatorImpl.setPatternsLoader(loader);
+    }
+
+    public void setHangingPunctuationConfig(HangingPunctuationConfig config) {
+        TypoWebLibrary.setHangingPunctuationConfig(config);
     }
 
     public void setSize(float width, float height) {

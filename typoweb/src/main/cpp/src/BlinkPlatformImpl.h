@@ -3,11 +3,14 @@
 #include "WebMimeRegistryImpl.h"
 #include "WebSchedulerImpl.h"
 #include "extensions/TypoExtensionsImpl.h"
+#include "util/JniUtils.h"
 #include <string>
 #include "third_party/WebKit/public/platform/Platform.h"
 #include "third_party/WebKit/public/platform/WebThemeEngine.h"
 
 namespace typo {
+
+class TypoWebLibrary;
 
 class BlinkPlatformImpl : public blink::Platform {
 public:
@@ -16,6 +19,7 @@ public:
 
     void pause();
     void resume();
+    void setHangingPunctuationConfig(jobject config);
 
     virtual blink::WebURLLoader* createURLLoader() override;
     virtual blink::WebString userAgent() override;
@@ -57,6 +61,8 @@ private:
     WebMimeRegistryImpl mimeRegistry_;
     WebSchedulerImpl webScheduler_;
     TypoExtensionsImpl typoExtensionsImpl_;
+
+    friend TypoWebLibrary;
 };
 
 }

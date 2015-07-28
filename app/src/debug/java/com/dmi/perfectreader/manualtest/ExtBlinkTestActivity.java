@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.TexHyphenationPatternsLoader;
+import com.dmi.typoweb.HangingPunctuationConfig;
 import com.dmi.typoweb.RenderContext;
 import com.dmi.typoweb.TypoWeb;
 
@@ -27,7 +28,7 @@ public class ExtBlinkTestActivity extends Activity {
     private static final String HANGING_PUNCTUATION = "assets://manualtest/extBlink/hangingpunctuation.html";
     @SuppressWarnings("unused")
     private static final String HYPHENS = "assets://manualtest/extBlink/hyphens.html";
-    private static final String FILE = HYPHENS;
+    private static final String FILE = HANGING_PUNCTUATION;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,7 @@ public class ExtBlinkTestActivity extends Activity {
             super(context);
 
             typoWeb = new TypoWeb(this, context, context.getString(R.string.app_name));
+
             typoWeb.setURLHandler(url -> {
                 if (url.startsWith("assets://")) {
                     return getAssets().open(url.substring("assets://".length()));
@@ -51,7 +53,19 @@ public class ExtBlinkTestActivity extends Activity {
                     throw new SecurityException();
                 }
             });
+            typoWeb.setHangingPunctuationConfig(
+                    HangingPunctuationConfig.builder()
+                            .startChar('(', 1.0F)
+                            .startChar('\"', 1.0F)
+                            .endChar(')', 1.0F)
+                            .endChar('\'', 1.0F)
+                            .endChar(',', 1.0F)
+                            .endChar('.', 1.0F)
+                            .endChar('-', 1.0F)
+                            .build()
+            );
             typoWeb.setHyphenationPatternsLoader(new TexHyphenationPatternsLoader(context));
+
             typoWeb.loadUrl(FILE);
 
             setEGLContextClientVersion(2);

@@ -5,6 +5,7 @@ import android.content.Context;
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.config.TextAlign;
 import com.dmi.perfectreader.bookstorage.BookStorage;
+import com.dmi.typoweb.HangingPunctuationConfig;
 import com.dmi.typoweb.JavascriptInterface;
 import com.dmi.typoweb.RenderContext;
 import com.dmi.typoweb.TypoWeb;
@@ -41,10 +42,76 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
                 throw new SecurityException();
             }
         });
+        typoWeb.setHangingPunctuationConfig(hangingPunctuationConfig());
         typoWeb.setHyphenationPatternsLoader(new TexHyphenationPatternsLoader(context));
         typoWeb.addJavascriptInterface("__javaBridge", new JavaBridge());
         typoWeb.loadUrl("assets://pageBook/pageBook.html");
         typoWeb.execJavaScript("reader.setClient(__javaBridge);");
+    }
+
+    private HangingPunctuationConfig hangingPunctuationConfig() {
+        return HangingPunctuationConfig.builder()
+
+            // скобки
+            .startChar('(', 0.5F)
+            .startChar('[', 0.5F)
+            .startChar('{', 0.5F)
+            .endChar(')', 0.50F)
+            .endChar(']', 0.50F)
+            .endChar('}', 0.50F)
+            .endChar('>', 0.50F)
+
+            // кавычки
+            .startChar('"', 0.5F)
+            .startChar('\'', 0.5F)
+            .startChar('«', 0.5F)
+            .startChar('»', 0.5F)
+            .startChar('„', 0.5F)
+            .startChar('“', 0.5F)
+            .startChar('‘', 0.5F)
+            .startChar('‚', 0.5F)
+            .startChar('‹',  0.5F)
+            .startChar('‚',  0.5F)
+            .endChar('"', 0.50F)
+            .endChar('\'', 0.50F)
+            .endChar('»', 0.50F)
+            .endChar('«', 0.50F)
+            .endChar('“', 0.50F)
+            .endChar('”', 0.50F)
+            .endChar('’', 0.50F)
+            .endChar('‘',  0.50F)
+            .endChar('›',  0.50F)
+
+            // знаки препинания
+            .endChar(',', 0.50F)
+            .endChar('.', 0.50F)
+            .endChar('…', 0.50F)
+            .endChar(':', 0.50F)
+            .endChar(';', 0.50F)
+            .endChar('!', 0.50F)
+            .endChar('‼', 0.50F)
+            .endChar('?', 0.50F)
+            .endChar('،',  0.50F)
+            .endChar('۔',  0.50F)
+            .endChar('、',  0.25F)
+            .endChar('。',  0.25F)
+            .endChar('，',  0.25F)
+            .endChar('．',  0.25F)
+            .endChar('﹐',  0.25F)
+            .endChar('﹑',  0.25F)
+            .endChar('﹒',  0.5F)
+            .endChar('｡',  0.5F)
+            .endChar('､',  0.5F)
+
+            // тире, дефисы, мягкий перенос
+            .endChar('\u2010', 0.50F)
+            .endChar('\u2011', 0.50F)
+            .endChar('\u2012', 0.25F)
+            .endChar('\u2013', 0.25F)
+            .endChar('\u2014', 0.25F)
+            .endChar('\u00AD', 0.50F)
+            .endChar('\u002D', 0.50F)
+            .build();
     }
 
     public void destroy() {

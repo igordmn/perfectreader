@@ -22,6 +22,7 @@ private:
     static void nativeLowMemoryNotification(JNIEnv*, jclass, jboolean critical);
     static void nativePause(JNIEnv*, jclass);
     static void nativeResume(JNIEnv*, jclass);
+    static void nativeSetHangingPunctuationConfig(JNIEnv*, jclass, jobject config);
 
     static BlinkPlatformImpl* blinkPlatform_;
     static void* icuData_;

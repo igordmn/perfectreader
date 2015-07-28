@@ -10,8 +10,8 @@ class TypoExtensionsImpl : public blink::TypoExtensions {
 public:
     virtual ~TypoExtensionsImpl() {}
 
-    virtual blink::TypoHyphenator& hyphenator() override { return hyphenator_; }
-    virtual blink::TypoHangingPunctuation& hangingPunctuation() override { return hangingPunctuation_; }
+    virtual TypoHyphenatorImpl& hyphenator() override { return hyphenator_; }
+    virtual TypoHangingPunctuationImpl& hangingPunctuation() override { return hangingPunctuation_; }
 
 private:
     TypoHyphenatorImpl hyphenator_;

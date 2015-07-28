@@ -1,4 +1,4 @@
-#include "../extensions/TypoHyphenatorImpl.h"
+#include "TypoHyphenatorImpl.h"
 
 namespace typo {
 

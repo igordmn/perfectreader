@@ -4,7 +4,7 @@
 </head>
 <body style="margin:15px; width:300px">
 
-<div><button onclick="toggleHang();">toggleHang</button><button onclick="configureHang();">configureHang</button></div>
+<div><button onclick="toggleHang();">toggleHang</button></div>
 
 <div style="border-left: thin solid #ff0000; border-right: thin solid #ff0000;">
 
@@ -42,7 +42,6 @@
         <span></span>         <button style="background: red; border: none"></button>(button on the edge, on the edge<span>)  <span><span>  </span></span>  <span></span><button style="background: red; border: none"></button>   </span>
         button on the edge
     </div>
-
 
     <table style="border: 0; height: 100; border-top: thin solid #ff0000; border-bottom: thin solid #ff0000;">
         <tr>
@@ -99,25 +98,6 @@
         }
     };
 
-    var config2 = {
-        hangingPunctuation: {
-            startChars: [
-                { charCode: "(".charCodeAt(0), hangFactor: 0.5 },
-                { charCode: "\"".charCodeAt(0), hangFactor: 0.5 },
-            ],
-            endChars: [
-                { charCode: ")".charCodeAt(0), hangFactor: 1.0 },
-                { charCode: "\"".charCodeAt(0), hangFactor: 1.0 },
-                { charCode: ",".charCodeAt(0), hangFactor: 0.5 },
-                { charCode: ".".charCodeAt(0), hangFactor: 1.0 },
-                { charCode: "-".charCodeAt(0), hangFactor: 1.0 },  // перенос (дефисоминус)
-            ]
-        }
-    };
-
-    var currentConfig = config1;
-    document.typoConfigure(currentConfig);
-
     function toggleHang() {
         var ddd = document.getElementById("ddd");;
         if (ddd.style.getPropertyValue("-typo-hanging-punctuation") != "on") {
@@ -125,11 +105,6 @@
         } else {
             ddd.style.setProperty("-typo-hanging-punctuation", "off", "important");
         }
-    }
-
-    function configureHang() {
-        currentConfig = currentConfig == config1 ? config2 : config1
-        document.typoConfigure(currentConfig);
     }
 </script>
 

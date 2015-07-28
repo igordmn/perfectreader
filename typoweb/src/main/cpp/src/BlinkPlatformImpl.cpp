@@ -66,6 +66,10 @@ void BlinkPlatformImpl::resume() {
     }
 }
 
+void BlinkPlatformImpl::setHangingPunctuationConfig(jobject config) {
+    typoExtensionsImpl_.hangingPunctuation().setHangingPunctuationConfig(config);
+}
+
 WebURLLoader* BlinkPlatformImpl::createURLLoader() {
     return new WebURLLoaderImpl();
 }

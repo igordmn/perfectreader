@@ -42,6 +42,7 @@ void TypoWebLibrary::registerJni() {
         {"nativeLowMemoryNotification", "(Z)V", (void*) &nativeLowMemoryNotification},
         {"nativePause", "()V", (void*) &nativePause},
         {"nativeResume", "()V", (void*) &nativeResume},
+        {"nativeSetHangingPunctuationConfig", "(Lcom/dmi/typoweb/HangingPunctuationConfig;)V", (void*) &nativeSetHangingPunctuationConfig},
     };
     env->RegisterNatives(cls, nativeMethods, sizeof(nativeMethods) / sizeof(nativeMethods[0]));
 }
@@ -140,6 +141,10 @@ void TypoWebLibrary::nativePause(JNIEnv*, jclass) {
 
 void TypoWebLibrary::nativeResume(JNIEnv*, jclass) {
     blinkPlatform_->resume();
+}
+
+void TypoWebLibrary::nativeSetHangingPunctuationConfig(JNIEnv*, jclass, jobject config) {
+    blinkPlatform_->setHangingPunctuationConfig(config);
 }
 
 }

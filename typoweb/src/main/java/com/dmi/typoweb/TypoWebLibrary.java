@@ -86,6 +86,10 @@ class TypoWebLibrary {
         mainThread().postTask(TypoWebLibrary::nativeResume);
     }
 
+    public static void setHangingPunctuationConfig(HangingPunctuationConfig config) {
+        mainThread().postTask(() -> nativeSetHangingPunctuationConfig(config));
+    }
+
     private static native void nativeStartMainThread();
     private static native WebThreadImpl nativeMainThread();
     private static native void nativeInitBlink(String userAgent);
@@ -94,4 +98,5 @@ class TypoWebLibrary {
     private static native void nativeLowMemoryNotification(boolean critical);
     private static native void nativePause();
     private static native void nativeResume();
+    private static native void nativeSetHangingPunctuationConfig(HangingPunctuationConfig config);
 }
