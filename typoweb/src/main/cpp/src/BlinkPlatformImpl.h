@@ -61,8 +61,6 @@ private:
     WebMimeRegistryImpl mimeRegistry_;
     WebSchedulerImpl webScheduler_;
     TypoExtensionsImpl typoExtensionsImpl_;
-
-    friend TypoWebLibrary;
 };
 
 }
