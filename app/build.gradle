@@ -2,6 +2,7 @@ import com.android.build.OutputFile
 import Utils
 import AndroidUtils
 
+apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
 apply plugin: 'groovyx.grooid.groovy-android'
 apply plugin: 'me.tatarka.retrolambda'

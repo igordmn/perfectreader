@@ -21,7 +21,6 @@ buildscript {
     }
 }
 
-apply plugin: 'android-sdk-manager'
 apply plugin: 'sonar-runner'
 
 def androidProjects = [project(':app'), project(':typoweb'), project(':util:android')]
