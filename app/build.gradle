@@ -35,13 +35,13 @@ android {
             jniDebuggable true
             minifyEnabled true
             signingConfig signProperties ? signingConfigs.main : null
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles 'proguard-android.pro', 'proguard-rules.pro'
         }
         release {
             minifyEnabled true
             shrinkResources true
             signingConfig signProperties ? signingConfigs.main : null
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles 'proguard-android.pro', 'proguard-rules.pro'
         }
     }
 
