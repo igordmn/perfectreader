@@ -4,7 +4,7 @@ solutions = [
     "deps_file"   : ".DEPS.git",
     "managed"     : False,
     "custom_deps" : {
-      "src/third_party/WebKit": "https://IgorDemin@bitbucket.org/IgorDemin/blink-typo.git@e5e77e8eec0fcaf59b891f8a3c6ce9fd9be46fc4",
+      "src/third_party/WebKit": "https://IgorDemin@bitbucket.org/IgorDemin/blink-typo.git@5e32a3fd9c4dd12c2030e7f185c53af0562c5501",
     },
     "safesync_url": "",
   },
