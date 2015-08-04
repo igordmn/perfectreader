@@ -5,8 +5,6 @@
 
 namespace typo {
 
-void TEST_TEST_TEST_HYPHENATE();
-
 class WordHyphenator {
     /**
      * Для нахождения переносов используется алгоритм Ляна-Кнута.
