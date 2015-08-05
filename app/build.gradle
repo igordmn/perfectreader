@@ -49,7 +49,7 @@ android {
         abi {
             enable true
             reset()
-            include 'armeabi-v7a', 'mips', 'x86'
+            include 'armeabi-v7a', 'mips', 'x86', 'arm64-v8a', 'x86_64'
         }
     }
 

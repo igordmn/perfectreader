@@ -1,0 +1,3 @@
+[submodule "typoweb/third_party/chromium-typo"]
+	path = typoweb/third_party/chromium-typo
+	url = git@bitbucket.org:IgorDemin/chromium-typo-build.git

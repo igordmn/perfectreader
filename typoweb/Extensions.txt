@@ -4,6 +4,5 @@ typoContentSizeChange for document. Fired when scrollWidth/scrollHeight changed
 (see TypoWeb.cpp#checkContentsSize)
 
 	CSS
--typo-hanging-punctuation: on | off
-hanging punctuation for text.
-(see RenderBlockLineLayout.cpp#applyHangingPunctuation)
+-typo-hanging-punctuation: on | off  (see RenderBlockLineLayout.cpp#applyHangingPunctuation)
+-typo-hyphens: on | off (see BreakingContextInlineHeaders.h#applyTypoHyphens)

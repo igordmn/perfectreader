@@ -1,7 +1,22 @@
 apply plugin: 'com.android.library'
 apply plugin: 'groovyx.grooid.groovy-android'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'android-ndk-classic'
 
 dependencies {
     compile project(':util:android')
+}
+
+android {
+    sourceSets {
+        main {
+            assets.srcDirs += "third_party/chromium-typo/assets";
+        }
+    }
+
+    buildTypes {
+        debug {
+            jniDebuggable true
+        }
+    }
 }

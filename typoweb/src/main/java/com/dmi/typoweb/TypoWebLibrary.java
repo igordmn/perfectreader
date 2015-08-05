@@ -58,7 +58,7 @@ class TypoWebLibrary {
     @SuppressLint("NewApi")
     private static void initICU(Context context) {
         try {
-            try (InputStream is = context.getResources().openRawResource(R.raw.icudtl)) {
+            try (InputStream is = context.getAssets().open("icu/icudtl.dat")) {
                 ByteBuffer icuData = nativeNewDirectByteBuffer(is.available());
                 byte[] buf = new byte[8 * 1024];
                 int length;
