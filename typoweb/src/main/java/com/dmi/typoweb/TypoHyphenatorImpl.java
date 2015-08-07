@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import timber.log.Timber;
+
 @UsedByNative
 class TypoHyphenatorImpl {
     private static final String LOG_TAG = TypoHyphenatorImpl.class.getName();
@@ -36,8 +38,7 @@ class TypoHyphenatorImpl {
                 return false;
             }
         } catch (IOException e) {
-            Log.w(LOG_TAG, "Cannot load hyphenation patterns for lang: " + locale);
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
+            Timber.w(e, "Cannot load hyphenation patterns for lang: %s", locale);
             return false;
         }
     }

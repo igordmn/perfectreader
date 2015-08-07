@@ -2,17 +2,15 @@ package com.dmi.util.setting;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.dmi.util.TypeConverters;
 
-import static android.util.Log.getStackTraceString;
+import timber.log.Timber;
+
 import static com.dmi.util.TypeConverters.stringToType;
 import static com.dmi.util.TypeConverters.typeToString;
 
 public abstract class AbstractSettings {
-    private static final String LOG_TAG = AbstractSettings.class.getName();
-
     private SharedPreferences sharedPreferences;
 
     protected void init(Context context, String name) {
@@ -25,7 +23,7 @@ public abstract class AbstractSettings {
         try {
             return setting.parseString(valueString);
         } catch (TypeConverters.ParseException e) {
-            Log.w(LOG_TAG, getStackTraceString(e));
+            Timber.w(e, "Parse saved value error");
             return setting.defaultValue();
         }
     }

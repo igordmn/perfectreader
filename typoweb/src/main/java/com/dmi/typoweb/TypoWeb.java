@@ -15,6 +15,7 @@ import java.util.List;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import java8.util.J8Arrays;
+import timber.log.Timber;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_ELEMENT_ARRAY_BUFFER;
@@ -31,7 +32,6 @@ import static java.lang.System.currentTimeMillis;
 
 @NotThreadSafe
 public class TypoWeb {
-    private static final String LOG_TAG = TypoWeb.class.getName();
     private static final double FPS = 60;
 
     private static boolean instanceCreated = false;
@@ -246,8 +246,7 @@ public class TypoWeb {
             Object result = method.invoke(object, arguments);
             return typeToString(result, resultType);
         } catch (Exception e) {
-            Log.e(LOG_TAG, format("Error call method. method name %s; arguments: %s\n%s",
-                                  method.getName(), formatArguments(strArguments), Log.getStackTraceString(e)));
+            Timber.e(e, "Error call method. method name %s; arguments: %s", method.getName(), formatArguments(strArguments));
             return null;
         }
     }

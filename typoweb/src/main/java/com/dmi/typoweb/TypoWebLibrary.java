@@ -6,15 +6,13 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.util.Log;
 
-import com.dmi.util.natv.UsedByNative;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-class TypoWebLibrary {
-    private static final String LOG_TAG = TypoWebLibrary.class.getSimpleName();
+import timber.log.Timber;
 
+class TypoWebLibrary {
     private static boolean init = false;
 
     private static final ComponentCallbacks2 componentCallbacks = new ComponentCallbacks2() {
@@ -68,7 +66,7 @@ class TypoWebLibrary {
                 nativeInitICU(icuData);
             }
         } catch (IOException e) {
-            Log.e(LOG_TAG, Log.getStackTraceString(e));
+            Timber.e(e, "ICU init error");
         }
     }
 

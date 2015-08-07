@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.book;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
@@ -28,11 +27,11 @@ import org.androidannotations.annotations.ViewById;
 import java.io.File;
 import java.io.IOException;
 
-import static android.util.Log.getStackTraceString;
+import timber.log.Timber;
 
 @EFragment(R.layout.fragment_book)
 public class BookFragment extends FragmentExt implements BookFacade {
-    private static final String LOG_TAG = BookFragment.class.getName();
+
     private static final float TIME_FOR_ONE_SLIDE_IN_SECONDS = 0.4F;
 
     @FragmentArg
@@ -99,7 +98,7 @@ public class BookFragment extends FragmentExt implements BookFacade {
             bookStorage.load(bookFile);
             initBook();
         } catch (IOException e) {
-            Log.e(LOG_TAG, getStackTraceString(e));
+            Timber.e(e, "Load book error");
             Toast.makeText(getActivity(), R.string.bookOpenError, Toast.LENGTH_SHORT).show();
         }
     }

@@ -22,7 +22,6 @@ import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glViewport;
 
 public class TypoWebTestActivity extends Activity {
-    private static final String LOG_TAG = TypoWebTestActivity.class.getName();
     private TypoWebView typoWebView;
 
     @Override
@@ -59,7 +58,7 @@ public class TypoWebTestActivity extends Activity {
         public TypoWebView(Context context) {
             super(context);
 
-            Log.d(LOG_TAG, "DDD start init");
+            Log.d("DDD", "start init");
 
             typoWeb = new TypoWeb(this, context, context.getString(R.string.app_name));
             typoWeb.setURLHandler(url -> {
@@ -146,7 +145,7 @@ public class TypoWebTestActivity extends Activity {
 
         @JavascriptInterface
         public void voidTest(String value1, String value2) {
-            Log.i("typoweb", "DDD " + value1 + " " + value2);
+            Log.i("DDD", value1 + " " + value2);
         }
     }
 }

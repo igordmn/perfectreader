@@ -13,6 +13,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import timber.log.Timber;
+
 import static com.dmi.typoweb.TypoWebLibrary.mainThread;
 import static com.dmi.typoweb.WebMimeRegistryImpl.mimeTypeFromFile;
 import static com.google.common.base.Preconditions.checkState;
@@ -21,7 +23,6 @@ import static java.net.URLConnection.guessContentTypeFromStream;
 
 @UsedByNative
 class WebURLLoaderImpl {
-    private static final String LOG_TAG = "WebURLRequestHandler";
     private static final int BUFFER_SIZE = 8192;
 
     private static ExecutorService taskExecutor = Executors.newSingleThreadExecutor();
@@ -54,7 +55,7 @@ class WebURLLoaderImpl {
             } catch (SecurityException e) {
                 onFail("Access to URL denied: %s", url);
             } catch (Exception e) {
-                Log.e(LOG_TAG, Log.getStackTraceString(e));
+                Timber.e(e, "Error loading URL");
                 onFail("Error loading URL: %s", url);
             }
         });
@@ -63,7 +64,7 @@ class WebURLLoaderImpl {
     private void onFail(String messageFormat, String url) {
         String shortUrl = url.length() > 200 ? url.substring(0, 200) : url;
         String message = format(messageFormat, shortUrl);
-        Log.e(LOG_TAG, message);
+        Timber.e(message);
         mainThread().postTask(() -> {
             if (!cancelled) {
                 nativeDidFail(nativeWebURLLoaderImpl, message);

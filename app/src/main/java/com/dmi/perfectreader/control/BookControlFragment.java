@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.control;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,6 +17,8 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
+import timber.log.Timber;
+
 import static com.dmi.util.Units.dipToPx;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
@@ -26,8 +27,6 @@ import static java.lang.Math.sqrt;
 
 @EFragment(R.layout.fragment_bookcontrol)
 public class BookControlFragment extends FragmentExt implements View.OnTouchListener {
-    private static String LOG_TAG = BookControlFragment.class.getName();
-
     private static final float TOUCH_SENSITIVITY = dipToPx(8);
     private static final float LEFT_SIDE_WIDTH_FOR_SLIDE = dipToPx(40);
     private static final float SLIDE_SENSITIVITY = dipToPx(20);
@@ -188,7 +187,7 @@ public class BookControlFragment extends FragmentExt implements View.OnTouchList
                 bookReader.book().goPreviewPage();
                 break;
             case SELECT_TEXT:
-                Log.w(LOG_TAG, "select text not implemented");
+                Timber.w("select text not implemented");
                 break;
             default:
                 throw new UnsupportedOperationException();
