@@ -9,7 +9,7 @@ public class SlidePageAnimation implements PageAnimation {
     private float pageWidth = 100;
     private float timeForOneSlideInSeconds = 1;
 
-    private PageAnimationState state = new PageAnimationState();
+    private com.dmi.perfectreader.book.animation.PageAnimationState state = new com.dmi.perfectreader.book.animation.PageAnimationState();
     private float distance = 0;
     private float velocity = 0;
 
@@ -80,7 +80,7 @@ public class SlidePageAnimation implements PageAnimation {
     }
 
     @Override
-    public PageAnimationState state() {
+    public com.dmi.perfectreader.book.animation.PageAnimationState state() {
         return state;
     }
 }

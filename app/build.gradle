@@ -81,7 +81,6 @@ dependencies {
     compile project(':lib:android:materialWidget')
     compile project(':lib:android:readiumSdk')
     compile project(':util:android')
-    compile project(':core')
     compile project(':typoweb')
     apt 'org.androidannotations:androidannotations:3.3.1'
 }

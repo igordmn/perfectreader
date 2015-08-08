@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -29,12 +28,9 @@ public class HintedImageButton extends ImageButton {
     }
 
     private void init() {
-        super.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showContentDescription();
-                return true;
-            }
+        super.setOnLongClickListener(v -> {
+            showContentDescription();
+            return true;
         });
     }
 
