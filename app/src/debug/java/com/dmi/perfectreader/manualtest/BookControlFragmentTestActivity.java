@@ -2,7 +2,6 @@ package com.dmi.perfectreader.manualtest;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.BookFragment;
@@ -18,6 +17,8 @@ import com.dmi.util.setting.SettingListener;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
+
+import timber.log.Timber;
 
 @EActivity(R.layout.activity_fragment_container)
 public class BookControlFragmentTestActivity extends AppCompatActivityExt implements BookReaderFacade {
@@ -59,35 +60,35 @@ public class BookControlFragmentTestActivity extends AppCompatActivityExt implem
 
             @Override
             public void tap(float x, float y, float tapDiameter, TapHandler tapHandler) {
-                Log.d("DDD", " tap " + String.format("(%.2f, %.2f, %.2f)", x, y, tapDiameter));
+                Timber.d("DDD tap (%.2f, %.2f, %.2f)", x, y, tapDiameter);
                 tapHandler.handleTap();
             }
 
             @Override
             public void goPercent(int percent) {
-                Log.d("DDD", "goPercent " + String.format("(%.2f)",IntegerPercent.toDouble(percent)));
+                Timber.d("DDD goPercent " + String.format("(%.2f)",IntegerPercent.toDouble(percent)));
             }
 
             @Override
             public void goNextPage() {
-                Log.d("DDD", "goNextPage");
+                Timber.d("DDD goNextPage");
             }
 
             @Override
             public void goPreviewPage() {
-                Log.d("DDD", "goPreviewPage");
+                Timber.d("DDD goPreviewPage");
             }
         };
     }
 
     @Override
     public void toggleMenu() {
-        Log.d("DDD", "toggleMenu");
+        Timber.d("DDD toggleMenu");
     }
 
     @Override
     public void exit() {
-        Log.d("DDD", "exit");
+        Timber.d("DDD exit");
     }
 
     private class SettingsApplier extends AbstractSettingsApplier {
@@ -102,7 +103,7 @@ public class BookControlFragmentTestActivity extends AppCompatActivityExt implem
         }
 
         private <T> SettingListener<T> listener(String settingName) {
-            return value -> Log.d("DDD", settingName + "=" + value);
+            return value -> Timber.d("DDD" + settingName + "=" + value);
         }
     }
 }

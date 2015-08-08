@@ -5,16 +5,17 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.KeyEvent;
 
-import com.dmi.perfectreader.manualtest.testbook.TestBookStorage;
-import com.dmi.perfectreader.manualtest.testbook.TestBooks;
 import com.dmi.perfectreader.book.PageBook;
 import com.dmi.perfectreader.book.WebPageBook;
+import com.dmi.perfectreader.manualtest.testbook.TestBookStorage;
+import com.dmi.perfectreader.manualtest.testbook.TestBooks;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import timber.log.Timber;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.glClear;
@@ -65,7 +66,7 @@ public class WebPageBookTestActivity extends Activity implements WebPageBook.Cli
                 if (pageBook.canGoPage(1) == PageBook.CanGoResult.CAN) {
                     pageBook.goNextPage();
                 } else {
-                    Log.i("DDD", "cannot go next page");
+                    Timber.i("DDD cannot go next page");
                 }
             });
             return true;
@@ -74,7 +75,7 @@ public class WebPageBookTestActivity extends Activity implements WebPageBook.Cli
                 if (pageBook.canGoPage(-1) == PageBook.CanGoResult.CAN) {
                     pageBook.goPreviewPage();
                 } else {
-                    Log.i("DDD", "cannot go preview page");
+                    Timber.i("DDD cannot go preview page");
                 }
             });
             return  true;

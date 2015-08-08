@@ -5,7 +5,6 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.dmi.perfectreader.R;
@@ -15,6 +14,8 @@ import com.dmi.typoweb.TypoWeb;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import timber.log.Timber;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.glClear;
@@ -58,7 +59,7 @@ public class TypoWebTestActivity extends Activity {
         public TypoWebView(Context context) {
             super(context);
 
-            Log.d("DDD", "start init");
+            Timber.d("DDD start init");
 
             typoWeb = new TypoWeb(this, context, context.getString(R.string.app_name));
             typoWeb.setURLHandler(url -> {
@@ -145,7 +146,7 @@ public class TypoWebTestActivity extends Activity {
 
         @JavascriptInterface
         public void voidTest(String value1, String value2) {
-            Log.i("DDD", value1 + " " + value2);
+            Timber.i("DDD" + value1 + " " + value2);
         }
     }
 }

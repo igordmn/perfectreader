@@ -3,7 +3,6 @@ package com.dmi.perfectreader.manualtest;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.ViewGroup.LayoutParams;
 
@@ -13,6 +12,8 @@ import com.dmi.perfectreader.book.animation.SlidePageAnimation;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import timber.log.Timber;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.glClear;
@@ -116,7 +117,7 @@ public class PageBookViewTestActivity extends Activity {
                     canDrawState.afterPageGo();
                 });
             } else {
-                Log.w("DDD", "cannot go next page");
+                Timber.w("DDD cannot go next page");
             }
         }
 
@@ -130,7 +131,7 @@ public class PageBookViewTestActivity extends Activity {
                     canDrawState.afterPageGo();
                 });
             } else {
-                Log.w("DDD", "cannot go preview page");
+                Timber.w("DDD cannot go preview page");
             }
         }
 

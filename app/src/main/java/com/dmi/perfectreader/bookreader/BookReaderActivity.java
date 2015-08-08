@@ -3,7 +3,6 @@ package com.dmi.perfectreader.bookreader;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.BookFragment;
@@ -20,6 +19,8 @@ import org.androidannotations.annotations.EActivity;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+
+import timber.log.Timber;
 
 @EActivity(R.layout.activity_book_reader)
 public class BookReaderActivity extends AppCompatActivityExt implements BookReaderFacade {
@@ -75,7 +76,7 @@ public class BookReaderActivity extends AppCompatActivityExt implements BookRead
     @Override
     public void toggleMenu() {
         // временно отключено для того, чтобы не вошло в версию 0.3
-        Log.d(BookReaderActivity.class.getName(), "Menu not implemented");
+        Timber.d("Menu not implemented");
         /*
         FragmentManager fragmentManager = getSupportFragmentManager();
         String tag = MenuFragment.class.getName();
