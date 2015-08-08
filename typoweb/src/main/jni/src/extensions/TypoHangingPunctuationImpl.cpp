@@ -45,13 +45,17 @@ float TypoHangingPunctuationImpl::endHangFactor(blink::WebUChar ch) {
 }
 
 void TypoHangingPunctuationImpl::setHangingPunctuationConfig(JNIEnv* env, jobject config) {
-    jcharArray jStartChars = (jcharArray) env->GetObjectField(config, jConfigMeta.startChars);
-    jfloatArray jStartCharsHangFactors = (jfloatArray) env->GetObjectField(config, jConfigMeta.startCharsHangFactors);
-    jcharArray jEndChars = (jcharArray) env->GetObjectField(config, jConfigMeta.endChars);
-    jfloatArray jEndCharsHangFactors = (jfloatArray) env->GetObjectField(config, jConfigMeta.endCharsHangFactors);
+    startHangFactors_.clear();
+    endHangFactors_.clear();
+    if (config) {
+        jcharArray jStartChars = (jcharArray) env->GetObjectField(config, jConfigMeta.startChars);
+        jfloatArray jStartCharsHangFactors = (jfloatArray) env->GetObjectField(config, jConfigMeta.startCharsHangFactors);
+        jcharArray jEndChars = (jcharArray) env->GetObjectField(config, jConfigMeta.endChars);
+        jfloatArray jEndCharsHangFactors = (jfloatArray) env->GetObjectField(config, jConfigMeta.endCharsHangFactors);
 
-    convertFactors(env, jStartChars, jStartCharsHangFactors, startHangFactors_);
-    convertFactors(env, jEndChars, jEndCharsHangFactors, endHangFactors_);
+        convertFactors(env, jStartChars, jStartCharsHangFactors, startHangFactors_);
+        convertFactors(env, jEndChars, jEndCharsHangFactors, endHangFactors_);
+    }
 }
 
 void TypoHangingPunctuationImpl::convertFactors(JNIEnv* env, jcharArray jChars, jfloatArray jHangFactors, std::hash_map<blink::WebUChar, float>& destination) {
