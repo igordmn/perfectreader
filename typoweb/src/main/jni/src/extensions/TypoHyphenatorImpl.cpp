@@ -49,9 +49,9 @@ TypoHyphenatorImpl::~TypoHyphenatorImpl() {
     env->DeleteGlobalRef(jobj_);
 }
 
-void TypoHyphenatorImpl::setHyphenationPatternsLoader(JNIEnv* env, jobject config) {
+void TypoHyphenatorImpl::setHyphenationPatternsLoader(JNIEnv* env, jobject patternsLoader) {
    WordHyphenator::Builder hyphenatorBuilder;
-   env->CallVoidMethod(jobj_, jmethods.setPatternsLoader, config);
+   env->CallVoidMethod(jobj_, jmethods.setPatternsLoader, patternsLoader);
 }
 
 int TypoHyphenatorImpl::hyphenateText(const blink::WebString& locale,

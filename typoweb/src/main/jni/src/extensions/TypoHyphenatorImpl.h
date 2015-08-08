@@ -20,7 +20,7 @@ public:
             const blink::WebString& text, unsigned int start, unsigned int end,
             unsigned int minBreakIndex, unsigned int maxBreakIndex) override;
 private:
-    void setHyphenationPatternsLoader(JNIEnv* env, jobject config);
+    void setHyphenationPatternsLoader(JNIEnv* env, jobject patternsLoader);
 
     WordHyphenator* hyphenatorForLocale(const blink::WebString& locale);
     WordHyphenator* loadHyphenator(const blink::WebString& locale);

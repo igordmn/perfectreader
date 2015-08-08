@@ -14,8 +14,6 @@ import timber.log.Timber;
 
 @UsedByNative
 class TypoHyphenatorImpl {
-    private static final String LOG_TAG = TypoHyphenatorImpl.class.getName();
-
     private HyphenationPatternsLoader patternsLoader;
 
     @UsedByNative
