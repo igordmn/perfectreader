@@ -1,231 +1,117 @@
 package com.dmi.perfectreader.book;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.view.MotionEvent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.View;
 import android.widget.Toast;
 
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
-import com.dmi.perfectreader.bookstorage.EPUBBookStorage;
-import com.dmi.perfectreader.facade.BookFacade;
-import com.dmi.perfectreader.setting.AppSettings;
-import com.dmi.perfectreader.userdata.UserData;
-import com.dmi.util.FragmentExt;
-import com.dmi.util.lang.IntegerPercent;
-import com.dmi.util.setting.AbstractSettingsApplier;
-import com.dmi.util.setting.SettingListener;
-
-import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
+import com.dmi.perfectreader.bookreader.BookReaderFragment;
+import com.dmi.util.base.BaseFragment;
+import com.dmi.util.layout.HasLayout;
 
 import java.io.File;
-import java.io.IOException;
 
-import timber.log.Timber;
+import javax.inject.Inject;
 
-@EFragment(R.layout.fragment_book)
-public class BookFragment extends FragmentExt implements BookFacade {
+import butterknife.Bind;
+import dagger.ObjectGraph;
+import dagger.Provides;
+import me.tatarka.simplefragment.SimpleFragmentIntent;
 
+@HasLayout(R.layout.fragment_book)
+public class BookFragment extends BaseFragment {
     private static final float TIME_FOR_ONE_SLIDE_IN_SECONDS = 0.4F;
 
-    @FragmentArg
     protected File bookFile;
 
-    @ViewById
+    @Bind(R.id.pageBookView)
     protected PageBookView pageBookView;
 
-    @Bean
-    protected UserData userData;
-    @Bean
-    protected AppSettings appSettings;
-    @Bean
-    protected EPUBBookStorage bookStorage;
+    @Inject
+    protected BookPresenter presenter;
 
-    private final SettingsApplier settingsApplier = new SettingsApplier();
-    private WebPageBook pageBook;
-    private BookFacade.TapHandler tapHandler = null;
-
-    @AfterInject
-    protected void init() {
-        setRetainInstance(true);
+    public static SimpleFragmentIntent<BookFragment> intent(File bookFile) {
+        return SimpleFragmentIntent.of(BookFragment.class).putExtra("bookFile", bookFile);
     }
 
-    @AfterViews
-    protected void initViews() {
+    @Override
+    protected ObjectGraph createObjectGraph(ObjectGraph parentGraph) {
+        return parentGraph.plus(new Module());
+    }
+
+    @Override
+    public BookPresenter presenter() {
+        return presenter;
+    }
+
+    @Override
+    public void onCreate(Context context, @Nullable Bundle state) {
+        super.onCreate(context, state);
+        bookFile = (File) getIntent().getSerializableExtra("bookFile");
+        presenter.setBookFile(bookFile);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view) {
+        super.onViewCreated(view);
         pageBookView.setPageAnimation(new SlidePageAnimation(TIME_FOR_ONE_SLIDE_IN_SECONDS));
-        pageBookView.setPageBook(pageBook);
-        pageBookView.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                pageBookView.queueEvent(
-                        () -> pageBook.tap(event.getX(), event.getY(), event.getTouchMajor())
-                );
-            }
-            return true;
-        });
+        presenter.requestBook();
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        settingsApplier.startListen();
-        pageBook = new WebPageBook(new WebPageBookClient(), getActivity());
-        if (bookFile != null) {
-            pageBook.goPercent(loadLocation());
-            loadBook();
-        } else {
-            Toast.makeText(getActivity(), R.string.bookNotLoaded, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private int loadLocation() {
-        Integer savedLocation = userData.loadBookLocation(bookFile);
-        if (savedLocation != null) {
-            return savedLocation;
-        } else {
-            return IntegerPercent.ZERO;
-        }
-    }
-
-    @Background
-    protected void loadBook() {
-        try {
-            bookStorage.load(bookFile);
-            initBook();
-        } catch (IOException e) {
-            Timber.e(e, "Load book error");
-            Toast.makeText(getActivity(), R.string.bookOpenError, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @UiThread
-    protected void initBook() {
-        pageBookView.queueEvent(() -> {
-            settingsApplier.applyAll();
-            pageBook.load(bookStorage);
-            pageBook.goPercent(loadLocation());
-        });
-    }
-
-    private void saveLocation(int integerPercent) {
-        userData.saveBookLocation(bookFile, integerPercent);
-    }
-
-    // todo если во время поворота pageBookView унижтожится, то действие не сработает
-    // сделать очередь из одного элемента. если при добавлении задания, в очереди что-то есть, очищать очередь
-    @UiThread
-    protected void saveCurrentLocation() {
-        pageBookView.queueEvent(() -> saveLocation(pageBook.currentPercent()));
-    }
-
-    @Override
-    public void onDestroy() {
-        settingsApplier.stopListen();
-        pageBook.destroy();
-        super.onDestroy();
+    public void init(PageBook pageBook) {
+        pageBookView.init(pageBook);
     }
 
     @Override
     public void onResume() {
-        super.onResume();
-        pageBook.resume();
+        presenter().resume();
         pageBookView.onResume();
     }
 
     @Override
     public void onPause() {
         pageBookView.onPause();
-        pageBook.pause();
-        super.onPause();
+        presenter().pause();
     }
 
-    @Override
-    public int currentPercent() {
-        return pageBook.currentPercent();
+    public void queueEvent(Runnable runnable) {
+        pageBookView.queueEvent(runnable);
     }
 
-    @Override
-    public void tap(float x, float y, float tapDiameter, BookFacade.TapHandler tapHandler) {
-        pageBookView.queueEvent(() -> {
-            this.tapHandler = tapHandler;
-            pageBook.tap(x, y, tapDiameter);
-        });
+    public void refresh() {
+        if (pageBookView != null) {
+            pageBookView.refresh();
+        }
     }
 
-    // todo если во время поворота pageBookView унижтожится, то действие не сработает
-    private void handleTap() {
-        pageBookView.queueEvent(() -> {
-            if (tapHandler != null) {
-                tapHandler.handleTap();
-                tapHandler = null;
-            }
-        });
-    }
-
-    @Override
     public void goPercent(int percent) {
         pageBookView.goPercent(percent);
     }
 
-    @Override
     public void goNextPage() {
         pageBookView.goNextPage();
     }
 
-    @Override
     public void goPreviewPage() {
         pageBookView.goPreviewPage();
     }
 
-    private class WebPageBookClient implements WebPageBook.Client {
-        @Override
-        public void afterAnimate() {
-            if (pageBookView != null) {
-                pageBookView.refresh();
-            }
-        }
-
-        @Override
-        public void afterLocationChanged() {
-            saveCurrentLocation();
-        }
-
-        @Override
-        public void handleTap() {
-            BookFragment.this.handleTap();
-        }
+    public void showBookLoadingError() {
+        Toast.makeText(getActivity(), R.string.bookOpenError, Toast.LENGTH_SHORT).show();
     }
 
-    private class SettingsApplier extends AbstractSettingsApplier {
-        public void applyAll() {
-            WebPageBook.Settings settings = pageBook.settings();
-            settings.setTextAlign(appSettings.format.textAlign.get());
-            settings.setFontSizePercents(appSettings.format.fontSizePercents.get());
-            settings.setLineHeightPercents(appSettings.format.lineHeightPercents.get());
-            settings.setHangingPunctuation(appSettings.format.hangingPunctuation.get());
-            settings.setHyphenation(appSettings.format.hyphenation.get());
-        }
-
-        @Override
-        protected void listen() {
-            listenWrapped(appSettings.format.textAlign, value -> pageBook.settings().setTextAlign(value));
-            listenWrapped(appSettings.format.fontSizePercents, value -> pageBook.settings().setFontSizePercents(value));
-            listenWrapped(appSettings.format.lineHeightPercents, value -> pageBook.settings().setLineHeightPercents(value));
-            listenWrapped(appSettings.format.hangingPunctuation, value -> pageBook.settings().setHangingPunctuation(value));
-            listenWrapped(appSettings.format.hyphenation, value -> pageBook.settings().setHyphenation(value));
-        }
-
-        private <T> void listenWrapped(AppSettings.Setting<T> setting, SettingListener<T> listener) {
-            listen(setting, wrap(listener));
-        }
-
-        private <T> SettingListener<T> wrap(SettingListener<T> listener) {
-            return value -> pageBookView.queueEvent(() -> listener.onValueSet(value));
+    @dagger.Module(addsTo = BookReaderFragment.Module.class, injects = {
+            BookFragment.class,
+            BookPresenter.class,
+    })
+    public class Module {
+        @Provides
+        public BookFragment view() {
+            return BookFragment.this;
         }
     }
 }

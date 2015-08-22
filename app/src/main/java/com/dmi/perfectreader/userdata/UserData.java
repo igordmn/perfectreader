@@ -7,15 +7,14 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.dmi.perfectreader.db.Databases;
 
-import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EBean;
-
 import java.io.File;
 
-@EBean(scope = EBean.Scope.Singleton)
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class UserData {
-    @Bean
+    @Inject
     protected Databases databases;
 
     @SuppressLint("NewApi")
@@ -31,7 +30,6 @@ public class UserData {
         }
     }
 
-    @Background
     public void saveLastBookFile(File bookFile) {
         SQLiteDatabase db = databases.userData().getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -52,7 +50,6 @@ public class UserData {
         }
     }
 
-    @Background
     public void saveBookLocation(File bookFile, int integerPercent) {
         SQLiteDatabase db = databases.userData().getWritableDatabase();
         ContentValues values = new ContentValues();

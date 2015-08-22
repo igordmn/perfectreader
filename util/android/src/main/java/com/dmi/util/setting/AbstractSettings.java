@@ -75,7 +75,9 @@ public abstract class AbstractSettings {
 
         public synchronized void set(T value) {
             cachedValue = value;
-            listener.onValueSet(value);
+            if (listener != null) {
+                listener.onValueSet(value);
+            }
             saveValue(this, value);
         }
 

@@ -1,4 +1,0 @@
-configurations.create("default")
-artifacts.add("default", file('materialWidget.aar'))
-
-task testClasses << {}

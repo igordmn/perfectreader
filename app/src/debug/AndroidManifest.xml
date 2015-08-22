@@ -3,12 +3,12 @@
           package="com.dmi.perfectreader">
 
     <application>
-        <activity android:exported="true" android:name=".manualtest.TypoWebTestActivity"/>
-        <activity android:exported="true" android:name=".manualtest.PageBookViewTestActivity"/>
-        <activity android:exported="true" android:name=".manualtest.WebPageBookTestActivity"/>
-        <activity android:exported="true" android:name=".manualtest.BookFragmentTestActivity_"/>
-        <activity android:exported="true" android:name=".manualtest.BookControlFragmentTestActivity_"/>
-        <activity android:exported="true" android:name=".manualtest.ExtBlinkTestActivity"/>
+        <activity android:exported="true" android:name=".manualtest.book.PageBookViewTestActivity"/>
+        <activity android:exported="true" android:name=".manualtest.book.WebPageBookTestActivity"/>
+        <activity android:exported="true" android:name=".manualtest.book.BookFragmentTestActivity"/>
+        <activity android:exported="true" android:name=".manualtest.bookcontrol.BookControlFragmentTestActivity"/>
+        <activity android:exported="true" android:name=".manualtest.typoweb.TypoWebTestActivity"/>
+        <activity android:exported="true" android:name=".manualtest.typoweb.ExtBlinkTestActivity"/>
     </application>
 
 </manifest> 

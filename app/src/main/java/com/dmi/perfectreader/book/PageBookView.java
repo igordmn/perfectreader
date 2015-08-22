@@ -83,7 +83,10 @@ public class PageBookView extends DeltaTimeGLSurfaceView {
 
     public PageBookView(Context context) {
         super(context);
-        init();
+    }
+
+    public PageBookView(Context context, AttributeSet attrs) {
+        super(context, attrs);
     }
 
     /**
@@ -91,22 +94,6 @@ public class PageBookView extends DeltaTimeGLSurfaceView {
      */
     public void refresh() {
         requestRender();
-    }
-
-    public PageBookView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
-    }
-
-    private void init() {
-        for (int i = 0; i < MAX_VISIBLE_PAGES_WITH_CONTENT; i++) {
-            Page page = new Page();
-            allPages.add(page);
-            freePages.add(page);
-        }
-        setEGLContextClientVersion(2);
-        runRender();
-        setRenderMode(RENDERMODE_WHEN_DIRTY);
     }
 
     @Override
@@ -125,8 +112,16 @@ public class PageBookView extends DeltaTimeGLSurfaceView {
         this.pageAnimation = pageAnimation;
     }
 
-    public void setPageBook(PageBook pageBook) {
+    public void init(PageBook pageBook) {
         this.pageBook = pageBook;
+        for (int i = 0; i < MAX_VISIBLE_PAGES_WITH_CONTENT; i++) {
+            Page page = new Page();
+            allPages.add(page);
+            freePages.add(page);
+        }
+        setEGLContextClientVersion(2);
+        runRender();
+        setRenderMode(RENDERMODE_WHEN_DIRTY);
     }
 
     public void goPercent(int integerPercent) {

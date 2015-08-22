@@ -9,32 +9,26 @@ import android.database.sqlite.SQLiteDatabase;
 import com.dmi.perfectreader.db.Databases;
 import com.dmi.util.cache.DiskDataCache;
 
-import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.RootContext;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 // todo не использовать БД для хранения ключей. очистку кэша производить по файлам, находящимся в папках. напрямую читая размер и время последнего доступа
-@EBean(scope = EBean.Scope.Singleton)
+@Singleton
 public class BookResourceCache extends DiskDataCache {
     public static final String CACHE_FOLDER = "bookResource";
     private static final int MAX_SIZE = 32 * 1024 * 1024; // 32 MB
 
-    @RootContext
-    protected Context context;
-    @Bean
+    @Inject
     protected Databases databases;
 
-    protected BookResourceCache() {
+    @Inject
+    public BookResourceCache(@Named("applicationContext") Context context) {
         super(MAX_SIZE);
-    }
-
-    @AfterInject
-    protected void init() {
         setCachePath(new File(context.getCacheDir(), CACHE_FOLDER));
     }
 

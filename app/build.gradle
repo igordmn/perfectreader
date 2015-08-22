@@ -6,8 +6,7 @@ apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
 apply plugin: 'groovyx.grooid.groovy-android'
 apply plugin: 'me.tatarka.retrolambda'
-apply plugin: 'android-apt'
-apply plugin: 'hugo'
+apply plugin: 'com.neenbedankt.android-apt'
 
 def buildCounter = Integer.getInteger('build.counter', 0)
 def signProperties = Utils.rootProperties('.sign/sign.properties')
@@ -64,25 +63,10 @@ android {
     }
 }
 
-configurations {
-    apt
-}
-
-apt {
-    arguments {
-        androidManifestFile variant.outputs[0].processResources.manifestFile
-        resourcePackageName variant.applicationId
-        logFile "$project.buildDir/outputs/logs/androidannotations.log"
-    }
-}
-
 dependencies {
-    compile project(':lib:android:discreteSeekBar')
-    compile project(':lib:android:materialWidget')
-    compile project(':lib:android:readiumSdk')
+    compile project(':libs:readiumSdk')
     compile project(':util:android')
     compile project(':typoweb')
-    apt 'org.androidannotations:androidannotations:3.3.1'
 }
 
 ext {

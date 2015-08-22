@@ -3,18 +3,18 @@ package com.dmi.perfectreader.setting;
 import android.content.Context;
 
 import com.dmi.perfectreader.book.config.TextAlign;
-import com.dmi.perfectreader.control.Action;
-import com.dmi.perfectreader.control.HardKey;
-import com.dmi.perfectreader.control.InteractiveClickMode;
-import com.dmi.perfectreader.control.TapZone;
-import com.dmi.perfectreader.control.TapZoneConfiguration;
+import com.dmi.perfectreader.bookcontrol.Action;
+import com.dmi.perfectreader.bookcontrol.HardKey;
+import com.dmi.perfectreader.bookcontrol.InteractiveClickMode;
+import com.dmi.perfectreader.bookcontrol.TapZone;
+import com.dmi.perfectreader.bookcontrol.TapZoneConfiguration;
 import com.dmi.util.setting.AbstractSettings;
 
-import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.RootContext;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-@EBean(scope = EBean.Scope.Singleton)
+@Singleton
 public class AppSettings extends AbstractSettings {
     public final Format format = new Format();
     public class Format {
@@ -283,11 +283,11 @@ public class AppSettings extends AbstractSettings {
         }
     }
 
-    @RootContext
     protected Context context;
 
-    @AfterInject
-    protected void init() {
+    @Inject
+    public AppSettings(@Named("applicationContext") Context context) {
+        this.context = context;
         init(context, "settings");
     }
 }

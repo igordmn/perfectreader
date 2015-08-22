@@ -5,8 +5,6 @@ import android.annotation.SuppressLint;
 import com.dmi.perfectreader.cache.BookResourceCache;
 import com.google.common.io.ByteStreams;
 
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EBean;
 import org.readium.sdk.android.Container;
 import org.readium.sdk.android.EPub3;
 import org.readium.sdk.android.SpineItem;
@@ -20,14 +18,17 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
 
-@EBean
+@Singleton
 public class EPUBBookStorage implements BookStorage {
     private static final String URL_PREFIX = "bookstorage://";
 
-    @Bean
+    @Inject
     protected BookResourceCache resourceCache;
 
     private File bookFile;

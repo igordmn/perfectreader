@@ -4,6 +4,8 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -12,6 +14,8 @@ import static java.lang.Math.min;
 public abstract class DeltaTimeGLSurfaceView extends GLSurfaceView {
     private final static int SMOOTH_SAMPLES = 8;
     private final static float MAX_DELTA_TIME_SECONDS = 1 / 20.0F;
+
+    private final AtomicBoolean renderRun = new AtomicBoolean(false);
 
     private long previewTime = -1;
     private AverageValue averageDeltaTime = new AverageValue(SMOOTH_SAMPLES);
@@ -24,8 +28,43 @@ public abstract class DeltaTimeGLSurfaceView extends GLSurfaceView {
         super(context, attrs);
     }
 
+    @Override
+    public void requestRender() {
+        synchronized (renderRun) {
+            if (renderRun.get()) {
+                super.requestRender();
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        synchronized (renderRun) {
+            if (renderRun.get()) {
+                super.onResume();
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        synchronized (renderRun) {
+            if (renderRun.get()) {
+                super.onPause();
+            }
+        }
+    }
+
     protected void runRender() {
         setRenderer(new DeltaTimeRenderer());
+    }
+
+    @Override
+    public void setRenderer(Renderer renderer) {
+        synchronized (renderRun) {
+            super.setRenderer(renderer);
+            renderRun.set(true);
+        }
     }
 
     public void resetTimer() {

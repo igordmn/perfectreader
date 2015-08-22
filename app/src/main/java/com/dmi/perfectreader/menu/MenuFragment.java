@@ -1,60 +1,64 @@
 package com.dmi.perfectreader.menu;
 
-import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.dmi.perfectreader.R;
-import com.dmi.perfectreader.facade.BookReaderFacade;
-import com.dmi.util.FragmentExt;
-import com.dmi.util.lang.IntegerPercent;
+import com.dmi.perfectreader.book.BookPresenter;
+import com.dmi.perfectreader.bookreader.BookReaderFragment;
+import com.dmi.util.base.BaseFragment;
+import com.dmi.util.layout.HasLayout;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-import org.androidannotations.api.BackgroundExecutor;
+
+import javax.inject.Inject;
+
+import butterknife.Bind;
+import dagger.ObjectGraph;
+import dagger.Provides;
 
 import static com.dmi.util.Units.dipToPx;
-import static com.dmi.util.lang.IntegerPercent.valuePercent;
 
-// todo добавить currentLocationChangeListener в BookFacade и использовать его здесь
-@EFragment(R.layout.fragment_menu)
-public class MenuFragment extends FragmentExt implements KeyEvent.Callback {
-    private static final int SEEK_BAR_RESOLUTION = 1024;
+@HasLayout(R.layout.fragment_menu)
+public class MenuFragment extends BaseFragment { // implements KeyEvent.Callback {
+    private static final int SEEK_BAR_MAX_PROGRESS = 1024;
 
-    @ViewById
+    @Bind(R.id.toolbar)
     protected Toolbar toolbar;
-    @ViewById
+    @Bind(R.id.currentChapterText)
     protected TextView currentChapterText;
-    @ViewById
+    @Bind(R.id.currentPageText)
     protected TextView currentPageText;
-    @ViewById
+    @Bind(R.id.locationSlider)
     protected DiscreteSeekBar locationSlider;
+    @Bind(R.id.middleSpace)
+    protected FrameLayout middleSpace;
 
-    private BookReaderFacade bookReader;
+    @Inject
+    protected MenuPresenter presenter;
 
-    @AfterViews
-    protected void initViews() {
+    @Override
+    protected ObjectGraph createObjectGraph(ObjectGraph parentGraph) {
+        return parentGraph.plus(new Module());
+    }
+
+    @Override
+    public MenuPresenter presenter() {
+        return presenter;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view) {
+        super.onViewCreated(view);
         initTopBar();
         initBottomBar();
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        bookReader = getClient(BookReaderFacade.class);
-    }
-
-    @Override
-    public void onDetach() {
-        bookReader = null;
-        super.onDetach();
+        initMiddleSpace();
     }
 
     private void initTopBar() {
@@ -65,8 +69,7 @@ public class MenuFragment extends FragmentExt implements KeyEvent.Callback {
         menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         menuItem.setIcon(R.drawable.ic_settings_white_24dp);
         menuItem.setOnMenuItemClickListener(item -> {
-            closeFragment();
-            showSettings();
+            presenter.showSettings();
             return true;
         });
         currentChapterText.setText("X — Alice's evidence");
@@ -74,41 +77,61 @@ public class MenuFragment extends FragmentExt implements KeyEvent.Callback {
     }
 
     private void initBottomBar() {
-        locationSlider.setMax(SEEK_BAR_RESOLUTION);
-        locationSlider.setOnProgressChangeListener((discreteSeekBar, progress, fromUser) -> {
-            if (fromUser) {
-                bookReader.book().goPercent(valuePercent(progress, SEEK_BAR_RESOLUTION));
+        locationSlider.setMax(SEEK_BAR_MAX_PROGRESS);
+        locationSlider.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+            @Override
+            public void onProgressChanged(DiscreteSeekBar discreteSeekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    presenter.goPosition(progress, SEEK_BAR_MAX_PROGRESS);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(DiscreteSeekBar discreteSeekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(DiscreteSeekBar discreteSeekBar) {
             }
         });
-        locationSlider.setProgress(IntegerPercent.multiply(bookReader.book().currentPercent(), SEEK_BAR_RESOLUTION));
+        presenter.requestCurrentPosition(SEEK_BAR_MAX_PROGRESS);
+    }
+
+    private void initMiddleSpace() {
+        middleSpace.setOnClickListener(view -> close());
+    }
+
+    public void setPosition(int position) {
+        locationSlider.setProgress(position);
     }
 
     @Override
-    public void onDestroy() {
-        BackgroundExecutor.cancelAll("checkLocationAvailable", true);
-        super.onDestroy();
-    }
-
-    @Click(R.id.middleSpace)
-    protected void onMiddleSpaceClick() {
-        closeFragment();
-    }
-
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU) {
-            closeFragment();
+            close();
         }
         return true;
     }
 
-    private void closeFragment() {
-        getFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.fadein, R.anim.fadeout)
-                .remove(this)
-                .commit();
+    public void close() {
+        BookReaderFragment bookReaderFragment = (BookReaderFragment) getParent();
+        bookReaderFragment.toggleMenu();
     }
 
-    private void showSettings() {
+    @dagger.Module(addsTo = BookReaderFragment.Module.class, injects = {
+            MenuFragment.class,
+            MenuPresenter.class,
+    })
+    public class Module {
+        @Provides
+        public MenuFragment view() {
+            return MenuFragment.this;
+        }
+
+        @Provides
+        public BookPresenter bookPresenter() {
+            BookReaderFragment bookReaderFragment = parentFragment();
+            return bookReaderFragment.book().presenter();
+        }
     }
 }

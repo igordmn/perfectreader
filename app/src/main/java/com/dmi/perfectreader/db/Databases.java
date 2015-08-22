@@ -2,24 +2,21 @@ package com.dmi.perfectreader.db;
 
 import android.content.Context;
 
-import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.RootContext;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
-@EBean(scope = EBean.Scope.Singleton)
-public class Databases {
-    @RootContext
-    protected Context context;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
+@Singleton
+public class Databases {
     private CacheDBOpenHelper cacheDBOpenHelper;
     private UserDataDBOpenHelper userDataDBOpenHelper;
 
     private final AtomicInteger clientCount = new AtomicInteger(0);
 
-    @AfterInject
-    protected void init() {
+    @Inject
+    public Databases(@Named("applicationContext") Context context) {
         cacheDBOpenHelper = new CacheDBOpenHelper(context);
         userDataDBOpenHelper = new UserDataDBOpenHelper(context);
     }
