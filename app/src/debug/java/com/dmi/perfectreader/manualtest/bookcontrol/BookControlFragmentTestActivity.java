@@ -34,7 +34,7 @@ public class BookControlFragmentTestActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         inject(new Module());
         settingsApplier.startListen();
-        findOrAddChild(TestFragment.class, R.id.mainContainer);
+        findOrAddChild(TestFragment.class, R.id.rootContainer);
     }
 
     @Override

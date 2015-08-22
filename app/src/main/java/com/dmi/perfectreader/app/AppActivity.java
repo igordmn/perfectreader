@@ -1,9 +1,10 @@
-package com.dmi.perfectreader.bookreader;
+package com.dmi.perfectreader.app;
 
 import android.net.Uri;
 import android.os.Bundle;
 
 import com.dmi.perfectreader.R;
+import com.dmi.perfectreader.bookreader.BookReaderFragment;
 import com.dmi.util.base.BaseActivity;
 import com.dmi.util.layout.HasLayout;
 
@@ -12,11 +13,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 @HasLayout(R.layout.activity_container)
-public class BookReaderActivity extends BaseActivity {
+public class AppActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        findOrAddChild(BookReaderFragment.intent(getRequestedBookFile()), R.id.mainContainer);
+        findOrAddChild(BookReaderFragment.intent(getRequestedBookFile()), R.id.rootContainer);
     }
 
     private File getRequestedBookFile() {

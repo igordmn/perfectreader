@@ -29,7 +29,7 @@ public class BookFragmentTestActivity extends BaseActivity {
     }
 
     private void initFragment() {
-        bookFragment = findOrAddChild(BookFragment.intent(tempBook(TEST_BOOK)), R.id.mainContainer);
+        bookFragment = findOrAddChild(BookFragment.intent(tempBook(TEST_BOOK)), R.id.rootContainer);
     }
 
     @SuppressLint("NewApi")
