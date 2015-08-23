@@ -183,12 +183,14 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
     }
 
     private void goCurrentLocation() {
-        canDrawState.beforePageGo();
-        typoWeb.execJavaScript(format(
-                "reader.goLocation(%s, %s);" +
-                "__javaBridge.afterPageGo();",
-                currentLocation.segmentIndex(), currentLocation.segmentPercent()
-        ));
+        if (currentLocation.hasSegments()) {
+            canDrawState.beforePageGo();
+            typoWeb.execJavaScript(format(
+                    "reader.goLocation(%s, %s);" +
+                    "__javaBridge.afterPageGo();",
+                    currentLocation.segmentIndex(), currentLocation.segmentPercent()
+            ));
+        }
     }
 
     @Override
@@ -374,8 +376,10 @@ class CurrentLocation {
     private int totalPercent;
     private int segmentIndex;
     private double segmentPercent;
-    private Integer segmentPage;
-    private Integer segmentPages;
+
+    private int segmentPage;
+    private int segmentPages;
+    private boolean segmentPageIsDefined = false;
 
     public synchronized void setSegmentSizes(int[] segmentSizes) {
         this.segmentSizes = segmentSizes;
@@ -387,8 +391,11 @@ class CurrentLocation {
         this.previewSegmentPageCount = previewSegment;
         this.currentSegmentPageCount = currentSegment;
         this.nextSegmentPageCount = nextSegment;
-        segmentPages = currentSegmentPageCount;
-        segmentPage = segmentPages != null ? percentToPage(segmentPages, segmentPercent) : null;
+        if (currentSegmentPageCount !=  null) {
+            segmentPages = currentSegmentPageCount;
+            segmentPage = percentToPage(segmentPages, segmentPercent);
+        }
+        segmentPageIsDefined = currentSegmentPageCount != null;
     }
 
     public synchronized void resetPageCounts() {
@@ -451,10 +458,14 @@ class CurrentLocation {
         return segmentPercent;
     }
 
+    public synchronized boolean hasSegments() {
+        return segmentCount > 0;
+    }
+
     public synchronized PageBook.CanGoResult canGoPage(int offset) {
         if (offset == 0) {
             return PageBook.CanGoResult.CAN;
-        } else if (segmentPage == null) {
+        } else if (!segmentPageIsDefined) {
             return PageBook.CanGoResult.CANNOT;
         } else if (offset > 0) {
             int targetPage = segmentPage + offset;
