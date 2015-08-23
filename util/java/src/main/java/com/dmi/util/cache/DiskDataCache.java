@@ -1,125 +1,63 @@
 package com.dmi.util.cache;
 
-import com.google.common.io.Files;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import com.dmi.util.io.InputStreamWrapper;
+import com.google.common.base.Charsets;
+import com.jakewharton.disklrucache.DiskLruCache;
+
+import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
-// todo написать тест
-public abstract class DiskDataCache implements DataCache {
-    private final int maxSize;
+import static com.google.common.hash.Hashing.sha1;
 
-    private File cachePath;
+public class DiskDataCache implements DataCache, Closeable {
+    private final DiskLruCache diskLruCache;
 
-    protected DiskDataCache(int maxSize) {
-        this.maxSize = maxSize;
-    }
-
-    protected void setCachePath(File cachePath) {
-        this.cachePath = cachePath;
+    public DiskDataCache(File directory, int appVersion, int maxSize) throws IOException {
+        diskLruCache = DiskLruCache.open(directory, appVersion, 1, maxSize);
     }
 
     @Override
-    public InputStream openRead(String cacheKey, DataWriter dataWriter) throws IOException {
-        boolean isExist = true;
+    public void close() throws IOException {
+        diskLruCache.close();
+    }
 
-        String uuid = fetchUUID(cacheKey);
-        if (uuid == null) {
-            uuid = UUID.randomUUID().toString();
-            isExist = false;
-        }
-
-        File resourceFile = new File(cachePath, uuid);
-        if (!resourceFile.exists()) {
-            writeFile(resourceFile, dataWriter);
-        }
-
-        long size = resourceFile.length();
-        long lastAccess = new Date().getTime();
-
-        if (isExist) {
-            updateRecord(cacheKey, uuid, size, lastAccess);
+    @Override
+    public InputStream openRead(String key, DataWriter dataWriter) throws IOException {
+        key = hashKey(key);
+        DiskLruCache.Snapshot snapshot = diskLruCache.get(key);
+        if (snapshot != null) {
+            return new SnapshotInputStream(snapshot, 0);
         } else {
-            insertRecord(cacheKey, uuid, size, lastAccess);
-        }
-
-        cleanup();
-
-        return new BufferedInputStream(new FileInputStream(resourceFile));
-    }
-
-    private void writeFile(File file, DataWriter dataWriter) throws IOException {
-        Files.createParentDirs(file);
-        // подчеркивание в конце для того, чтобы при вылете приложения, не оставалось недозаписанных файлов
-        // todo удлалять файлы с подчеркиванием в cleanup
-        File tempFile = new File(file.getAbsolutePath() + "_");
-        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(tempFile))) {
-            dataWriter.write(os);
-        }
-        if (!tempFile.renameTo(file)) {
-            throw new IOException("Cannot rename file " + file.getAbsolutePath());
-        }
-    }
-
-    private void deleteFile(File file) throws IOException {
-        if (file.exists() && !file.delete()) {
-            throw new IOException("cannot delete file " + file.getAbsolutePath());
-        }
-    }
-
-    private void cleanup() throws IOException {
-        List<SizeEntry> sizeEntries = sizeEntriesOrderByLastAccess();
-
-        int currentSize = 0;
-        int deleteFromIndex = 0;
-        for (SizeEntry sizeEntry : sizeEntries) {
-            currentSize += sizeEntry.size;
-            if (currentSize > maxSize) {
-                break;
+            DiskLruCache.Editor editor = diskLruCache.edit(key);
+            try (OutputStream os = editor.newOutputStream(0)) {
+                dataWriter.write(os);
             }
-            deleteFromIndex++;
+            editor.commit();
+            diskLruCache.flush();
+            return new SnapshotInputStream(diskLruCache.get(key), 0);
         }
-        if (deleteFromIndex == 0) {
-            deleteFromIndex = 1;
-        }
-
-        int index = 0;
-        for (SizeEntry sizeEntry : sizeEntries) {
-            if (index >= deleteFromIndex) {
-                deleteFile(new File(cachePath, sizeEntry.uuid));
-            }
-            index++;
-        }
-
-        deleteRecordsFromIndexOrderByLastAccess(deleteFromIndex);
     }
 
-    protected abstract String fetchUUID(String key);
+    private String hashKey(String key) {
+        return sha1().hashString(key, Charsets.UTF_8).toString();
+    }
 
-    protected abstract List<SizeEntry> sizeEntriesOrderByLastAccess();
+    private static class SnapshotInputStream extends InputStreamWrapper {
+        private final DiskLruCache.Snapshot snapshot;
 
-    protected abstract void deleteRecordsFromIndexOrderByLastAccess(int index);
+        private SnapshotInputStream(DiskLruCache.Snapshot snapshot, int index) {
+            super(snapshot.getInputStream(index));
+            this.snapshot = snapshot;
+        }
 
-    protected abstract void insertRecord(String key, String uuid, long size, long lastAccess);
-
-    protected abstract void updateRecord(String key, String uuid, long size, long lastAccess);
-
-    protected static class SizeEntry {
-        public String uuid;
-        long size;
-
-        public SizeEntry(String uuid, long size) {
-            this.uuid = uuid;
-            this.size = size;
+        @Override
+        public void close() throws IOException {
+            super.close();
+            snapshot.close();
         }
     }
 }

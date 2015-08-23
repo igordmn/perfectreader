@@ -21,6 +21,7 @@ import java.util.zip.ZipFile;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import static com.dmi.perfectreader.cache.BookResourceCache.resourceKey;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
 
@@ -104,13 +105,11 @@ public class EPUBBookStorage implements BookStorage {
         if (!url.startsWith(URL_PREFIX)) {
             throw new SecurityException();
         }
-        String cacheKey = format("file: %s; url: %s; lastModified: %s",
-                                 bookFile.getAbsolutePath(), url, bookFile.lastModified());
-        return resourceCache.openRead(cacheKey, outputStream -> {
+        String key = resourceKey(bookFile.getAbsolutePath(), url, bookFile.lastModified());
+        return resourceCache.openRead(key, outputStream -> {
             if (!bookFile.exists()) {
                 throw new FileNotFoundException(format("Book file not found: %s", bookFile.getAbsolutePath()));
             }
-            // todo проверить производительность при открытии ZipFile каждый раз
             try (ZipFile zipFile = new ZipFile(bookFile)) {
                 String filePath = url.substring(URL_PREFIX.length());
                 ZipEntry entry = zipFile.getEntry(filePath);

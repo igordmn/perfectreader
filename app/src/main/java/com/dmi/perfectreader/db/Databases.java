@@ -10,15 +10,13 @@ import javax.inject.Singleton;
 
 @Singleton
 public class Databases {
-    private CacheDBOpenHelper cacheDBOpenHelper;
-    private UserDataDBOpenHelper userDataDBOpenHelper;
+    private UserDBOpenHelper userDBOpenHelper;
 
     private final AtomicInteger clientCount = new AtomicInteger(0);
 
     @Inject
     public Databases(@Named("applicationContext") Context context) {
-        cacheDBOpenHelper = new CacheDBOpenHelper(context);
-        userDataDBOpenHelper = new UserDataDBOpenHelper(context);
+        userDBOpenHelper = new UserDBOpenHelper(context);
     }
 
     public void registerClient() {
@@ -35,20 +33,14 @@ public class Databases {
     }
 
     private synchronized void close() {
-        cacheDBOpenHelper.close();
-        userDataDBOpenHelper.close();
+        userDBOpenHelper.close();
     }
 
     public synchronized void createOrUpgrade() {
-        cacheDBOpenHelper.getWritableDatabase();
-        userDataDBOpenHelper.getWritableDatabase();
+        userDBOpenHelper.getWritableDatabase();
     }
 
-    public synchronized CacheDBOpenHelper cache() {
-        return cacheDBOpenHelper;
-    }
-
-    public synchronized UserDataDBOpenHelper userData() {
-        return userDataDBOpenHelper;
+    public synchronized UserDBOpenHelper user() {
+        return userDBOpenHelper;
     }
 }

@@ -4,11 +4,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class UserDataDBOpenHelper extends SQLiteOpenHelper {
+public class UserDBOpenHelper extends SQLiteOpenHelper {
     private static final int VERSION = 7;
 
-    public UserDataDBOpenHelper(Context context) {
-        super(context, "userData", null, VERSION);
+    public UserDBOpenHelper(Context context) {
+        super(context, "user", null, VERSION);
     }
 
     @Override

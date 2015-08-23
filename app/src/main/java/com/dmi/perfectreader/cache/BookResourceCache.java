@@ -1,88 +1,68 @@
 package com.dmi.perfectreader.cache;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
-import com.dmi.perfectreader.db.Databases;
+import com.dmi.util.cache.DataCache;
 import com.dmi.util.cache.DiskDataCache;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-// todo не использовать БД для хранения ключей. очистку кэша производить по файлам, находящимся в папках. напрямую читая размер и время последнего доступа
+import timber.log.Timber;
+
+import static com.dmi.perfectreader.BuildConfig.VERSION_CODE;
+import static com.dmi.util.AndroidPaths.getCachedDir;
+import static java.lang.String.format;
+
 @Singleton
-public class BookResourceCache extends DiskDataCache {
-    public static final String CACHE_FOLDER = "bookResource";
+public class BookResourceCache implements DataCache {
+    private static final String CACHE_DIR = "bookResource";
     private static final int MAX_SIZE = 32 * 1024 * 1024; // 32 MB
 
-    @Inject
-    protected Databases databases;
+    private DiskDataCache diskDataCache;
+    private File currentCacheDir;
 
     @Inject
-    public BookResourceCache(@Named("applicationContext") Context context) {
-        super(MAX_SIZE);
-        setCachePath(new File(context.getCacheDir(), CACHE_FOLDER));
-    }
+    @Named("applicationContext")
+    protected Context context;
 
-    @SuppressLint("NewApi")
-    @Override
-    protected String fetchUUID(String key) {
-        SQLiteDatabase cacheDB = databases.cache().getReadableDatabase();
-        try (Cursor cursor = cacheDB.rawQuery("SELECT uuid FROM bookResource WHERE key = ?", new String[]{key})) {
-            return cursor.moveToFirst() ? cursor.getString(0) : null;
-        }
-    }
-
-    @SuppressLint("NewApi")
-    @Override
-    protected List<SizeEntry> sizeEntriesOrderByLastAccess() {
-        ArrayList<SizeEntry> sizeEntries = new ArrayList<>();
-        SQLiteDatabase cacheDB = databases.cache().getReadableDatabase();
-        try (Cursor cursor = cacheDB.rawQuery("SELECT uuid, size FROM bookResource ORDER BY lastAccess DESC", null)) {
-            if (cursor.moveToFirst()) {
-                do {
-                    String uuid = cursor.getString(0);
-                    long size = cursor.getLong(1);
-                    sizeEntries.add(new SizeEntry(uuid, size));
-                } while (cursor.moveToNext());
+    public void close() {
+        if (diskDataCache != null) {
+            try {
+                diskDataCache.close();
+                diskDataCache = null;
+            } catch (IOException e) {
+                Timber.w("Book resource cache closing error", e);
             }
         }
-        return sizeEntries;
     }
 
+    @SuppressLint("NewApi")
     @Override
-    protected void deleteRecordsFromIndexOrderByLastAccess(int index) {
-        SQLiteDatabase cacheDB = databases.cache().getWritableDatabase();
-        cacheDB.execSQL("DELETE FROM bookResource WHERE key IN (SELECT key FROM bookResource WHERE rowid > ? ORDER BY lastAccess DESC)",
-                new Object[]{ (long) index });
+    public InputStream openRead(String key, DataWriter dataWriter) throws IOException {
+        File cacheDir = getCacheDir();
+        if (!cacheDir.equals(currentCacheDir) && diskDataCache != null) {
+            diskDataCache.close();
+            diskDataCache = null;
+        }
+        if (diskDataCache == null) {
+            diskDataCache = new DiskDataCache(cacheDir, VERSION_CODE, MAX_SIZE);
+        }
+        currentCacheDir = cacheDir;
+        return diskDataCache.openRead(key, dataWriter);
     }
 
-    @Override
-    protected void insertRecord(String key, String uuid, long size, long lastAccess) {
-        SQLiteDatabase cacheDB = databases.cache().getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("key", key);
-        values.put("uuid", uuid);
-        values.put("size", size);
-        values.put("lastAccess", lastAccess);
-        cacheDB.insertOrThrow("bookResource", null, values);
+    private File getCacheDir() {
+        return new File(getCachedDir(context), CACHE_DIR);
     }
 
-    @Override
-    protected void updateRecord(String key, String uuid, long size, long lastAccess) {
-        SQLiteDatabase cacheDB = databases.cache().getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("uuid", uuid);
-        values.put("size", size);
-        values.put("lastAccess", lastAccess);
-        cacheDB.update("bookResource", values, "key = ?", new String[]{key});
+    public static String resourceKey(String bookFilePath, String innerResourcePath, long lastModified) {
+        return format("file: %s; url: %s; lastModified: %s", bookFilePath, innerResourcePath, lastModified);
     }
 }
