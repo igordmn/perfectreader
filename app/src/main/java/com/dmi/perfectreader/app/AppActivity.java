@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.app;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -17,11 +18,24 @@ public class AppActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        findOrAddChild(BookReaderFragment.intent(getRequestedBookFile()), R.id.rootContainer);
+        if (findChild(R.id.rootContainer) == null) {
+            File requestedBookFile = requestedBookFile(getIntent());
+            addChild(BookReaderFragment.intent(requestedBookFile), R.id.rootContainer);
+        }
     }
 
-    private File getRequestedBookFile() {
-        Uri data = getIntent().getData();
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        File requestedBookFile = requestedBookFile(intent);
+        if (requestedBookFile != null) {
+            removeChild(R.id.rootContainer);
+            addChild(BookReaderFragment.intent(requestedBookFile), R.id.rootContainer);
+        }
+    }
+
+    private File requestedBookFile(Intent intent) {
+        Uri data = intent.getData();
         try {
             if (data != null) {
                 String path = URLDecoder.decode(data.getEncodedPath(), "UTF-8");
