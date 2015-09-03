@@ -1,21 +1,13 @@
 package com.dmi.util.opengl;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
 
 import static java.lang.Math.min;
 
-public abstract class DeltaTimeGLSurfaceView extends GLSurfaceView {
+public abstract class DeltaTimeGLSurfaceView extends GLSurfaceViewExt {
     private final static int SMOOTH_SAMPLES = 8;
     private final static float MAX_DELTA_TIME_SECONDS = 1 / 20.0F;
-
-    private final AtomicBoolean renderRun = new AtomicBoolean(false);
 
     private long previewTime = -1;
     private AverageValue averageDeltaTime = new AverageValue(SMOOTH_SAMPLES);
@@ -28,69 +20,44 @@ public abstract class DeltaTimeGLSurfaceView extends GLSurfaceView {
         super(context, attrs);
     }
 
-    @Override
-    public void requestRender() {
-        synchronized (renderRun) {
-            if (renderRun.get()) {
-                super.requestRender();
-            }
-        }
-    }
-
-    @Override
-    public void onResume() {
-        synchronized (renderRun) {
-            if (renderRun.get()) {
-                super.onResume();
-            }
-        }
-    }
-
-    @Override
-    public void onPause() {
-        synchronized (renderRun) {
-            if (renderRun.get()) {
-                super.onPause();
-            }
-        }
-    }
-
     protected void runRender() {
         setRenderer(new DeltaTimeRenderer());
-    }
-
-    @Override
-    public void setRenderer(Renderer renderer) {
-        synchronized (renderRun) {
-            super.setRenderer(renderer);
-            renderRun.set(true);
-        }
     }
 
     public void resetTimer() {
         previewTime = -1;
     }
 
-    protected abstract void onSurfaceCreated();
+    protected void onSurfaceCreated() {}
 
-    protected abstract void onSurfaceChanged(int width, int height);
+    protected void onSurfaceChanged(int width, int height) {}
 
-    protected abstract void onDrawFrame(float dt);
+    protected void onFreeResources() {}
 
-    private class DeltaTimeRenderer implements Renderer {
+    protected void onUpdate(float dt) {}
+
+    protected void onDrawFrame() {}
+
+    private class DeltaTimeRenderer implements GLRenderer {
         @Override
-        public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        public void onSurfaceCreated() {
             DeltaTimeGLSurfaceView.this.onSurfaceCreated();
         }
 
         @Override
-        public void onSurfaceChanged(GL10 gl, int width, int height) {
+        public void onSurfaceChanged(int width, int height) {
             DeltaTimeGLSurfaceView.this.onSurfaceChanged(width, height);
         }
 
         @Override
-        public void onDrawFrame(GL10 gl) {
-            DeltaTimeGLSurfaceView.this.onDrawFrame(deltaTimeSeconds());
+        public void onFreeResources() {
+            DeltaTimeGLSurfaceView.this.onFreeResources();
+        }
+
+        @Override
+        public void onDrawFrame() {
+            DeltaTimeGLSurfaceView.this.onUpdate(deltaTimeSeconds());
+            DeltaTimeGLSurfaceView.this.onDrawFrame();
         }
     }
 

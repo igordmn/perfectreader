@@ -1,19 +1,17 @@
 package com.dmi.perfectreader.manualtest.typoweb;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 
 import com.dmi.perfectreader.R;
 import com.dmi.typoweb.JavascriptInterface;
-import com.dmi.typoweb.RenderContext;
 import com.dmi.typoweb.TypoWeb;
+import com.dmi.typoweb.TypoWebRenderer;
 import com.dmi.util.base.BaseActivity;
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
+import com.dmi.util.opengl.GLRendererDelegate;
+import com.dmi.util.opengl.GLSurfaceViewExt;
 
 import timber.log.Timber;
 
@@ -51,10 +49,8 @@ public class TypoWebTestActivity extends BaseActivity {
         super.onPause();
     }
 
-    private class TypoWebView extends GLSurfaceView implements GLSurfaceView.Renderer, TypoWeb.Client {
+    private class TypoWebView extends GLSurfaceViewExt implements TypoWeb.Client {
         private TypoWeb typoWeb;
-        private RenderContext renderContext;
-        private boolean renderStarted = false;
 
         public TypoWebView(Context context) {
             super(context);
@@ -75,9 +71,21 @@ public class TypoWebTestActivity extends BaseActivity {
             typoWeb.execJavaScript("calledFromJava()");
 
             setEGLContextClientVersion(2);
-            setRenderer(this);
+            setRenderer(new GLRendererDelegate(new TypoWebRenderer(typoWeb)) {
+                @Override
+                public void onSurfaceChanged(int width, int height) {
+                    glViewport(0, 0, width, height);
+                    super.onSurfaceChanged(width, height);
+                }
+
+                @Override
+                public void onDrawFrame() {
+                    glClearColor(1.0F, 1.0F, 1.0F, 1.0F);
+                    glClear(GL_COLOR_BUFFER_BIT);
+                    super.onDrawFrame();
+                }
+            });
             setRenderMode(RENDERMODE_WHEN_DIRTY);
-            renderStarted = true;
         }
 
         public void destroy() {
@@ -93,32 +101,14 @@ public class TypoWebTestActivity extends BaseActivity {
 
         @Override
         public void onPause() {
-            queueEvent(() -> {
-                renderContext.destroy();
-                renderContext = null;
-            });
             super.onPause();
             typoWeb.pause();
         }
 
         @Override
-        public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-            if (renderContext == null) {
-                renderContext = new RenderContext();
-            }
-        }
-
-        @Override
-        public void onSurfaceChanged(GL10 gl, int width, int height) {
-            glViewport(0, 0, width, height);
-            typoWeb.setSize(width, height);
-        }
-
-        @Override
-        public void onDrawFrame(GL10 gl) {
-            glClearColor(1.0F, 1.0F, 1.0F, 1.0F);
-            glClear(GL_COLOR_BUFFER_BIT);
-            typoWeb.draw(renderContext);
+        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+            super.onSizeChanged(w, h, oldw, oldh);
+            typoWeb.resize(w, h);
         }
 
         @Override
@@ -132,9 +122,7 @@ public class TypoWebTestActivity extends BaseActivity {
 
         @Override
         public void afterAnimate() {
-            if (renderStarted) {
-                requestRender();
-            }
+            requestRender();
         }
     }
 

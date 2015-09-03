@@ -1,7 +1,11 @@
-package com.dmi.perfectreader.book;
+package com.dmi.perfectreader.book.pagebook;
 
 public interface PageBook {
+    void resize(int width, int height);
+
     CanGoResult canGoPage(int offset);
+
+    void tap(float x, float y, float tapDiameter);
 
     /**
      * @param integerPercent integer percent. see {@link com.dmi.util.lang.IntegerPercent}
@@ -11,22 +15,6 @@ public interface PageBook {
     void goNextPage();
 
     void goPreviewPage();
-
-    default void glInit() {}
-
-    /**
-     * Free resources, created in glInit. May be invoke multiple times after glInit.
-     */
-    default void glFreeResources() {}
-
-    default void glSetSize(int width, int height) {}
-
-    /**
-     * @return false if now book cannot draw current state (going to page, resizing)
-     */
-    default boolean glCanDraw() { return true; }
-
-    default void glDraw() {}
 
     enum CanGoResult {
         /* Next/preview page is loaded */

@@ -11,7 +11,7 @@ import static com.google.common.base.Preconditions.checkState;
  * Should created and destroyed in Open GL thread
  */
 @NotThreadSafe
-public class RenderContext {
+class RenderContext {
     final long nativeRenderContext;
     boolean destroyed = false;
 

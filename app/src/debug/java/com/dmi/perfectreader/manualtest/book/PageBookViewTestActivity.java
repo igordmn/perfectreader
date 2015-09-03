@@ -5,9 +5,9 @@ import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 import android.view.ViewGroup.LayoutParams;
 
-import com.dmi.perfectreader.book.PageBook;
-import com.dmi.perfectreader.book.PageBookView;
 import com.dmi.perfectreader.book.animation.SlidePageAnimation;
+import com.dmi.perfectreader.book.pagebook.PageBookRenderer;
+import com.dmi.perfectreader.book.pagebook.PageBookView;
 import com.dmi.util.base.BaseActivity;
 
 import java.util.concurrent.ExecutorService;
@@ -18,22 +18,20 @@ import timber.log.Timber;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
-import static com.google.common.base.Preconditions.checkState;
-import static java.lang.Math.min;
 
 public class PageBookViewTestActivity extends BaseActivity {
-    private PageBookImpl pageBook;
+    private TestPageBook pageBook;
     private PageBookView pageBookView;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pageBook = new PageBookImpl();
+        pageBook = new TestPageBook();
         pageBookView = new PageBookView(this);
+        pageBookView.setClient(new PageBookViewClient());
         pageBookView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         pageBookView.setPageAnimation(new SlidePageAnimation(1));
-        pageBookView.init(pageBook);
+        pageBookView.setRenderer(pageBook);
         setContentView(pageBookView);
     }
 
@@ -46,15 +44,21 @@ public class PageBookViewTestActivity extends BaseActivity {
     @Override
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            pageBookView.goNextPage();
+            if (pageBook.canGoPage(pageBookView.currentPageRelativeIndex() + 1)) {
+                pageBookView.goNextPage();
+            }
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            pageBookView.goPreviewPage();
+            if (pageBook.canGoPage(pageBookView.currentPageRelativeIndex() - 1)) {
+                pageBookView.goPreviewPage();
+            }
             return  true;
         } else {
             return super.onKeyDown(keyCode, event);
         }
     }
+
+
 
     @Override
     public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
@@ -69,16 +73,44 @@ public class PageBookViewTestActivity extends BaseActivity {
         }
     }
 
-    private class PageBookImpl implements PageBook {
+    private class PageBookViewClient implements PageBookView.Client {
+        @Override
+        public void resize(int width, int height) {
+        }
+
+        @Override
+        public int synchronizeCurrentPage(int currentPageRelativeIndex) {
+            if (currentPageRelativeIndex < 0) {
+                if (pageBook.canGoPage(1)) {
+                    pageBook.goNextPage();
+                    return currentPageRelativeIndex + 1;
+                } else {
+                    return 0;
+                }
+            } else if (currentPageRelativeIndex > 0) {
+                if (pageBook.canGoPage(-1)) {
+                    pageBook.goPreviewPage();
+                    return currentPageRelativeIndex - 1;
+                } else {
+                    return 0;
+                }
+            }
+            return currentPageRelativeIndex;
+        }
+    }
+
+    private class TestPageBook implements PageBookRenderer {
+        private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
         private float color = 1.0F;
         private boolean colorDecreasing = true;
         private long previewTime = -1;
         private final int maxPages = 20;
         private int currentPage = 0;
-        private final LoadingState canDrawState = new LoadingState();
-        private boolean stopped = false;
+        private volatile int loadCount = 0;
+        private volatile boolean stopped = false;
 
-        public PageBookImpl() {
+        public TestPageBook() {
             executor.execute(this::updateLoop);
         }
 
@@ -86,49 +118,31 @@ public class PageBookViewTestActivity extends BaseActivity {
             stopped = true;
         }
 
-        @Override
-        public CanGoResult canGoPage(int offset) {
+        public boolean canGoPage(int offset) {
             int targetPage = currentPage + offset;
-            return targetPage >= 0 && targetPage < maxPages - 1 ? CanGoResult.CAN : CanGoResult.CANNOT;
+            return targetPage >= 0 && targetPage < maxPages - 1;
         }
 
-        @Override
-        public boolean glCanDraw() {
-            return canDrawState.canDraw();
-        }
-
-        @Override
-        public void goPercent(int integerPercent) {
-            canDrawState.beforePageGo();
-            executor.execute(() -> {
-                currentPage = min(maxPages * integerPercent, maxPages - 1);
-                delay();
-                canDrawState.afterPageGo();
-            });
-        }
-
-        @Override
         public void goNextPage() {
-            if (canGoPage(1) == CanGoResult.CAN) {
-                canDrawState.beforePageGo();
+            if (canGoPage(1)) {
+                loadCount++;
+                currentPage++;
                 executor.execute(() -> {
-                    currentPage++;
                     delay();
-                    canDrawState.afterPageGo();
+                    loadCount--;
                 });
             } else {
                 Timber.w("DDD cannot go next page");
             }
         }
 
-        @Override
         public void goPreviewPage() {
-            if (canGoPage(-1) == CanGoResult.CAN) {
-                canDrawState.beforePageGo();
+            if (canGoPage(-1)) {
+                loadCount++;
+                currentPage--;
                 executor.execute(() -> {
-                    currentPage--;
                     delay();
-                    canDrawState.afterPageGo();
+                    loadCount--;
                 });
             } else {
                 Timber.w("DDD cannot go preview page");
@@ -160,12 +174,23 @@ public class PageBookViewTestActivity extends BaseActivity {
                 }
             }
             delay();
-            canDrawState.afterAnimate();
             afterAnimate();
         }
 
         @Override
-        public void glDraw() {
+        public void onSurfaceCreated() {
+        }
+
+        @Override
+        public void onSurfaceChanged(int width, int height) {
+        }
+
+        @Override
+        public void onFreeResources() {
+        }
+
+        @Override
+        public void onDrawFrame() {
             switch (currentPage % 3) {
                 case 0:
                     glClearColor(color, 0.0F, 0.0F, 1.0F);
@@ -190,31 +215,10 @@ public class PageBookViewTestActivity extends BaseActivity {
                 Thread.currentThread().interrupt();
             }
         }
-    }
 
-    private class LoadingState {
-        private int scheduledGoes = 0;
-        private boolean canDraw = true;
-
-        public synchronized void beforePageGo() {
-            canDraw = false;
-            scheduledGoes++;
-            checkState(scheduledGoes >= 0);
-        }
-
-        public synchronized void afterPageGo() {
-            scheduledGoes--;
-            checkState(scheduledGoes >= 0);
-        }
-
-        public synchronized void afterAnimate() {
-            if (scheduledGoes == 0) {
-                canDraw = true;
-            }
-        }
-
-        public synchronized boolean canDraw() {
-            return canDraw;
+        @Override
+        public boolean isLoading() {
+            return loadCount > 0;
         }
     }
 }

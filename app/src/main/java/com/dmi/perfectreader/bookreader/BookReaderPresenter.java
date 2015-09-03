@@ -8,10 +8,14 @@ import com.dmi.util.base.BasePresenter;
 import java.io.File;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
 public class BookReaderPresenter extends BasePresenter {
+    @Inject
+    @Named("requestedBookFile")
+    protected File requestedBookFile;
     @Inject
     protected UserData userData;
     @Inject
@@ -32,7 +36,7 @@ public class BookReaderPresenter extends BasePresenter {
         databases.unregisterClient();
     }
 
-    public void openBook(File requestedBookFile) {
+    public void openBook() {
         File bookFile = getBookFile(requestedBookFile);
         if (bookFile != null) {
             view.openBook(bookFile);

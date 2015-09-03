@@ -70,10 +70,6 @@ configure(androidProjects + javaProjects) {
                 exclude group: 'org.codehaus.groovy'
             }
         }
-
-        retrolambda {
-            defaultMethods true
-        }
     }
 }
 

@@ -2,7 +2,6 @@ package com.dmi.perfectreader.manualtest.typoweb;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
@@ -10,12 +9,11 @@ import android.view.MotionEvent;
 import com.dmi.perfectreader.R;
 import com.dmi.perfectreader.book.TexHyphenationPatternsLoader;
 import com.dmi.typoweb.HangingPunctuationConfig;
-import com.dmi.typoweb.RenderContext;
 import com.dmi.typoweb.TypoWeb;
+import com.dmi.typoweb.TypoWebRenderer;
 import com.dmi.util.base.BaseActivity;
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
+import com.dmi.util.opengl.GLRendererDelegate;
+import com.dmi.util.opengl.GLSurfaceViewExt;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.glClear;
@@ -37,15 +35,13 @@ public class ExtBlinkTestActivity extends BaseActivity {
         setContentView(new TypoWebView(this));
     }
 
-    private class TypoWebView extends GLSurfaceView implements GLSurfaceView.Renderer, TypoWeb.Client {
+    private class TypoWebView extends GLSurfaceViewExt implements TypoWeb.Client {
         private TypoWeb typoWeb;
-        private RenderContext renderContext;
 
         public TypoWebView(Context context) {
             super(context);
 
             typoWeb = new TypoWeb(this, context, context.getString(R.string.app_name));
-
             typoWeb.setURLHandler(url -> {
                 if (url.startsWith("assets://")) {
                     return getAssets().open(url.substring("assets://".length()));
@@ -65,33 +61,29 @@ public class ExtBlinkTestActivity extends BaseActivity {
                             .build()
             );
             typoWeb.setHyphenationPatternsLoader(new TexHyphenationPatternsLoader(context));
-
             typoWeb.loadUrl(FILE);
 
             setEGLContextClientVersion(2);
-            setRenderer(this);
+            setRenderer(new GLRendererDelegate(new TypoWebRenderer(typoWeb)) {
+                @Override
+                public void onSurfaceChanged(int width, int height) {
+                    glViewport(0, 0, width, height);
+                    super.onSurfaceChanged(width, height);
+                }
+
+                @Override
+                public void onDrawFrame() {
+                    glClearColor(1.0F, 1.0F, 1.0F, 1.0F);
+                    glClear(GL_COLOR_BUFFER_BIT);
+                    super.onDrawFrame();
+                }
+            });
         }
 
         @Override
-        public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-            renderContext = new RenderContext();
-        }
-
-        @Override
-        public void onSurfaceChanged(GL10 gl, int width, int height) {
-            glViewport(0, 0, width, height);
-            typoWeb.setSize(width, height);
-        }
-
-        @Override
-        public void onDrawFrame(GL10 gl) {
-            glClearColor(1.0F, 1.0F, 1.0F, 1.0F);
-            glClear(GL_COLOR_BUFFER_BIT);
-            typoWeb.draw(renderContext);
-        }
-
-        @Override
-        public void afterAnimate() {
+        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+            super.onSizeChanged(w, h, oldw, oldh);
+            typoWeb.resize(w, h);
         }
 
         @Override
@@ -101,6 +93,10 @@ public class ExtBlinkTestActivity extends BaseActivity {
                             event.getTouchMajor(), event.getEventTime());
             }
             return true;
+        }
+
+        @Override
+        public void afterAnimate() {
         }
     }
 }

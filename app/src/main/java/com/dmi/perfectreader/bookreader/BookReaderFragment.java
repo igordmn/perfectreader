@@ -1,9 +1,6 @@
 package com.dmi.perfectreader.bookreader;
 
-import android.content.Context;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
 
@@ -18,6 +15,7 @@ import com.dmi.util.layout.HasLayout;
 import java.io.File;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import dagger.ObjectGraph;
 import dagger.Provides;
@@ -27,8 +25,6 @@ import static com.google.common.base.Preconditions.checkState;
 
 @HasLayout(R.layout.fragment_book_reader)
 public class BookReaderFragment extends BaseFragment {
-    protected File requestedBookFile;
-
     @Inject
     protected BookReaderPresenter presenter;
 
@@ -47,16 +43,10 @@ public class BookReaderFragment extends BaseFragment {
     }
 
     @Override
-    public void onCreate(Context context, @Nullable Bundle state) {
-        super.onCreate(context, state);
-        requestedBookFile = (File) getIntent().getSerializableExtra("requestedBookFile");
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view) {
         super.onViewCreated(view);
         if (findChild(R.id.bookContainer) == null) {
-            presenter.openBook(requestedBookFile);
+            presenter.openBook();
         }
     }
 
@@ -67,9 +57,6 @@ public class BookReaderFragment extends BaseFragment {
     }
 
     public void toggleMenu() {
-        // временно отключено для того, чтобы не вошло в версию 0.3
-        //Timber.d("Menu not implemented");
-
         if (findChild(R.id.menuContainer) == null) {
             addChild(MenuFragment.class, R.id.menuContainer);
         } else {
@@ -97,6 +84,12 @@ public class BookReaderFragment extends BaseFragment {
         @Provides
         public BookReaderFragment view() {
             return BookReaderFragment.this;
+        }
+
+        @Provides
+        @Named("requestedBookFile")
+        public File presenter() {
+            return (File) getIntent().getSerializableExtra("requestedBookFile");
         }
     }
 }

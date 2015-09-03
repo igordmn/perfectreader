@@ -1,33 +1,35 @@
-package com.dmi.perfectreader.book;
+package com.dmi.perfectreader.book.pagebook;
 
 import android.content.Context;
+import android.support.annotation.UiThread;
 
 import com.dmi.perfectreader.R;
+import com.dmi.perfectreader.book.TexHyphenationPatternsLoader;
 import com.dmi.perfectreader.book.config.TextAlign;
 import com.dmi.perfectreader.bookstorage.BookStorage;
 import com.dmi.typoweb.HangingPunctuationConfig;
 import com.dmi.typoweb.JavascriptInterface;
-import com.dmi.typoweb.RenderContext;
 import com.dmi.typoweb.TypoWeb;
+import com.dmi.util.concurrent.Threads;
 
-import static com.dmi.perfectreader.book.LocationUtils.pageToPercent;
-import static com.dmi.perfectreader.book.LocationUtils.percentToPage;
 import static com.dmi.util.js.JavaScript.jsArray;
 import static com.dmi.util.js.JavaScript.jsValue;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
 
+@UiThread
 public class WebPageBook implements PageBook, TypoWeb.Client {
+    private volatile boolean destroyed = false;
+
     private final Client client;
 
-    private TypoWeb typoWeb;
-    private RenderContext renderContext;
+    TypoWeb typoWeb;
 
     private final Settings settings = new Settings();
     private BookStorage bookStorage;
     private final CurrentLocation currentLocation = new CurrentLocation();
-    private final LoadingState canDrawState = new LoadingState();
+    private volatile int loadCount = 0;
 
     public WebPageBook(Client client, Context context) {
         this.client = client;
@@ -115,11 +117,12 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
     }
 
     public void destroy() {
+        destroyed = true;
         typoWeb.destroy();
-        typoWeb = null;
     }
 
     public void load(BookStorage bookStorage) {
+        checkNotDestroyed();
         checkState(this.bookStorage == null, "Cannot load twice");
         checkArgument(bookStorage.getSegmentSizes().length == bookStorage.getSegmentURLs().length);
         this.bookStorage = bookStorage;
@@ -128,108 +131,104 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
                 "reader.load(%s);",
                 jsArray(bookStorage.getSegmentURLs())
         ));
+        goCurrentLocation();
     }
 
     public void pause() {
+        checkNotDestroyed();
         typoWeb.pause();
     }
 
     public void resume() {
+        checkNotDestroyed();
         typoWeb.resume();
     }
 
     public int currentPercent() {
+        checkNotDestroyed();
         return currentLocation.totalPercent();
     }
 
     @Override
     public CanGoResult canGoPage(int offset) {
+        checkNotDestroyed();
         checkState(bookStorage != null);
         return currentLocation.canGoPage(offset);
     }
 
-    @Override
-    public boolean glCanDraw() {
-        return canDrawState.canDraw();
-    }
-
     public Settings settings() {
+        checkNotDestroyed();
         return settings;
     }
 
+    @Override
     public void tap(float x, float y, float tapDiameter) {
+        checkNotDestroyed();
         typoWeb.tap(x, y, x, y, tapDiameter, System.nanoTime() / 1E6F);
     }
 
     @Override
     public void goPercent(int integerPercent) {
+        checkNotDestroyed();
         currentLocation.goPercent(integerPercent);
-        client.afterLocationChanged();
         goCurrentLocation();
     }
 
+    @UiThread
     @Override
     public void goNextPage() {
+        checkNotDestroyed();
         currentLocation.goNextPage();
-        client.afterLocationChanged();
         goCurrentLocation();
     }
 
+    @UiThread
     @Override
     public void goPreviewPage() {
+        checkNotDestroyed();
         currentLocation.goPreviewPage();
-        client.afterLocationChanged();
         goCurrentLocation();
     }
 
     private void goCurrentLocation() {
         if (currentLocation.hasSegments()) {
-            canDrawState.beforePageGo();
+            loadCount++;
             typoWeb.execJavaScript(format(
                     "reader.goLocation(%s, %s);" +
-                    "__javaBridge.afterPageGo();",
+                    "__javaBridge.decrementLoadCount();",
                     currentLocation.segmentIndex(), currentLocation.segmentPercent()
             ));
         }
     }
 
+    @UiThread
     @Override
-    public void glInit() {
-        if (renderContext == null) {
-            renderContext = new RenderContext();
-        }
-    }
-
-    @Override
-    public void glFreeResources() {
-        if (renderContext != null) {
-            renderContext.destroy();
-            renderContext = null;
-        }
-    }
-
-    @Override
-    public void glSetSize(int width, int height) {
-        canDrawState.beforeResize();
-        typoWeb.setSize(width, height);
+    public void resize(int width, int height) {
+        checkNotDestroyed();
+        loadCount++;
+        typoWeb.resize(width, height);
         typoWeb.execJavaScript(
                 "reader.configure({" +
                 "    pageWidth: innerWidth," +
                 "    pageHeight: innerHeight" +
                 "});" +
-                "__javaBridge.afterResize();"
+                "__javaBridge.decrementLoadCount();"
         );
     }
 
-    @Override
-    public void glDraw() {
-        typoWeb.draw(renderContext);
+
+    // can be called from another thread
+    boolean isLoading() {
+        return loadCount > 0;
     }
 
     @Override
     public void afterAnimate() {
-        canDrawState.afterAnimate();
         client.afterAnimate();
+    }
+
+    private void checkNotDestroyed() {
+        checkState(!destroyed, "Already destroyed");
     }
 
     private class JavaBridge {
@@ -239,13 +238,8 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
         }
 
         @JavascriptInterface
-        public void afterPageGo() {
-            canDrawState.afterPageGo();
-        }
-
-        @JavascriptInterface
-        public void afterResize() {
-            canDrawState.afterResize();
+        public void decrementLoadCount() {
+            loadCount--;
         }
 
         @JavascriptInterface
@@ -255,54 +249,15 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
 
         @JavascriptInterface
         public void handleTap() {
-            client.handleTap();
-        }
-    }
-
-    private static class LoadingState {
-        private int scheduledGoes = 0;
-        private int scheduledResizes = 0;
-        private boolean canDraw = true;
-
-        public synchronized void beforeResize() {
-            canDraw = false;
-            scheduledResizes++;
-            checkState(scheduledResizes >= 0);
-        }
-
-        public synchronized void afterResize() {
-            scheduledResizes--;
-            checkState(scheduledResizes >= 0);
-        }
-
-        public synchronized void beforePageGo() {
-            canDraw = false;
-            scheduledGoes++;
-            checkState(scheduledGoes >= 0);
-        }
-
-        public synchronized void afterPageGo() {
-            scheduledGoes--;
-            checkState(scheduledGoes >= 0);
-        }
-
-        public synchronized void afterAnimate() {
-            if (scheduledGoes == 0 && scheduledResizes == 0) {
-                canDraw = true;
-            }
-        }
-
-        public synchronized boolean canDraw() {
-            return canDraw;
+            Threads.postUITask(client::handleTap);
         }
     }
 
     public interface Client {
-        default void afterAnimate() {}
+        void afterAnimate();
 
-        default void afterLocationChanged() {}
-
-        default void handleTap() {}
+        @UiThread
+        void handleTap();
     }
 
     public class Settings {
@@ -393,7 +348,7 @@ class CurrentLocation {
         this.nextSegmentPageCount = nextSegment;
         if (currentSegmentPageCount !=  null) {
             segmentPages = currentSegmentPageCount;
-            segmentPage = percentToPage(segmentPages, segmentPercent);
+            segmentPage = LocationUtils.percentToPage(segmentPages, segmentPercent);
         }
         segmentPageIsDefined = currentSegmentPageCount != null;
     }
@@ -424,7 +379,7 @@ class CurrentLocation {
                 segmentPage = 0;
                 segmentPages = currentSegmentPageCount;
             }
-            segmentPercent = pageToPercent(segmentPages, segmentPage);
+            segmentPercent = LocationUtils.pageToPercent(segmentPages, segmentPage);
             segmentLocationToTotalPercent();
         }
     }
@@ -441,7 +396,7 @@ class CurrentLocation {
                 segmentPage = currentSegmentPageCount - 1;
                 segmentPages = currentSegmentPageCount;
             }
-            segmentPercent = pageToPercent(segmentPages, segmentPage);
+            segmentPercent = LocationUtils.pageToPercent(segmentPages, segmentPage);
             segmentLocationToTotalPercent();
         }
     }

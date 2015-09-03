@@ -2,13 +2,15 @@ package com.dmi.perfectreader.book;
 
 import android.content.Context;
 
+import com.dmi.perfectreader.book.pagebook.PageBook;
+import com.dmi.perfectreader.book.pagebook.PageBookRenderer;
+import com.dmi.perfectreader.book.pagebook.WebPageBook;
+import com.dmi.perfectreader.book.pagebook.WebPageBookRenderer;
 import com.dmi.perfectreader.bookstorage.EPUBBookStorage;
 import com.dmi.perfectreader.setting.AppSettings;
 import com.dmi.perfectreader.userdata.UserData;
 import com.dmi.util.base.BasePresenter;
-import com.dmi.util.lang.IntegerPercent;
 import com.dmi.util.setting.AbstractSettingsApplier;
-import com.dmi.util.setting.SettingListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,13 +21,16 @@ import javax.inject.Singleton;
 
 import timber.log.Timber;
 
-import static com.dmi.perfectreader.app.AppThreads.postIOTask;
-import static com.dmi.perfectreader.app.AppThreads.postUITask;
+import static com.dmi.util.concurrent.Threads.postIOTask;
+import static com.dmi.util.concurrent.Threads.postUITask;
+import static com.dmi.util.lang.IntegerPercent.ZERO;
+import static com.google.common.base.MoreObjects.firstNonNull;
 
 @Singleton
 public class BookPresenter extends BasePresenter {
+    @Inject
+    @Named("bookFile")
     protected File bookFile;
-
     @Inject
     @Named("applicationContext")
     protected Context context;
@@ -42,12 +47,12 @@ public class BookPresenter extends BasePresenter {
     private WebPageBook pageBook;
     private TapHandler tapHandler = null;
 
-    private boolean bookLoaded = false;
-
     @Override
     public void onCreate() {
         settingsApplier.startListen();
         pageBook = new WebPageBook(new WebPageBookClient(), context);
+        pageBook.goPercent(loadLocation());
+        postIOTask(this::loadBook);
     }
 
     @Override
@@ -56,54 +61,36 @@ public class BookPresenter extends BasePresenter {
         settingsApplier.stopListen();
     }
 
-    public void setBookFile(File bookFile) {
-        this.bookFile = bookFile;
-    }
-
-    public void requestBook() {
-        view.init(pageBook);
-        if (!bookLoaded) {
-            pageBook.goPercent(loadLocation());
-            postIOTask(this::loadBook);
-            bookLoaded = true;
-        }
-    }
-
-    private int loadLocation() {
-        Integer savedLocation = userData.loadBookLocation(bookFile);
-        if (savedLocation != null) {
-            return savedLocation;
-        } else {
-            return IntegerPercent.ZERO;
-        }
+    public PageBookRenderer createRenderer() {
+        return new WebPageBookRenderer(pageBook);
     }
 
     protected void loadBook() {
         try {
             bookStorage.load(bookFile);
-            postUITask(this::initBook);
+            postUITask(this::afterBookStorageLoad);
         } catch (IOException e) {
             Timber.e(e, "Load book error");
             view.showBookLoadingError();
         }
     }
 
-    protected void initBook() {
-        view.queueEvent(() -> {
-            settingsApplier.applyAll();
-            pageBook.load(bookStorage);
-            pageBook.goPercent(loadLocation());
-        });
+    protected void afterBookStorageLoad() {
+        settingsApplier.applyAll();
+        pageBook.load(bookStorage);
     }
 
-    private void saveLocation(int integerPercent) {
-        userData.saveBookLocation(bookFile, integerPercent);
+    private int loadLocation() {
+        return firstNonNull(userData.loadBookLocation(bookFile), ZERO);
     }
 
-    // todo если во время поворота pageBookView уничтожится, то действие не сработает
-    // сделать очередь из одного элемента. если при добавлении задания, в очереди что-то есть, очищать очередь
-    protected void saveCurrentLocation() {
-        view.queueEvent(() -> saveLocation(pageBook.currentPercent()));
+    protected void saveLocation() {
+        int currentLocation = pageBook.currentPercent();
+        postIOTask(() -> userData.saveBookLocation(bookFile, currentLocation));
+    }
+
+    public void resize(int width, int height) {
+        pageBook.resize(width, height);
     }
 
     public void resume() {
@@ -120,10 +107,9 @@ public class BookPresenter extends BasePresenter {
 
     public void tap(float x, float y, float tapDiameter, TapHandler tapHandler) {
         this.tapHandler = tapHandler;
-        view.queueEvent(() -> pageBook.tap(x, y, tapDiameter));
+        pageBook.tap(x, y, tapDiameter);
     }
 
-    // todo если во время поворота pageBookView уничтожится, то действие не сработает
     private void handleTap() {
         if (tapHandler != null) {
             tapHandler.handleTap();
@@ -132,15 +118,45 @@ public class BookPresenter extends BasePresenter {
     }
 
     public void goPercent(int percent) {
-        view.goPercent(percent);
+        view.reset(() -> {
+            pageBook.goPercent(percent);
+            saveLocation();
+        });
     }
 
     public void goNextPage() {
-        view.goNextPage();
+        if (pageBook.canGoPage(-view.currentPageRelativeIndex() + 1) != PageBook.CanGoResult.CANNOT) {
+            view.goNextPage();
+        }
     }
 
     public void goPreviewPage() {
-        view.goPreviewPage();
+        if (pageBook.canGoPage(-view.currentPageRelativeIndex() - 1) != PageBook.CanGoResult.CANNOT) {
+            view.goPreviewPage();
+        }
+    }
+
+    public int synchronizeCurrentPage(int currentPageRelativeIndex) {
+        if (currentPageRelativeIndex < 0) {
+            switch (pageBook.canGoPage(1)) {
+                case CAN:
+                    pageBook.goNextPage();
+                    saveLocation();
+                    return currentPageRelativeIndex + 1;
+                case CANNOT:
+                    return 0;
+            }
+        } else if (currentPageRelativeIndex > 0) {
+            switch (pageBook.canGoPage(-1)) {
+                case CAN:
+                    pageBook.goPreviewPage();
+                    saveLocation();
+                    return currentPageRelativeIndex - 1;
+                case CANNOT:
+                    return 0;
+            }
+        }
+        return currentPageRelativeIndex;
     }
 
     private class WebPageBookClient implements WebPageBook.Client {
@@ -150,13 +166,8 @@ public class BookPresenter extends BasePresenter {
         }
 
         @Override
-        public void afterLocationChanged() {
-            postUITask(BookPresenter.this::saveCurrentLocation);
-        }
-
-        @Override
         public void handleTap() {
-            postUITask(BookPresenter.this::handleTap);
+            BookPresenter.this.handleTap();
         }
     }
 
@@ -172,19 +183,11 @@ public class BookPresenter extends BasePresenter {
 
         @Override
         protected void listen() {
-            listenWrapped(appSettings.format.textAlign, value -> pageBook.settings().setTextAlign(value));
-            listenWrapped(appSettings.format.fontSizePercents, value -> pageBook.settings().setFontSizePercents(value));
-            listenWrapped(appSettings.format.lineHeightPercents, value -> pageBook.settings().setLineHeightPercents(value));
-            listenWrapped(appSettings.format.hangingPunctuation, value -> pageBook.settings().setHangingPunctuation(value));
-            listenWrapped(appSettings.format.hyphenation, value -> pageBook.settings().setHyphenation(value));
-        }
-
-        private <T> void listenWrapped(AppSettings.Setting<T> setting, SettingListener<T> listener) {
-            listen(setting, wrap(listener));
-        }
-
-        private <T> SettingListener<T> wrap(SettingListener<T> listener) {
-            return value -> view.queueEvent(() -> listener.onValueSet(value));
+            listen(appSettings.format.textAlign, value -> pageBook.settings().setTextAlign(value));
+            listen(appSettings.format.fontSizePercents, value -> pageBook.settings().setFontSizePercents(value));
+            listen(appSettings.format.lineHeightPercents, value -> pageBook.settings().setLineHeightPercents(value));
+            listen(appSettings.format.hangingPunctuation, value -> pageBook.settings().setHangingPunctuation(value));
+            listen(appSettings.format.hyphenation, value -> pageBook.settings().setHyphenation(value));
         }
     }
 

@@ -2,7 +2,6 @@ package com.dmi.typoweb;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 
 import com.dmi.util.natv.UsedByNative;
 import com.google.common.base.Joiner;
@@ -39,16 +38,12 @@ public class TypoWeb {
     private final Client client;
     long nativeTypoWeb = 0;
 
-    private boolean paused = false;
     private boolean loading = false;
     private boolean destroyed = false;
     private final List<String> delayedScripts = new ArrayList<>();
-    private long nativeCurrentPicture = 0;
-    private final Object pictureMutex = new Object();
 
-    private long lastInvalidateTime = -1;
-    private boolean invalidateScheduled = false;
-    private final Runnable invalidateTask = this::invalidate;
+    private final Invalidator invalidator = new Invalidator();
+    private final Picture picture = new Picture();
 
     public TypoWeb(Client client, Context context, String userAgent) {
         checkState(!instanceCreated, "only single instance of TypoWeb allowed");
@@ -65,13 +60,9 @@ public class TypoWeb {
     public void destroy() {
         checkNotDestroyed();
         destroyed = true;
+        picture.recycle();
+        invalidator.destroy();
         mainThread().postTask(() -> {
-            synchronized (pictureMutex) {
-                if (nativeCurrentPicture != 0) {
-                    nativeDestroyPicture(nativeCurrentPicture);
-                    nativeCurrentPicture = 0;
-                }
-            }
             nativeDestroyTypoWeb(nativeTypoWeb);
             nativeTypoWeb = 0;
         });
@@ -82,31 +73,33 @@ public class TypoWeb {
     }
 
     public void pause() {
-        mainThread().postTask(() -> paused = true);
+        checkNotDestroyed();
+        invalidator.pause();
         TypoWebLibrary.pause();
     }
 
     public void resume() {
+        checkNotDestroyed();
         TypoWebLibrary.resume();
-        mainThread().postTask(() -> {
-            paused = false;
-            scheduleAnimate();
-        });
+        invalidator.resume();
     }
 
     public void setURLHandler(URLHandler urlHandler) {
+        checkNotDestroyed();
         TypoWebLibrary.setURLHandler(urlHandler);
     }
 
     public void setHyphenationPatternsLoader(HyphenationPatternsLoader loader) {
+        checkNotDestroyed();
         TypoWebLibrary.setHyphenationPatternsLoader(loader);
     }
 
     public void setHangingPunctuationConfig(HangingPunctuationConfig config) {
+        checkNotDestroyed();
         TypoWebLibrary.setHangingPunctuationConfig(config);
     }
 
-    public void setSize(float width, float height) {
+    public void resize(float width, float height) {
         checkNotDestroyed();
         mainThread().postTask(() -> nativeResize(nativeTypoWeb, width, height));
     }
@@ -179,48 +172,17 @@ public class TypoWeb {
         });
     }
 
-    public void draw(RenderContext renderContext) {
+    /**
+     * Should called from GL thread
+     */
+    void draw(RenderContext renderContext) {
         checkState(WebThreadImpl.current() != mainThread(), "Draw shouldn't called from main web thread");
-        checkNotDestroyed();
-        renderContext.checkCanUse();
-
-        synchronized (pictureMutex) {
-            if (nativeCurrentPicture != 0) {
-                nativeDrawPicture(renderContext.nativeRenderContext, getFrameBufferBinding(), nativeCurrentPicture);
-            }
-        }
-
-        // necessary because skia don't cleanup buffer binding
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        picture.draw(renderContext);
     }
 
     @UsedByNative
     private void scheduleAnimate() {
-        if (!invalidateScheduled && !paused) {
-            invalidateScheduled = true;
-            long lastInvalidateInterval = currentTimeMillis() - lastInvalidateTime;
-            long frameInterval = (long) (1000 / FPS);
-            long invalidateDelay = max(frameInterval - lastInvalidateInterval, 0);
-            mainThread().postDelayedTask(invalidateTask, invalidateDelay);
-        }
-    }
-
-    private void invalidate() {
-        if (!destroyed) {
-            invalidateScheduled = false;
-            lastInvalidateTime = currentTimeMillis();
-            nativeBeginFrame(nativeTypoWeb, currentTimeMillis() / 1000.0, 0, 1 / FPS);
-            nativeLayout(nativeTypoWeb);
-            synchronized (pictureMutex) {
-                if (nativeCurrentPicture != 0) {
-                    nativeDestroyPicture(nativeCurrentPicture);
-                    nativeCurrentPicture = 0;
-                }
-                nativeCurrentPicture = nativeRecordPicture(nativeTypoWeb);
-            }
-            client.afterAnimate();
-        }
+        invalidator.scheduleInvalidate();
     }
 
     @UsedByNative
@@ -279,7 +241,84 @@ public class TypoWeb {
                                                             String objectName, String[] functionNames,
                                                             Object javaObject, Method[] javaMethods);
 
+    private class Invalidator {
+        private boolean destroyed = false;
+        private boolean paused = false;
+
+        private long lastInvalidateTime = -1;
+        private boolean invalidateScheduled = false;
+        private final Runnable invalidateTask = this::invalidate;
+
+        public synchronized void pause() {
+            paused = true;
+        }
+
+        public synchronized void resume() {
+            paused = false;
+            scheduleInvalidate();
+        }
+
+        public synchronized void destroy() {
+            destroyed = true;
+        }
+
+        public synchronized void scheduleInvalidate() {
+            if (!invalidateScheduled && !paused) {
+                invalidateScheduled = true;
+                long lastInvalidateInterval = currentTimeMillis() - lastInvalidateTime;
+                long frameInterval = (long) (1000 / FPS);
+                long invalidateDelay = max(frameInterval - lastInvalidateInterval, 0);
+                mainThread().postDelayedTask(invalidateTask, invalidateDelay);
+            }
+        }
+
+        private synchronized void invalidate() {
+            if (!destroyed) {
+                invalidateScheduled = false;
+                lastInvalidateTime = currentTimeMillis();
+                picture.invalidate();
+                client.afterAnimate();
+            }
+        }
+    }
+
+    private class Picture {
+        private long nativeCurrentPicture = 0;
+
+        // called from client thread (usually it is android UI thread)
+        public synchronized void recycle(){
+            if (nativeCurrentPicture != 0) {
+                nativeDestroyPicture(nativeCurrentPicture);
+                nativeCurrentPicture = 0;
+            }
+        }
+
+        // called from GL thread
+        public synchronized void draw(RenderContext renderContext) {
+            renderContext.checkCanUse();
+            if (nativeCurrentPicture != 0) {
+                nativeDrawPicture(renderContext.nativeRenderContext, getFrameBufferBinding(), nativeCurrentPicture);
+            }
+
+            // necessary because skia don't cleanup buffer binding
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        }
+
+        // called from main web thread
+        public synchronized void invalidate() {
+            nativeBeginFrame(nativeTypoWeb, currentTimeMillis() / 1000.0, 0, 1 / FPS);
+            nativeLayout(nativeTypoWeb);
+            recycle();
+            nativeCurrentPicture = nativeRecordPicture(nativeTypoWeb);
+        }
+    }
+
     public interface Client {
-        default void afterAnimate() {}
+        /**
+         * Called from another thread (not thread in which client call public methods of typoweb).
+         * Should execute as quickly as possible
+         */
+        void afterAnimate();
     }
 }

@@ -25,10 +25,6 @@ public class BookFragmentTestActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initFragment();
-    }
-
-    private void initFragment() {
         bookFragment = findOrAddChild(BookFragment.intent(tempBook(TEST_BOOK)), R.id.rootContainer);
     }
 
@@ -52,10 +48,10 @@ public class BookFragmentTestActivity extends BaseActivity {
     @Override
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            bookFragment.goNextPage();
+            bookFragment.presenter().goNextPage();
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            bookFragment.goPreviewPage();
+            bookFragment.presenter().goPreviewPage();
             return  true;
         } else {
             return super.onKeyDown(keyCode, event);

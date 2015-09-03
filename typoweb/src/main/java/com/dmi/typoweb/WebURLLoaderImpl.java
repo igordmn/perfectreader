@@ -17,6 +17,7 @@ import timber.log.Timber;
 
 import static com.dmi.typoweb.TypoWebLibrary.mainThread;
 import static com.dmi.typoweb.WebMimeRegistryImpl.mimeTypeFromFile;
+import static com.dmi.util.concurrent.Threads.postIOTask;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
 import static java.net.URLConnection.guessContentTypeFromStream;
@@ -24,8 +25,6 @@ import static java.net.URLConnection.guessContentTypeFromStream;
 @UsedByNative
 class WebURLLoaderImpl {
     private static final int BUFFER_SIZE = 8192;
-
-    private static ExecutorService taskExecutor = Executors.newSingleThreadExecutor();
 
     private long nativeWebURLLoaderImpl;
 
@@ -45,7 +44,7 @@ class WebURLLoaderImpl {
         checkState(loadTask == null, "load called twice");
         checkState(!cancelled, "loader cancelled");
 
-        loadTask = taskExecutor.submit(() -> {
+        loadTask = postIOTask(() -> {
             try {
                 handleRequest(url);
             } catch (InterruptedException e) {

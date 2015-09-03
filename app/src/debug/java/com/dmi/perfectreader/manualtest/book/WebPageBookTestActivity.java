@@ -1,19 +1,18 @@
 package com.dmi.perfectreader.manualtest.book;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 
-import com.dmi.perfectreader.book.PageBook;
-import com.dmi.perfectreader.book.WebPageBook;
+import com.dmi.perfectreader.book.pagebook.PageBook;
+import com.dmi.perfectreader.book.pagebook.WebPageBook;
+import com.dmi.perfectreader.book.pagebook.WebPageBookRenderer;
 import com.dmi.perfectreader.manualtest.testbook.TestBookStorage;
 import com.dmi.perfectreader.manualtest.testbook.TestBooks;
 import com.dmi.util.base.BaseActivity;
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
+import com.dmi.util.opengl.GLRendererDelegate;
+import com.dmi.util.opengl.GLSurfaceViewExt;
 
 import timber.log.Timber;
 
@@ -23,7 +22,7 @@ import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glViewport;
 
 public class WebPageBookTestActivity extends BaseActivity implements WebPageBook.Client {
-    private static final String[] TEST_BOOK = TestBooks.Extracted.LORD_OF_THE_RINGS;
+    private static final String[] TEST_BOOK = TestBooks.Extracted.CARROLL_ALICE_IN_WONDERLAND;
 
     private WebPageBook pageBook;
     private PageBookView pageBookView;
@@ -62,22 +61,18 @@ public class WebPageBookTestActivity extends BaseActivity implements WebPageBook
     @Override
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            pageBookView.queueEvent(() -> {
-                if (pageBook.canGoPage(1) == PageBook.CanGoResult.CAN) {
-                    pageBook.goNextPage();
-                } else {
-                    Timber.i("DDD cannot go next page");
-                }
-            });
+            if (pageBook.canGoPage(1) == PageBook.CanGoResult.CAN) {
+                pageBook.goNextPage();
+            } else {
+                Timber.i("DDD cannot go next page");
+            }
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            pageBookView.queueEvent(() -> {
-                if (pageBook.canGoPage(-1) == PageBook.CanGoResult.CAN) {
-                    pageBook.goPreviewPage();
-                } else {
-                    Timber.i("DDD cannot go preview page");
-                }
-            });
+            if (pageBook.canGoPage(-1) == PageBook.CanGoResult.CAN) {
+                pageBook.goPreviewPage();
+            } else {
+                Timber.i("DDD cannot go preview page");
+            }
             return  true;
         } else {
             return super.onKeyDown(keyCode, event);
@@ -99,45 +94,33 @@ public class WebPageBookTestActivity extends BaseActivity implements WebPageBook
     }
 
     @Override
-    public void afterLocationChanged() {
-    }
-
-    @Override
     public void handleTap() {
     }
 
-    private class PageBookView extends GLSurfaceView implements GLSurfaceView.Renderer {
+    private class PageBookView extends GLSurfaceViewExt {
         public PageBookView(Context context) {
             super(context);
             setEGLContextClientVersion(2);
-            setRenderer(this);
+            setRenderer(new GLRendererDelegate(new WebPageBookRenderer(pageBook)) {
+                @Override
+                public void onSurfaceChanged(int width, int height) {
+                    glViewport(0, 0, width, height);
+                    super.onSurfaceChanged(width, height);
+                }
+
+                @Override
+                public void onDrawFrame() {
+                    glClearColor(1.0F, 1.0F, 1.0F, 1.0F);
+                    glClear(GL_COLOR_BUFFER_BIT);
+                    super.onDrawFrame();
+                }
+            });
             setRenderMode(RENDERMODE_WHEN_DIRTY);
         }
 
         @Override
-        public void onPause() {
-            queueEvent(pageBook::glFreeResources);
-            super.onPause();
-        }
-
-        @Override
-        public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-            pageBook.glInit();
-        }
-
-        @Override
-        public void onSurfaceChanged(GL10 gl, int width, int height) {
-            glViewport(0, 0, width, height);
-            pageBook.glSetSize(width, height);
-        }
-
-        @Override
-        public void onDrawFrame(GL10 gl) {
-            glClearColor(1.0F, 1.0F, 1.0F, 1.0F);
-            glClear(GL_COLOR_BUFFER_BIT);
-            if (pageBook.glCanDraw()) {
-                pageBook.glDraw();
-            }
+        protected void onSizeChanged(int width, int height, int oldw, int oldh) {
+            pageBook.resize(width, height);
         }
     }
 }
