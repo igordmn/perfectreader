@@ -63,8 +63,7 @@ LOCAL_CFLAGS += -fno-strict-aliasing \
     -fvisibility=hidden -pipe -fPIC -Wno-unused-local-typedefs -Wno-format \
     -ffunction-sections -funwind-tables -g \
     -fno-short-enums -finline-limit=64 \
-    -Os -fno-ident -fdata-sections -ffunction-sections \
-    -fno-unwind-tables -fno-asynchronous-unwind-tables -g0
+    -Os -fno-ident -fdata-sections -ffunction-sections
 
 LOCAL_CPPFLAGS += -fno-exceptions -fno-rtti -fno-threadsafe-statics \
     -fvisibility-inlines-hidden -Wno-deprecated -std=gnu++11 \
