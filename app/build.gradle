@@ -7,6 +7,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'groovyx.grooid.groovy-android'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'com.jakewharton.hugo'
 
 def buildCounter = Integer.getInteger('build.counter', 0)
 def signProperties = Utils.rootProperties('.sign/sign.properties')
