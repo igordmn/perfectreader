@@ -1,46 +1,49 @@
 package com.dmi.perfectreader.db;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import com.dmi.util.db.DatabaseUpgrades;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import static android.content.Context.MODE_PRIVATE;
+import static com.dmi.util.db.DatabaseUpgrades.upgradeDatabase;
+
 @Singleton
 public class Databases {
-    private UserDBOpenHelper userDBOpenHelper;
+    private SQLiteDatabase user;
 
-    private final AtomicInteger clientCount = new AtomicInteger(0);
-
+    @Named("applicationContext")
     @Inject
-    public Databases(@Named("applicationContext") Context context) {
-        userDBOpenHelper = new UserDBOpenHelper(context);
-    }
+    Context context;
 
-    public void registerClient() {
-        clientCount.incrementAndGet();
-    }
-
-    public void unregisterClient() {
-        if (clientCount.get() > 0) {
-            clientCount.decrementAndGet();
-            if (clientCount.get() == 0) {
-                close();
-            }
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            // it's safe keep databases opened during application life. @see http://stackoverflow.com/questions/6608498/best-place-to-close-database-connection
+            close();
+        } finally {
+            super.finalize();
         }
     }
 
-    private synchronized void close() {
-        userDBOpenHelper.close();
+    public synchronized void init() {
+        user = context.openOrCreateDatabase("user", MODE_PRIVATE, null);
+        try {
+            upgradeDatabase(context, user, "db/user");
+        } catch (DatabaseUpgrades.DowngradeException e) {
+            throw new RuntimeException(e); // todo показывать диалог
+        }
     }
 
-    public synchronized void createOrUpgrade() {
-        userDBOpenHelper.getWritableDatabase();
+    private void close() {
+        user.close();
     }
 
-    public synchronized UserDBOpenHelper user() {
-        return userDBOpenHelper;
+    public synchronized SQLiteDatabase user() {
+        return user;
     }
 }

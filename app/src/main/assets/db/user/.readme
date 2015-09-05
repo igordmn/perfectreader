@@ -1,0 +1,4 @@
+!!! WARNING
+Don't change committed scripts that were in production.
+Add a new one.
+You can change committed script in only one case: if script contains error (app crashes on some user devices)

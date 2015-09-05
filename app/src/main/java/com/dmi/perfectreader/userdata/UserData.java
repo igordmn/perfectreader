@@ -19,7 +19,7 @@ public class UserData {
 
     @SuppressLint("NewApi")
     public File loadLastBookFile() {
-        SQLiteDatabase db = databases.user().getReadableDatabase();
+        SQLiteDatabase db = databases.user();
         try (Cursor cursor = db.rawQuery("SELECT path FROM lastBook where id = 1", null)) {
             if (cursor.moveToFirst()) {
                 String path = cursor.getString(0);
@@ -31,7 +31,7 @@ public class UserData {
     }
 
     public void saveLastBookFile(File bookFile) {
-        SQLiteDatabase db = databases.user().getWritableDatabase();
+        SQLiteDatabase db = databases.user();
         ContentValues values = new ContentValues();
         values.put("id", 1);
         values.put("path", bookFile.getAbsolutePath());
@@ -40,7 +40,7 @@ public class UserData {
 
     @SuppressLint("NewApi")
     public Integer loadBookLocation(File bookFile) {
-        SQLiteDatabase db = databases.user().getReadableDatabase();
+        SQLiteDatabase db = databases.user();
         try (Cursor cursor = db.rawQuery("SELECT integerPercent FROM bookLocation WHERE path = ?", new String[]{bookFile.getAbsolutePath()})) {
             if (cursor.moveToFirst()) {
                 return cursor.getInt(0);
@@ -51,7 +51,7 @@ public class UserData {
     }
 
     public void saveBookLocation(File bookFile, int integerPercent) {
-        SQLiteDatabase db = databases.user().getWritableDatabase();
+        SQLiteDatabase db = databases.user();
         ContentValues values = new ContentValues();
         values.put("path", bookFile.getAbsolutePath());
         values.put("integerPercent", integerPercent);

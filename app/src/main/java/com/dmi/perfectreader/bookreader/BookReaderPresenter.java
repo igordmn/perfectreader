@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.bookreader;
 
 import com.dmi.perfectreader.cache.BookResourceCache;
-import com.dmi.perfectreader.db.Databases;
 import com.dmi.perfectreader.userdata.UserData;
 import com.dmi.util.base.BasePresenter;
 
@@ -19,21 +18,13 @@ public class BookReaderPresenter extends BasePresenter {
     @Inject
     protected UserData userData;
     @Inject
-    protected Databases databases;
-    @Inject
     protected BookReaderFragment view;
     @Inject
     protected BookResourceCache bookResourceCache;
 
     @Override
-    protected void onCreate() {
-        databases.registerClient();
-    }
-
-    @Override
     protected void onDestroy() {
         bookResourceCache.close();
-        databases.unregisterClient();
     }
 
     public void openBook() {

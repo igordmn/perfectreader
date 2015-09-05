@@ -42,7 +42,7 @@ public class App extends BaseApplication {
     }
 
     private void initDatabases() {
-        databases.createOrUpgrade();
+        databases.init();
     }
 
     private void initUnits() {
