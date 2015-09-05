@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.app;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.dmi.perfectreader.BuildConfig;
 import com.dmi.perfectreader.bookstorage.EPUBBookStorage;
@@ -62,6 +63,12 @@ public class App extends BaseApplication {
         @Named("applicationContext")
         Context context() {
             return App.this;
+        }
+
+        @Provides
+        @Named("userDatabase")
+        SQLiteDatabase userDatabase(Databases databases) {
+            return databases.user();
         }
     }
 }
