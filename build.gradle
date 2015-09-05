@@ -93,6 +93,10 @@ configure(androidProjects) {
                 sourceCompatibility JavaVersion.VERSION_1_8
                 targetCompatibility JavaVersion.VERSION_1_8
             }
+
+            aaptOptions {
+                ignoreAssetsPattern "!.readme"
+            }
         }
 
         sonarRunner {
