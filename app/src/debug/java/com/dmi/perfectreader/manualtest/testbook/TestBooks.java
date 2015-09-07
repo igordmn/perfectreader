@@ -26,7 +26,7 @@ public abstract class TestBooks {
                 "assets://manualtest/testBooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-12.htm.html"
         };
 
-        public static final String[] LORD_OF_THE_RINGS = new String[] {
+        public static final String[] TOLKIEN_LORD_OF_THE_RINGS = new String[] {
                 "assets://manualtest/testBooks/extracted/tolkienLordOfTheRings/cover.xhtml",
                 "assets://manualtest/testBooks/extracted/tolkienLordOfTheRings/title.xhtml",
                 "assets://manualtest/testBooks/extracted/tolkienLordOfTheRings/section1.xhtml",

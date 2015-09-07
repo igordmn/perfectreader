@@ -22,7 +22,7 @@ import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glViewport;
 
 public class WebPageBookTestActivity extends BaseActivity implements WebPageBook.Client {
-    private static final String[] TEST_BOOK = TestBooks.Extracted.CARROLL_ALICE_IN_WONDERLAND;
+    private static final String[] TEST_BOOK = TestBooks.Extracted.TOLKIEN_LORD_OF_THE_RINGS;
 
     private WebPageBook pageBook;
     private PageBookView pageBookView;
