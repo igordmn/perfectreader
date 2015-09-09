@@ -2,6 +2,7 @@
 
 #include "util/JniUtils.h"
 #include "third_party/WebKit/public/platform/WebThread.h"
+#include "WebSchedulerImpl.h"
 
 namespace typo {
 
@@ -24,8 +25,7 @@ public:
     virtual blink::PlatformThreadId threadId() const override;
     virtual void addTaskObserver(TaskObserver* taskObserver) override ;
     virtual void removeTaskObserver(TaskObserver* taskObserver) override;
-    virtual void enterRunLoop() override {};
-    virtual void exitRunLoop() override {};
+    virtual blink::WebScheduler* scheduler() const override;
     
     // used by java
     static void nativeRunTask(JNIEnv*, jobject, jlong nativeTask);
@@ -37,6 +37,7 @@ private:
     friend TypoWebLibrary;
 
     jobject jobj_;
+    WebSchedulerImpl* webScheduler_;
 };
 
 }

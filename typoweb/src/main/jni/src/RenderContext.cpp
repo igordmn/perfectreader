@@ -38,7 +38,7 @@ RenderContext::~RenderContext() {
 }
 
 GrRenderTarget* RenderContext::wrapBackendRenderTarget(const GrBackendRenderTargetDesc& desc) {
-    return context_->wrapBackendRenderTarget(desc);
+    return context_->textureProvider()->wrapBackendRenderTarget(desc);
 }
 
 void RenderContext::resetContext(uint32_t state) {

@@ -71,9 +71,11 @@ WebThreadImpl::WebThreadImpl(const char* name) {
     JNIEnv* env = jniScope.getEnv();
     jstring jname = env->NewStringUTF(name);
     jobj_ = env->NewGlobalRef(env->NewObject(jmethods.cls, jmethods.constructor, (jlong) this, jname));
+    webScheduler_ = new WebSchedulerImpl();
 }
 
 WebThreadImpl::~WebThreadImpl() {
+    delete webScheduler_;
     JNIScope jniScope;
     JNIEnv* env = jniScope.getEnv();
     env->CallVoidMethod(jobj_, jmethods.destroy);
@@ -120,6 +122,10 @@ void WebThreadImpl::removeTaskObserver(TaskObserver* taskObserver) {
     JNIScope jniScope;
     JNIEnv* env = jniScope.getEnv();
     env->CallVoidMethod(jobj_, jmethods.removeNativeTaskObserver, (jlong) taskObserver);
+}
+
+WebScheduler* WebThreadImpl::scheduler() const {
+    return webScheduler_;
 }
 
 void WebThreadImpl::nativeRunTask(JNIEnv*, jobject, jlong nativeTask) {

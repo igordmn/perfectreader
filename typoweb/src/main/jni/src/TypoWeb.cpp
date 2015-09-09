@@ -303,12 +303,10 @@ TypoWeb::TypoWeb(jobject jobj, float deviceDensity) {
     settings->setShouldPrintBackgrounds(false);
     settings->setShouldClearDocumentBackground(true);
     settings->setEnableScrollAnimator(false);
-    settings->setRegionBasedColumnsEnabled(false);
     settings->setMaxTouchPoints(1);
     settings->setDeviceSupportsTouch(true);
     settings->setDeviceSupportsMouse(false);
     settings->setEnableTouchAdjustment(true);
-    settings->setDeferredImageDecodingEnabled(true);
     settings->setShouldRespectImageOrientation(false);
     settings->setUnsafePluginPastingEnabled(false);
     settings->setEditingBehavior(WebSettings::EditingBehaviorAndroid);
@@ -343,15 +341,12 @@ TypoWeb::TypoWeb(jobject jobj, float deviceDensity) {
     settings->setClobberUserAgentInitialScaleQuirk(false);
     settings->setIgnoreMainFrameOverflowHiddenQuirk(false);
     settings->setReportScreenSizeInPhysicalPixelsQuirk(false);
-    settings->setShrinksStandaloneImagesToFit(false);
     settings->setShrinksViewportContentToFit(false);
-    settings->setPinchVirtualViewportEnabled(false);
     settings->setPinchOverlayScrollbarThickness(false);
     settings->setUseSolidColorScrollbars(false);
     settings->setPreferCompositingToLCDTextEnabled(true);
     settings->setAcceleratedCompositingForTransitionEnabled(true);
     settings->setThreadedScrollingEnabled(false);
-    settings->setAllowConnectingInsecureWebSocket(true);
     settings->setAccessibilityEnabled(false);
     settings->setTouchDragDropEnabled(false);
     settings->setTouchEditingEnabled(false);
@@ -395,7 +390,7 @@ SkPicture* TypoWeb::recordPicture() {
             nullptr, 0
     );
     webView_->paint(canvas, WebRect(0, 0, webSize.width, webSize.height));
-    return recorder.endRecording();
+    return recorder.endRecordingAsPicture();
 }
 
 void TypoWeb::loadUrl(std::string url) {

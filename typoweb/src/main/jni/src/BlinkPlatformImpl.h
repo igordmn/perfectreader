@@ -1,7 +1,6 @@
 #pragma once
 
 #include "WebMimeRegistryImpl.h"
-#include "WebSchedulerImpl.h"
 #include "extensions/TypoExtensionsImpl.h"
 #include "util/JniUtils.h"
 #include <string>
@@ -34,8 +33,6 @@ public:
     virtual void setSharedTimerFiredFunction(void (*func)()) override;
     virtual void setSharedTimerFireInterval(double intervalSeconds) override;
     virtual void stopSharedTimer() override;
-    virtual void callOnMainThread(void (*func)(void*), void* context);
-    virtual blink::WebScheduler* scheduler() override;
     virtual blink::WebThemeEngine* themeEngine() override;
     virtual size_t maxDecodedImageBytes() override;
     virtual blink::WebData loadResource(const char* name) override;
@@ -61,7 +58,6 @@ private:
 
     blink::WebThemeEngine webThemeEngine_;
     WebMimeRegistryImpl mimeRegistry_;
-    WebSchedulerImpl webScheduler_;
     TypoExtensionsImpl typoExtensionsImpl_;
     jobject urlHandler_ = 0;
 };

@@ -25,6 +25,7 @@ void clearSkiaCache() {
 
 }
 
+base::ThreadTaskRunnerHandle* TypoWebLibrary::threadTaskRunnerHandle_ = 0;
 BlinkPlatformImpl* TypoWebLibrary::blinkPlatform_ = 0;
 void* TypoWebLibrary::icuData_ = 0;
 WebThreadImpl* TypoWebLibrary::mainThread_ = 0;
@@ -66,6 +67,7 @@ void TypoWebLibrary::nativeInitBlink(JNIEnv* env, jclass, jstring jUserAgent) {
     CHECK(blinkPlatform_ == 0);
 
     WebRuntimeFeatures::enableExperimentalFeatures(true);
+    WebRuntimeFeatures::enableTestOnlyFeatures(false);
     WebRuntimeFeatures::enableApplicationCache(false);
     WebRuntimeFeatures::enableDatabase(false);
     WebRuntimeFeatures::enableCompositedSelectionUpdate(false);
@@ -74,26 +76,29 @@ void TypoWebLibrary::nativeInitBlink(JNIEnv* env, jclass, jstring jUserAgent) {
     WebRuntimeFeatures::enableEncryptedMedia(false);
     WebRuntimeFeatures::enablePrefixedEncryptedMedia(false);
     WebRuntimeFeatures::enableBleedingEdgeFastPaths(false);
+    WebRuntimeFeatures::enableBlinkScheduler(false);
+    WebRuntimeFeatures::enableCompositorAnimationTimelines(false);
     WebRuntimeFeatures::enableExperimentalCanvasFeatures(false);
     WebRuntimeFeatures::enableFastMobileScrolling(false);
     WebRuntimeFeatures::enableFileSystem(false);
-    WebRuntimeFeatures::enableLocalStorage(false);
+    WebRuntimeFeatures::enableImageColorProfiles(false);
     WebRuntimeFeatures::enableMediaPlayer(false);
     WebRuntimeFeatures::enableMediaCapture(false);
     WebRuntimeFeatures::enableMediaSource(false);
+    WebRuntimeFeatures::enableNotificationConstructor(false);
     WebRuntimeFeatures::enableNotifications(false);
     WebRuntimeFeatures::enableNavigatorContentUtils(false);
     WebRuntimeFeatures::enableNavigationTransitions(false);
     WebRuntimeFeatures::enableNetworkInformation(false);
     WebRuntimeFeatures::enableOrientationEvent(false);
     WebRuntimeFeatures::enablePagePopup(false);
-    WebRuntimeFeatures::enablePeerConnection(false);
+    WebRuntimeFeatures::enablePermissionsAPI(false);
     WebRuntimeFeatures::enableRequestAutocomplete(false);
     WebRuntimeFeatures::enableScreenOrientation(false);
     WebRuntimeFeatures::enableScriptedSpeech(false);
     WebRuntimeFeatures::enableServiceWorker(false);
-    WebRuntimeFeatures::enableSessionStorage(false);
-    WebRuntimeFeatures::enableTouch(true);
+    WebRuntimeFeatures::enableSlimmingPaint(false);
+    WebRuntimeFeatures::enableTouch(false);
     WebRuntimeFeatures::enableTouchIconLoading(false);
     WebRuntimeFeatures::enableWebAudio(false);
     WebRuntimeFeatures::enableWebGLDraftExtensions(false);
@@ -104,8 +109,20 @@ void TypoWebLibrary::nativeInitBlink(JNIEnv* env, jclass, jstring jUserAgent) {
     WebRuntimeFeatures::enableOverlayFullscreenVideo(false);
     WebRuntimeFeatures::enableSharedWorker(false);
     WebRuntimeFeatures::enablePreciseMemoryInfo(false);
-    WebRuntimeFeatures::enableLayerSquashing(true);
-    WebRuntimeFeatures::enableShowModalDialog(false);
+    WebRuntimeFeatures::enableLayerSquashing(false);
+    WebRuntimeFeatures::enableCredentialManagerAPI(false);
+    WebRuntimeFeatures::enableTextBlobs(false);
+    WebRuntimeFeatures::enableCSSViewport(false);
+    WebRuntimeFeatures::enableV8IdleTasks(false);
+    WebRuntimeFeatures::enableSVG1DOM(false);
+    WebRuntimeFeatures::enableReducedReferrerGranularity(false);
+    WebRuntimeFeatures::enablePushMessaging(false);
+    WebRuntimeFeatures::enablePushMessagingData(false);
+    WebRuntimeFeatures::enableStaleWhileRevalidateCacheControl(false);
+    WebRuntimeFeatures::enableUnsafeES3APIs(false);
+    WebRuntimeFeatures::enableWebVR(false);
+
+    threadTaskRunnerHandle_ = new base::ThreadTaskRunnerHandle(scoped_refptr<base::SingleThreadTaskRunner>()); // without this blink::initialize crashes
     blinkPlatform_ = new BlinkPlatformImpl(JniUtils::toUTF8String(env, jUserAgent));
     blink::initialize(blinkPlatform_);
 }

@@ -3,6 +3,8 @@
 #include "WebThreadImpl.h"
 #include "BlinkPlatformImpl.h"
 #include "util/JniUtils.h"
+#include "base/thread_task_runner_handle.h"
+#include "base/single_thread_task_runner.h"
 
 namespace typo {
 
@@ -29,6 +31,7 @@ private:
     static BlinkPlatformImpl* blinkPlatform_;
     static void* icuData_;
     static WebThreadImpl* mainThread_;
+    static base::ThreadTaskRunnerHandle* threadTaskRunnerHandle_;
 };
 
 }

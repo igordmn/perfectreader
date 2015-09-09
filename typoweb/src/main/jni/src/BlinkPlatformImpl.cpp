@@ -7,7 +7,7 @@
 #include "TypoWebLibrary.h"
 #include "util/Debug.h"
 #include <string>
-#include <sys/time.h>
+#include <time.h>
 #include "third_party/WebKit/public/platform/WebTraceLocation.h"
 
 using namespace std;
@@ -139,13 +139,6 @@ void BlinkPlatformImpl::stopSharedTimer() {
     TypoWebLibrary::mainThread()->cancelTask(sharedTimerTask_);
 }
 
-void BlinkPlatformImpl::callOnMainThread(void (*func)(void*), void* context) {
-    TypoWebLibrary::mainThread()->postTask(blink::WebTraceLocation(), new CallContextFuncTask(func, context));
-}
-
-WebScheduler* BlinkPlatformImpl::scheduler() {
-    return &webScheduler_;
-}
 
 WebThemeEngine* BlinkPlatformImpl::themeEngine() {
     return &webThemeEngine_;

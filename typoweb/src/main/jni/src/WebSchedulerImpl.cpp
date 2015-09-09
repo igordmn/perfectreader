@@ -9,10 +9,10 @@ namespace typo {
 
 class WebSchedulerImpl::IdleTaskWrapper : public WebThread::Task {
 private:
-    WebScheduler::IdleTask* idleTask_;
+    WebThread::IdleTask* idleTask_;
 
 public:
-    IdleTaskWrapper(WebScheduler::IdleTask* idleTask) : idleTask_(idleTask) {}
+    IdleTaskWrapper(WebThread::IdleTask* idleTask) : idleTask_(idleTask) {}
     virtual ~IdleTaskWrapper() {
         delete idleTask_;
     }
@@ -22,12 +22,24 @@ public:
     }
 };
 
-void WebSchedulerImpl::postIdleTask(const WebTraceLocation& location, IdleTask* task) {
+void WebSchedulerImpl::postIdleTask(const WebTraceLocation& location, WebThread::IdleTask* task) {
+    TypoWebLibrary::mainThread()->postTask(location, new IdleTaskWrapper(task));
+}
+
+void WebSchedulerImpl::postNonNestableIdleTask(const WebTraceLocation& location, WebThread::IdleTask* task) {
+    TypoWebLibrary::mainThread()->postTask(location, new IdleTaskWrapper(task));
+}
+
+void WebSchedulerImpl::postIdleTaskAfterWakeup(const WebTraceLocation& location, WebThread::IdleTask* task) {
     TypoWebLibrary::mainThread()->postTask(location, new IdleTaskWrapper(task));
 }
 
 void WebSchedulerImpl::postLoadingTask(const WebTraceLocation& location, WebThread::Task* task) {
     TypoWebLibrary::mainThread()->postTask(location, task);
+}
+
+void WebSchedulerImpl::postTimerTask(const WebTraceLocation& location, WebThread::Task* task, long long delayMs) {
+    TypoWebLibrary::mainThread()->postDelayedTask(location, task, delayMs);
 }
 
 }
