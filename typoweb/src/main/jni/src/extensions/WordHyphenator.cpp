@@ -1,6 +1,6 @@
 #include "WordHyphenator.h"
 
-#include "../util/Debug.h"
+#include "base/logging.h"
 #include <algorithm>
 #include <math.h>
 #include <queue>

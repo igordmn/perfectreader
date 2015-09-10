@@ -3,7 +3,7 @@
 #include "BlinkPlatformImpl.h"
 #include "WebThreadImpl.h"
 #include "util/JniUtils.h"
-#include "util/Debug.h"
+#include "base/logging.h"
 #include <string>
 #include "third_party/WebKit/public/web/WebKit.h"
 #include "third_party/WebKit/public/web/WebView.h"
@@ -467,24 +467,25 @@ void TypoWeb::didAddMessageToConsole(
         const WebString& webSourceName,
         unsigned sourceLine,
         const WebString& stackTrace) {
-    int level = INFO;
+    logging::LogSeverity severity = logging::LOG_VERBOSE;
     switch (webMessage.level) {
-       case WebConsoleMessage::LevelDebug:
-           level = DEBUG;
-           break;
-       case WebConsoleMessage::LevelLog:
-       case WebConsoleMessage::LevelInfo:
-           level = INFO;
-           break;
-       case WebConsoleMessage::LevelWarning:
-           level = WARNING;
-           break;
-       case WebConsoleMessage::LevelError:
-           level = ERROR;
-           break;
+        case WebConsoleMessage::LevelDebug:
+            severity = logging::LOG_VERBOSE;
+            break;
+        case WebConsoleMessage::LevelLog:
+        case WebConsoleMessage::LevelInfo:
+            severity = logging::LOG_INFO;
+            break;
+        case WebConsoleMessage::LevelWarning:
+            severity = logging::LOG_WARNING;
+            break;
+        case WebConsoleMessage::LevelError:
+            severity = logging::LOG_ERROR;
+            break;
+        default:
+            severity = logging::LOG_VERBOSE;
     }
-
-    LOG(level, "[%s:%d] %s", webSourceName.utf8().c_str(), sourceLine, webMessage.text.utf8().c_str());
+    logging::LogMessage(webSourceName.utf8().c_str(), sourceLine, severity).stream() << webMessage.text.utf8().c_str();
 }
 
 void TypoWeb::didCreateScriptContext(WebLocalFrame* frame, v8::Handle<v8::Context> context, int extension_group, int world_id) {

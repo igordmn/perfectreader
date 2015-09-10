@@ -3,7 +3,7 @@
 #include "WebThreadImpl.h"
 #include "DataURL.h"
 #include "TypoWebLibrary.h"
-#include "util/Debug.h"
+#include "base/logging.h"
 #include "util/StringUtils.h"
 #include <string>
 #include "third_party/WebKit/public/platform/WebString.h"
@@ -83,7 +83,7 @@ void WebURLLoaderImpl::loadSynchronously(
         WebURLResponse& response,
         WebURLError& error,
         WebData& data) {
-    LOGW("WebURLLoaderImpl::loadSynchronously not implemented");
+    LOG(WARNING) << "WebURLLoaderImpl::loadSynchronously not implemented";
 }
 
 void WebURLLoaderImpl::loadAsynchronously(
@@ -128,7 +128,7 @@ void WebURLLoaderImpl::cancel() {
 }
 
 void WebURLLoaderImpl::setDefersLoading(bool value) {
-    LOGW("WebURLLoaderImpl::setDefersLoading not implemented");
+    LOG(WARNING) << "WebURLLoaderImpl::setDefersLoading not implemented";
 }
 
 void WebURLLoaderImpl::didReceiveResponse(long long contentLength, string contentType, string charset) {

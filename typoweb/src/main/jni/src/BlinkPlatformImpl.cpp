@@ -5,7 +5,7 @@
 #include "WebThreadImpl.h"
 #include "BlinkResourceLoader.h"
 #include "TypoWebLibrary.h"
-#include "util/Debug.h"
+#include "base/logging.h"
 #include <string>
 #include <time.h>
 #include "third_party/WebKit/public/platform/WebTraceLocation.h"

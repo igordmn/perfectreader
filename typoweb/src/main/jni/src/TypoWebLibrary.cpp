@@ -1,7 +1,7 @@
 #include "TypoWebLibrary.h"
 
 #include "BlinkPlatformImpl.h"
-#include "util/Debug.h"
+#include "base/logging.h"
 #include "third_party/WebKit/public/web/WebKit.h"
 #include "third_party/WebKit/public/web/WebRuntimeFeatures.h"
 #include "third_party/WebKit/public/web/WebCache.h"

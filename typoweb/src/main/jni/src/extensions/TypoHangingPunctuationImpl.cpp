@@ -1,5 +1,5 @@
 #include "TypoHangingPunctuationImpl.h"
-#include "../util/Debug.h"
+#include "base/logging.h"
 
 namespace typo {
 

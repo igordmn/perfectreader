@@ -1,7 +1,7 @@
 #include "WebThreadImpl.h"
 
 #include <list>
-#include "util/Debug.h"
+#include "base/logging.h"
 
 using namespace blink;
 

@@ -2,7 +2,7 @@
 
 #include "skia/GrGLCreateNativeInterface_android.h"
 #include <sys/time.h>
-#include "util/Debug.h"
+#include "base/logging.h"
 
 namespace typo {
 

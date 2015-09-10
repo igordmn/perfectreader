@@ -1,6 +1,6 @@
 #include "JniUtils.h"
 
-#include "Debug.h"
+#include "base/logging.h"
 #include <pthread.h>
 #include <stdlib.h>
 
