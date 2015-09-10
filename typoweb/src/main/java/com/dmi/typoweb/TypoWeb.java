@@ -57,7 +57,7 @@ public class TypoWeb {
     public void destroy() {
         checkNotDestroyed();
         destroyed = true;
-        picture.recycle();
+        picture.destroy();
         invalidator.destroy();
         mainThread().postTask(() -> {
             nativeDestroyTypoWeb(nativeTypoWeb);
@@ -281,30 +281,48 @@ public class TypoWeb {
 
     private class Picture {
         private long nativeCurrentPicture = 0;
+        private final Object pictureMutex = new Object();
+        private boolean destroyed = false;
 
         // called from client thread (usually it is android UI thread)
-        public synchronized void recycle(){
-            if (nativeCurrentPicture != 0) {
-                nativeDestroyPicture(nativeCurrentPicture);
-                nativeCurrentPicture = 0;
+        public void destroy(){
+            synchronized (pictureMutex) {
+                reset(0);
+                destroyed = true;
             }
         }
 
         // called from GL thread
-        public synchronized void draw(RenderContext renderContext) {
+        public void draw(RenderContext renderContext) {
             renderContext.checkCanUse();
-            if (nativeCurrentPicture != 0) {
-                nativeDrawPicture(renderContext.nativeRenderContext, getFrameBufferBinding(), nativeCurrentPicture);
+            synchronized (pictureMutex) {
+                if (nativeCurrentPicture != 0) {
+                    nativeDrawPicture(renderContext.nativeRenderContext, getFrameBufferBinding(), nativeCurrentPicture);
+                }
             }
             renderContext.resetGLState();
         }
 
         // called from main web thread
-        public synchronized void invalidate() {
+        public void invalidate() {
             nativeBeginFrame(nativeTypoWeb, currentTimeMillis() / 1000.0, 0, 1 / FPS);
             nativeLayout(nativeTypoWeb);
-            recycle();
-            nativeCurrentPicture = nativeRecordPicture(nativeTypoWeb);
+
+            long newNativeCurrentPicture = nativeRecordPicture(nativeTypoWeb);
+            synchronized (pictureMutex) {
+                if (destroyed) {
+                    nativeDestroyPicture(newNativeCurrentPicture);
+                } else {
+                    reset(newNativeCurrentPicture);
+                }
+            }
+        }
+
+        private void reset(long newNativeCurrentPicture) {
+            if (this.nativeCurrentPicture != 0) {
+                nativeDestroyPicture(this.nativeCurrentPicture);
+            }
+            this.nativeCurrentPicture = newNativeCurrentPicture;
         }
     }
 

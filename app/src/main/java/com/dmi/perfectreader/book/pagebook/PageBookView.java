@@ -260,7 +260,7 @@ public class PageBookView extends DeltaTimeGLSurfaceView {
                     currentPage = acquirePage(visiblePages, currentIndex);
                     currentPage.refresh();
                 }
-            } else {
+            } else if (!pageAnimation.isAnimate()) {
                 currentPage.refresh();
             }
         }

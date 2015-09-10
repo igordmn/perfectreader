@@ -29,7 +29,7 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
     private final Settings settings = new Settings();
     private BookStorage bookStorage;
     private final CurrentLocation currentLocation = new CurrentLocation();
-    private volatile int loadCount = 0;
+    private final LoadingState loadingState = new LoadingState();
 
     public WebPageBook(Client client, Context context) {
         this.client = client;
@@ -192,10 +192,10 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
 
     private void goCurrentLocation() {
         if (currentLocation.hasSegments()) {
-            loadCount++;
+            loadingState.beforeLoad();
             typoWeb.execJavaScript(format(
                     "reader.goLocation(%s, %s);" +
-                    "__javaBridge.decrementLoadCount();",
+                    "__javaBridge.afterLoad();",
                     currentLocation.segmentIndex(), currentLocation.segmentPercent()
             ));
         }
@@ -205,25 +205,26 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
     @Override
     public void resize(int width, int height) {
         checkNotDestroyed();
-        loadCount++;
+        loadingState.beforeLoad();
         typoWeb.resize(width, height);
         typoWeb.execJavaScript(
                 "reader.configure({" +
                 "    pageWidth: innerWidth," +
                 "    pageHeight: innerHeight" +
                 "});" +
-                "__javaBridge.decrementLoadCount();"
+                "__javaBridge.afterLoad();"
         );
     }
 
 
     // can be called from another thread
     boolean isLoading() {
-        return loadCount > 0;
+        return loadingState.isLoading();
     }
 
     @Override
     public void afterAnimate() {
+        loadingState.afterAnimate();
         client.afterAnimate();
     }
 
@@ -238,8 +239,8 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
         }
 
         @JavascriptInterface
-        public void decrementLoadCount() {
-            loadCount--;
+        public void afterLoad() {
+            loadingState.afterLoad();
         }
 
         @JavascriptInterface
@@ -250,6 +251,32 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
         @JavascriptInterface
         public void handleTap() {
             Threads.postUITask(client::handleTap);
+        }
+    }
+
+    private class LoadingState {
+        private boolean isLoading = false;
+        private int loadCount = 0;
+
+        public synchronized void beforeLoad() {
+            isLoading = true;
+            loadCount++;
+            checkState(loadCount >= 0);
+        }
+
+        public synchronized void afterLoad() {
+            loadCount--;
+            checkState(loadCount >= 0);
+        }
+
+        public synchronized void afterAnimate() {
+            if (loadCount == 0) {
+                isLoading = false;
+            }
+        }
+
+        public synchronized boolean isLoading() {
+            return isLoading;
         }
     }
 
