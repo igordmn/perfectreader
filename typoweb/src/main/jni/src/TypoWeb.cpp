@@ -350,6 +350,7 @@ TypoWeb::TypoWeb(jobject jobj, float deviceDensity) {
     settings->setAccessibilityEnabled(false);
     settings->setTouchDragDropEnabled(false);
     settings->setTouchEditingEnabled(false);
+    settings->setRegionBasedColumnsEnabled(true);
 
     WebLocalFrame* webFrame = WebLocalFrame::create(this);
     webView_->setMainFrame(webFrame);
