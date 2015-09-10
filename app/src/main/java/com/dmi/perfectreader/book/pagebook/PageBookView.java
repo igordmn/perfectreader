@@ -42,6 +42,7 @@ import static android.opengl.GLES20.glCheckFramebufferStatus;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glDisable;
+import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnable;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
@@ -374,6 +375,7 @@ public class PageBookView extends DeltaTimeGLSurfaceView {
             glUniformMatrix4fv(mvpMatrixHandle, 1, false, matrix, 0);
             glUniform1i(textureHandle, 0);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, VERTEX_COUNT);
+            glDisableVertexAttribArray(coordinateHandle);
             glUseProgram(0);
         }
     }

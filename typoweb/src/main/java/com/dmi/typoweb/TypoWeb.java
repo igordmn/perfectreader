@@ -16,9 +16,6 @@ import javax.annotation.concurrent.NotThreadSafe;
 import java8.util.J8Arrays;
 import timber.log.Timber;
 
-import static android.opengl.GLES20.GL_ARRAY_BUFFER;
-import static android.opengl.GLES20.GL_ELEMENT_ARRAY_BUFFER;
-import static android.opengl.GLES20.glBindBuffer;
 import static com.dmi.typoweb.TypoWebLibrary.mainThread;
 import static com.dmi.util.TypeConverters.stringToType;
 import static com.dmi.util.TypeConverters.typeToString;
@@ -299,10 +296,7 @@ public class TypoWeb {
             if (nativeCurrentPicture != 0) {
                 nativeDrawPicture(renderContext.nativeRenderContext, getFrameBufferBinding(), nativeCurrentPicture);
             }
-
-            // necessary because skia don't cleanup buffer binding
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            renderContext.resetGLState();
         }
 
         // called from main web thread
