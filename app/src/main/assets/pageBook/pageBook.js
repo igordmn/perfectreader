@@ -27,9 +27,13 @@ window.onload = function() {
         hyphenation: true,
     };
 
-    var currentFrame = document.getElementById("firstFrame");
-    var nextFrame = document.getElementById("secondFrame");
-    var previewFrame = document.getElementById("thirdFrame");
+    document.body.style.padding = "0";
+    document.body.style.margin = "0";
+    document.body.style.overflow = "hidden";
+
+    var currentFrame;
+    var nextFrame;
+    var previewFrame;
 
     window.reader = {
         setClient: function(client) {
@@ -47,34 +51,36 @@ window.onload = function() {
             for (var i in config) {
                 bookConfig_[i] = config[i];
             }
-            refreshSegmentNow(currentFrame);
-            refreshSegmentDelayed(nextFrame, NEIGHBOR_FRAME_REFRESH_DELAY_MILLIS);
-            refreshSegmentDelayed(previewFrame, NEIGHBOR_FRAME_REFRESH_DELAY_MILLIS);
+            currentFrame && refreshSegmentNow(currentFrame);
+            nextFrame && refreshSegmentDelayed(nextFrame, NEIGHBOR_FRAME_REFRESH_DELAY_MILLIS);
+            previewFrame && refreshSegmentDelayed(previewFrame, NEIGHBOR_FRAME_REFRESH_DELAY_MILLIS);
         },
 
-        goLocation: function(segmentIndex, segmentPercent) { var oldSegmentIndex = segmentIndex_;
+        goLocation: function(segmentIndex, segmentPercent) {
+            var oldSegmentIndex = segmentIndex_;
             segmentIndex_ = segmentIndex;
             segmentPercent_ = segmentPercent;
 
             var currentUrl = segmentUrls_[segmentIndex_];
             var nextUrl = segmentIndex_ < segmentCount_ - 1 ? segmentUrls_[segmentIndex_ + 1] : "about:blank";
             var previewUrl = segmentIndex_ > 0 ? segmentUrls_[segmentIndex_ - 1] : "about:blank";
-            if (segmentIndex_ == oldSegmentIndex + 1) {
-                var oldCurrentFrame = currentFrame;
+            if (segmentIndex_ == oldSegmentIndex + 1) {   // go next segment
+                previewFrame && removeFrame(previewFrame);
+                previewFrame = currentFrame;
                 currentFrame = nextFrame;
-                nextFrame = previewFrame;
-                previewFrame = oldCurrentFrame;
-                loadSegment(nextFrame, nextUrl);
-            } else if (segmentIndex_ == oldSegmentIndex - 1) {
-                var oldCurrentFrame = currentFrame;
+                nextFrame = loadFrame(nextUrl);
+            } else if (segmentIndex_ == oldSegmentIndex - 1) {  // go preview segment
+                nextFrame && removeFrame(nextFrame);
+                nextFrame = currentFrame;
                 currentFrame = previewFrame;
-                previewFrame = nextFrame;
-                nextFrame = oldCurrentFrame;
-                loadSegment(previewFrame, previewUrl);
+                previewFrame = loadFrame(previewUrl);
             } else if (segmentIndex_ != oldSegmentIndex) {
-                loadSegment(currentFrame, currentUrl);
-                loadSegment(nextFrame, nextUrl);
-                loadSegment(previewFrame, previewUrl);
+                currentFrame && removeFrame(currentFrame);
+                nextFrame && removeFrame(nextFrame);
+                previewFrame && removeFrame(previewFrame);
+                currentFrame = loadFrame(currentUrl);
+                nextFrame = loadFrame(nextUrl);
+                previewFrame = loadFrame(previewUrl);
             }
             refreshViewport();
         }
@@ -123,18 +129,39 @@ window.onload = function() {
         }
     }
 
-    function loadSegment(frame, segmentUrl) {
+    function loadFrame(segmentUrl) {
+        var frame = appendFrame();
+        console.assert(frame.reader == null);
         frame.style.visibility = "hidden";
-        frame.reader = null;
-        clearTimeout(frame.refreshId);
         frame.onload = function() {
             frame.contentWindow.document.fonts.ready.then(function() {
                 initFrame(frame);
                 afterFrameLoad(frame);
                 frame.style.visibility = "";
             });
-        }
+        };
         frame.src = segmentUrl;
+        return frame;
+    }
+
+    function appendFrame() {
+        var frame = document.createElement("iframe");
+        frame.scrolling = "no";
+        frame.style.visibility = "hidden";
+        frame.style.width = "100%";
+        frame.style.height = "100%";
+        frame.style.border = "0";
+        frame.style.position = "absolute";
+        frame.style.padding = "0";
+        frame.style.margin = "0";
+        document.body.appendChild(frame);
+        return frame;
+    }
+
+    function removeFrame(frame) {
+        frame.reader = null;
+        clearTimeout(frame.refreshId);
+        document.body.removeChild(frame);
     }
 
     function afterFrameLoad(frame) {
