@@ -24,13 +24,11 @@ import static java.net.URLConnection.guessContentTypeFromStream;
 
 @UsedByNative
 class WebURLLoaderImpl {
+    // WARNING!!! don't make load in another thread. if you did it, you should fix bug PR-267 (for example, disable invalidate on any url loading)
+
     private static final int BUFFER_SIZE = 8192;
 
     private long nativeWebURLLoaderImpl;
-
-    private boolean cancelled = false;
-    private Future<?> loadTask;
-    private ReceiveDataTask receiveDataTask = new ReceiveDataTask();
 
     public WebURLLoaderImpl(long nativeWebURLLoaderImpl, URLHandler urlHandler) {
         this.nativeWebURLLoaderImpl = nativeWebURLLoaderImpl;
@@ -41,42 +39,31 @@ class WebURLLoaderImpl {
 
     @UsedByNative
     private void load(String url) {
-        checkState(loadTask == null, "load called twice");
-        checkState(!cancelled, "loader cancelled");
-
-        loadTask = postIOTask(() -> {
-            try {
-                handleRequest(url);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (Resources.NotFoundException | FileNotFoundException e) {
-                onFail("URL not found: %s", url);
-            } catch (SecurityException e) {
-                onFail("Access to URL denied: %s", url);
-            } catch (Exception e) {
-                Timber.e(e, "Error loading URL");
-                onFail("Error loading URL: %s", url);
-            }
-        });
+        mainThread().postTask(() -> {
+             try {
+                 handleRequest(url);
+             } catch (InterruptedException e) {
+                 Thread.currentThread().interrupt();
+             } catch (Resources.NotFoundException | FileNotFoundException e) {
+                 onFail("URL not found: %s", url);
+             } catch (SecurityException e) {
+                 onFail("Access to URL denied: %s", url);
+             } catch (Exception e) {
+                 Timber.e(e, "Error loading URL");
+                 onFail("Error loading URL: %s", url);
+             }
+         });
     }
 
     private void onFail(String messageFormat, String url) {
         String shortUrl = url.length() > 200 ? url.substring(0, 200) : url;
         String message = format(messageFormat, shortUrl);
         Timber.e(message);
-        mainThread().postTask(() -> {
-            if (!cancelled) {
-                nativeDidFail(nativeWebURLLoaderImpl, message);
-            }
-        });
+        nativeDidFail(nativeWebURLLoaderImpl, message);
     }
 
     @UsedByNative
     private void cancel() {
-        cancelled = true;
-        if (loadTask != null) {
-            loadTask.cancel(true);
-        }
     }
 
     @SuppressLint("NewApi")
@@ -85,30 +72,17 @@ class WebURLLoaderImpl {
         try (InputStream stream = urlHandler.handleURL(url)) {
             int expectedContentLength = stream.available();
             String contentType = guessContentType(stream, url);
-            mainThread().postTask(() -> {
-                if (!cancelled) {
-                    nativeDidReceiveResponse(nativeWebURLLoaderImpl, expectedContentLength, contentType);
-                }
-            });
-            checkThreadInterrupted();
-
+            nativeDidReceiveResponse(nativeWebURLLoaderImpl, expectedContentLength, contentType);
             int totalLength = 0;
             byte[] data = new byte[BUFFER_SIZE];
             int length;
             while ((length = stream.read(data, 0, data.length)) != -1) {
-                receiveDataTask.data = data;
-                receiveDataTask.length = length;
-                receiveDataTask.execute();
+                nativeDidReceiveData(nativeWebURLLoaderImpl, data, length);
                 totalLength += length;
-                checkThreadInterrupted();
             }
 
             final int totalLengthFinal = totalLength;
-            mainThread().postTask(() -> {
-                if (!cancelled) {
-                    nativeDidFinishLoading(nativeWebURLLoaderImpl, totalLengthFinal);
-                }
-            });
+            nativeDidFinishLoading(nativeWebURLLoaderImpl, totalLengthFinal);
         }
     }
 
@@ -127,26 +101,8 @@ class WebURLLoaderImpl {
         return "";
     }
 
-    private void checkThreadInterrupted() throws InterruptedException {
-        if (Thread.interrupted()) {
-            throw new InterruptedException();
-        }
-    }
-
     private native void nativeDidReceiveResponse(long nativeWebURLLoaderImpl, long contentLength, String contentType);
     private native void nativeDidReceiveData(long nativeWebURLLoaderImpl, byte[] data, int dataLength);
     private native void nativeDidFinishLoading(long nativeWebURLLoaderImpl, long totalLength);
     private native void nativeDidFail(long nativeWebURLLoaderImpl, String message);
-
-    private class ReceiveDataTask extends BlockingTask.MainExecutor {
-        byte[] data;
-        int length;
-
-        @Override
-        public void run() {
-            if (!cancelled) {
-                nativeDidReceiveData(nativeWebURLLoaderImpl, data, length);
-            }
-        }
-    }
 }
