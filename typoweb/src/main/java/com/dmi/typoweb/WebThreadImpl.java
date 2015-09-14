@@ -92,12 +92,16 @@ class WebThreadImpl {
 
     @UsedByNative
     private void addNativeTaskObserver(long nativeTaskObserver) {
-        nativeTaskObservers.add(nativeTaskObserver);
+        synchronized (nativeTaskObservers) {
+            nativeTaskObservers.add(nativeTaskObserver);
+        }
     }
 
     @UsedByNative
     private void removeNativeTaskObserver(long nativeTaskObserver) {
-        nativeTaskObservers.remove(nativeTaskObserver);
+        synchronized (nativeTaskObservers) {
+            nativeTaskObservers.remove(nativeTaskObserver);
+        }
     }
 
     private native void nativeRunTask(long nativeTask);
@@ -126,14 +130,18 @@ class WebThreadImpl {
         public synchronized void run() {
             if (!finished) {
                 finished = true;
-                for (long nativeTaskObserver : nativeTaskObservers) {
-                    nativeWillProcessTask(nativeTaskObserver);
+                synchronized (nativeTaskObservers) {
+                    for (long nativeTaskObserver : nativeTaskObservers) {
+                        nativeWillProcessTask(nativeTaskObserver);
+                    }
                 }
                 nativeRunTask(nativeTask);
                 nativeDeleteTask(nativeTask);
                 nativeTaskToRunnable.remove(nativeTask);
-                for (long nativeTaskObserver : nativeTaskObservers) {
-                    nativeDidProcessTask(nativeTaskObserver);
+                synchronized (nativeTaskObservers) {
+                    for (long nativeTaskObserver : nativeTaskObservers) {
+                        nativeDidProcessTask(nativeTaskObserver);
+                    }
                 }
             }
         }
