@@ -66,7 +66,6 @@ jobject TypoWebLibrary::nativeMainThread(JNIEnv* env, jclass) {
 void TypoWebLibrary::nativeInitBlink(JNIEnv* env, jclass, jstring jUserAgent) {
     CHECK(blinkPlatform_ == 0);
 
-    WebRuntimeFeatures::enableExperimentalFeatures(true);
     WebRuntimeFeatures::enableTestOnlyFeatures(false);
     WebRuntimeFeatures::enableApplicationCache(false);
     WebRuntimeFeatures::enableDatabase(false);
@@ -121,6 +120,11 @@ void TypoWebLibrary::nativeInitBlink(JNIEnv* env, jclass, jstring jUserAgent) {
     WebRuntimeFeatures::enableStaleWhileRevalidateCacheControl(false);
     WebRuntimeFeatures::enableUnsafeES3APIs(false);
     WebRuntimeFeatures::enableWebVR(false);
+    WebRuntimeFeatures::enableExperimentalFeatures(false);
+    WebRuntimeFeatures::enableFeatureFromString("CSS3Text", true);
+    WebRuntimeFeatures::enableFeatureFromString("CSS3TextDecorations", true);
+    WebRuntimeFeatures::enableFeatureFromString("CSSFontSizeAdjust", true);
+    WebRuntimeFeatures::enableFeatureFromString("RegionBasedColumns", true);
 
     threadTaskRunnerHandle_ = new base::ThreadTaskRunnerHandle(scoped_refptr<base::SingleThreadTaskRunner>()); // without this blink::initialize crashes
     blinkPlatform_ = new BlinkPlatformImpl(JniUtils::toUTF8String(env, jUserAgent));
