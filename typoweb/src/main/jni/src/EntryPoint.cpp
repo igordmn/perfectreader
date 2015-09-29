@@ -23,10 +23,5 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     BlinkResourceLoader::registerJni();
     TypoHyphenatorImpl::registerJni();
     TypoHangingPunctuationImpl::registerJni();
-
-    SkGraphics::SetFontCacheLimit(8 * 1024 * 1024);
-    SkGraphics::SetResourceCacheSingleAllocationByteLimit(64 * 1024 * 1024);
-    SkGraphics::Init();
-
     return JNI_VERSION_1_6;
 }

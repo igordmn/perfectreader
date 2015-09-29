@@ -127,6 +127,10 @@ void TypoWebLibrary::nativeInitBlink(JNIEnv* env, jclass, jstring jUserAgent) {
     WebRuntimeFeatures::enableFeatureFromString("CSSFontSizeAdjust", true);
     WebRuntimeFeatures::enableFeatureFromString("RegionBasedColumns", true);
 
+    SkGraphics::SetFontCacheLimit(8 * 1024 * 1024);
+    SkGraphics::SetResourceCacheSingleAllocationByteLimit(64 * 1024 * 1024);
+    SkGraphics::Init();
+
     string flag("--harmony");
     v8::V8::SetFlagsFromString(flag.c_str(), static_cast<int>(flag.size()));
 
