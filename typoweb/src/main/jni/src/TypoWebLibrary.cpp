@@ -13,6 +13,7 @@
 #include "v8/include/v8.h"
 
 using namespace blink;
+using namespace std;
 
 namespace typo {
 
@@ -125,6 +126,9 @@ void TypoWebLibrary::nativeInitBlink(JNIEnv* env, jclass, jstring jUserAgent) {
     WebRuntimeFeatures::enableFeatureFromString("CSS3TextDecorations", true);
     WebRuntimeFeatures::enableFeatureFromString("CSSFontSizeAdjust", true);
     WebRuntimeFeatures::enableFeatureFromString("RegionBasedColumns", true);
+
+    string flag("--harmony");
+    v8::V8::SetFlagsFromString(flag.c_str(), static_cast<int>(flag.size()));
 
     threadTaskRunnerHandle_ = new base::ThreadTaskRunnerHandle(scoped_refptr<base::SingleThreadTaskRunner>()); // without this blink::initialize crashes
     blinkPlatform_ = new BlinkPlatformImpl(JniUtils::toUTF8String(env, jUserAgent));
