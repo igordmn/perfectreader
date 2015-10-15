@@ -7,6 +7,7 @@ public abstract class TestBooks {
     public static final String LUKIANENKO_NEW_DOZOR = "assets://manualtest/testBooks/lukianenkoNewDozor.epub";
     public static final String PRATCHETT_INTERESTING_TIMES = "assets://manualtest/testBooks/pratchettInterestingTimes.epub";
     public static final String PRATCHETT_MEN_AT_ARMS = "assets://manualtest/testBooks/pratchettMenAtArms.epub";
+    public static final String EVANS_NIGHT_OF_KNIVES = "assets://manualtest/testBooks/evansNightOfKnives.epub";
 
     public static abstract class Extracted {
         public static final String[] CARROLL_ALICE_IN_WONDERLAND = new String[] {
