@@ -17,6 +17,7 @@ class WebThreadImpl {
     private final HandlerThread thread;
     private final Handler handler;
     private final List<Long> nativeTaskObservers = new ArrayList<>();
+    private final List<Long> nativeTaskObserversTemp = new ArrayList<>();
     private final Map<Long, NativeTaskWrapper> nativeTaskToRunnable = new ConcurrentHashMap<>();
 
     public static WebThreadImpl current() {
@@ -130,18 +131,22 @@ class WebThreadImpl {
         public synchronized void run() {
             if (!finished) {
                 finished = true;
+
                 synchronized (nativeTaskObservers) {
-                    for (long nativeTaskObserver : nativeTaskObservers) {
-                        nativeWillProcessTask(nativeTaskObserver);
-                    }
+                    nativeTaskObserversTemp.clear();
+                    nativeTaskObserversTemp.addAll(nativeTaskObservers);
                 }
+
+                for (long nativeTaskObserver : nativeTaskObserversTemp) {
+                    nativeWillProcessTask(nativeTaskObserver);
+                }
+
                 nativeRunTask(nativeTask);
                 nativeDeleteTask(nativeTask);
                 nativeTaskToRunnable.remove(nativeTask);
-                synchronized (nativeTaskObservers) {
-                    for (long nativeTaskObserver : nativeTaskObservers) {
-                        nativeDidProcessTask(nativeTaskObserver);
-                    }
+
+                for (long nativeTaskObserver : nativeTaskObserversTemp) {
+                    nativeDidProcessTask(nativeTaskObserver);
                 }
             }
         }
