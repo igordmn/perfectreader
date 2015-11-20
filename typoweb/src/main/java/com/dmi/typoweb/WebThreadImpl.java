@@ -49,7 +49,7 @@ class WebThreadImpl {
         threadToWebThread.remove(thread);
         ArrayList<NativeTaskWrapper> tasks = new ArrayList<>(nativeTaskToRunnable.values());
         for (NativeTaskWrapper task : tasks) {
-            task.cancel();
+            task.destroy();
         }
         thread.quit();
     }
@@ -62,11 +62,15 @@ class WebThreadImpl {
         handler.postDelayed(runnable, milliseconds);
     }
 
+    public void cancelTask(Runnable runnable) {
+        handler.removeCallbacks(runnable);
+    }
+
     @UsedByNative
     private synchronized void cancelNativeTask(final long nativeTask) {
         NativeTaskWrapper task = nativeTaskToRunnable.get(nativeTask);
         if (task != null) {
-            task.cancel();
+            task.destroy();
             handler.removeCallbacks(task);
         }
     }
@@ -112,25 +116,24 @@ class WebThreadImpl {
 
     private class NativeTaskWrapper implements Runnable {
         private final long nativeTask;
-        private boolean finished = false;
+        private boolean destroyed = false;
 
         public NativeTaskWrapper(long nativeTask) {
             this.nativeTask = nativeTask;
             nativeTaskToRunnable.put(nativeTask, this);
         }
 
-        public synchronized void cancel() {
-            if (!finished) {
-                finished = true;
+        public synchronized void destroy() {
+            if (!destroyed) {
                 nativeDeleteTask(nativeTask);
                 nativeTaskToRunnable.remove(nativeTask);
+                destroyed = true;
             }
         }
 
         @Override
         public synchronized void run() {
-            if (!finished) {
-                finished = true;
+            if (!destroyed) {
 
                 synchronized (nativeTaskObservers) {
                     nativeTaskObserversTemp.clear();
@@ -142,8 +145,7 @@ class WebThreadImpl {
                 }
 
                 nativeRunTask(nativeTask);
-                nativeDeleteTask(nativeTask);
-                nativeTaskToRunnable.remove(nativeTask);
+                destroy();
 
                 for (long nativeTaskObserver : nativeTaskObserversTemp) {
                     nativeDidProcessTask(nativeTaskObserver);

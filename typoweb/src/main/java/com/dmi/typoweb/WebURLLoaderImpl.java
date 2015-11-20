@@ -2,22 +2,17 @@ package com.dmi.typoweb;
 
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
-import android.util.Log;
 
 import com.dmi.util.natv.UsedByNative;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import timber.log.Timber;
 
 import static com.dmi.typoweb.TypoWebLibrary.mainThread;
 import static com.dmi.typoweb.WebMimeRegistryImpl.mimeTypeFromFile;
-import static com.dmi.util.concurrent.Threads.postIOTask;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
 import static java.net.URLConnection.guessContentTypeFromStream;
@@ -29,30 +24,45 @@ class WebURLLoaderImpl {
     private static final int BUFFER_SIZE = 8192;
 
     private long nativeWebURLLoaderImpl;
+    private volatile boolean cancelled = false;
+    private Runnable loadTask;
 
     public WebURLLoaderImpl(long nativeWebURLLoaderImpl, URLHandler urlHandler) {
         this.nativeWebURLLoaderImpl = nativeWebURLLoaderImpl;
         this.urlHandler = urlHandler;
     }
 
+    @UsedByNative
+    private void destroy() {
+        mainThread().cancelTask(loadTask);
+    }
+
+    @UsedByNative
+    private void cancel() {
+        cancelled = true;
+    }
+
     private final URLHandler urlHandler;
 
     @UsedByNative
     private void load(String url) {
-        mainThread().postTask(() -> {
-             try {
-                 handleRequest(url);
-             } catch (InterruptedException e) {
-                 Thread.currentThread().interrupt();
-             } catch (Resources.NotFoundException | FileNotFoundException e) {
-                 onFail("URL not found: %s", url);
-             } catch (SecurityException e) {
-                 onFail("Access to URL denied: %s", url);
-             } catch (Exception e) {
-                 Timber.e(e, "Error loading URL");
-                 onFail("Error loading URL: %s", url);
-             }
-         });
+        loadTask = () -> {
+            if (cancelled) {
+                onFail("URL loading aborted: %s", url);
+            } else {
+                try {
+                    handleRequest(url);
+                } catch (Resources.NotFoundException | FileNotFoundException e) {
+                    onFail("URL not found: %s", url);
+                } catch (SecurityException e) {
+                    onFail("Access to URL denied: %s", url);
+                } catch (Exception e) {
+                    Timber.e(e, "Error loading URL");
+                    onFail("Error loading URL: %s", url);
+                }
+            }
+        };
+        mainThread().postTask(loadTask);
     }
 
     private void onFail(String messageFormat, String url) {
@@ -62,17 +72,15 @@ class WebURLLoaderImpl {
         nativeDidFail(nativeWebURLLoaderImpl, message);
     }
 
-    @UsedByNative
-    private void cancel() {
-    }
-
     @SuppressLint("NewApi")
-    private void handleRequest(String url) throws IOException, InterruptedException {
+    private void handleRequest(String url) throws IOException {
         checkState(urlHandler != null, "need set url handler");
+
         try (InputStream stream = urlHandler.handleURL(url)) {
             int expectedContentLength = stream.available();
             String contentType = guessContentType(stream, url);
             nativeDidReceiveResponse(nativeWebURLLoaderImpl, expectedContentLength, contentType);
+
             int totalLength = 0;
             byte[] data = new byte[BUFFER_SIZE];
             int length;

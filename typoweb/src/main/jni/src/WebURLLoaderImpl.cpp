@@ -22,6 +22,7 @@ namespace {
 struct JMethods {
     jclass cls;
     jmethodID constructor;
+    jmethodID destroy;
     jmethodID load;
     jmethodID cancel;
 };
@@ -38,6 +39,7 @@ void WebURLLoaderImpl::registerJni() {
 
     jmethods.cls = (jclass) env->NewGlobalRef(env->FindClass("com/dmi/typoweb/WebURLLoaderImpl"));
     jmethods.constructor = env->GetMethodID(jmethods.cls, "<init>", "(JLcom/dmi/typoweb/URLHandler;)V");
+    jmethods.destroy = env->GetMethodID(jmethods.cls, "destroy", "()V");
     jmethods.load = env->GetMethodID(jmethods.cls, "load", "(Ljava/lang/String;)V");
     jmethods.cancel = env->GetMethodID(jmethods.cls, "cancel", "()V");
 
@@ -75,6 +77,7 @@ WebURLLoaderImpl::WebURLLoaderImpl(jobject urlHandler) : processDataURLTask_(0) 
 WebURLLoaderImpl::~WebURLLoaderImpl() {
     JNIScope jniScope;
     JNIEnv* env = jniScope.getEnv();
+    env->CallVoidMethod(jobj_, jmethods.destroy);
     env->DeleteGlobalRef(jobj_);
 }
 
