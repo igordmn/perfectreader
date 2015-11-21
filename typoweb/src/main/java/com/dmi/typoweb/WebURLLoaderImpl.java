@@ -8,6 +8,8 @@ import com.dmi.util.natv.UsedByNative;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 import timber.log.Timber;
 
@@ -47,18 +49,26 @@ class WebURLLoaderImpl {
     @UsedByNative
     private void load(String url) {
         loadTask = () -> {
-            if (cancelled) {
-                onFail("URL loading aborted: %s", url);
-            } else {
-                try {
-                    handleRequest(url);
-                } catch (Resources.NotFoundException | FileNotFoundException e) {
-                    onFail("URL not found: %s", url);
-                } catch (SecurityException e) {
-                    onFail("Access to URL denied: %s", url);
-                } catch (Exception e) {
-                    Timber.e(e, "Error loading URL");
-                    onFail("Error loading URL: %s", url);
+            String decodedURL = null;
+            try {
+                decodedURL = URLDecoder.decode(url, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                onFail("Failed to decode url: %s", url);
+            }
+            if (decodedURL != null) {
+                if (cancelled) {
+                    onFail("URL loading aborted: %s", decodedURL);
+                } else {
+                    try {
+                        handleRequest(decodedURL);
+                    } catch (Resources.NotFoundException | FileNotFoundException e) {
+                        onFail("URL not found: %s", decodedURL);
+                    } catch (SecurityException e) {
+                        onFail("Access to URL denied: %s", decodedURL);
+                    } catch (Exception e) {
+                        Timber.e(e, "Error loading URL");
+                        onFail("Error loading URL: %s", decodedURL);
+                    }
                 }
             }
         };
@@ -66,7 +76,7 @@ class WebURLLoaderImpl {
     }
 
     private void onFail(String messageFormat, String url) {
-        String shortUrl = url.length() > 200 ? url.substring(0, 200) : url;
+        String shortUrl = url.length() > 200 ? url.substring(0, 200) + "..." : url;
         String message = format(messageFormat, shortUrl);
         Timber.e(message);
         nativeDidFail(nativeWebURLLoaderImpl, message);
@@ -75,7 +85,6 @@ class WebURLLoaderImpl {
     @SuppressLint("NewApi")
     private void handleRequest(String url) throws IOException {
         checkState(urlHandler != null, "need set url handler");
-
         try (InputStream stream = urlHandler.handleURL(url)) {
             int expectedContentLength = stream.available();
             String contentType = guessContentType(stream, url);
