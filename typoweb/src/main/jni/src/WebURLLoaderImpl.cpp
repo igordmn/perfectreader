@@ -150,6 +150,8 @@ void WebURLLoaderImpl::didReceiveResponse(long long contentLength, string conten
     response.setExpectedContentLength(contentLength);
     response.addHTTPHeaderField("Content-Type", webContentTypeHeader);
     response.addHTTPHeaderField("Content-Length", webContentLengthStr);
+    response.addHTTPHeaderField("Cache-Control", "no-cache");
+    response.addHTTPHeaderField("Pragma", "no-cache");
     client_->didReceiveResponse(this, response);
 }
 

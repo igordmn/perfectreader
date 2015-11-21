@@ -128,19 +128,19 @@ void TypoWebLibrary::nativeInitBlink(JNIEnv* env, jclass, jstring jUserAgent) {
     WebRuntimeFeatures::enableFeatureFromString("RegionBasedColumns", true);
 
     SkGraphics::SetFontCacheLimit(8 * 1024 * 1024);
-    SkGraphics::SetResourceCacheSingleAllocationByteLimit(16 * 1024 * 1024);
-    SkGraphics::SetResourceCacheTotalByteLimit(48 * 1024 * 1024);
+    SkGraphics::SetResourceCacheSingleAllocationByteLimit(8 * 1024 * 1024);
+    SkGraphics::SetResourceCacheTotalByteLimit(32 * 1024 * 1024);
     SkGraphics::Init();
 
-    string flag("--harmony");
+    string flag("--harmony --expose-gc");
     v8::V8::SetFlagsFromString(flag.c_str(), static_cast<int>(flag.size()));
 
     threadTaskRunnerHandle_ = new base::ThreadTaskRunnerHandle(scoped_refptr<base::SingleThreadTaskRunner>()); // without this blink::initialize crashes
     blinkPlatform_ = new BlinkPlatformImpl(JniUtils::toUTF8String(env, jUserAgent));
     blink::initialize(blinkPlatform_);
 
-    WebImageCache::setCacheLimitInBytes(48 * 1024 * 1024);
-    WebCache::setCapacities(0, 24 * 1024 * 1024, 48 * 1024 * 1024);
+    WebImageCache::setCacheLimitInBytes(8 * 1024 * 1024);
+    WebCache::setCapacities(0, 4 * 1024 * 1024, 8 * 1024 * 1024);
 }
 
 void TypoWebLibrary::nativeInitICU(JNIEnv* env, jclass, jobject icuData) {
@@ -166,6 +166,7 @@ void TypoWebLibrary::nativeLowMemoryNotification(JNIEnv*, jclass, jboolean criti
     }
 
     if (critical) {
+        WebCache::clear();
         WebImageCache::clear();
         clearSkiaCache();
     }
