@@ -39,6 +39,8 @@ public class App extends BaseApplication {
     private void initLogging() {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
+        } else {
+            Timber.plant(new TimberReleaseTree());
         }
     }
 
