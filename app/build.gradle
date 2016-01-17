@@ -1,6 +1,5 @@
-import com.android.build.OutputFile
-import Utils
 import AndroidUtils
+import com.android.build.OutputFile
 
 apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
@@ -8,9 +7,9 @@ apply plugin: 'groovyx.grooid.groovy-android'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'com.jakewharton.hugo'
+apply plugin: 'android-ndk-classic'
 
 def buildCounter = Integer.getInteger('build.counter', 0)
-def signProperties = Utils.rootProperties('.sign/sign.properties')
 
 android {
     defaultConfig {
@@ -18,13 +17,13 @@ android {
         versionName rootProject.version.toString()
     }
 
-    if (signProperties != null) {
+    if (config['sign.enabled']) {
         signingConfigs {
             main {
-                storeFile new File(rootProject.projectDir, '.sign/' + signProperties['store.file'])
-                storePassword signProperties['store.password']
-                keyAlias signProperties['key.alias']
-                keyPassword signProperties['key.password']
+                storeFile new File(rootProject.projectDir, '.sign/' + config['sign.store.file'])
+                storePassword config['sign.store.password']
+                keyAlias config['sign.key.alias']
+                keyPassword config['sign.key.password']
             }
         }
     }
@@ -34,14 +33,14 @@ android {
             debuggable true
             jniDebuggable true
             minifyEnabled true
-            signingConfig signProperties ? signingConfigs.main : null
+            signingConfig config['sign.enabled'] ? signingConfigs.main : null
             proguardFiles 'proguard-android.pro', 'proguard-rules.pro'
         }
         release {
             minifyEnabled true
             shrinkResources true
-            signingConfig signProperties ? signingConfigs.main : null
-            proguardFiles 'proguard-android.pro', 'proguard-rules.pro'
+            signingConfig config['sign.enabled'] ? signingConfigs.main : null
+            proguardFiles 'proguard-android-optimize.pro', 'proguard-rules.pro'
         }
     }
 
@@ -49,7 +48,11 @@ android {
         abi {
             enable true
             reset()
-            include 'armeabi-v7a', 'mips', 'x86', 'arm64-v8a', 'mips64', 'x86_64'
+            if (config['ndk.abi']) {
+                include config['ndk.abi'].split(",")
+            } else {
+                include 'armeabi-v7a', 'mips', 'x86'
+            }
         }
     }
 
@@ -72,4 +75,8 @@ dependencies {
 
 ext {
     archivesBaseName = rootProject.name + '-' + rootProject.version + '-b' + buildCounter
+}
+
+ndkClassic {
+    additionalArguments "APP_ABI=" + (config['ndk.abi'] ? config['ndk.abi'] : "armeabi-v7a,mips,x86")
 }

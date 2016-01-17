@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?><ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="eng">
+  <head>
+    <meta content="9c11dc39-9cd2-4dc3-9ceb-49ef19e58cfc" name="dtb:uid"/>
+    <meta content="2" name="dtb:depth"/>
+    <meta content="calibre (0.8.29)" name="dtb:generator"/>
+    <meta content="0" name="dtb:totalPageCount"/>
+    <meta content="0" name="dtb:maxPageNumber"/>
+  </head>
+  <docTitle>
+    <text>Interesting Times</text>
+  </docTitle>
+  <navMap>
+    <navPoint class="h1" id="ncx1" playOrder="1">
+      <navLabel>
+        <text>Cover</text>
+      </navLabel>
+      <content src="Text/interestingtimes_cover.xhtml"/>
+    </navPoint>
+    <navPoint class="h1" id="ncx2" playOrder="2">
+      <navLabel>
+        <text>Title Page</text>
+      </navLabel>
+      <content src="Text/interestingtimes.xhtml"/>
+    </navPoint>
+    <navPoint class="h1" id="ncx3" playOrder="3">
+      <navLabel>
+        <text>Contents</text>
+      </navLabel>
+      <content src="Text/contents.xhtml"/>
+    </navPoint>
+    <navPoint class="h1" id="ncx4" playOrder="4">
+      <navLabel>
+        <text>Epigraph</text>
+      </navLabel>
+      <content src="Text/epigraph.xhtml"/>
+    </navPoint>
+    <navPoint class="h1" id="ncx5" playOrder="5">
+      <navLabel>
+        <text>Begin Reading</text>
+      </navLabel>
+      <content src="Text/beginreading.xhtml"/>
+    </navPoint>
+    <navPoint class="h1" id="ncx6" playOrder="6">
+      <navLabel>
+        <text>About the Author</text>
+      </navLabel>
+      <content src="Text/ata.xhtml"/>
+    </navPoint>
+    <navPoint class="h1" id="ncx7" playOrder="7">
+      <navLabel>
+        <text>Praise</text>
+      </navLabel>
+      <content src="Text/praise.xhtml"/>
+    </navPoint>
+    <navPoint class="h1" id="ncx8" playOrder="8">
+      <navLabel>
+        <text>Other Books by Terry Pratchett</text>
+      </navLabel>
+      <content src="Text/booksby.xhtml"/>
+    </navPoint>
+    <navPoint class="h1" id="ncx9" playOrder="9">
+      <navLabel>
+        <text>Copyright</text>
+      </navLabel>
+      <content src="Text/copyright.xhtml"/>
+    </navPoint>
+    <navPoint class="h1" id="ncx10" playOrder="10">
+      <navLabel>
+        <text>About the Publisher</text>
+      </navLabel>
+      <content src="Text/atp.xhtml"/>
+    </navPoint>
+  </navMap>
+</ncx>

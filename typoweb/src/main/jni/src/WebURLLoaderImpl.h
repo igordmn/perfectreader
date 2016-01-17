@@ -31,11 +31,13 @@ public:
     void didFail(std::string message);
 
     // used by java
-    static void nativeDidReceiveResponse(JNIEnv* env, jobject,
+    static void nativeDidReceiveResponse(JNIEnv* env, jclass,
             jlong nativeWebURLLoaderImpl, jlong contentLength, jstring jContentType);
-    static void nativeDidReceiveData(JNIEnv* env, jobject, jlong nativeWebURLLoaderImpl, jbyteArray jData, jint dataLength);
-    static void nativeDidFinishLoading(JNIEnv* env, jobject, jlong nativeWebURLLoaderImpl, jlong totalLength);
-    static void nativeDidFail(JNIEnv* env, jobject, jlong nativeWebURLLoaderImpl, jstring jMessage);
+    static void nativeDidReceiveData(JNIEnv* env, jclass, jlong nativeWebURLLoaderImpl, jobject jData, jint dataLength);
+    static void nativeDidFinishLoading(JNIEnv* env, jclass, jlong nativeWebURLLoaderImpl, jlong totalLength);
+    static void nativeDidFail(JNIEnv* env, jclass, jlong nativeWebURLLoaderImpl, jstring jMessage);
+    static jobject nativeCreateBuffer(JNIEnv* env, jclass, jlong size);
+    static void nativeDeleteBuffer(JNIEnv* env, jclass, jobject jBuffer);
 
 private:
     class ProcessDataURLTask;

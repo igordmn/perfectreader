@@ -377,7 +377,6 @@ void TypoWeb::beginFrame(const WebBeginFrameArgs& frameTime) {
 
 void TypoWeb::layout() {
     webView_->layout();
-    checkContentsSize();
 }
 
 SkPicture* TypoWeb::recordPicture() {
@@ -418,21 +417,6 @@ void TypoWeb::addJavascriptInterface(const JavascriptInterface& interface) {
     javascriptInterfaces_.push_back(interface);
 }
 
-void TypoWeb::checkContentsSize() {
-    for (auto& entry : frameContentsSizes_) {
-        WebFrame* frame = entry.first;
-        WebSize size = entry.second;
-        WebSize currentSize = frame->contentsSize();
-        if (size != currentSize) {
-            WebDocument document = frame->document();
-            WebDOMCustomEvent event = document.createEvent("CustomEvent").to<WebDOMCustomEvent>();
-            event.initCustomEvent("typoContentSizeChange", false, false, WebSerializedScriptValue());
-            document.dispatchEvent(event);
-            entry.second = currentSize;
-        }
-    }
-}
-
 void TypoWeb::scheduleAnimation() {
     JNIScope jniScope;
     JNIEnv* env = jniScope.getEnv();
@@ -450,14 +434,12 @@ void TypoWeb::didFinishLoad(WebLocalFrame* frame) {
 WebFrame* TypoWeb::createChildFrame(WebLocalFrame* parent, const WebString& name, WebSandboxFlags) {
     WebLocalFrame* child = WebLocalFrame::create(this);
     parent->appendChild(child);
-    frameContentsSizes_[child] = child->contentsSize();
     return child;
 }
 
 void TypoWeb::frameDetached(WebFrame* frame) {
     if (frame->parent())
         frame->parent()->removeChild(frame);
-    frameContentsSizes_.erase(frame);
     frame->close();
 }
 

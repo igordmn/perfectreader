@@ -1,0 +1,122 @@
+<html>
+<head>
+    <style type="text/css">
+        @font-face {
+            font-family: font1;
+            src: url(../extra/font1.ttf) ;
+        }
+
+        @font-face {
+            font-family: font2;
+            src: url(../extra/font2.ttf) ;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/global.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/require.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/element.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/promise.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/search.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/style.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/content-info.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/piece.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/calculator.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/splitter.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/transformer.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/importer.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/piece-loader.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/book-content.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece-view.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/paginator.js"></script>
+
+<script type="text/javascript" src="assets://pagebook/js/global.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/utils/require.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/utils/element.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/utils/promise.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/utils/search.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/utils/style.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/content-info.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/piece.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/calculator.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/splitter.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/transformer.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/importer.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/piece-loader.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/book-content.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece-view.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/paginator.js"></script>
+
+<script type="text/javascript" src="utils/test.js"></script>
+
+<script type="text/javascript">
+"use strict";
+
+const TestUtils = require("utils/test");
+const ElementUtils = require("utils/element");
+
+const runTest = TestUtils.runTest;
+const runAsyncTest = TestUtils.runAsyncTest;
+const assertEquals = TestUtils.assertEquals;
+const documentReady = ElementUtils.documentReady;
+
+runAsyncTest("load all resources", function(onOK) {
+    console.assert(document.images.length == 0, "Should not contains images");
+    console.assert(document.fonts.size == 2, "Should contains fonts");
+    document.fonts.forEach(function(fontFace) {
+        console.assert(fontFace.status == 'unloaded', "All fonts should be unloaded");
+    });
+
+    const element1 = document.createElement("div");
+    element1.innerHTML = "                        \
+        <img src='../extra/img1.jpg'/>               \
+        <img src='../extra/img2.jpg'/>               \
+        <img />               \
+        <p style='font-family:font2'>Font2</p>";
+    document.body.appendChild(element1);
+
+    console.assert(document.images.length == 3, "Should contains images");
+    console.assert(document.fonts.size == 2, "Should contains fonts");
+
+    for (let i = 0; i < document.images.length; i++) {
+        console.assert(document.images[i].complete == false, "Should not contains complete images");
+    }
+
+    testReady(function() { console.log("ready1 OK") });
+    testReady(function() { console.log("ready2 OK") });
+
+
+    setTimeout(function() {
+        const element2 = document.createElement("div");
+        element2.innerHTML = "                        \
+            <img src='../extra/img1.jpg'/>               \
+            <img src='../extra/img2.jpg'/>               \
+            <img src='../extra/imgetwtewtewtwetewt.jpg'/>  \
+            <p style='font-family:font2'>Font1</p>    \
+            <p style='font-family:font2'>Font2</p>";
+        document.body.appendChild(element2);
+        testReady(function() { console.log("ready3 OK") });
+    }, 1500);
+
+    setTimeout(function() {
+        testReady(function() { console.log("ready4 OK"); onOK(); });
+    }, 3000);
+});
+
+function testReady(onOK) {
+    documentReady(document, 15000).then(function(document) {
+        document.fonts.forEach(function(fontFace) {
+            console.assert(fontFace.status == 'loaded', "All fonts should be loaded");
+        });
+        for (let i = 0; i < document.images.length; i++) {
+            console.assert(document.images[i].complete == true, "All images should be completed");
+        }
+        onOK();
+    });
+}
+
+</script>
+
+</body>
+</html>

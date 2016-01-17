@@ -1,12 +1,12 @@
 abstract class Utils {
-    static Properties rootProperties(String path) throws IOException {
-        File file = new File(path);
-        if (file.exists()) {
-            Properties properties = new Properties();
-            properties.load(new FileInputStream(file));
-            return properties;
-        } else {
-            return null;
+    static Properties loadProperties(String... paths) throws IOException {
+        Properties all = new Properties();
+        for (String path in paths) {
+            File file = new File(path);
+            if (file.exists()) {
+                all.load(new FileInputStream(file));
+            }
         }
+        return all;
     }
 }

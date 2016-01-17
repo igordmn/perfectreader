@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+  <metadata xmlns:calibre="http://calibre.kovidgoyal.net/2009/metadata" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:opf="http://www.idpf.org/2007/opf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <dc:publisher>Harper Collins, Inc.</dc:publisher>
+    <meta content="17" name="calibre:series_index" />
+    <dc:rights>HarperCollins</dc:rights>
+    <dc:description>&lt;div&gt;&lt;center&gt;Mighty Battles! Revolution! Death! War! (and his sons Terrorand Panic, and Daughter Clancy).&lt;/center&gt;&lt;br&gt;&lt;br&gt;The oldest and most inscrutable empire on the Discworld is in turmoil, brought about by the revolutionary treatise *What I Did On My Holidays*.&lt;br&gt;&lt;br&gt;Workers are uniting, with nothing to lose but their water buffaloes. Warlords are struggling for power. War (and Clancy) are spreading through the ancient cities.&lt;br&gt;&lt;br&gt;And all that stands in the way of terrible doom for everyone is:&lt;br&gt;&lt;br&gt;&lt;center&gt;Rincewind the Wizard, who can't even spell the word "wizard"...&lt;br&gt;&lt;br&gt;Cohen the barbarian hero, five foot tall in his surgical sandals, who has had a lifetime's experience of not dying ...&lt;br&gt;&lt;br&gt;...and a very &lt;i&gt;special&lt;/i&gt; butterfly.&lt;/center&gt;&lt;/div&gt;</dc:description>
+    <dc:language>en</dc:language>
+    <dc:creator opf:file-as="Pratchett, Terry" opf:role="aut">Pratchett, Terry</dc:creator>
+    <meta content="Discworld" name="calibre:series" />
+    <meta content="Interesting Times" name="calibre:title_sort" />
+    <meta name="cover" content="cover" />
+    <dc:date>1994-06-21T04:00:00+00:00</dc:date>
+    <meta content="2011-10-17T15:12:49+00:00" name="calibre:timestamp" />
+    <dc:contributor opf:role="bkp">calibre (0.8.29) [http://calibre-ebook.com]</dc:contributor>
+    <dc:title>Interesting Times</dc:title>
+    <dc:identifier id="uuid_id" opf:scheme="uuid">9c11dc39-9cd2-4dc3-9ceb-49ef19e58cfc</dc:identifier>
+    <meta content="0.4.904" name="Sigil version" />
+  </metadata>
+  <manifest>
+    <item href="Images/cover.jpeg" id="cover" media-type="image/jpeg" />
+    <item href="Images/MSRCover.png" id="ops-fmt-png" media-type="image/png" />
+    <item href="Text/ata.xhtml" id="aboutauthor" media-type="application/xhtml+xml" />
+    <item href="Text/atp.xhtml" id="aboutpublisher" media-type="application/xhtml+xml" />
+    <item href="Text/beginreading.xhtml" id="beginreading" media-type="application/xhtml+xml" />
+    <item href="Text/beginreading1.xhtml" id="beginreading1" media-type="application/xhtml+xml" />
+    <item href="Text/beginreading2.xhtml" id="beginreading2" media-type="application/xhtml+xml" />
+    <item href="Text/beginreading3.xhtml" id="beginreading3" media-type="application/xhtml+xml" />
+    <item href="Text/beginreading4.xhtml" id="beginreading4" media-type="application/xhtml+xml" />
+    <item href="Text/booksby.xhtml" id="booksby" media-type="application/xhtml+xml" />
+    <item href="Text/contents.xhtml" id="contents" media-type="application/xhtml+xml" />
+    <item href="Text/copyright.xhtml" id="copyright" media-type="application/xhtml+xml" />
+    <item href="Text/epigraph.xhtml" id="epigraph" media-type="application/xhtml+xml" />
+    <item href="Text/footnote.xhtml" id="footnote" media-type="application/xhtml+xml" />
+    <item href="Text/interestingtimes.xhtml" id="titlepage" media-type="application/xhtml+xml" />
+    <item href="Images/logo.jpg" id="f1" media-type="image/jpeg" />
+    <item href="Text/praise.xhtml" id="praise" media-type="application/xhtml+xml" />
+    <item href="Styles/stylesheet.css" id="css" media-type="text/css" />
+    <item href="Text/titlepage.xhtml" id="titlepage1" media-type="application/xhtml+xml" />
+    <item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml" />
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="titlepage1" />
+    <itemref idref="titlepage" />
+    <itemref idref="contents" />
+    <itemref idref="epigraph" />
+    <itemref idref="beginreading" />
+    <itemref idref="beginreading1" />
+    <itemref idref="beginreading2" />
+    <itemref idref="beginreading3" />
+    <itemref idref="beginreading4" />
+    <itemref idref="aboutauthor" />
+    <itemref idref="praise" />
+    <itemref idref="booksby" />
+    <itemref idref="copyright" />
+    <itemref idref="aboutpublisher" />
+    <itemref idref="footnote" />
+  </spine>
+  <guide>
+    <reference href="Text/titlepage.xhtml" title="Cover" type="cover" />
+  </guide>
+</package>

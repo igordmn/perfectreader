@@ -14,10 +14,4 @@ android {
             assets.srcDirs += "third_party/chromium-typo/assets";
         }
     }
-
-    buildTypes {
-        debug {
-            jniDebuggable true
-        }
-    }
 }

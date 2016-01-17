@@ -1,0 +1,194 @@
+<!--suppress ALL -->
+
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body style="width:200px; text-align: justify; text-align-last: right">
+
+<script type="text/javascript" src="assets://pagebook/js/utils/require.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/utils/test.js"></script>
+
+<div id="rects" style="position:absolute; top: 0; left: 0; z-index: 1"></div>
+<div style="position:fixed; z-index: 10">
+    <button onclick="showPreview()">showPreview</button>
+    <button onclick="showNext()">showNext</button>
+</div>
+
+<div id="testElements" style="padding-top: 1000px;">
+
+<div>
+    <div style="line-height:0.7" test="colorize(this)">
+        выпи рпв <span test="noLines(this)">оаравпиар иавва
+        ап оарви риы ралои рв</span>
+            рраворлдыва
+            выарлвр
+            <span test="colorize(this)" style="display:inline-block">gjf khsfdkhhksh jklsg <span>hkjlhn</span> jkfs kjghn kfjsnkjnsltrh rth rth rhrhrhrth rthtrh trhrhtrh rt hrth rkhnflkhsnfk rhtrh rhrth rthtr hrthrth rh rh r htrhlnsfkjsnfh klnsfh ksfjnh</span>
+            врывлровлрв
+    </div>
+</div>
+
+<div style="padding-left:20px; width: 320px">
+    <div style="transform:rotate(90deg)">
+        <div test="colorize(this)" style="margin-top:1000px; padding-top:100px; border-top:10px solid black; margin-left:10px; padding-left:5.5px; border-left:1px solid black; text-indent:7px; font-size: 250%; line-height:0.4;">
+            выпи рпв <img test="noLines(this)" style="width:100px; height: 100px; vertical-align: middle"/> оаравпиар иавва
+            ап оарви риы ралои выалои аорв
+            ар ывротавт рлв
+            р авырлов арва
+        </div>
+    </div>
+</div>
+
+<div test="colorize(this)" style="height: 100px; -webkit-writing-mode: vertical-lr; margin-top: 20px">
+    111vvbbgfhr hrttr ytrytrtyy ryrty ryrtyrt yry rr y
+</div>
+
+<div test="colorize(this)" style="height: 100px; -webkit-writing-mode: vertical-rl; margin-top: 20px">
+    111vvbbgfhr hrttr ytrytrtyy ryrty ryrtyrt yry rr y
+</div>
+
+<div test="colorize(this)" style="height: 100px; -webkit-writing-mode: horizontal-bt; margin-top: 20px">
+    111vvbbgfhr hrttr ytrytrtyy ryrty ryrtyrt yry rr y
+</div>
+
+<div test="colorize(this)" style="transform: scale(0.5,0.5);">
+    vvbbgfhr hrttr ytrytrtyy ryrty ryrtyrt yry rr y
+</div>
+
+<div test="noLines(this)" style="margin-top:30px">
+    <div test="colorize(this)">
+        <div test="colorize(this)" style="float:left; width:50px">dgh dgh hgdhgd hdgh gd hdfgh</div>
+        8999999999999
+    </div>
+    <p test="colorize(this)">sdfg sdgsd gdsfg sdfgfsg sf gsfdgsfdg sfgsfd 5gsdfg fs yury uyuri7768u tyu rt uyrtdgsfd gs saf sa fsf
+        s7567567657567657dfsd fafadfas ffd gsdgssdg sd gsd</p>
+</div>
+
+<div test="colorize(this)" style="margin-top:30px; padding-top:5.5px">
+    gfdgdf<br test="noLines(this)">gsdf
+</div>
+
+<pre test="colorize(this)" style="margin-top:30px">
+ gfdgdf gsdfg dsfgdg dsgdfgdfsg sdf1
+    gsdfgfdsgsdfgfdsgfsdgs
+ fgsdf sdfg
+</pre>
+
+<div test="colorize(this)" style="visibility: hidden">ret erter esr tesr tesrtestestestres sert sre tr ur ryu y urtuyest ser t</div>
+
+<table test="noLines(this)" style="margin-top:30px">
+    <tr test="noLines(this)">
+        <td test="colorize(this)">
+            fsdfsdfsdfsdfg sdfgdfs
+            hfh
+            fhsdh sfhsd hsh
+            sfdhs
+            dfh sdf
+            hsfdh
+        </td>
+    </tr>
+    <tr test="noLines(this)">
+        <td test="colorize(this)">dfgsdfhsfhdf df hgdsf hfs</td>
+    </tr>
+</table>
+
+<div test="colorize(this)" style="margin-top:30px">
+    77fgjksdf ngkjfskfj gfksjg fskjfgkj hgkljh gkjsfg
+    <div test="colorize(this)">44 fjh sfkjgjngs nskjsnhkg kjshnkjhnkjhnsgkh nsk hsg</div>
+    99kfjghsfdkj ghfklghskl fklshkhkjshgkjshgkljfhgkshksdh
+</div>
+
+<div test="colorize(this)" style="margin-top:30px">
+    77fgjksdf ngkjfskfj gfksjg fskjfgkj hgkljh gkjsfg
+    <div test="colorize(this)" style="float:left">44 fjh sfkjgjngs nskjsnhkg kjshnkjhnkjhnsgkh nsk hsg</div>
+    99kfjghsfdkj ghfklghskl fklshkhkjshgkjshgkljfhgkshksdh
+</div>
+
+<p test="colorize(this)" style="-webkit-column-count: 2; -webkit-column-gap: 40px; -webkit-column-rule: 1px solid lightgrey; padding: 15px;">
+    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod
+</p>
+
+<svg test="noLines(this)">
+    <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+</svg>
+
+<p test="colorize(this)" style="white-space: nowrap; width:100px; margin-top:30px; overflow: hidden; text-overflow: ellipsis">
+    uituiytiy uiuyiytitui yuty uty utu ty utyu t
+</p>
+
+<i test="noLines(this)" style="margin-top:30px" >Hello<br>world.</i>
+
+</div>
+
+<script type="text/javascript">
+    var TestUtils = require("utils/test");
+    var runTest = TestUtils.runTest;
+    var runAsyncTest = TestUtils.runAsyncTest;
+    var assertEquals = TestUtils.assertEquals;
+
+    var testElementsNode = document.getElementById("testElements");
+
+    const walker = document.createTreeWalker(testElementsNode, NodeFilter.SHOW_ELEMENT);
+    while (walker.nextNode()) {
+        var test = walker.currentNode.getAttribute("test");
+        if (test) {
+            (function() {
+                eval(test);
+            }).call(walker.currentNode);
+        }
+    }
+
+    function colorize(element) {
+        var rects = element.typoGetLineRects();
+
+        var container = document.getElementById("rects");
+
+        for (var i = 0; i < rects.length; i++) {
+            var rect = rects[i];
+            var element = document.createElement("div");
+            element.style.position = "absolute";
+            element.style.left = document.body.scrollLeft + rect.left;
+            element.style.top = document.body.scrollTop + rect.top;
+            element.style.width = rect.width;
+            element.style.height = rect.height;
+            element.style.background = "red";
+            element.style.opacity = "0.1";
+            container.appendChild(element);
+        };
+    }
+
+    function noLines(element) {
+        assertEquals(0, element.typoGetLineRects().length, "length equals");
+    }
+</script>
+
+<script type="text/javascript">
+    var rootElements = [];
+    var currentIndex = 0;
+
+    for (var i in testElementsNode.childNodes) {
+        var node = testElementsNode.childNodes[i];
+        if (node.nodeType == Node.ELEMENT_NODE && node.nodeName != "SCRIPT") {
+            rootElements.push(node);
+        }
+    }
+
+    showCurrent();
+
+    function showPreview() {
+        currentIndex > 0 && currentIndex--;
+        showCurrent();
+    }
+
+    function showNext() {
+        currentIndex < rootElements.length - 1 && currentIndex++;
+        showCurrent();
+    }
+
+    function showCurrent() {
+        window.scrollTo(1, rootElements[currentIndex].offsetTop - 40);
+    }
+</script>
+
+</body>
+</html>

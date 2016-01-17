@@ -12,16 +12,15 @@ import java.nio.ByteBuffer;
 
 import timber.log.Timber;
 
-class TypoWebLibrary {
+public class TypoWebLibrary {
     private static boolean init = false;
 
     private static final ComponentCallbacks2 componentCallbacks = new ComponentCallbacks2() {
         @Override
         public void onTrimMemory(int level) {
-            if (level >= ComponentCallbacks2.TRIM_MEMORY_COMPLETE) {
+            if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL) {
                 lowMemoryNotification(true);
-            } else if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND ||
-                       level == ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL) {
+            } else if (level == ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE) {
                 lowMemoryNotification(false);
             }
         }
@@ -35,10 +34,6 @@ class TypoWebLibrary {
         public void onConfigurationChanged(Configuration configuration) {
         }
     };
-
-    static {
-        System.loadLibrary("typoweb");
-    }
 
     public static void checkInit(final Context context, final String userAgent) {
         if (!init) {
@@ -74,7 +69,7 @@ class TypoWebLibrary {
         return nativeMainThread();
     }
 
-    private static void lowMemoryNotification(final boolean critical) {
+    public static void lowMemoryNotification(final boolean critical) {
         mainThread().postTask(() -> nativeLowMemoryNotification(critical));
     }
 

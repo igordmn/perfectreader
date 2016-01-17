@@ -1,0 +1,171 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" href="../../../../main/assets/pagebook/css/index.css">
+    <link rel="stylesheet" href="assets://pagebook/css/index.css">
+</head>
+<body style="padding:0; margin:0;">
+
+<div id="page" style="margin:2px; padding:8px; width:338px; height:600px; border:1px solid black; font-size:70%"></div>
+
+<div style="position:fixed; left:290px; top:0px; width:70px; z-index: 1; background-color:#BBBBBB; opacity:0.9">
+    <button onclick="goNextPage()" style="width:60px; height: 50px; margin:5px;">NEXT</button>
+    <button onclick="goPreviousPage()" style="width:60px; height: 50px; margin:5px;">PREV</button>
+</div>
+
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/global.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/require.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/element.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/promise.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/search.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/style.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/content-info.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/piece.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/calculator.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/splitter.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/transformer.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/importer.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/piece-loader.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/book-content.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/piece-view.js"></script>
+<script type="text/javascript" src="../../../../main/assets/pagebook/js/paginator.js"></script>
+
+<script type="text/javascript" src="assets://pagebook/js/global.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/utils/require.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/utils/element.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/utils/promise.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/utils/search.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/utils/style.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/content-info.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/piece.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/calculator.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/splitter.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/transformer.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/importer.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece/piece-loader.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/book-content.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/piece-view.js"></script>
+<script type="text/javascript" src="assets://pagebook/js/paginator.js"></script>
+
+<script type="text/javascript" src="utils/test.js"></script>
+
+<script type="text/javascript">
+"use strict";
+
+const PromiseUtils = require("utils/promise");
+const BookContent = require("book-content");
+const Paginator = require("paginator");
+
+const async = PromiseUtils.async.bind(PromiseUtils);
+const createBookContent = BookContent.createBookContent.bind(BookContent);
+const createPaginator = Paginator.createPaginator.bind(Paginator);
+
+// For desktop test
+if (!Element.prototype.typoGetLineRects) {
+    Element.prototype.typoGetLineRects = function() { return []; }
+}
+if (!CSSStyleDeclaration.prototype.typoHiddenLinesTop) {
+    Object.defineProperty(CSSStyleDeclaration.prototype, "typoHiddenLinesTop", { value: "", writable:true });
+}
+if (!CSSStyleDeclaration.prototype.typoHiddenLinesBottom) {
+    Object.defineProperty(CSSStyleDeclaration.prototype, "typoHiddenLinesBottom", { value: "", writable:true });
+}
+
+const TEST_SOURCE_1 = {
+    segments: [
+        { src: "test-content-1.html", sizeInBytes: 1 },
+        { src: "test-content-2.html", sizeInBytes: 1 }
+    ],
+};
+
+const TEST_SOURCE_2 = {
+    segments: [
+        { src: "../testbooks/extracted/carrollAliceInWonderland/wrap0000.html", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-0.htm.html", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-1.htm.html", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-2.htm.html", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-3.htm.html", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-4.htm.html", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-5.htm.html", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-6.htm.html", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-7.htm.html", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-8.htm.html", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-9.htm.html", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-10.htm.html", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-11.htm.html", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-12.htm.html", sizeInBytes: 1 },
+    ],
+};
+
+const TEST_SOURCE_3 = {
+    segments: [
+        { src: "../testbooks/extracted/pratchettInterestingTimes/OEBPS/Text/interestingtimes.xhtml", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/pratchettInterestingTimes/OEBPS/Text/contents.xhtml", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/pratchettInterestingTimes/OEBPS/Text/epigraph.xhtml", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/pratchettInterestingTimes/OEBPS/Text/beginreading.xhtml", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/pratchettInterestingTimes/OEBPS/Text/beginreading1.xhtml", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/pratchettInterestingTimes/OEBPS/Text/beginreading2.xhtml", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/pratchettInterestingTimes/OEBPS/Text/beginreading3.xhtml", sizeInBytes: 1 },
+        { src: "../testbooks/extracted/pratchettInterestingTimes/OEBPS/Text/beginreading4.xhtml", sizeInBytes: 1 },
+    ],
+};
+
+const INITIAL_PERCENT = 0.0;
+const TEST_SOURCE = TEST_SOURCE_3;
+
+const bookContent = createBookContent(TEST_SOURCE);
+const paginator = createPaginator(bookContent);
+const pageContainer = document.getElementById("page");
+
+let currentPage;
+
+async(function*() {
+    var t1 = new Date().getTime();
+    currentPage = yield paginator.makePage(INITIAL_PERCENT, pageContainer);
+    document.body.clientWidth;
+    var t2 = new Date().getTime();
+    console.log("make page by percent time: " + (t2-t1))
+});
+
+function goNextPage() {
+    if (currentPage) {
+        if (paginator.hasNextPage(currentPage)) {
+            const page = currentPage;
+            currentPage = undefined;
+            pageContainer.innerHTML = "";
+            async(function*() {
+                var t1 = new Date().getTime();
+                currentPage = yield paginator.makeNextPage(page, pageContainer);
+                paginator.releasePage(page);
+                document.body.clientWidth;
+                var t2 = new Date().getTime();
+                console.log("make next page time: " + (t2-t1))
+            });
+        } else {
+            log("hasn't next page");
+        }
+    }
+}
+
+function goPreviousPage() {
+    if (currentPage) {
+        if (paginator.hasPreviousPage(currentPage)) {
+            const page = currentPage;
+            currentPage = undefined;
+            pageContainer.innerHTML = "";
+            async(function*() {
+                var t1 = new Date().getTime();
+                currentPage = yield paginator.makePreviousPage(page, pageContainer);
+                paginator.releasePage(page);
+                document.body.clientWidth;
+                var t2 = new Date().getTime();
+                console.log("make previous page time: " + (t2-t1))
+            });
+        } else {
+            log("hasn't previous page");
+        }
+    }
+}
+
+</script>
+</body>
+</html>

@@ -72,7 +72,7 @@ void TypoWebLibrary::nativeInitBlink(JNIEnv* env, jclass, jstring jUserAgent) {
     SkGraphics::SetResourceCacheTotalByteLimit(32 * 1024 * 1024);
     SkGraphics::Init();
 
-    string flag("--harmony --expose-gc");
+    string flag("--harmony --expose-gc --max-executable-size=96 --max-old-space-size=128 --max-semi-space-size=1");
     v8::V8::SetFlagsFromString(flag.c_str(), static_cast<int>(flag.size()));
 
     threadTaskRunnerHandle_ = new base::ThreadTaskRunnerHandle(scoped_refptr<base::SingleThreadTaskRunner>()); // without this blink::initialize crashes

@@ -58,8 +58,6 @@ public:
     void addJavascriptInterface(const JavascriptInterface& interface);
 
 protected:
-    void checkContentsSize();
-
     // WebViewClient implementation
     virtual void scheduleAnimation() override;
     virtual void didFinishLoad(blink::WebLocalFrame* frame) override;
@@ -83,7 +81,6 @@ protected:
 private:
     jobject jobj_;
     std::vector<JavascriptInterface> javascriptInterfaces_;
-    std::map<blink::WebFrame*, blink::WebSize> frameContentsSizes_;
     blink::WebView* webView_;
 };
 

@@ -8,15 +8,7 @@
 <script type="text/javascript">console.log("ddd finish");</script>
 
 <script type="text/javascript" src="js/dom.js"></script>
-<script type="text/javascript" src="js/error.js"></script>
-<script type="text/javascript" src="js/map.js"></script>
-<script type="text/javascript" src="js/string.js"></script>
-<script type="text/javascript" src="js/style.js"></script>
-<script type="text/javascript" src="js/regexp.js"></script>
-<script type="text/javascript" src="js/object.js"></script>
-<script type="text/javascript" src="js/debug.js"></script>
 <script type="text/javascript" src="js/set.js"></script>
-<script type="text/javascript" src="js/render.js"></script>
 <script type="text/javascript" src="js/text.js"></script>
 
 <script type="text/javascript">
@@ -206,7 +198,7 @@
             "NAV", "OL", "OPTION", "P", "SECTION", "SUMMARY", "UL", "XMP"
         ]);
 
-        var postActions = create(function () {
+        var postActions = (function () {
             var firstActions = [];
             var secondActions = [];
             var thirdActions = [];
@@ -239,7 +231,7 @@
                     thirdActions.length = 0;
                 }
             };
-        });
+        })();
 
         var range = doc.createRange();
 

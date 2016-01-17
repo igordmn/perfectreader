@@ -36,7 +36,7 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
 
         typoWeb = new TypoWeb(this, context, context.getString(R.string.app_name));
         typoWeb.setURLHandler((url) -> {
-            if (url.startsWith("assets://pageBook/")) {
+            if (url.startsWith("assets://pagebook/")) {
                 return context.getAssets().open(url.substring("assets://".length()));
             } else if (bookStorage != null) {
                 return bookStorage.readURL(url);
@@ -47,7 +47,7 @@ public class WebPageBook implements PageBook, TypoWeb.Client {
         typoWeb.setHangingPunctuationConfig(hangingPunctuationConfig());
         typoWeb.setHyphenationPatternsLoader(new TexHyphenationPatternsLoader(context));
         typoWeb.addJavascriptInterface("__javaBridge", new JavaBridge());
-        typoWeb.loadUrl("assets://pageBook/pageBook.html");
+        typoWeb.loadUrl("assets://pagebook/index.html");
         typoWeb.execJavaScript("reader.setClient(__javaBridge);");
     }
 

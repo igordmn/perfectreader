@@ -1,0 +1,8 @@
+.invisible-page {
+    visibility: hidden;
+}
+
+.invisible-page * {
+    animation-play-state: paused !important;
+    transition: none !important;
+}

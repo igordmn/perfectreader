@@ -15,6 +15,9 @@ import com.dmi.util.base.BaseActivity;
 import com.dmi.util.opengl.GLRendererDelegate;
 import com.dmi.util.opengl.GLSurfaceViewExt;
 
+import java.io.FileInputStream;
+import java.net.URL;
+
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
@@ -22,11 +25,7 @@ import static android.opengl.GLES20.glViewport;
 
 // NOTE: pause, resume, destroy not calling because we are not test it
 public class ExtBlinkTestActivity extends BaseActivity {
-    @SuppressWarnings("unused")
-    private static final String HANGING_PUNCTUATION = "assets://manualtest/extBlink/hangingpunctuation.html";
-    @SuppressWarnings("unused")
-    private static final String HYPHENS = "assets://manualtest/extBlink/hyphens.html";
-    private static final String FILE = HANGING_PUNCTUATION;
+    private static final String FILE = "assets://manualtest/pagebook/paginator-test.html";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,22 +42,26 @@ public class ExtBlinkTestActivity extends BaseActivity {
 
             typoWeb = new TypoWeb(this, context, context.getString(R.string.app_name));
             typoWeb.setURLHandler(url -> {
-                if (url.startsWith("assets://")) {
+                if (url.startsWith("http://")) {
+                    return new URL(url).openStream();
+                } else if (url.startsWith("assets://")) {
                     return getAssets().open(url.substring("assets://".length()));
+                } else if (url.startsWith("file://")) {
+                    return new FileInputStream(url.substring("file://".length()));
                 } else {
                     throw new SecurityException();
                 }
             });
             typoWeb.setHangingPunctuationConfig(
                     HangingPunctuationConfig.builder()
-                            .startChar('(', 1.0F)
-                            .startChar('\"', 1.0F)
-                            .endChar(')', 1.0F)
-                            .endChar('\'', 1.0F)
-                            .endChar(',', 1.0F)
-                            .endChar('.', 1.0F)
-                            .endChar('-', 1.0F)
-                            .build()
+                                            .startChar('(', 1.0F)
+                                            .startChar('\"', 1.0F)
+                                            .endChar(')', 1.0F)
+                                            .endChar('\'', 1.0F)
+                                            .endChar(',', 1.0F)
+                                            .endChar('.', 1.0F)
+                                            .endChar('-', 1.0F)
+                                            .build()
             );
             typoWeb.setHyphenationPatternsLoader(new TexHyphenationPatternsLoader(context));
             typoWeb.loadUrl(FILE);

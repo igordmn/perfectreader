@@ -1,0 +1,32 @@
+.fghfgh {
+}
+
+@font-face
+{
+ font-style: normal;
+ font-family: Font_3c70a861-af45-495b-867d-2bf4759b1209;
+ src:  url(../fonts/LiberationSerif-Regular.ttf) ;
+ font-weight: normal;}
+@font-face
+{
+ font-style: italic;
+ font-family: Font_3c70a861-af45-495b-867d-2bf4759b1209;
+ src:  url(../fonts/LiberationSerif-Italic.ttf) ;
+ font-weight: normal;}
+@font-face
+{
+ font-style: normal;
+ font-family: Font_3c70a861-af45-495b-867d-2bf4759b1209;
+ src:  url(../fonts/LiberationSerif-Bold.ttf) ;
+ font-weight: bold;}
+@font-face
+{
+ font-style: italic;
+ font-family: Font_3c70a861-af45-495b-867d-2bf4759b1209;
+ src:  url(../fonts/LiberationSerif-BoldItalic.ttf) ;
+ font-weight: bold;}
+@font-face
+{
+ font-style: italic;
+ font-family: Font_3c70a861-af45-495b-867d-2bf4759b1209;
+ src:  url(../fonts/LiberationSerif-Italic.ttf) ;}

@@ -1,0 +1,153 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" href="../../../../main/assets/pagebook/css/index.css">
+    <link rel="stylesheet" href="assets://pagebook/css/index.css">
+
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/global.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/require.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/element.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/promise.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/search.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/utils/style.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/content-info.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/piece.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/calculator.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/splitter.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/transformer.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/importer.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/piece/piece-loader.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/book-content.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/piece-view.js"></script>
+    <script type="text/javascript" src="../../../../main/assets/pagebook/js/paginator.js"></script>
+
+    <script type="text/javascript" src="assets://pagebook/js/global.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/utils/require.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/utils/element.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/utils/promise.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/utils/search.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/utils/style.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/piece/content-info.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/piece/piece.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/piece/calculator.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/piece/splitter.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/piece/transformer.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/piece/importer.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/piece/piece-loader.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/book-content.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/piece-view.js"></script>
+    <script type="text/javascript" src="assets://pagebook/js/paginator.js"></script>
+
+    <script type="text/javascript" src="utils/test.js"></script>
+</head>
+<body style="padding:0; margin:0;">
+<div style="overflow:hidden;">
+    <div style="-webkit-margin-top-collapse: discard"></div>
+    <div id="contentContainer" style="width: 640px; zoom:0.5"></div>
+    <div style="-webkit-margin-bottom-collapse: discard"></div>
+</div>
+
+<div id="splittedPieces" style="width:300px"></div>
+
+<script type="text/javascript">
+"use strict";
+
+const TEST_CONTENT_1 = "test-content-1.html";
+const TEST_CONTENT_2 = "test-content-2.html";
+const TEST_CONTENT_3 = "../testbooks/extracted/tolkienLordOfTheRings/section23.xhtml";
+const TEST_CONTENT_4 = "../testbooks/extracted/pratchettInterestingTimes/OEBPS/Text/beginreading.xhtml";
+const TEST_CONTENT_5 = "../testbooks/extracted/carrollAliceInWonderland/@public@vhost@g@gutenberg@html@files@28885@28885-h@28885-h-12.htm.html";
+const TEST_CONTENT_6 = "../testbooks/tolkienLordOfTheRings.html";
+const TEST_CONTENT = TEST_CONTENT_4;
+
+const Test = require("utils/test");
+const ContentInfo = require("piece/content-info");
+const Calculator = require("piece/calculator");
+const Importer = require("piece/importer");
+const Transformer = require("piece/transformer");
+const Splitter = require("piece/splitter");
+
+const bench = Test.bench.bind(Test);
+const calculateEdges = Calculator.calculateEdges.bind(Calculator);
+const importContent = Importer.importContent.bind(Importer);
+const cleanNode = Transformer.cleanNode.bind(Transformer);
+const splitIntoPieces = Splitter.splitIntoPieces.bind(Splitter);
+
+
+setTimeout(test, 2000);
+setTimeout(test, 6000);
+setTimeout(test, 9000);
+setTimeout(test, 12000);
+setTimeout(function() {
+    window.gc && bench("gc", function() {
+        window.gc();
+    });
+}, 14000);
+
+var frame = document.createElement("iframe");
+frame.style.display = "none";
+document.body.appendChild(frame);
+
+function test() {
+    frame.onload = null;
+    frame.style.display = "none";
+    frame.src = "";
+    document.getElementById("splittedPieces").innerHTML = "";
+    document.body.clientHeight;
+
+    console.log("_____________________________________");
+    var t1 = new Date().getTime();
+    frame.onload = function() {
+        var t2 = new Date().getTime();
+        console.log("0. load time: " + (t2 - t1));
+        testTransform();
+    }
+    frame.src = TEST_CONTENT;
+}
+
+function clearStyleSheet(sheet) {
+    for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+        sheet.deleteRule(sheet.cssRules[i]);
+    }
+}
+
+function testTransform() {
+    const doc = frame.contentWindow.document;
+
+    let body;
+    let pieces;
+
+    bench("1. importContent", function() {
+        body = importContent(doc);
+    });
+    bench("2. calculateEdges", function() {
+        calculateEdges(body, 0.0, 1.0);
+    });
+    bench("3. cleanNode", function() {
+        cleanNode(body);
+    });
+    bench("4. splitIntoPieces", function() {
+        pieces = splitIntoPieces(body);
+    });
+    bench("5. createFragment x8", function() {
+        let n = 0;
+        for (let piece of pieces) {
+            if (n == 8) break;
+            piece.createFragment();
+            n++;
+        }
+    });
+
+    for (let piece of pieces) {
+        let wrapper = document.createElement("div");
+        wrapper.style.clear = "both";
+        wrapper.appendChild(piece.createFragment());
+        document.getElementById("splittedPieces").appendChild(wrapper);
+    }
+
+    frame.onload = null
+    frame.src = "";
+}
+
+</script>
+</body>
+</html>

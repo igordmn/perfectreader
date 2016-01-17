@@ -45,9 +45,11 @@ void WebURLLoaderImpl::registerJni() {
 
     static JNINativeMethod nativeMethods[] = {
         {"nativeDidReceiveResponse", "(JJLjava/lang/String;)V", (void*) &nativeDidReceiveResponse},
-        {"nativeDidReceiveData", "(J[BI)V", (void*) &nativeDidReceiveData},
+        {"nativeDidReceiveData", "(JLjava/nio/ByteBuffer;I)V", (void*) &nativeDidReceiveData},
         {"nativeDidFinishLoading", "(JJ)V", (void*) &nativeDidFinishLoading},
         {"nativeDidFail", "(JLjava/lang/String;)V", (void*) &nativeDidFail},
+        {"nativeCreateBuffer", "(J)Ljava/nio/ByteBuffer;", (void*) &nativeCreateBuffer},
+        {"nativeDeleteBuffer", "(Ljava/nio/ByteBuffer;)V", (void*) &nativeDeleteBuffer},
     };
     env->RegisterNatives(jmethods.cls, nativeMethods, sizeof(nativeMethods) / sizeof(nativeMethods[0]));
 }
@@ -174,27 +176,36 @@ void WebURLLoaderImpl::didFail(string message) {
 }
 
 void WebURLLoaderImpl::nativeDidReceiveResponse(JNIEnv* env,
-        jobject, jlong nativeWebURLLoaderImpl, jlong contentLength, jstring jContentType) {
+                                                jclass, jlong nativeWebURLLoaderImpl, jlong contentLength, jstring jContentType) {
     typo::WebURLLoaderImpl* loader = (typo::WebURLLoaderImpl*) nativeWebURLLoaderImpl;
     loader->didReceiveResponse(contentLength, typo::JniUtils::toUTF8String(env, jContentType), "");
 }
 
 void WebURLLoaderImpl::nativeDidReceiveData(JNIEnv* env,
-        jobject, jlong nativeWebURLLoaderImpl, jbyteArray jData, jint dataLength) {
+                                            jclass, jlong nativeWebURLLoaderImpl, jobject jData, jint dataLength) {
     typo::WebURLLoaderImpl* loader = (typo::WebURLLoaderImpl*) nativeWebURLLoaderImpl;
-    char data[dataLength];
-    env->GetByteArrayRegion(jData, 0, dataLength, (jbyte*) data);
-    loader->didReceiveData(data, dataLength);
+    void* data = env->GetDirectBufferAddress(jData);
+    loader->didReceiveData((char*) data, dataLength);
 }
 
-void WebURLLoaderImpl::nativeDidFinishLoading(JNIEnv* env, jobject, jlong nativeWebURLLoaderImpl, jlong totalLength) {
+void WebURLLoaderImpl::nativeDidFinishLoading(JNIEnv* env, jclass, jlong nativeWebURLLoaderImpl, jlong totalLength) {
     typo::WebURLLoaderImpl* loader = (typo::WebURLLoaderImpl*) nativeWebURLLoaderImpl;
     loader->didFinishLoading(totalLength);
 }
 
-void WebURLLoaderImpl::nativeDidFail(JNIEnv* env, jobject, jlong nativeWebURLLoaderImpl, jstring jMessage) {
+void WebURLLoaderImpl::nativeDidFail(JNIEnv* env, jclass, jlong nativeWebURLLoaderImpl, jstring jMessage) {
     typo::WebURLLoaderImpl* loader = (typo::WebURLLoaderImpl*) nativeWebURLLoaderImpl;
     loader->didFail(typo::JniUtils::toUTF8String(env, jMessage));
+}
+
+jobject WebURLLoaderImpl::nativeCreateBuffer(JNIEnv* env, jclass, jlong capacity) {
+    void* buffer = malloc(capacity);
+    return env->NewDirectByteBuffer(buffer, capacity);
+}
+
+void WebURLLoaderImpl::nativeDeleteBuffer(JNIEnv* env, jclass, jobject jBuffer) {
+    void* buffer = env->GetDirectBufferAddress(jBuffer);
+    free(buffer);
 }
 
 }
