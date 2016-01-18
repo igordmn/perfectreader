@@ -1,14 +1,15 @@
 abstract class AndroidUtils {
     static int computeVersionCode(buildNumber, abi) {
-        // values must not changed
+        // values must not be changed
         def variantVersion =
-                abi == 'armeabi' ? 0 :
-                abi == 'armeabi-v7a' ? 1 :
-                abi == 'mips' ? 2 :
-                abi == 'x86' ? 3 :
-                abi == 'arm64-v8a' ? 10 :
-                abi == 'x86_64' ? 11 :
-                abi == 'mips64' ? 12 :
+                abi == null ? 0 :
+                abi == 'armeabi' ? 1 :
+                abi == 'armeabi-v7a' ? 2 :
+                abi == 'mips' ? 3 :
+                abi == 'x86' ? 4 :
+                abi == 'arm64-v8a' ? 11 :
+                abi == 'x86_64' ? 12 :
+                abi == 'mips64' ? 13 :
                 -1
 
         assert variantVersion >= 0 : 'unknown build variant'
