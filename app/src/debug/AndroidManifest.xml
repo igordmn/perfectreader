@@ -4,11 +4,8 @@
 
     <application>
         <activity android:exported="true" android:name=".manualtest.book.PageBookViewTestActivity"/>
-        <activity android:exported="true" android:name=".manualtest.book.WebPageBookTestActivity"/>
         <activity android:exported="true" android:name=".manualtest.book.BookFragmentTestActivity"/>
         <activity android:exported="true" android:name=".manualtest.bookcontrol.BookControlFragmentTestActivity"/>
-        <activity android:exported="true" android:name=".manualtest.typoweb.TypoWebTestActivity"/>
-        <activity android:exported="true" android:name=".manualtest.typoweb.ExtBlinkTestActivity"/>
     </application>
 
 </manifest> 

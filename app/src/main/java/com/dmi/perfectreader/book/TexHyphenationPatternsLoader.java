@@ -2,8 +2,6 @@ package com.dmi.perfectreader.book;
 
 import android.content.Context;
 
-import com.dmi.typoweb.HyphenationPatternsLoader;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +12,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 
-public class TexHyphenationPatternsLoader implements HyphenationPatternsLoader {
+public class TexHyphenationPatternsLoader {
     private static final String fileFormat = "hyphenation/hyph-%s.pat.txt";
 
     private static final Map<String, String> languageAliases = new HashMap<String, String>() {{
@@ -32,7 +30,6 @@ public class TexHyphenationPatternsLoader implements HyphenationPatternsLoader {
         this.context = context;
     }
 
-    @Override
     public InputStream loadPatterns(String language) throws IOException {
         for (String languageVariant : languageVariants(language)) {
             try {

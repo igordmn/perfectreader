@@ -4,8 +4,6 @@ import android.content.Context;
 
 import com.dmi.perfectreader.book.pagebook.PageBook;
 import com.dmi.perfectreader.book.pagebook.PageBookRenderer;
-import com.dmi.perfectreader.book.pagebook.WebPageBook;
-import com.dmi.perfectreader.book.pagebook.WebPageBookRenderer;
 import com.dmi.perfectreader.bookstorage.EPUBBookStorage;
 import com.dmi.perfectreader.setting.AppSettings;
 import com.dmi.perfectreader.userdata.UserData;
@@ -44,25 +42,23 @@ public class BookPresenter extends BasePresenter {
     protected BookFragment view;
 
     private final SettingsApplier settingsApplier = new SettingsApplier();
-    private WebPageBook pageBook;
+    private PageBook pageBook;
     private TapHandler tapHandler = null;
 
     @Override
     public void onCreate() {
         settingsApplier.startListen();
-        pageBook = new WebPageBook(new WebPageBookClient(), context);
         pageBook.goPercent(loadLocation());
         postIOTask(this::loadBook);
     }
 
     @Override
     public void onDestroy() {
-        pageBook.destroy();
         settingsApplier.stopListen();
     }
 
     public PageBookRenderer createRenderer() {
-        return new WebPageBookRenderer(pageBook);
+        return null;
     }
 
     protected void loadBook() {
@@ -77,7 +73,6 @@ public class BookPresenter extends BasePresenter {
 
     protected void afterBookStorageLoad() {
         settingsApplier.applyAll();
-        pageBook.load(bookStorage);
     }
 
     private int loadLocation() {
@@ -85,7 +80,7 @@ public class BookPresenter extends BasePresenter {
     }
 
     protected void saveLocation() {
-        int currentLocation = pageBook.currentPercent();
+        int currentLocation = 0;
         postIOTask(() -> userData.saveBookLocation(bookFile, currentLocation));
     }
 
@@ -94,15 +89,13 @@ public class BookPresenter extends BasePresenter {
     }
 
     public void resume() {
-        pageBook.resume();
     }
 
     public void pause() {
-        pageBook.pause();
     }
 
     public int currentPercent() {
-        return pageBook.currentPercent();
+        return 0;
     }
 
     public void tap(float x, float y, float tapDiameter, TapHandler tapHandler) {
@@ -159,35 +152,12 @@ public class BookPresenter extends BasePresenter {
         return currentPageRelativeIndex;
     }
 
-    private class WebPageBookClient implements WebPageBook.Client {
-        @Override
-        public void afterAnimate() {
-            view.refresh();
-        }
-
-        @Override
-        public void handleTap() {
-            BookPresenter.this.handleTap();
-        }
-    }
-
     private class SettingsApplier extends AbstractSettingsApplier {
         public void applyAll() {
-            WebPageBook.Settings settings = pageBook.settings();
-            settings.setTextAlign(appSettings.format.textAlign.get());
-            settings.setFontSizePercents(appSettings.format.fontSizePercents.get());
-            settings.setLineHeightPercents(appSettings.format.lineHeightPercents.get());
-            settings.setHangingPunctuation(appSettings.format.hangingPunctuation.get());
-            settings.setHyphenation(appSettings.format.hyphenation.get());
         }
 
         @Override
         protected void listen() {
-            listen(appSettings.format.textAlign, value -> pageBook.settings().setTextAlign(value));
-            listen(appSettings.format.fontSizePercents, value -> pageBook.settings().setFontSizePercents(value));
-            listen(appSettings.format.lineHeightPercents, value -> pageBook.settings().setLineHeightPercents(value));
-            listen(appSettings.format.hangingPunctuation, value -> pageBook.settings().setHangingPunctuation(value));
-            listen(appSettings.format.hyphenation, value -> pageBook.settings().setHyphenation(value));
         }
     }
 
