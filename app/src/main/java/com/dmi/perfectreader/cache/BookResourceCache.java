@@ -38,7 +38,7 @@ public class BookResourceCache implements DataCache {
                 diskDataCache.close();
                 diskDataCache = null;
             } catch (IOException e) {
-                Timber.w("Book resource cache closing error", e);
+                Timber.e(e, "Book resource cache closing error");
             }
         }
     }
