@@ -10,7 +10,6 @@ import com.dmi.perfectreader.bookcontrol.BookControlPresenter;
 import com.dmi.perfectreader.bookreader.BookReaderPresenter;
 import com.dmi.perfectreader.setting.AppSettings;
 import com.dmi.util.base.BaseActivity;
-import com.dmi.util.lang.IntegerPercent;
 import com.dmi.util.layout.HasLayout;
 import com.dmi.util.setting.AbstractSettingsApplier;
 import com.dmi.util.setting.SettingListener;
@@ -88,7 +87,7 @@ public class BookControlFragmentTestActivity extends BaseActivity {
             public BookPresenter bookPresenter() {
                 return new BookPresenter() {
                     @Override
-                    public int currentPercent() {
+                    public double currentPercent() {
                         return 0;
                     }
 
@@ -99,8 +98,8 @@ public class BookControlFragmentTestActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void goPercent(int percent) {
-                        Timber.d("DDD goPercent " + String.format("(%.2f)", IntegerPercent.toDouble(percent)));
+                    public void goPercent(double percent) {
+                        Timber.d("DDD goPercent " + String.format("(%.2f)", percent));
                     }
 
                     @Override

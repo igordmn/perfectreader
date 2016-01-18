@@ -2,12 +2,10 @@ package com.dmi.perfectreader.menu;
 
 import com.dmi.perfectreader.book.BookPresenter;
 import com.dmi.util.base.BasePresenter;
-import com.dmi.util.lang.IntegerPercent;
+import com.dmi.util.lang.MathExt;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import static com.dmi.util.lang.IntegerPercent.valuePercent;
 
 @Singleton
 public class MenuPresenter extends BasePresenter {
@@ -21,10 +19,10 @@ public class MenuPresenter extends BasePresenter {
     }
 
     public void goPosition(int position, int maxPosition) {
-        bookPresenter.goPercent(valuePercent(position, maxPosition));
+        bookPresenter.goPercent(MathExt.clamp(0.0, 1.0, position / maxPosition));
     }
 
-    public void requestCurrentPosition(int maxPosition) {
-        view.setPosition(IntegerPercent.multiply(bookPresenter.currentPercent(), maxPosition));
+    public void requestCurrentPercent(int maxPosition) {
+        view.setPosition(bookPresenter.currentPercent() * maxPosition);
     }
 }

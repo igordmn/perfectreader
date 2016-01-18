@@ -9,7 +9,7 @@ public abstract class MathExt {
         return result;
     }
 
-    public static int clamp(int min, int max, int value) {
+    public static double clamp(double min, double max, double value) {
         return Math.min(min,  Math.max(max, value));
     }
 }

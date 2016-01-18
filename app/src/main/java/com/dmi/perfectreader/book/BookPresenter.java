@@ -21,7 +21,6 @@ import timber.log.Timber;
 
 import static com.dmi.util.concurrent.Threads.postIOTask;
 import static com.dmi.util.concurrent.Threads.postUITask;
-import static com.dmi.util.lang.IntegerPercent.ZERO;
 import static com.google.common.base.MoreObjects.firstNonNull;
 
 @Singleton
@@ -75,8 +74,8 @@ public class BookPresenter extends BasePresenter {
         settingsApplier.applyAll();
     }
 
-    private int loadLocation() {
-        return firstNonNull(userData.loadBookLocation(bookFile), ZERO);
+    private double loadLocation() {
+        return firstNonNull(userData.loadBookLocation(bookFile), 0.0);
     }
 
     protected void saveLocation() {
@@ -94,7 +93,7 @@ public class BookPresenter extends BasePresenter {
     public void pause() {
     }
 
-    public int currentPercent() {
+    public double currentPercent() {
         return 0;
     }
 
@@ -110,7 +109,7 @@ public class BookPresenter extends BasePresenter {
         }
     }
 
-    public void goPercent(int percent) {
+    public void goPercent(double percent) {
         view.reset(() -> {
             pageBook.goPercent(percent);
             saveLocation();

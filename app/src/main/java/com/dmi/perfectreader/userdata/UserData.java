@@ -37,20 +37,20 @@ public class UserData {
     }
 
     @SuppressLint("NewApi")
-    public Integer loadBookLocation(File bookFile) {
-        try (Cursor cursor = userDatabase.rawQuery("SELECT integerPercent FROM bookLocation WHERE path = ?", new String[]{bookFile.getAbsolutePath()})) {
+    public Double loadBookLocation(File bookFile) {
+        try (Cursor cursor = userDatabase.rawQuery("SELECT percent FROM bookLocation WHERE path = ?", new String[]{bookFile.getAbsolutePath()})) {
             if (cursor.moveToFirst()) {
-                return cursor.getInt(0);
+                return cursor.getDouble(0);
             } else {
                 return null;
             }
         }
     }
 
-    public void saveBookLocation(File bookFile, int integerPercent) {
+    public void saveBookLocation(File bookFile, double percent) {
         ContentValues values = new ContentValues();
         values.put("path", bookFile.getAbsolutePath());
-        values.put("integerPercent", integerPercent);
+        values.put("percent", percent);
         userDatabase.insertWithOnConflict("bookLocation", null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 }

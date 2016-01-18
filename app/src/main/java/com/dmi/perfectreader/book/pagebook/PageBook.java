@@ -7,10 +7,7 @@ public interface PageBook {
 
     void tap(float x, float y, float tapDiameter);
 
-    /**
-     * @param integerPercent integer percent. see {@link com.dmi.util.lang.IntegerPercent}
-     */
-    void goPercent(int integerPercent);
+    void goPercent(double percent);
 
     void goNextPage();
 

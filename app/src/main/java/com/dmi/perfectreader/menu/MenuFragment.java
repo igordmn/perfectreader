@@ -94,7 +94,7 @@ public class MenuFragment extends BaseFragment { // implements KeyEvent.Callback
             public void onStopTrackingTouch(DiscreteSeekBar discreteSeekBar) {
             }
         });
-        presenter.requestCurrentPosition(SEEK_BAR_MAX_PROGRESS);
+        presenter.requestCurrentPercent(SEEK_BAR_MAX_PROGRESS);
     }
 
     private void initMiddleSpace() {
