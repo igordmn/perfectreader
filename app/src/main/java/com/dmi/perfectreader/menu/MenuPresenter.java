@@ -23,6 +23,6 @@ public class MenuPresenter extends BasePresenter {
     }
 
     public void requestCurrentPercent(int maxPosition) {
-        view.setPosition(bookPresenter.currentPercent() * maxPosition);
+        view.setPosition((int) (bookPresenter.currentPercent() * maxPosition));
     }
 }
