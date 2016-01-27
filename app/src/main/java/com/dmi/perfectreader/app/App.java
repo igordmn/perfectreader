@@ -20,10 +20,6 @@ import dagger.Provides;
 import timber.log.Timber;
 
 public class App extends BaseApplication {
-    static {
-        System.loadLibrary("perfectreader");
-    }
-
     @Inject
     protected Databases databases;
 
