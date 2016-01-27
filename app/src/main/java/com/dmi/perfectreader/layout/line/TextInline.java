@@ -7,9 +7,11 @@ import com.dmi.perfectreader.render.RenderText;
 
 public class TextInline implements Inline {
     private final String text;
+    private final int color;
 
-    public TextInline(String text) {
+    public TextInline(String text, int color) {
         this.text = text;
+        this.color = color;
     }
 
     @Override
@@ -44,7 +46,7 @@ public class TextInline implements Inline {
             for (float charWidth : charWidths) {
                 width += charWidth;
             }
-            linesBuilder.appendObject(new RenderText(width, height, text, baseline), baseline);
+            linesBuilder.appendObject(new RenderText(width, height, text, baseline, color), baseline);
         }
     }
 
