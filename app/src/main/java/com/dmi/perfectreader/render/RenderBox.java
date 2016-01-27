@@ -1,7 +1,5 @@
 package com.dmi.perfectreader.render;
 
-import android.graphics.Canvas;
-
 import java.util.List;
 
 public class RenderBox extends RenderObject {
@@ -12,9 +10,5 @@ public class RenderBox extends RenderObject {
     @Override
     public boolean canPartiallyPainted() {
         return true;
-    }
-
-    @Override
-    public void paintItself(RenderConfig config, Canvas canvas) {
     }
 }
