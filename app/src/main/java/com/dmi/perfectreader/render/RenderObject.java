@@ -7,8 +7,8 @@ import android.text.TextPaint;
 import java.util.List;
 
 public abstract class RenderObject {
-    protected static final Paint paint = new Paint();
-    protected static final TextPaint textPaint = new TextPaint();
+    private static final Paint paint = new Paint();
+    private static final TextPaint textPaint = new TextPaint();
 
     private final float width;
     private final float height;
@@ -51,6 +51,25 @@ public abstract class RenderObject {
      * Нарисовать только содержимое данного объекта, без рисования дочерних объектов
      */
     public void paintItself(RenderConfig config, Canvas canvas) {
+    }
+
+    protected static Paint getPaint(RenderConfig config) {
+        configurePaint(textPaint, config);
+        return paint;
+    }
+
+    protected static TextPaint getTextPaint(RenderConfig config) {
+        configurePaint(textPaint, config);
+        return textPaint;
+    }
+
+    protected static void configurePaint(Paint paint, RenderConfig config) {
+        paint.setAntiAlias(config.textAntialias());
+        paint.setSubpixelText(config.textSubpixel());
+        paint.setHinting(config.textHinting() ? Paint.HINTING_ON : Paint.HINTING_OFF);
+        paint.setLinearText(config.textLinearScaling());
+        paint.setFilterBitmap(config.bitmapBilinearSampling());
+        paint.setDither(config.dither());
     }
 
     public void paintRecursive(RenderConfig config, Canvas canvas) {

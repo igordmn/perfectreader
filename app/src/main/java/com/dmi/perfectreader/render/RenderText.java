@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.render;
 
 import android.graphics.Canvas;
+import android.text.TextPaint;
 
 import static java.util.Collections.emptyList;
 
@@ -27,7 +28,9 @@ public class RenderText extends RenderObject {
 
     @Override
     public void paintItself(RenderConfig config, Canvas canvas) {
-        textPaint.setColor(color);
-        canvas.drawText(text, 0, text.length(), 0F, baseline, textPaint);
+        super.paintItself(config, canvas);
+        TextPaint paint = getTextPaint(config);
+        paint.setColor(color);
+        canvas.drawText(text, 0, text.length(), 0F, baseline, paint);
     }
 }

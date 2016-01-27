@@ -17,6 +17,7 @@ import com.dmi.util.base.BaseActivity;
 import static java.util.Arrays.asList;
 
 public class LayoutObjectsTestActivity extends BaseActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,7 +29,20 @@ public class LayoutObjectsTestActivity extends BaseActivity {
                 textInline("xt. This is text. This is text")
         ));
 
-        RenderConfig renderConfig = new RenderConfig();
+        final boolean textAntialias = true;
+        final boolean textSubpixel = true;
+        final boolean textHinting = true;
+        final boolean textLinearScaling = false;
+        final boolean bitmapBilinearSampling = true;
+        final boolean dither = true;
+        RenderConfig renderConfig = new RenderConfig(
+                textAntialias,
+                textSubpixel,
+                textHinting,
+                textLinearScaling,
+                bitmapBilinearSampling,
+                dither
+        );
         RenderObject renderText = text.layout(layoutConfig, LayoutArea.unlimited());
         View view = new View(this) {
             @Override
