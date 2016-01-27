@@ -8,17 +8,19 @@ import com.dmi.perfectreader.render.RenderText;
 public class TextInline implements Inline {
     private final String text;
     private final int color;
+    private final float size;
 
-    public TextInline(String text, int color) {
+    public TextInline(String text, int color, float size) {
         this.text = text;
         this.color = color;
+        this.size = size;
     }
 
     @Override
     public void layout(LayoutConfig config, LinesBuilder linesBuilder) {
         TextMetrics metrics = config.textMetrics();
         TextMetrics.VerticalMetrics verticalMetrics = new TextMetrics.VerticalMetrics();
-        metrics.getVerticalMetrics(verticalMetrics);
+        metrics.getVerticalMetrics(size, verticalMetrics);
         float height = -verticalMetrics.ascent + verticalMetrics.descent;
         float baseline = -verticalMetrics.ascent;
         float whitespaceWidth = whitespaceWidth(metrics);
@@ -42,17 +44,17 @@ public class TextInline implements Inline {
 
             float width = 0F;
             float[] charWidths = new float[text.length()];
-            metrics.getTextWidths(text, charWidths);
+            metrics.getTextWidths(text, size, charWidths);
             for (float charWidth : charWidths) {
                 width += charWidth;
             }
-            linesBuilder.appendObject(new RenderText(width, height, text, baseline, color), baseline);
+            linesBuilder.appendObject(new RenderText(width, height, text, baseline, color, size), baseline);
         }
     }
 
     private float whitespaceWidth(TextMetrics metrics) {
         float[] spaceWidths = new float[1];
-        metrics.getTextWidths(" ", spaceWidths);
+        metrics.getTextWidths(" ", size, spaceWidths);
         return spaceWidths[0];
     }
 }

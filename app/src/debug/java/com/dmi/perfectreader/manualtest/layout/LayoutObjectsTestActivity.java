@@ -56,6 +56,6 @@ public class LayoutObjectsTestActivity extends BaseActivity {
     }
 
     private TextInline textInline(String text) {
-        return new TextInline(text, Color.RED);
+        return new TextInline(text, Color.RED, 25);
     }
 }
