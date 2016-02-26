@@ -1,11 +1,11 @@
 package com.dmi.perfectreader.book.animation;
 
-import gnu.trove.list.array.TFloatArrayList;
-import gnu.trove.list.array.TIntArrayList;
+import com.carrotsearch.hppc.FloatArrayList;
+import com.carrotsearch.hppc.IntArrayList;
 
 public class PageAnimationState {
-    private final TIntArrayList relativeIndices = new TIntArrayList();
-    private final TFloatArrayList xPositions = new TFloatArrayList();
+    private final IntArrayList relativeIndices = new IntArrayList();
+    private final FloatArrayList xPositions = new FloatArrayList();
     private int minRelativeIndex = 0;
     private int maxRelativeIndex = 0;
 
