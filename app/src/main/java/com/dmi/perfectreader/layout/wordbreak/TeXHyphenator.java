@@ -4,6 +4,7 @@ import com.carrotsearch.hppc.ByteArrayList;
 import com.carrotsearch.hppc.CharArrayList;
 import com.dmi.util.annotation.Reusable;
 import com.dmi.util.cache.ReuseCache;
+import com.google.common.base.Charsets;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,7 +89,7 @@ public class TeXHyphenator {
         private CharsLevels exceptions = new CharsLevels();
 
         public Builder addPatternsFrom(InputStream is) throws IOException {
-            List<String> patterns = readLines(new InputStreamReader(is));
+            List<String> patterns = readLines(new InputStreamReader(is, Charsets.UTF_8));
             for (String pattern : patterns) {
                 addPattern(pattern);
             }
@@ -96,7 +97,7 @@ public class TeXHyphenator {
         }
 
         public Builder addExceptionsFrom(InputStream is) throws IOException {
-            List<String> patterns = readLines(new InputStreamReader(is));
+            List<String> patterns = readLines(new InputStreamReader(is, Charsets.UTF_8));
             for (String pattern : patterns) {
                 addException(pattern);
             }
