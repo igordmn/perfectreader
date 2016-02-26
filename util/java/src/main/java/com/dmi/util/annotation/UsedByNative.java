@@ -1,4 +1,4 @@
-package com.dmi.util.natv;
+package com.dmi.util.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
