@@ -2,12 +2,12 @@ package com.dmi.perfectreader.setting;
 
 import android.content.Context;
 
-import com.dmi.perfectreader.book.config.TextAlign;
 import com.dmi.perfectreader.bookcontrol.Action;
 import com.dmi.perfectreader.bookcontrol.HardKey;
 import com.dmi.perfectreader.bookcontrol.InteractiveClickMode;
 import com.dmi.perfectreader.bookcontrol.TapZone;
 import com.dmi.perfectreader.bookcontrol.TapZoneConfiguration;
+import com.dmi.perfectreader.style.TextAlign;
 import com.dmi.util.setting.AbstractSettings;
 
 import javax.inject.Inject;

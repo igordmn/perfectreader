@@ -1,14 +1,24 @@
 package com.dmi.perfectreader.render;
 
-import static java.util.Collections.emptyList;
+import android.graphics.Canvas;
 
-public class RenderSpace extends RenderObject {
-    public RenderSpace(float width, float height) {
-        super(width, height, emptyList());
+import com.dmi.perfectreader.style.FontStyle;
+
+import java.util.Locale;
+
+public class RenderSpace extends RenderText {
+    private float scaleX;
+
+    public RenderSpace(float width, float height, CharSequence text, Locale locale, float baseline, float scaleX, FontStyle style) {
+        super(width, height, text, locale, baseline, style);
+        this.scaleX = scaleX;
+    }
+
+    public float scaleX() {
+        return scaleX;
     }
 
     @Override
-    public boolean canPartiallyPainted() {
-        return true;
+    public void paintItself(Canvas canvas) {
     }
 }

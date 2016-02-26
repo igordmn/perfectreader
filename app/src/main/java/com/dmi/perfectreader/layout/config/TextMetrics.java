@@ -1,13 +1,30 @@
 package com.dmi.perfectreader.layout.config;
 
+import com.dmi.perfectreader.style.FontStyle;
+import com.dmi.util.annotation.Reusable;
+
 public interface TextMetrics {
-    void getTextWidths(String text, float size, float[] widths);
+    @Reusable
+    float[] charWidths(CharSequence text, FontStyle style);
 
-    void getVerticalMetrics(float size, VerticalMetrics verticalMetrics);
+    VerticalMetrics verticalMetrics(FontStyle style);
 
+    @Reusable
     class VerticalMetrics {
-        public float ascent;
-        public float descent;
-        public float leading;
+        protected float ascent;
+        protected float descent;
+        protected float leading;
+
+        public float ascent() {
+            return ascent;
+        }
+
+        public float descent() {
+            return descent;
+        }
+
+        public float leading() {
+            return leading;
+        }
     }
 }

@@ -6,7 +6,7 @@
         <activity android:exported="true" android:name=".manualtest.book.PageBookViewTestActivity"/>
         <activity android:exported="true" android:name=".manualtest.book.BookFragmentTestActivity"/>
         <activity android:exported="true" android:name=".manualtest.bookcontrol.BookControlFragmentTestActivity"/>
-        <activity android:exported="true" android:name=".manualtest.layout.LayoutObjectsTestActivity"/>
+        <activity android:exported="true" android:name=".manualtest.layout.LayoutTestActivity"/>
     </application>
 
 </manifest> 

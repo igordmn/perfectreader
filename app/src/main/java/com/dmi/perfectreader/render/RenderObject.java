@@ -1,15 +1,10 @@
 package com.dmi.perfectreader.render;
 
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.text.TextPaint;
 
 import java.util.List;
 
 public abstract class RenderObject {
-    private static final Paint paint = new Paint();
-    private static final TextPaint textPaint = new TextPaint();
-
     private final float width;
     private final float height;
     private final List<RenderChild> children;
@@ -36,10 +31,6 @@ public abstract class RenderObject {
         return children.get(index);
     }
 
-    public RenderObject childObject(int index) {
-        return children.get(index).object();
-    }
-
     /**
      * Необходимо для механизма разделения на страницы.
      *   true - для текстовых строк, изображений, и всех тех объектов, которые необходимо рисовать на экране целиком
@@ -50,33 +41,16 @@ public abstract class RenderObject {
     /**
      * Нарисовать только содержимое данного объекта, без рисования дочерних объектов
      */
-    public void paintItself(RenderConfig config, Canvas canvas) {
+    public void paintItself(Canvas canvas) {
     }
 
-    protected static Paint getPaint(RenderConfig config) {
-        configurePaint(textPaint, config);
-        return paint;
-    }
-
-    protected static TextPaint getTextPaint(RenderConfig config) {
-        configurePaint(textPaint, config);
-        return textPaint;
-    }
-
-    protected static void configurePaint(Paint paint, RenderConfig config) {
-        paint.setAntiAlias(config.textAntialias());
-        paint.setSubpixelText(config.textSubpixel());
-        paint.setHinting(config.textHinting() ? Paint.HINTING_ON : Paint.HINTING_OFF);
-        paint.setLinearText(config.textLinearScaling());
-        paint.setFilterBitmap(config.bitmapBilinearSampling());
-        paint.setDither(config.dither());
-    }
-
-    public void paintRecursive(RenderConfig config, Canvas canvas) {
-        paintItself(config, canvas);
-        for (RenderChild child : children) {
+    public void paintRecursive(Canvas canvas) {
+        paintItself(canvas);
+        // не использовать for-each! снижается производительность
+        for (int i = 0; i < children.size(); i++) {
+            RenderChild child = children.get(i);
             canvas.translate(child.x(), child.y());
-            child.object().paintRecursive(config, canvas);
+            child.object().paintRecursive(canvas);
             canvas.translate(-child.x(), -child.y());
         }
     }
