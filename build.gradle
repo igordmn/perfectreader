@@ -1,24 +1,17 @@
 buildscript {
     repositories {
         jcenter()
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots'
-        }
-        maven {
-            url 'https://dl.bintray.com/igordmn/maven'
-        }
-        maven {
-            url 'https://clojars.org/repo'
-        }
-        flatDir {
-            dirs new File(rootProject.projectDir, 'libs')
-        }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url 'https://dl.bintray.com/igordmn/maven' }
+        maven { url 'https://clojars.org/repo' }
+        maven { url 'https://jitpack.io' }
+        flatDir { dirs new File(rootProject.projectDir, 'libs') }
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:1.5.0"
-        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
-        classpath "me.tatarka:gradle-retrolambda:3.2.4"
+        classpath 'com.android.tools.build:gradle:2.0.0-beta5'
+        classpath 'com.github.JakeWharton:sdk-manager-plugin:220bf7a88a7072df3ed16dc8466fb144f2817070'
+        classpath 'me.tatarka:gradle-retrolambda:3.2.4'
         classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
         classpath 'org.codehaus.groovy:gradle-groovy-android-plugin:0.3.7'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.7'
@@ -42,18 +35,11 @@ configure(androidProjects + javaProjects) {
     afterEvaluate { project ->
         repositories {
             jcenter()
-            maven {
-                url 'https://oss.sonatype.org/content/repositories/snapshots'
-            }
-            maven {
-                url 'https://dl.bintray.com/igordmn/maven'
-            }
-            maven {
-                url 'https://clojars.org/repo'
-            }
-            flatDir {
-                dirs new File(rootProject.projectDir, 'libs')
-            }
+            maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+            maven { url 'https://dl.bintray.com/igordmn/maven' }
+            maven { url 'https://clojars.org/repo' }
+            maven { url 'https://jitpack.io' }
+            flatDir { dirs new File(rootProject.projectDir, 'libs') }
         }
 
         tasks.withType(JavaCompile) {
