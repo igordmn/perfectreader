@@ -5,7 +5,8 @@ import com.dmi.perfectreader.layout.liner.Liner.Config
 import com.dmi.perfectreader.layout.liner.Liner.Line
 import com.dmi.perfectreader.layout.liner.Liner.MeasuredText
 import com.dmi.perfectreader.layout.liner.Liner.Token
-import java8.util.function.Consumer
+import kotlin.Unit
+import kotlin.jvm.functions.Function1
 import spock.lang.Specification
 
 class BreakLinerSpec extends Specification {
@@ -545,15 +546,15 @@ class BreakLinerSpec extends Specification {
     def spaceBreakFinder() {
         return new BreakFinder() {
             @Override
-            void findBreaks(CharSequence text, Locale locale, Consumer<BreakFinder.Break> consumer) {
+            void findBreaks(CharSequence text, Locale locale, Function1<? super BreakFinder.Break, Unit> accept) {
                 for (int i = 1; i < text.length(); i++) {
                     if (text.charAt(i - 1) == '\n' as char) {
-                        consumer.accept(br(i, false, true))
+                        accept.invoke(br(i, false, true))
                     } else if (text.charAt(i - 1) == ' ' as char && text.charAt(i) != ' ' as char) {
-                        consumer.accept(br(i, false, false))
+                        accept.invoke(br(i, false, false))
                     }
                 }
-                consumer.accept(br(text.length(), false, false))
+                accept.invoke(br(text.length(), false, false))
             }
         }
     }
@@ -561,23 +562,23 @@ class BreakLinerSpec extends Specification {
     def spaceAndWordBreakFinder(int breakBeforeWordIndex) {
         return new BreakFinder() {
             @Override
-            void findBreaks(CharSequence text, Locale locale, Consumer<BreakFinder.Break> consumer) {
+            void findBreaks(CharSequence text, Locale locale, Function1<? super BreakFinder.Break, Unit> accept) {
                 int wordBeginIndex = 0
                 for (int i = 1; i < text.length(); i++) {
                     int wordIndex = i - wordBeginIndex
                     if (text.charAt(i - 1) == '\n' as char) {
-                        consumer.accept(br(i, false, true))
+                        accept.invoke(br(i, false, true))
                     } else if (text.charAt(i - 1) == ' ' as char && text.charAt(i) != ' ' as char) {
-                        consumer.accept(br(i, false, false))
+                        accept.invoke(br(i, false, false))
                     } else if (wordIndex == breakBeforeWordIndex) {
-                        consumer.accept(br(i, true, false))
+                        accept.invoke(br(i, true, false))
                     }
 
                     if (isSpaceChar(text.charAt(i))) {
                         wordBeginIndex = i + 1
                     }
                 }
-                consumer.accept(br(text.length(), false, false))
+                accept.invoke(br(text.length(), false, false))
             }
         }
     }

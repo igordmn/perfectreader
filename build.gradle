@@ -1,4 +1,9 @@
 buildscript {
+    ext {
+        kotlinVersion = '1.0.0'
+        config = Utils.loadProperties('.sign/sign.properties', 'workspace.properties');
+    }
+
     repositories {
         jcenter()
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
@@ -10,22 +15,15 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:2.0.0-beta5'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.github.JakeWharton:sdk-manager-plugin:220bf7a88a7072df3ed16dc8466fb144f2817070'
-        classpath 'me.tatarka:gradle-retrolambda:3.2.4'
-        classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
         classpath 'org.codehaus.groovy:gradle-groovy-android-plugin:0.3.7'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.7'
         classpath 'com.jakewharton.hugo:hugo-plugin:1.2.1'
-        configurations.classpath.exclude group: 'com.android.tools.external.lombok'
     }
 }
 
 plugins {
     id "org.sonarqube" version "1.1"
-}
-
-ext {
-    config = Utils.loadProperties('.sign/sign.properties', 'workspace.properties');
 }
 
 def androidProjects = [project(':app'), project(':util:android')]
@@ -47,15 +45,20 @@ configure(androidProjects + javaProjects) {
         }
 
         dependencies {
+            compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
             compile 'com.google.code.findbugs:jsr305:3.0.0'
             compile 'com.google.guava:guava:18.0'
             compile 'com.carrotsearch:hppc:0.7.1'
-            compile 'net.sourceforge.streamsupport:streamsupport:1.2.1'
             compile 'com.jakewharton:disklrucache:2.0.2'
+            testCompile "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
             testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
             testCompile 'org.codehaus.groovy:groovy-all:2.4.3'
             testCompile 'cglib:cglib-nodep:3.1'
             testCompile 'org.objenesis:objenesis:2.2'
+        }
+
+        sourceSets {
+            main.java.srcDirs += 'src/main/kotlin'
         }
     }
 }
@@ -75,13 +78,12 @@ configure(androidProjects) {
                 disable 'InvalidPackage'
             }
 
-            compileOptions {
-                sourceCompatibility JavaVersion.VERSION_1_8
-                targetCompatibility JavaVersion.VERSION_1_8
-            }
-
             aaptOptions {
                 ignoreAssetsPattern "!.readme"
+            }
+
+            sourceSets {
+                main.java.srcDirs += 'src/main/kotlin'
             }
         }
 
@@ -103,8 +105,8 @@ configure(androidProjects) {
             compile 'com.squareup.dagger:dagger:1.2.2'
             compile 'com.jakewharton:butterknife:7.0.1'
             compile 'frankiesardo:icepick:3.1.0'
-            apt 'frankiesardo:icepick-processor:3.1.0'
-            apt 'com.squareup.dagger:dagger-compiler:1.2.2'
+            compile 'org.jetbrains.anko:anko-sdk15:0.8'
+            compile 'org.jetbrains.anko:anko-appcompat-v7:0.8'
         }
     }
 }

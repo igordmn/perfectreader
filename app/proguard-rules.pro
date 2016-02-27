@@ -1,5 +1,15 @@
 -dontobfuscate
 
+# Kotlin
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
+}
+
+
+# Anko
+-dontwarn org.jetbrains.anko.**
+
+
 # Guava
 
 -dontwarn java.lang.invoke.**
@@ -7,31 +17,16 @@
 -dontwarn sun.misc.Unsafe
 
 
-# Retrolambda
-
--dontwarn java8.**
--dontwarn **$$Lambda$**
-
-
 # SimpleFragment
 
 -dontwarn me.tatarka.simplefragment.SimpleFragment$**
 
 
-# Typoweb
-
--keep class com.dmi.typoweb.**
--keepclassmembers class com.dmi.typoweb.** {
-    *;
-}
+# Readium
 
 -keep class org.readium.sdk.android.**
 -keepclassmembers class org.readium.sdk.android.** {
     *;
-}
-
--keepclassmembers class * {
-    @com.dmi.typoweb.JavascriptInterface <methods>;
 }
 
 

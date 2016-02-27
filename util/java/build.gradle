@@ -1,2 +1,1 @@
-apply plugin: 'java'
-apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'kotlin'

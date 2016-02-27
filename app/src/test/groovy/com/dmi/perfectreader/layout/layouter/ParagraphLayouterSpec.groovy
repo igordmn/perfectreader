@@ -2,19 +2,11 @@ package com.dmi.perfectreader.layout.layouter
 
 import com.dmi.perfectreader.layout.LayoutObject
 import com.dmi.perfectreader.layout.LayoutParagraph
-import com.dmi.perfectreader.layout.config.HangingConfig
-import com.dmi.perfectreader.layout.config.LayoutArea
-
-import com.dmi.perfectreader.layout.config.LayoutChars
-import com.dmi.perfectreader.layout.config.TextMetrics
+import com.dmi.perfectreader.layout.config.*
 import com.dmi.perfectreader.layout.liner.Liner
 import com.dmi.perfectreader.layout.run.ObjectRun
 import com.dmi.perfectreader.layout.run.TextRun
-import com.dmi.perfectreader.render.RenderLine
-import com.dmi.perfectreader.render.RenderObject
-import com.dmi.perfectreader.render.RenderParagraph
-import com.dmi.perfectreader.render.RenderSpace
-import com.dmi.perfectreader.render.RenderText
+import com.dmi.perfectreader.render.*
 import com.dmi.perfectreader.style.FontStyle
 import com.dmi.perfectreader.style.TextAlign
 import spock.lang.Specification
@@ -32,9 +24,16 @@ class ParagraphLayouterSpec extends Specification {
                 textMetrics(),
                 liner
         )
-        def hangingConfig = Stub(HangingConfig) {
-            it.leftHangFactor(_) >> 0.6F
-            it.rightHangFactor(_) >> 0.5F
+        def hangingConfig = new HangingConfig() {
+            @Override
+            float leftHangFactor(char ch) {
+                return 0.6
+            }
+
+            @Override
+            float rightHangFactor(char ch) {
+                return 0.5
+            }
         }
 
         when:
@@ -42,7 +41,7 @@ class ParagraphLayouterSpec extends Specification {
                 new LayoutParagraph(
                         true, Locale.US,
                         [
-                                new TextRun("text", Stub(FontStyle))
+                                new TextRun("text", GroovyMock(FontStyle))
                         ],
                         20, TextAlign.LEFT, hangingConfig
                 ),
@@ -65,12 +64,12 @@ class ParagraphLayouterSpec extends Specification {
         final LETTER_WIDTH1 = 10F
         final SPACE_WIDTH1 = 5F
         final HYPHEN_WIDTH1 = 5F
-        final style1 = Stub(FontStyle)
+        final style1 = GroovyMock(FontStyle)
 
         final LETTER_WIDTH2 = 15F
         final SPACE_WIDTH2 = 10F
         final HYPHEN_WIDTH2 = 10F
-        final style2 = Stub(FontStyle)
+        final style2 = GroovyMock(FontStyle)
 
         def liner = Mock(Liner)
         def layouter = new ParagraphLayouter(
@@ -90,7 +89,7 @@ class ParagraphLayouterSpec extends Specification {
                                 new TextRun("some ", style1),
                                 new TextRun("text", style2)
                         ],
-                        20, TextAlign.LEFT, new HangingConfig()
+                        20, TextAlign.LEFT, new DefaultHangingConfig()
                 ),
                 new LayoutArea(200, 200)
         )
@@ -117,8 +116,8 @@ class ParagraphLayouterSpec extends Specification {
 
     def "measure object runs"() {
         given:
-        def object1 = Stub(LayoutObject)
-        def object2 = Stub(LayoutObject)
+        def object1 = GroovyMock(LayoutObject)
+        def object2 = GroovyMock(LayoutObject)
 
         def liner = Mock(Liner)
         def layouter = new ParagraphLayouter(
@@ -136,10 +135,10 @@ class ParagraphLayouterSpec extends Specification {
                         true, Locale.US,
                         [
                                 new ObjectRun(object1),
-                                new TextRun("text", Stub(FontStyle)),
+                                new TextRun("text", GroovyMock(FontStyle)),
                                 new ObjectRun(object2)
                         ],
-                        20, TextAlign.LEFT, new HangingConfig()
+                        20, TextAlign.LEFT, new DefaultHangingConfig()
                 ),
                 new LayoutArea(200, 200)
         )
@@ -159,7 +158,7 @@ class ParagraphLayouterSpec extends Specification {
     def "layout area for object runs"() {
         given:
         def childLayouter = Mock(Layouter)
-        def object = Stub(LayoutObject)
+        def object = GroovyMock(LayoutObject)
         def layouter = new ParagraphLayouter(
                 childLayouter,
                 textMetrics(),
@@ -171,7 +170,7 @@ class ParagraphLayouterSpec extends Specification {
                 new LayoutParagraph(
                         true, Locale.US,
                         [new ObjectRun(object)],
-                        20, TextAlign.LEFT, new HangingConfig()
+                        20, TextAlign.LEFT, new DefaultHangingConfig()
                 ),
                 new LayoutArea(200, 200)
         )
@@ -192,14 +191,14 @@ class ParagraphLayouterSpec extends Specification {
         final HYPHEN_WIDTH1 = 5F
         final ASCENT1 = -8F
         final DESCENT1 = 5F
-        def style1 = Stub(FontStyle)
+        def style1 = GroovyMock(FontStyle)
 
         final LETTER_WIDTH2 = 15F
         final SPACE_WIDTH2 = 10F
         final HYPHEN_WIDTH2 = 10F
         final ASCENT2 = -16F
         final DESCENT2 = 10F
-        def style2 = Stub(FontStyle)
+        def style2 = GroovyMock(FontStyle)
 
         def runs = [
                 new TextRun("some t", style1),
@@ -224,7 +223,7 @@ class ParagraphLayouterSpec extends Specification {
 
         when:
         RenderParagraph renderObject = layouter.layout(
-                new LayoutParagraph(true, Locale.US, runs, 20, TextAlign.LEFT, new HangingConfig()),
+                new LayoutParagraph(true, Locale.US, runs, 20, TextAlign.LEFT, new DefaultHangingConfig()),
                 new LayoutArea(200, 200)
         )
 
@@ -305,10 +304,10 @@ class ParagraphLayouterSpec extends Specification {
         final CHAR_WIDTH = 10F
         final ASCENT = -20F
         final DESCENT = 6F
-        def style = Stub(FontStyle)
+        def style = GroovyMock(FontStyle)
 
-        def object1 = Stub(LayoutObject)
-        def object2 = Stub(LayoutObject)
+        def object1 = GroovyMock(LayoutObject)
+        def object2 = GroovyMock(LayoutObject)
         def renderObject1 = renderObject(50, 10)
         def renderObject2 = renderObject(70, 70)
 
@@ -334,7 +333,7 @@ class ParagraphLayouterSpec extends Specification {
 
         when:
         RenderParagraph renderObject = layouter.layout(
-                new LayoutParagraph(true, Locale.US, runs, 20, TextAlign.LEFT, new HangingConfig()),
+                new LayoutParagraph(true, Locale.US, runs, 20, TextAlign.LEFT, new DefaultHangingConfig()),
                 new LayoutArea(200, 200)
         )
 
@@ -371,15 +370,15 @@ class ParagraphLayouterSpec extends Specification {
         final HYPHEN_WIDTH1 = 5F
         final ASCENT1 = -8F
         final DESCENT1 = 5F
-        def style1 = Stub(FontStyle)
+        def style1 = GroovyMock(FontStyle)
 
         final CHAR_WIDTH2 = 20F
         final HYPHEN_WIDTH2 = 15F
         final ASCENT2 = -16F
         final DESCENT2 = 10F
-        def style2 = Stub(FontStyle)
+        def style2 = GroovyMock(FontStyle)
 
-        def object1 = Stub(LayoutObject)
+        def object1 = GroovyMock(LayoutObject)
         def renderObject1 = renderObject(50, 10)
 
         def runs = [
@@ -408,7 +407,7 @@ class ParagraphLayouterSpec extends Specification {
 
         when:
         RenderParagraph renderObject = layouter.layout(
-                new LayoutParagraph(true, Locale.US, runs, 20, TextAlign.LEFT, new HangingConfig()),
+                new LayoutParagraph(true, Locale.US, runs, 20, TextAlign.LEFT, new DefaultHangingConfig()),
                 new LayoutArea(200, 200)
         )
 
@@ -472,7 +471,7 @@ class ParagraphLayouterSpec extends Specification {
         given:
         final LETTER_WIDTH = 10
         final SPACE_WIDTH = 5
-        def style = Stub(FontStyle)
+        def style = GroovyMock(FontStyle)
 
         def runs = [
                 new TextRun(" text1   text2   text3 text4", style)
@@ -493,7 +492,7 @@ class ParagraphLayouterSpec extends Specification {
 
         when:
         RenderParagraph renderObject = layouter.layout(
-                new LayoutParagraph(true, Locale.US, runs, 20, TextAlign.RIGHT, new HangingConfig()),
+                new LayoutParagraph(true, Locale.US, runs, 20, TextAlign.RIGHT, new DefaultHangingConfig()),
                 new LayoutArea(200, 200)
         )
 
@@ -535,7 +534,7 @@ class ParagraphLayouterSpec extends Specification {
         given:
         final LETTER_WIDTH = 10
         final SPACE_WIDTH = 5
-        def style = Stub(FontStyle)
+        def style = GroovyMock(FontStyle)
 
         def runs = [
                 new TextRun(" text1   text2   text3 text4", style)
@@ -556,7 +555,7 @@ class ParagraphLayouterSpec extends Specification {
 
         when:
         RenderParagraph renderObject = layouter.layout(
-                new LayoutParagraph(true, Locale.US, runs, 20, TextAlign.CENTER, new HangingConfig()),
+                new LayoutParagraph(true, Locale.US, runs, 20, TextAlign.CENTER, new DefaultHangingConfig()),
                 new LayoutArea(200, 200)
         )
 
@@ -598,7 +597,7 @@ class ParagraphLayouterSpec extends Specification {
         given:
         final LETTER_WIDTH = 10
         final SPACE_WIDTH = 5
-        def style = Stub(FontStyle)
+        def style = GroovyMock(FontStyle)
 
         def runs = [
                 new TextRun(" text1   t ext2   text3 text4  text5 ", style)
@@ -620,7 +619,7 @@ class ParagraphLayouterSpec extends Specification {
 
         when:
         RenderParagraph renderObject = layouter.layout(
-                new LayoutParagraph(true, Locale.US, runs, 20, TextAlign.JUSTIFY, new HangingConfig()),
+                new LayoutParagraph(true, Locale.US, runs, 20, TextAlign.JUSTIFY, new DefaultHangingConfig()),
                 new LayoutArea(200, 200)
         )
 
@@ -697,7 +696,7 @@ class ParagraphLayouterSpec extends Specification {
 
         when:
         RenderParagraph renderObject = layouter.layout(
-                new LayoutParagraph(true, Locale.US, [], 20, TextAlign.LEFT, new HangingConfig()),
+                new LayoutParagraph(true, Locale.US, [], 20, TextAlign.LEFT, new DefaultHangingConfig()),
                 new LayoutArea(200, 200)
         )
 
@@ -712,7 +711,7 @@ class ParagraphLayouterSpec extends Specification {
     def "compute lines width when not fill area"() {
         given:
         def runs = [
-                new TextRun("texttexttext", Stub(FontStyle))
+                new TextRun("texttexttext", GroovyMock(FontStyle))
         ]
         def lines = lines([
                 [left: 30, width: 100, text: "text"],
@@ -728,7 +727,7 @@ class ParagraphLayouterSpec extends Specification {
 
         when:
         RenderParagraph renderObject = layouter.layout(
-                new LayoutParagraph(false, Locale.US, runs, 20, TextAlign.LEFT, new HangingConfig()),
+                new LayoutParagraph(false, Locale.US, runs, 20, TextAlign.LEFT, new DefaultHangingConfig()),
                 new LayoutArea(200, 200)
         )
 
@@ -738,7 +737,7 @@ class ParagraphLayouterSpec extends Specification {
 
         when:
         renderObject = layouter.layout(
-                new LayoutParagraph(false, Locale.US, runs, 20, TextAlign.RIGHT, new HangingConfig()),
+                new LayoutParagraph(false, Locale.US, runs, 20, TextAlign.RIGHT, new DefaultHangingConfig()),
                 new LayoutArea(200, 200)
         )
 
@@ -751,7 +750,7 @@ class ParagraphLayouterSpec extends Specification {
 
         when:
         renderObject = layouter.layout(
-                new LayoutParagraph(false, Locale.US, runs, 20, TextAlign.CENTER, new HangingConfig()),
+                new LayoutParagraph(false, Locale.US, runs, 20, TextAlign.CENTER, new DefaultHangingConfig()),
                 new LayoutArea(200, 200)
         )
 
