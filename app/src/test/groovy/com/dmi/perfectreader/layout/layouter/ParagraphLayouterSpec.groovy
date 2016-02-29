@@ -234,7 +234,7 @@ class ParagraphLayouterSpec extends Specification {
             float HEIGHT1 = -ASCENT1 + DESCENT1 + LEADING1
             float HEIGHT2 = -ASCENT2 + DESCENT2 + LEADING2
 
-            with(it.child(0).object() as RenderLine) {
+            with(it.child(0).obj() as RenderLine) {
                 childTexts(it) == ["some", " "]
                 childBaselines(it) == [-ASCENT1, -ASCENT1]
                 childStyles(it) == [style1, style1]
@@ -245,7 +245,7 @@ class ParagraphLayouterSpec extends Specification {
                 childY(it) == [0, 0]
             }
 
-            with(it.child(1).object() as RenderLine) {
+            with(it.child(1).obj() as RenderLine) {
                 childTexts(it) == ["t", "ext", " ", "words"]
                 childBaselines(it) == [-ASCENT1, -ASCENT2, -ASCENT2, -ASCENT2]
                 childStyles(it) == [style1, style2, style2, style2]
@@ -261,7 +261,7 @@ class ParagraphLayouterSpec extends Specification {
                 childY(it) == [ASCENT1 - ASCENT2, 0, 0, 0]
             }
 
-            with(it.child(2).object() as RenderLine) {
+            with(it.child(2).obj() as RenderLine) {
                 childTexts(it) == [" ", " ", "qwert"]
                 childBaselines(it) == [-ASCENT2, -ASCENT1, -ASCENT1]
                 childStyles(it) == [style2, style1, style1]
@@ -272,7 +272,7 @@ class ParagraphLayouterSpec extends Specification {
                 childY(it) == [0, ASCENT1 - ASCENT2, ASCENT1 - ASCENT2]
             }
 
-            with(it.child(3).object() as RenderLine) {
+            with(it.child(3).obj() as RenderLine) {
                 childTexts(it) == ["y"]
                 childBaselines(it) == [-ASCENT1]
                 childStyles(it) == [style1]
@@ -291,8 +291,8 @@ class ParagraphLayouterSpec extends Specification {
             childY(it) == [0, HEIGHT1, HEIGHT1 + HEIGHT2, HEIGHT1 + HEIGHT2 + HEIGHT2]
         }
 
-        renderObject.children().collect { it.object() }.each { RenderLine line ->
-            line.children().collect { it.object() }.each { RenderText text ->
+        renderObject.children().collect { it.obj() }.each { RenderLine line ->
+            line.children().collect { it.obj() }.each { RenderText text ->
                 assert text.locale() == Locale.US
                 if (text instanceof RenderSpace) {
                     assert text.scaleX() == 1.0F
@@ -341,11 +341,11 @@ class ParagraphLayouterSpec extends Specification {
 
         then:
         with(renderObject) {
-            with(it.child(0).object() as RenderLine) {
-                it.child(0).object() == renderObject1
-                it.child(2).object() == renderObject2
+            with(it.child(0).obj() as RenderLine) {
+                it.child(0).obj() == renderObject1
+                it.child(2).obj() == renderObject2
 
-                with(it.child(1).object()as RenderText) {
+                with(it.child(1).obj()as RenderText) {
                     it.text().toString() == "text"
                     it.baseline() == 20
                     it.style() == style
@@ -418,7 +418,7 @@ class ParagraphLayouterSpec extends Specification {
             def HEIGHT1 = -ASCENT1 + DESCENT1
             def HEIGHT2 = -ASCENT2 + DESCENT2
 
-            with(it.child(0).object() as RenderLine) {
+            with(it.child(0).obj() as RenderLine) {
                 childTexts(it) == ["t", HYPHEN_STRING]
                 childBaselines(it) == [-ASCENT1, -ASCENT1]
                 childStyles(it) == [style1, style1]
@@ -429,7 +429,7 @@ class ParagraphLayouterSpec extends Specification {
                 childY(it) == [0, 0]
             }
 
-            with(it.child(1).object() as RenderLine) {
+            with(it.child(1).obj() as RenderLine) {
                 childTexts(it) == ["ext", HYPHEN_STRING]
                 childBaselines(it) == [-ASCENT1, -ASCENT1]
                 childStyles(it) == [style1, style1]
@@ -440,8 +440,8 @@ class ParagraphLayouterSpec extends Specification {
                 childY(it) == [0, 0]
             }
 
-            with(it.child(2).object() as RenderLine) {
-                it.child(0).object() == renderObject1
+            with(it.child(2).obj() as RenderLine) {
+                it.child(0).obj() == renderObject1
 
                 childWidths(it) == [50]
                 childHeights(it) == [10]
@@ -449,7 +449,7 @@ class ParagraphLayouterSpec extends Specification {
                 childY(it) == [0]
             }
 
-            with(it.child(3).object() as RenderLine) {
+            with(it.child(3).obj() as RenderLine) {
                 childTexts(it) == ["t", "ext2", HYPHEN_STRING]
                 childBaselines(it) == [-ASCENT1, -ASCENT2, -ASCENT2]
                 childStyles(it) == [style1, style2, style2]
@@ -499,7 +499,7 @@ class ParagraphLayouterSpec extends Specification {
         )
 
         then:
-        with(renderObject.child(0).object() as RenderLine) {
+        with(renderObject.child(0).obj() as RenderLine) {
             def widths = [1 * SPACE_WIDTH, 5 * LETTER_WIDTH, 3 * SPACE_WIDTH, 5 * LETTER_WIDTH, 1 * SPACE_WIDTH]
             childWidths(it) == widths
             childX(it) == [
@@ -511,7 +511,7 @@ class ParagraphLayouterSpec extends Specification {
             ]
         }
 
-        with(renderObject.child(1).object() as RenderLine) {
+        with(renderObject.child(1).obj() as RenderLine) {
             def widths = [2 * SPACE_WIDTH, 1 * LETTER_WIDTH, 1 * LETTER_WIDTH]
             childWidths(it) == widths
             childX(it) == [
@@ -521,7 +521,7 @@ class ParagraphLayouterSpec extends Specification {
             ]
         }
 
-        with(renderObject.child(2).object() as RenderLine) {
+        with(renderObject.child(2).obj() as RenderLine) {
             def widths = [4 * LETTER_WIDTH, 1 * SPACE_WIDTH, 5 * LETTER_WIDTH]
             childWidths(it) == widths
             childX(it) == [
@@ -562,7 +562,7 @@ class ParagraphLayouterSpec extends Specification {
         )
 
         then:
-        with(renderObject.child(0).object() as RenderLine) {
+        with(renderObject.child(0).obj() as RenderLine) {
             def widths = [1 * SPACE_WIDTH, 5 * LETTER_WIDTH, 3 * SPACE_WIDTH, 5 * LETTER_WIDTH, 1 * SPACE_WIDTH]
             childWidths(it) == widths
             childX(it) == [
@@ -574,7 +574,7 @@ class ParagraphLayouterSpec extends Specification {
             ]
         }
 
-        with(renderObject.child(1).object() as RenderLine) {
+        with(renderObject.child(1).obj() as RenderLine) {
             def widths = [2 * SPACE_WIDTH, 1 * LETTER_WIDTH, 1 * LETTER_WIDTH]
             childWidths(it) == widths
             childX(it) == [
@@ -584,7 +584,7 @@ class ParagraphLayouterSpec extends Specification {
             ]
         }
 
-        with(renderObject.child(2).object() as RenderLine) {
+        with(renderObject.child(2).obj() as RenderLine) {
             def widths = [4 * LETTER_WIDTH, 1 * SPACE_WIDTH, 5 * LETTER_WIDTH]
             childWidths(it) == widths
             childX(it) == [
@@ -626,7 +626,7 @@ class ParagraphLayouterSpec extends Specification {
         )
 
         then:
-        with(renderObject.child(0).object() as RenderLine) {
+        with(renderObject.child(0).obj() as RenderLine) {
             float freeSpace = 200 - 180 + 10
             float midSpaceWidths = (3 + 1) * SPACE_WIDTH
             float midSpaceScaleX = (freeSpace + midSpaceWidths) / midSpaceWidths
@@ -653,7 +653,7 @@ class ParagraphLayouterSpec extends Specification {
             ]
         }
 
-        with(renderObject.child(1).object() as RenderLine) {
+        with(renderObject.child(1).obj() as RenderLine) {
             def widths = [2 * SPACE_WIDTH, 1 * LETTER_WIDTH, 1 * LETTER_WIDTH]
             childScaleX(it) == [1F, null, null]
             childWidths(it) == widths
@@ -664,7 +664,7 @@ class ParagraphLayouterSpec extends Specification {
             ]
         }
 
-        with(renderObject.child(2).object() as RenderLine) {
+        with(renderObject.child(2).obj() as RenderLine) {
             def widths = [4 * LETTER_WIDTH, 1 * SPACE_WIDTH, 1 * LETTER_WIDTH]
             childScaleX(it) == [null, 1F, null]
             childWidths(it) == widths
@@ -675,7 +675,7 @@ class ParagraphLayouterSpec extends Specification {
             ]
         }
 
-        with(renderObject.child(3).object() as RenderLine) {
+        with(renderObject.child(3).obj() as RenderLine) {
             def widths = [4 * LETTER_WIDTH, 2 * SPACE_WIDTH, 5 * LETTER_WIDTH, 1 * SPACE_WIDTH]
             childScaleX(it) == [null, 1F, null, 1F]
             childWidths(it) == widths
@@ -746,9 +746,9 @@ class ParagraphLayouterSpec extends Specification {
         then:
         renderObject.width() == 170
         childWidths(renderObject) == [170, 170, 170]
-        childX(renderObject.child(0).object()) == [170 - 100]
-        childX(renderObject.child(1).object()) == [170 - 180]
-        childX(renderObject.child(2).object()) == [170 - 50]
+        childX(renderObject.child(0).obj()) == [170 - 100]
+        childX(renderObject.child(1).obj()) == [170 - 180]
+        childX(renderObject.child(2).obj()) == [170 - 50]
 
         when:
         renderObject = layouter.layout(
@@ -759,9 +759,9 @@ class ParagraphLayouterSpec extends Specification {
         then:
         renderObject.width() == 170
         childWidths(renderObject) == [170, 170, 170]
-        childX(renderObject.child(0).object()) == [30 + (170 - 30 - 100) / 2]
-        childX(renderObject.child(1).object()) == [-10 + (170 + 10 - 180) / 2]
-        childX(renderObject.child(2).object()) == [0 + (170 + 0 - 50) / 2]
+        childX(renderObject.child(0).obj()) == [30 + (170 - 30 - 100) / 2]
+        childX(renderObject.child(1).obj()) == [-10 + (170 + 10 - 180) / 2]
+        childX(renderObject.child(2).obj()) == [0 + (170 + 0 - 50) / 2]
     }
 
     def childLayouter(layoutToRenderObject = [:]) {
@@ -879,13 +879,13 @@ class ParagraphLayouterSpec extends Specification {
 
     def childWidths(renderObject) {
         return renderObject.children().collect({
-            it.object().width()
+            it.obj().width()
         })
     }
 
     def childHeights(renderObject) {
         return renderObject.children().collect({
-            it.object().height()
+            it.obj().height()
         })
     }
 
@@ -903,14 +903,14 @@ class ParagraphLayouterSpec extends Specification {
 
     def childTexts(renderLine) {
         return renderLine.children().collect({
-            it.object().text().toString()
+            it.obj().text().toString()
         })
     }
 
     def childScaleX(renderLine) {
         return renderLine.children().collect({
-            if (it.object() instanceof RenderSpace) {
-                it.object().scaleX()
+            if (it.obj() instanceof RenderSpace) {
+                it.obj().scaleX()
             } else {
                 null
             }
@@ -919,13 +919,13 @@ class ParagraphLayouterSpec extends Specification {
 
     def childBaselines(renderLine) {
         return renderLine.children().collect({
-            it.object().baseline()
+            it.obj().baseline()
         })
     }
 
     def childStyles(renderLine) {
         return renderLine.children().collect({
-            it.object().style()
+            it.obj().style()
         })
     }
 }

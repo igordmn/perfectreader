@@ -1,8 +1,7 @@
 package com.dmi.perfectreader.layout.liner
 
 import com.dmi.perfectreader.layout.config.LayoutChars
-import com.dmi.util.cache.ReuseCache.reuseCollection
-import com.dmi.util.cache.ReuseCache.reuser
+import com.dmi.util.cache.ReusableArrayList
 import com.google.common.base.Preconditions.checkState
 import java.lang.Math.max
 import java.util.*
@@ -184,11 +183,7 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
     }
 
     private object Reusables {
-        private val lines = reuser({ ArrayList<Liner.Line>() })
-
-        fun lines(): ArrayList<Liner.Line> {
-            return reuseCollection(lines)
-        }
+        val lines = ReusableArrayList<Liner.Line>()
     }
 
     private class LineImpl : Liner.Line {

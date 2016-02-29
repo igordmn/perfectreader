@@ -4,13 +4,11 @@ import com.dmi.perfectreader.layout.config.LayoutChars
 import com.dmi.perfectreader.layout.wordbreak.WordBreaker
 import com.dmi.perfectreader.layout.wordbreak.WordBreaker.WordBreaks
 import com.dmi.util.annotation.Reusable
-import com.dmi.util.cache.ReuseCache.reuseBooleanArray
-import com.dmi.util.cache.ReuseCache.reuser
+import com.dmi.util.cache.ReusableBooleanArray
 import com.dmi.util.text.CharSequenceCharacterIterator
 import com.google.common.base.Preconditions.checkArgument
 import java.text.BreakIterator
 import java.util.*
-import java.util.concurrent.atomic.AtomicReference
 
 class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
 
@@ -140,20 +138,8 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
     private object Reusables {
         private val INITIAL_CHARS_CAPACITY = 4000
 
-        private val isBreak = reuser { AtomicReference(BooleanArray(INITIAL_CHARS_CAPACITY)) }
-        private val hasHyphen = reuser { AtomicReference(BooleanArray(INITIAL_CHARS_CAPACITY)) }
-        private val isForce = reuser { AtomicReference(BooleanArray(INITIAL_CHARS_CAPACITY)) }
-
-        fun isBreak(capacity: Int): BooleanArray {
-            return reuseBooleanArray(isBreak, capacity)
-        }
-
-        fun hasHyphen(capacity: Int): BooleanArray {
-            return reuseBooleanArray(hasHyphen, capacity)
-        }
-
-        fun isForce(capacity: Int): BooleanArray {
-            return reuseBooleanArray(isForce, capacity)
-        }
+        val isBreak = ReusableBooleanArray(INITIAL_CHARS_CAPACITY)
+        val hasHyphen = ReusableBooleanArray(INITIAL_CHARS_CAPACITY)
+        val isForce = ReusableBooleanArray(INITIAL_CHARS_CAPACITY)
     }
 }

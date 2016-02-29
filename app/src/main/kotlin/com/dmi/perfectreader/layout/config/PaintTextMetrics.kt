@@ -4,14 +4,12 @@ import android.graphics.Paint
 import android.text.TextPaint
 import com.dmi.perfectreader.style.FontStyle
 import com.dmi.util.annotation.Reusable
-import com.dmi.util.cache.ReuseCache.reuseFloatArray
-import com.dmi.util.cache.ReuseCache.reuser
-import java.util.concurrent.atomic.AtomicReference
+import com.dmi.util.cache.ReusableFloatArray
 
 class PaintTextMetrics : TextMetrics {
     @Reusable
     override fun charWidths(text: CharSequence, style: FontStyle): FloatArray {
-        val textPaint = Reusables.textPaint()
+        val textPaint = Reusables.textPaint
         val charWidths = Reusables.charWidths(text.length)
 
         textPaint.isAntiAlias = style.renderParams().textAntialias()
@@ -26,9 +24,9 @@ class PaintTextMetrics : TextMetrics {
 
     @Reusable
     override fun verticalMetrics(style: FontStyle): TextMetrics.VerticalMetrics {
-        val textPaint = Reusables.textPaint()
-        val verticalMetrics = Reusables.verticalMetrics()
-        val paintFontMetrics = Reusables.paintFontMetrics()
+        val textPaint = Reusables.textPaint
+        val verticalMetrics = Reusables.verticalMetrics
+        val paintFontMetrics = Reusables.paintFontMetrics
 
         textPaint.textSize = style.size()
         textPaint.getFontMetrics(paintFontMetrics)
@@ -40,29 +38,9 @@ class PaintTextMetrics : TextMetrics {
     }
 
     private object Reusables {
-        private val textPaint = TextPaint()
-        private val paintFontMetrics = Paint.FontMetrics()
-        private val verticalMetrics = TextMetrics.VerticalMetrics()
-        private val charWidths = reuser { AtomicReference(FloatArray(8000)) }
-
-        @Reusable
-        fun textPaint(): TextPaint {
-            return textPaint
-        }
-
-        @Reusable
-        fun paintFontMetrics(): Paint.FontMetrics {
-            return paintFontMetrics
-        }
-
-        @Reusable
-        fun verticalMetrics(): TextMetrics.VerticalMetrics {
-            return verticalMetrics
-        }
-
-        @Reusable
-        fun charWidths(capacity: Int): FloatArray {
-            return reuseFloatArray(charWidths, capacity)
-        }
+        val textPaint = TextPaint()
+        val paintFontMetrics = Paint.FontMetrics()
+        val verticalMetrics = TextMetrics.VerticalMetrics()
+        val charWidths = ReusableFloatArray()
     }
 }

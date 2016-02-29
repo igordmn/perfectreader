@@ -3,7 +3,7 @@ package com.dmi.perfectreader.layout.wordbreak
 import com.carrotsearch.hppc.ByteArrayList
 import com.carrotsearch.hppc.CharArrayList
 import com.dmi.util.annotation.Reusable
-import com.dmi.util.cache.ReuseCache.reuser
+import com.dmi.util.cache.ReusableValue
 import com.google.common.base.Charsets
 import com.google.common.io.CharStreams.readLines
 import java.io.InputStream
@@ -12,7 +12,19 @@ import java.lang.Math.min
 import java.util.*
 import java.util.Arrays.copyOf
 
-class TeXHyphenator private constructor(private val patterns: TeXHyphenator.Patterns, private val exceptions: TeXHyphenator.CharsLevels) {
+class TeXHyphenator private constructor(
+        private val patterns: TeXHyphenator.Patterns,
+        private val exceptions: TeXHyphenator.CharsLevels
+) {
+    /**
+     * алгоритм: https://habrahabr.ru/post/138088/
+     */
+
+    companion object {
+        private val EDGE_OF_WORD = '.'
+    }
+
+
     fun breakWord(text: CharSequence, beginIndex: Int, endIndex: Int): WordBreaker.WordBreaks {
         val length = endIndex - beginIndex
         val wordLevels = Reusables.wordLevels(length)
@@ -281,33 +293,29 @@ class TeXHyphenator private constructor(private val patterns: TeXHyphenator.Patt
     }
 
     private object Reusables {
-        private val wordChars = reuser<PatternChars>({ PatternChars() })
-        private val wordLevels = reuser<PatternLevels>({ PatternLevels() })
-        private val wordBreaks = reuser<WordBreaksImpl>({ WordBreaksImpl() })
+        val wordChars = ReusableValue({ PatternChars() })
+        val wordLevels = ReusableWordLevels()
+        val wordBreaks = ReusableWordBreaks()
 
-        fun wordChars(): PatternChars {
-            return wordChars.reuse()
+        class ReusableWordBreaks {
+            private val value = ReusableValue({ WordBreaksImpl() })
+
+            operator fun invoke(levels: PatternLevels, beginIndex: Int): WordBreaksImpl {
+                return value().apply {
+                    reset(levels, beginIndex)
+                }
+            }
         }
 
-        fun wordLevels(wordLength: Int): PatternLevels {
-            val value = wordLevels.reuse()
-            value.clear()
-            value.resize(wordLength + 1)
-            return value
+        class ReusableWordLevels {
+            private val value = ReusableValue({ PatternLevels() })
+
+            operator fun invoke(wordLength: Int): PatternLevels {
+                return value().apply {
+                    clear()
+                    resize(wordLength + 1)
+                }
+            }
         }
-
-        fun wordBreaks(levels: PatternLevels, beginIndex: Int): WordBreaker.WordBreaks {
-            val value = wordBreaks.reuse()
-            value.reset(levels, beginIndex)
-            return value
-        }
-    }
-
-    companion object {
-        /**
-         * алгоритм: https://habrahabr.ru/post/138088/
-         */
-
-        private val EDGE_OF_WORD = '.'
     }
 }

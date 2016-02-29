@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.layout.layouter
 
 import com.carrotsearch.hppc.FloatArrayList
-import com.carrotsearch.hppc.IntArrayList
 import com.dmi.perfectreader.layout.LayoutObject
 import com.dmi.perfectreader.layout.LayoutParagraph
 import com.dmi.perfectreader.layout.config.LayoutArea
@@ -12,11 +11,10 @@ import com.dmi.perfectreader.layout.run.ObjectRun
 import com.dmi.perfectreader.layout.run.TextRun
 import com.dmi.perfectreader.render.*
 import com.dmi.perfectreader.style.TextAlign
-import com.dmi.util.cache.ReuseCache.reuseCollection
-import com.dmi.util.cache.ReuseCache.reuseFloatArrayList
-import com.dmi.util.cache.ReuseCache.reuseIntArrayList
-import com.dmi.util.cache.ReuseCache.reuseStringBuilder
-import com.dmi.util.cache.ReuseCache.reuser
+import com.dmi.util.cache.ReusableArrayList
+import com.dmi.util.cache.ReusableFloatArrayList
+import com.dmi.util.cache.ReusableIntArrayList
+import com.dmi.util.cache.ReusableStringBuilder
 import com.google.common.base.Preconditions.checkArgument
 import java.lang.Math.max
 import java.util.*
@@ -387,51 +385,15 @@ class ParagraphLayouter(
         private val INITIAL_CHARS_CAPACITY = 4000
         private val INITIAL_RUNS_CAPACITY = 16
 
-        private val plainText = reuser { StringBuilder(INITIAL_CHARS_CAPACITY) }
-        private val plainIndexToRunIndex = reuser { IntArrayList(INITIAL_CHARS_CAPACITY) }
-        private val plainIndexToWidth = reuser { FloatArrayList(INITIAL_CHARS_CAPACITY) }
-        private val plainIndexToTotalWidth = reuser { FloatArrayList(INITIAL_CHARS_CAPACITY) }
-        private val runIndexToPlainBeginIndex = reuser { IntArrayList(INITIAL_RUNS_CAPACITY) }
-        private val runIndexToObject = reuser { ArrayList<RenderObject?>(INITIAL_RUNS_CAPACITY) }
-        private val runIndexToHeight = reuser { FloatArrayList(INITIAL_RUNS_CAPACITY) }
-        private val runIndexToBaseline = reuser { FloatArrayList(INITIAL_RUNS_CAPACITY) }
-        private val runIndexToHyphenWidth = reuser { FloatArrayList(INITIAL_RUNS_CAPACITY) }
-
-        fun plainText(): StringBuilder {
-            return reuseStringBuilder(plainText)
-        }
-
-        fun plainIndexToRunIndex(): IntArrayList {
-            return reuseIntArrayList(plainIndexToRunIndex)
-        }
-
-        fun plainIndexToWidth(): FloatArrayList {
-            return reuseFloatArrayList(plainIndexToWidth)
-        }
-
-        fun plainIndexToTotalWidth(): FloatArrayList {
-            return reuseFloatArrayList(plainIndexToTotalWidth)
-        }
-
-        fun runIndexToPlainBeginIndex(): IntArrayList {
-            return reuseIntArrayList(runIndexToPlainBeginIndex)
-        }
-
-        fun runIndexToObject(): ArrayList<RenderObject?> {
-            return reuseCollection(runIndexToObject)
-        }
-
-        fun runIndexToHeight(): FloatArrayList {
-            return reuseFloatArrayList(runIndexToHeight)
-        }
-
-        fun runIndexToBaseline(): FloatArrayList {
-            return reuseFloatArrayList(runIndexToBaseline)
-        }
-
-        fun runIndexToHyphenWidth(): FloatArrayList {
-            return reuseFloatArrayList(runIndexToHyphenWidth)
-        }
+        val plainText = ReusableStringBuilder(INITIAL_CHARS_CAPACITY)
+        val plainIndexToRunIndex = ReusableIntArrayList(INITIAL_CHARS_CAPACITY)
+        val plainIndexToWidth = ReusableFloatArrayList(INITIAL_CHARS_CAPACITY)
+        val plainIndexToTotalWidth = ReusableFloatArrayList(INITIAL_CHARS_CAPACITY)
+        val runIndexToPlainBeginIndex = ReusableIntArrayList(INITIAL_CHARS_CAPACITY)
+        val runIndexToObject = ReusableArrayList<RenderObject?>(INITIAL_RUNS_CAPACITY)
+        val runIndexToHeight = ReusableFloatArrayList(INITIAL_CHARS_CAPACITY)
+        val runIndexToBaseline = ReusableFloatArrayList(INITIAL_CHARS_CAPACITY)
+        val runIndexToHyphenWidth = ReusableFloatArrayList(INITIAL_CHARS_CAPACITY)
     }
 
     companion object {

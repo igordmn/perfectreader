@@ -6,7 +6,9 @@ import java.io.InputStream
 import java.lang.String.format
 import java.util.*
 
-class TeXPatternsSource(private val context: Context) {
+class TeXPatternsSource(
+        private val context: Context
+) {
     companion object {
         private val PATTERN_FORMAT = "hyphenation/hyph-%s.pat.txt"
         private val EXCEPTION_FORMAT = "hyphenation/hyph-%s.hyp.txt"
@@ -20,22 +22,23 @@ class TeXPatternsSource(private val context: Context) {
         )
     }
 
-    fun readPatternsFor(locale: Locale): InputStream? {
-        return readTeXFile(locale, PATTERN_FORMAT)
+    fun readPatternsFor(locale: Locale, read: (InputStream) -> Unit){
+        readTeXFile(locale, PATTERN_FORMAT, read)
     }
 
-    fun readExceptionsFor(locale: Locale): InputStream? {
-        return readTeXFile(locale, EXCEPTION_FORMAT)
+    fun readExceptionsFor(locale: Locale, read: (InputStream) -> Unit) {
+        readTeXFile(locale, EXCEPTION_FORMAT, read)
     }
 
-    private fun readTeXFile(locale: Locale, format: String): InputStream? {
+    private fun readTeXFile(locale: Locale, format: String, read: (InputStream) -> Unit) {
         try {
             val language = aliasOrLanguage(locale.language)
-            return context.assets.open(format(format, language))
+            context.assets.open(format(format, language)).use {
+                read(it)
+            }
         } catch (e: FileNotFoundException) {
-            return null
+            // ignore
         }
-
     }
 
     private fun aliasOrLanguage(language: String): String {

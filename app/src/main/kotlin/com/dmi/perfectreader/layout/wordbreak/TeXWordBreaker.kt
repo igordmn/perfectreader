@@ -4,7 +4,9 @@ import timber.log.Timber
 import java.io.IOException
 import java.util.*
 
-class TeXWordBreaker(private val patternsSource: TeXPatternsSource) : WordBreaker {
+class TeXWordBreaker(
+        private val patternsSource: TeXPatternsSource
+) : WordBreaker {
     private val hyphenatorCache = HyphenatorCache()
 
     override fun breakWord(text: CharSequence, locale: Locale, beginIndex: Int, endIndex: Int): WordBreaker.WordBreaks {
@@ -15,10 +17,10 @@ class TeXWordBreaker(private val patternsSource: TeXPatternsSource) : WordBreake
         val builder = TeXHyphenator.Builder()
 
         try {
-            patternsSource.readPatternsFor(locale)?.use {
+            patternsSource.readPatternsFor(locale) {
                 builder.addPatternsFrom(it)
             }
-            patternsSource.readExceptionsFor(locale)?.use {
+            patternsSource.readExceptionsFor(locale) {
                 builder.addExceptionsFrom(it)
             }
         } catch (e: IOException) {
