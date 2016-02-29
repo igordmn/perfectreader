@@ -10,7 +10,7 @@ import com.dmi.perfectreader.R
 import com.dmi.perfectreader.book.animation.PageAnimation
 import com.dmi.util.collection.DuplexBuffer
 import com.dmi.util.concurrent.Interrupts.waitTask
-import com.dmi.util.concurrent.Threads.postUITask
+import com.dmi.perfectreader.app.AppThreads.postUITask
 import com.dmi.util.opengl.DeltaTimeGLSurfaceView
 import com.dmi.util.opengl.Graphics.createProgram
 import com.dmi.util.opengl.Graphics.floatBuffer

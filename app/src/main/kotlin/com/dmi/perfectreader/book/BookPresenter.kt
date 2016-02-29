@@ -1,14 +1,13 @@
 package com.dmi.perfectreader.book
 
 import android.content.Context
+import com.dmi.perfectreader.app.AppThreads.postIOTask
 import com.dmi.perfectreader.book.pagebook.PageBook
 import com.dmi.perfectreader.book.pagebook.PageBookRenderer
 import com.dmi.perfectreader.bookstorage.EPUBBookStorage
 import com.dmi.perfectreader.setting.AppSettings
 import com.dmi.perfectreader.userdata.UserData
 import com.dmi.util.base.BasePresenter
-import com.dmi.util.concurrent.Threads.postIOTask
-import com.dmi.util.concurrent.Threads.postUITask
 import com.dmi.util.setting.AbstractSettingsApplier
 import com.google.common.base.MoreObjects.firstNonNull
 import timber.log.Timber
@@ -75,7 +74,7 @@ open class BookPresenter : BasePresenter() {
     protected fun loadBook() {
         try {
             bookStorage.load(bookFile)
-            postUITask { this.afterBookStorageLoad() }
+            postIOTask { this.afterBookStorageLoad() }
         } catch (e: IOException) {
             Timber.e(e, "Load book error")
             view.showBookLoadingError()
