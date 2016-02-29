@@ -5,5 +5,5 @@ apply plugin: 'groovyx.grooid.groovy-android'
 apply plugin: 'com.jakewharton.hugo'
 
 dependencies {
-    compile project(':util:java')
+    compile project(':util:util-common')
 }

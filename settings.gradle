@@ -1,4 +1,4 @@
 rootProject.name = 'perfectreader'
-include ':libs:readiumSdk',
-        ':util:java', 'util:android',
+include ':lib:readiumSdk',
+        ':util:util-common', 'util:util-android',
         ':app'

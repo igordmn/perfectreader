@@ -55,8 +55,8 @@ android {
 }
 
 dependencies {
-    compile project(':libs:readiumSdk')
-    compile project(':util:android')
+    compile project(':lib:readiumSdk')
+    compile project(':util:util-android')
 }
 
 ext {

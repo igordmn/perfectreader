@@ -10,7 +10,7 @@ buildscript {
         maven { url 'https://dl.bintray.com/igordmn/maven' }
         maven { url 'https://clojars.org/repo' }
         maven { url 'https://jitpack.io' }
-        flatDir { dirs new File(rootProject.projectDir, 'libs') }
+        flatDir { dirs new File(rootProject.projectDir, 'lib') }
     }
 
     dependencies {
@@ -26,8 +26,9 @@ plugins {
     id "org.sonarqube" version "1.1"
 }
 
-def androidProjects = [project(':app'), project(':util:android')]
-def javaProjects = [project(':util:java')]
+def androidProjects = [project(':app'), project(':util:util-android')]
+def javaProjects = [project(':util:util-common')]
+
 
 configure(androidProjects + javaProjects) {
     afterEvaluate { project ->
@@ -37,7 +38,7 @@ configure(androidProjects + javaProjects) {
             maven { url 'https://dl.bintray.com/igordmn/maven' }
             maven { url 'https://clojars.org/repo' }
             maven { url 'https://jitpack.io' }
-            flatDir { dirs new File(rootProject.projectDir, 'libs') }
+            flatDir { dirs new File(rootProject.projectDir, 'lib') }
         }
 
         tasks.withType(JavaCompile) {
