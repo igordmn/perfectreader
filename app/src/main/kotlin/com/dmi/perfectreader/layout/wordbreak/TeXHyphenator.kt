@@ -24,12 +24,11 @@ class TeXHyphenator private constructor(
         private val EDGE_OF_WORD = '.'
     }
 
-
     fun breakWord(text: CharSequence, beginIndex: Int, endIndex: Int): WordBreaker.WordBreaks {
         val length = endIndex - beginIndex
         val wordLevels = Reusables.wordLevels(length)
 
-        if (length >= 3 && (patterns.count > 0 || exceptions.size > 0)) {
+        if (length >= 3 && (patterns.size > 0 || exceptions.size > 0)) {
             val chars = Reusables.wordChars()
             if (!applyException(text, beginIndex, endIndex, wordLevels, chars)) {
                 applyPatterns(text, beginIndex, endIndex, wordLevels, chars)
@@ -52,7 +51,7 @@ class TeXHyphenator private constructor(
 
     private fun applyPatterns(text: CharSequence, beginIndex: Int, endIndex: Int, wordLevels: PatternLevels, chars: PatternChars) {
         for (begin in beginIndex..endIndex - 1) {
-            for (end in begin + 1..min(endIndex, begin + patterns.maxLength())) {
+            for (end in begin + 1..min(endIndex, begin + patterns.maxLength)) {
                 if (begin == beginIndex) {
                     applyLevels(text, beginIndex, wordLevels, chars, begin, end, true, false)
                 }
@@ -70,7 +69,7 @@ class TeXHyphenator private constructor(
     private fun applyLevels(text: CharSequence, beginIndex: Int, wordLevels: PatternLevels, chars: PatternChars, begin: Int, end: Int,
                             atWordBegin: Boolean, atWordEnd: Boolean) {
         chars.reset(text, begin, end, atWordBegin, atWordEnd)
-        val levels = patterns.levelsFor(chars)
+        val levels = patterns[chars]
         levels?.applyTo(wordLevels, begin - beginIndex)
     }
 
@@ -79,78 +78,73 @@ class TeXHyphenator private constructor(
         private val exceptions = CharsLevels()
 
         fun addPatternsFrom(stream: InputStream): Builder {
-            val patterns = readLines(InputStreamReader(stream, Charsets.UTF_8))
-            for (pattern in patterns) {
-                addPattern(pattern)
-            }
+            readStreamLines(stream) { addPattern(it) }
             return this
         }
 
         fun addExceptionsFrom(stream: InputStream): Builder {
-            val patterns = readLines(InputStreamReader(stream, Charsets.UTF_8))
-            for (pattern in patterns) {
-                addException(pattern)
-            }
+            readStreamLines(stream) { addException(it) }
             return this
+        }
+
+        private inline fun readStreamLines(stream: InputStream, forEach: (String) -> Unit) {
+            readLines(InputStreamReader(stream, Charsets.UTF_8)).forEach(forEach)
         }
 
         fun addPattern(pattern: String): Builder {
             val letters = CharArrayList()
-            val levels = PatternLevels()
-            levels.resize(pattern.length + 1)
-
+            val levels = PatternLevels().apply { resize(pattern.length + 1) }
             var atWordBegin = false
             var atWordEnd = false
 
             for (i in 0..pattern.length - 1) {
                 val ch = pattern[i]
-                if (ch == EDGE_OF_WORD) {
-                    if (i == 0) {
-                        atWordBegin = true
-                    } else if (i == pattern.length - 1) {
-                        atWordEnd = true
+                when (ch) {
+                    EDGE_OF_WORD -> {
+                        if (i == 0) atWordBegin = true
+                        if (i == pattern.length - 1) atWordEnd = true
                     }
-                } else if ('0' <= ch && ch <= '9') {
-                    levels.set(letters.size(), (ch - '0').toByte())
-                } else {
-                    letters.add(ch)
+                    in '0'..'9' -> levels.set(letters.size(), (ch - '0').toByte())
+                    else -> letters.add(ch)
                 }
             }
 
-            val patternStr = String(letters.buffer, 0, letters.elementsCount)
-            val patternChars = PatternChars(patternStr, 0, patternStr.length, atWordBegin, atWordEnd)
-
-            levels.resize(letters.size() + 1)
-            levels.trimToSize()
-
-            patterns.put(patternChars, levels)
+            patterns.put(
+                    patternChars(letters, atWordBegin, atWordEnd),
+                    trimLevels(letters.size(), levels)
+            )
 
             return this
         }
 
         fun addException(exception: String): Builder {
             val letters = CharArrayList()
-            val levels = PatternLevels()
-            levels.resize(exception.length + 1)
+            val levels = PatternLevels().apply { resize(exception.length + 1) }
 
             for (i in 0..exception.length - 1) {
                 val ch = exception[i]
-                if (ch == '-') {
-                    levels.set(letters.size(), 9.toByte())
-                } else {
-                    letters.add(ch)
+                when (ch) {
+                    '-' -> levels.set(letters.size(), 9)
+                    else -> letters.add(ch)
                 }
             }
 
-            val patternStr = String(letters.buffer, 0, letters.elementsCount)
-            val patternChars = PatternChars(patternStr, 0, patternStr.length, true, true)
-
-            levels.resize(letters.size() + 1)
-            levels.trimToSize()
-
-            exceptions.put(patternChars, levels)
+            exceptions.put(
+                    patternChars(letters, true, true),
+                    trimLevels(letters.size(), levels)
+            )
 
             return this
+        }
+
+        private fun patternChars(array: CharArrayList, atWordBegin: Boolean, atWordEnd: Boolean): PatternChars {
+            val patternStr = String(array.buffer, 0, array.elementsCount)
+            return PatternChars(patternStr, 0, patternStr.length, atWordBegin, atWordEnd)
+        }
+
+        private fun trimLevels(lettersSize: Int, levels: PatternLevels) = levels.apply {
+            resize(lettersSize + 1)
+            trimToSize()
         }
 
         fun build(): TeXHyphenator {
@@ -160,35 +154,30 @@ class TeXHyphenator private constructor(
 
     private class Patterns {
         private var lengthToCharsLevels = arrayOfNulls<CharsLevels>(16)
-        private var maxLength = 0
-        var count = 0
+        var maxLength = 0
+            private set
+        var size = 0
+            private set
 
         fun put(chars: PatternChars, levels: PatternLevels) {
-            val length = chars.length
-            if (length > lengthToCharsLevels.size) {
-                lengthToCharsLevels = copyOf<CharsLevels>(lengthToCharsLevels, length shr 1)
+            val len = chars.length
+            if (len > lengthToCharsLevels.size) {
+                lengthToCharsLevels = copyOf<CharsLevels>(lengthToCharsLevels, len shr 1)
             }
-            if (length > maxLength) {
-                maxLength = length
-            }
+            if (len > maxLength) maxLength = len
 
-            var charsLevels: CharsLevels? = lengthToCharsLevels[length]
+            var charsLevels: CharsLevels? = lengthToCharsLevels[len]
             if (charsLevels == null) {
                 charsLevels = CharsLevels()
-                lengthToCharsLevels[length] = charsLevels
+                lengthToCharsLevels[len] = charsLevels
             }
 
             charsLevels.put(chars, levels)
-            count++
+            size++
         }
 
-        fun maxLength(): Int {
-            return maxLength
-        }
-
-        fun levelsFor(chars: PatternChars): PatternLevels? {
-            val charsLevels = lengthToCharsLevels[chars.length]
-            return if (charsLevels != null) charsLevels[chars] else null
+        operator fun get(chars: PatternChars): PatternLevels? {
+            return lengthToCharsLevels[chars.length]?.get(chars)
         }
     }
 
@@ -196,17 +185,18 @@ class TeXHyphenator private constructor(
 
     @Reusable
     private class PatternChars {
-        private var str: CharSequence? = null
+        private lateinit var str: CharSequence
         private var begin: Int = 0
         private var end: Int = 0
         private var atWordBegin: Boolean = false
         private var atWordEnd: Boolean = false
 
-        var length: Int = 0
         private var hashCode: Int = 0
 
-        constructor() {
-        }
+        var length: Int = 0
+            private set
+
+        constructor()
 
         constructor(str: CharSequence, begin: Int, end: Int, atWordBegin: Boolean, atWordEnd: Boolean) {
             reset(str, begin, end, atWordBegin, atWordEnd)
@@ -223,7 +213,6 @@ class TeXHyphenator private constructor(
             computeHashCode()
         }
 
-
         override fun equals(other: Any?): Boolean {
             other as PatternChars
 
@@ -234,7 +223,7 @@ class TeXHyphenator private constructor(
             var i = begin
             var j = other.begin
             while (i < end) {
-                if (str!![i] != other.str!![j]) {
+                if (str[i] != other.str[j]) {
                     return false
                 }
                 i++
@@ -244,17 +233,15 @@ class TeXHyphenator private constructor(
             return true
         }
 
-        override fun hashCode(): Int {
-            return hashCode
-        }
+        override fun hashCode() = hashCode
 
         private fun computeHashCode() {
             hashCode = 0
             for (i in begin..end - 1) {
-                hashCode = 31 * hashCode + str!![i].toInt()
+                hashCode = 31 * hashCode + str[i].toInt()
             }
-            hashCode = 31 * hashCode + if (atWordBegin) 1 else 0
-            hashCode = 31 * hashCode + if (atWordEnd) 1 else 0
+            hashCode = 31 * hashCode + atWordBegin.hashCode()
+            hashCode = 31 * hashCode + atWordEnd.hashCode()
         }
     }
 
@@ -264,9 +251,9 @@ class TeXHyphenator private constructor(
             var i = 0
             var j = beginIndex
             while (i < elementsCount && j < levels.elementsCount) {
-                val level = get(i)
-                if (level > levels.get(j)) {
-                    levels.set(j, level)
+                val level = this[i]
+                if (level > levels[j]) {
+                    levels[j] = level
                 }
                 i++
                 j++
@@ -276,7 +263,7 @@ class TeXHyphenator private constructor(
 
     @Reusable
     private class WordBreaksImpl : WordBreaker.WordBreaks {
-        private var levels: PatternLevels? = null
+        private lateinit var levels: PatternLevels
         private var beginIndex: Int = 0
 
         fun reset(levels: PatternLevels, beginIndex: Int) {
@@ -287,8 +274,8 @@ class TeXHyphenator private constructor(
         override fun canBreakBefore(index: Int): Boolean {
             val wordIndex = index - beginIndex
             // переносить одну букву нельзя
-            val isMiddleBreak = wordIndex >= 2 && wordIndex < levels!!.elementsCount - 2
-            return isMiddleBreak && levels!!.get(wordIndex) % 2 != 0
+            val isMiddleBreak = wordIndex >= 2 && wordIndex < levels.elementsCount - 2
+            return isMiddleBreak && levels[wordIndex] % 2 != 0
         }
     }
 
