@@ -2,7 +2,6 @@ package com.dmi.util
 
 object TypeConverters {
     @Suppress("UNCHECKED_CAST")
-    @Throws(ParseException::class)
     fun <T> stringToType(value: String?, type: Class<*>): T {
         try {
             if (value == null || String::class.java == type || Void.TYPE == type) {

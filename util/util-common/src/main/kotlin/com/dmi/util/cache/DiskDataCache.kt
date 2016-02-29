@@ -7,10 +7,9 @@ import com.google.common.hash.Hashing.sha1
 import com.jakewharton.disklrucache.DiskLruCache
 import java.io.Closeable
 import java.io.File
-import java.io.IOException
 import java.io.InputStream
 
-class DiskDataCache @Throws(IOException::class)
+class DiskDataCache
 constructor(directory: File, appVersion: Int, maxSize: Int) : DataCache, Closeable {
     private val diskLruCache: DiskLruCache
 
@@ -18,12 +17,10 @@ constructor(directory: File, appVersion: Int, maxSize: Int) : DataCache, Closeab
         diskLruCache = DiskLruCache.open(directory, appVersion, 1, maxSize.toLong())
     }
 
-    @Throws(IOException::class)
     override fun close() {
         diskLruCache.close()
     }
 
-    @Throws(IOException::class)
     override fun openRead(key: String, dataWriter: DataCache.DataWriter): InputStream {
         var key = key
         key = hashKey(key)
@@ -44,8 +41,6 @@ constructor(directory: File, appVersion: Int, maxSize: Int) : DataCache, Closeab
     }
 
     private class SnapshotInputStream constructor(private val snapshot: DiskLruCache.Snapshot, index: Int) : InputStreamWrapper(snapshot.getInputStream(index)) {
-
-        @Throws(IOException::class)
         override fun close() {
             super.close()
             snapshot.close()

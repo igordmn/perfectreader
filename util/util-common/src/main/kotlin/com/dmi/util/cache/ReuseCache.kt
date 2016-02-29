@@ -7,9 +7,7 @@ import com.carrotsearch.hppc.IntArrayList
 import com.dmi.util.annotation.Reusable
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicReference
-import javax.annotation.concurrent.NotThreadSafe
 
-@NotThreadSafe
 object ReuseCache {
     fun <T> reuser(create: () -> T): Reuser<T> {
         val holder = AtomicReference(WeakReference<T>(null))

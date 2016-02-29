@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.cache
 
-import android.annotation.SuppressLint
 import android.content.Context
 import com.dmi.perfectreader.BuildConfig.VERSION_CODE
 import com.dmi.util.AndroidPaths.getCachedDir
@@ -37,8 +36,6 @@ class BookResourceCache : DataCache {
         }
     }
 
-    @SuppressLint("NewApi")
-    @Throws(IOException::class)
     override fun openRead(key: String, dataWriter: DataCache.DataWriter): InputStream {
         val cacheDir = cacheDir
         if (cacheDir != currentCacheDir && diskDataCache != null) {

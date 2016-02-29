@@ -29,8 +29,8 @@ class ParagraphLayouter(
 
     override fun layout(obj: LayoutParagraph, area: LayoutArea): RenderParagraph {
         return object : Callable<RenderParagraph> {
-            internal var runs = obj.runs()
-            internal var locale = obj.locale()
+            var runs = obj.runs()
+            var locale = obj.locale()
 
             override fun call(): RenderParagraph {
                 val text = PrerenderedText()
@@ -131,7 +131,7 @@ class ParagraphLayouter(
                 return if (totalMidspace > 0) (totalMidspace + totalExpansion) / totalMidspace else 1F
             }
 
-            internal inner class PrerenderedText : Liner.MeasuredText {
+            inner class PrerenderedText : Liner.MeasuredText {
                 private val plainText = Reusables.plainText()
                 private val plainIndexToRunIndex = Reusables.plainIndexToRunIndex()
                 private val plainIndexToWidth = Reusables.plainIndexToWidth()

@@ -56,7 +56,6 @@ abstract class AbstractSettings {
             return typeToString(value, valueClass)
         }
 
-        @Throws(TypeConverters.ParseException::class)
         internal fun parseString(string: String): T {
             return stringToType(string, valueClass)
         }

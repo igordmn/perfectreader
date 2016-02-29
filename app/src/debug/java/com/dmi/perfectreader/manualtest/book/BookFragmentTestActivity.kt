@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.manualtest.book
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.KeyEvent
 import com.dmi.perfectreader.R
@@ -22,7 +21,6 @@ class BookFragmentTestActivity : BaseActivity() {
         bookFragment = findOrAddChild(BookFragment.intent(tempBook(TEST_BOOK)), R.id.rootContainer)
     }
 
-    @SuppressLint("NewApi")
     private fun tempBook(path: String): File {
         var path = path
         path = path.substring("assets://".length)

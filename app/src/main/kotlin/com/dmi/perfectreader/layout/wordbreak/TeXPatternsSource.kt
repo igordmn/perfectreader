@@ -2,39 +2,32 @@ package com.dmi.perfectreader.layout.wordbreak
 
 import android.content.Context
 import java.io.FileNotFoundException
-import java.io.IOException
 import java.io.InputStream
 import java.lang.String.format
 import java.util.*
 
 class TeXPatternsSource(private val context: Context) {
     companion object {
-        private val patternFormat = "hyphenation/hyph-%s.pat.txt"
-        private val exceptionFormat = "hyphenation/hyph-%s.hyp.txt"
-
-        private val languageAliases = object : HashMap<String, String>() {
-            init {
-                put("de", "de-1996")
-                put("el", "el-monoton")
-                put("en", "en-us")
-                put("la", "la-x-classic")
-                put("mn", "mn-cyrl")
-                put("sr", "sh-latn")
-            }
-        }
+        private val PATTERN_FORMAT = "hyphenation/hyph-%s.pat.txt"
+        private val EXCEPTION_FORMAT = "hyphenation/hyph-%s.hyp.txt"
+        private val LANGUAGE_ALIASES = mapOf(
+                "de" to "de-1996",
+                "el" to "el-monoton",
+                "el" to "en-us",
+                "en" to "la-x-classic",
+                "la" to "mn-cyrl",
+                "sr" to "sh-latn"
+        )
     }
 
-    @Throws(IOException::class)
     fun readPatternsFor(locale: Locale): InputStream? {
-        return readTeXFile(locale, patternFormat)
+        return readTeXFile(locale, PATTERN_FORMAT)
     }
 
-    @Throws(IOException::class)
     fun readExceptionsFor(locale: Locale): InputStream? {
-        return readTeXFile(locale, exceptionFormat)
+        return readTeXFile(locale, EXCEPTION_FORMAT)
     }
 
-    @Throws(IOException::class)
     private fun readTeXFile(locale: Locale, format: String): InputStream? {
         try {
             val language = aliasOrLanguage(locale.language)
@@ -46,7 +39,7 @@ class TeXPatternsSource(private val context: Context) {
     }
 
     private fun aliasOrLanguage(language: String): String {
-        val alias = languageAliases[language]
+        val alias = LANGUAGE_ALIASES[language]
         return alias ?: language
     }
 }

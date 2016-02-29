@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.bookstorage
 
-import java.io.IOException
 import java.io.InputStream
 
 interface BookStorage {
@@ -8,6 +7,5 @@ interface BookStorage {
 
     val segmentSizes: IntArray
 
-    @Throws(IOException::class, SecurityException::class)
     fun readURL(url: String): InputStream
 }

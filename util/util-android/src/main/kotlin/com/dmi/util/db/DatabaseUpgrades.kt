@@ -1,6 +1,5 @@
 package com.dmi.util.db
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
@@ -13,7 +12,6 @@ import java.util.*
 import java.util.Arrays.sort
 
 object DatabaseUpgrades {
-    @Throws(DowngradeException::class)
     fun upgradeDatabase(context: Context, database: SQLiteDatabase, scriptsAssetsPath: String) {
         database.beginTransaction()
         try {
@@ -36,7 +34,6 @@ object DatabaseUpgrades {
         }
     }
 
-    @Throws(IOException::class)
     private fun getNewScripts(context: Context, currentVersion: Int, scriptsAssetsPath: String): NewScripts {
         val newScripts = NewScripts()
         val scripts = context.assets.list(scriptsAssetsPath)
@@ -54,7 +51,6 @@ object DatabaseUpgrades {
         return newScripts
     }
 
-    @Throws(IOException::class)
     private fun applyScripts(context: Context, database: SQLiteDatabase, scriptPaths: List<String>) {
         for (scriptPath in scriptPaths) {
             for (sqlCommand in readSQLCommands(context, scriptPath)) {
@@ -63,8 +59,6 @@ object DatabaseUpgrades {
         }
     }
 
-    @SuppressLint("NewApi")
-    @Throws(IOException::class)
     private fun readSQLCommands(context: Context, scriptPath: String): List<String> {
         context.assets.open(scriptPath).use { stream -> return CharStreams.readLines(InputStreamReader(stream, Charsets.UTF_8)) }
     }

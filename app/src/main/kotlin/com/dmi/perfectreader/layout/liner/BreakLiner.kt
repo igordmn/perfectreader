@@ -16,8 +16,8 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
         val locale = measuredText.locale()
 
         object : Runnable {
-            internal var part = LinePart()             // содержит символы, которые уже точно будет содержать строка
-            internal var newPart = LinePart()          // содержит символы из part, а также новые добавочные. необходима для проверки, вмещается ли новая строка
+            var part = LinePart()             // содержит символы, которые уже точно будет содержать строка
+            var newPart = LinePart()          // содержит символы из part, а также новые добавочные. необходима для проверки, вмещается ли новая строка
 
             override fun run() {
                 part.reset(0, 0, config.firstLineIndent(), false)
@@ -37,7 +37,7 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
                 pushLine(true)
             }
 
-            internal fun pushChars(endIndex: Int, hasHyphenAfter: Boolean) {
+            fun pushChars(endIndex: Int, hasHyphenAfter: Boolean) {
                 newPart.reset(part.beginIndex, endIndex, part.indent, hasHyphenAfter)
 
                 if (canUsePart(newPart)) {
@@ -82,7 +82,7 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
                 newPart = temp
             }
 
-            @JvmOverloads internal fun pushLine(isLast: Boolean = false) {
+            fun pushLine(isLast: Boolean = false) {
                 if (!part.isEmpty) {
                     val line = LineImpl()
                     line.left = part.left
@@ -119,7 +119,7 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
                 return Character.isSpaceChar(ch) || Character.isWhitespace(ch)
             }
 
-            internal inner class LinePart {
+            inner class LinePart {
                 var beginIndex: Int = 0
                 var endIndex: Int = 0
                 var indent: Float = 0.toFloat()

@@ -9,14 +9,14 @@ class PageAnimationState {
     private var minRelativeIndex = 0
     private var maxRelativeIndex = 0
 
-    internal fun clear() {
+    fun clear() {
         relativeIndices.clear()
         xPositions.clear()
         minRelativeIndex = 0
         maxRelativeIndex = 0
     }
 
-    internal fun add(relativeIndex: Int, xPosition: Float) {
+    fun add(relativeIndex: Int, xPosition: Float) {
         relativeIndices.add(relativeIndex)
         xPositions.add(xPosition)
         if (relativeIndex < minRelativeIndex) {

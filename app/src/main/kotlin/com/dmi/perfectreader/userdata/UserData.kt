@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.userdata
 
-import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import java.io.File
@@ -14,7 +13,6 @@ class UserData {
     @Named("userDatabase")
     protected lateinit var userDatabase: SQLiteDatabase
 
-    @SuppressLint("NewApi")
     fun loadLastBookFile(): File? {
         userDatabase.rawQuery("SELECT path FROM lastBook where id = 1", null).use { cursor ->
             if (cursor.moveToFirst()) {
@@ -33,7 +31,6 @@ class UserData {
         userDatabase.insertWithOnConflict("lastBook", null, values, SQLiteDatabase.CONFLICT_REPLACE)
     }
 
-    @SuppressLint("NewApi")
     fun loadBookLocation(bookFile: File): Double? {
         userDatabase.rawQuery("SELECT percent FROM bookLocation WHERE path = ?", arrayOf(bookFile.absolutePath)).use { cursor ->
             if (cursor.moveToFirst()) {

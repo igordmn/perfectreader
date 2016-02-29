@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.widget
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
 import android.text.TextUtils.isEmpty
@@ -35,7 +34,6 @@ class HintedImageButton : ImageButton {
         throw UnsupportedOperationException()
     }
 
-    @SuppressLint("RtlHardcoded")
     private fun showContentDescription() {
         val contentDesc = contentDescription.toString()
         if (!isEmpty(contentDesc)) {

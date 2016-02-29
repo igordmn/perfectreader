@@ -6,7 +6,6 @@ import com.dmi.util.annotation.Reusable
 import com.dmi.util.cache.ReuseCache.reuser
 import com.google.common.base.Charsets
 import com.google.common.io.CharStreams.readLines
-import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.lang.Math.min
@@ -67,7 +66,6 @@ class TeXHyphenator private constructor(private val patterns: TeXHyphenator.Patt
         private val patterns = Patterns()
         private val exceptions = CharsLevels()
 
-        @Throws(IOException::class)
         fun addPatternsFrom(stream: InputStream): Builder {
             val patterns = readLines(InputStreamReader(stream, Charsets.UTF_8))
             for (pattern in patterns) {
@@ -76,7 +74,6 @@ class TeXHyphenator private constructor(private val patterns: TeXHyphenator.Patt
             return this
         }
 
-        @Throws(IOException::class)
         fun addExceptionsFrom(stream: InputStream): Builder {
             val patterns = readLines(InputStreamReader(stream, Charsets.UTF_8))
             for (pattern in patterns) {
@@ -251,7 +248,7 @@ class TeXHyphenator private constructor(private val patterns: TeXHyphenator.Patt
 
     @Reusable
     private class PatternLevels : ByteArrayList() {
-        internal fun applyTo(levels: PatternLevels, beginIndex: Int) {
+        fun applyTo(levels: PatternLevels, beginIndex: Int) {
             var i = 0
             var j = beginIndex
             while (i < elementsCount && j < levels.elementsCount) {

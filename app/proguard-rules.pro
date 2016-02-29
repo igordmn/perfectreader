@@ -13,6 +13,7 @@
 # Guava
 
 -dontwarn java.lang.invoke.**
+-dontwarn javax.annotation.**
 -dontwarn org.springframework.**
 -dontwarn sun.misc.Unsafe
 

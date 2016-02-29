@@ -1,12 +1,14 @@
 package com.dmi.perfectreader.bookstorage
 
-import android.annotation.SuppressLint
 import com.dmi.perfectreader.cache.BookResourceCache
 import com.dmi.util.cache.DataCache
 import com.google.common.base.Preconditions.checkState
 import com.google.common.io.ByteStreams
 import org.readium.sdk.android.EPub3
-import java.io.*
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.InputStream
+import java.io.OutputStream
 import java.lang.String.format
 import java.util.*
 import java.util.zip.ZipFile
@@ -23,7 +25,6 @@ class EPUBBookStorage : BookStorage {
     override lateinit var segmentSizes: IntArray
     private var loaded = false
 
-    @Throws(IOException::class)
     fun load(bookFile: File) {
         this.bookFile = bookFile
         val segmentPaths = loadSegmentPaths(bookFile)
@@ -32,8 +33,6 @@ class EPUBBookStorage : BookStorage {
         loaded = true
     }
 
-    @SuppressLint("NewApi")
-    @Throws(IOException::class, SecurityException::class)
     override fun readURL(url: String): InputStream {
         checkState(loaded)
         if (!url.startsWith(URL_PREFIX)) {
@@ -57,7 +56,6 @@ class EPUBBookStorage : BookStorage {
     companion object {
         private val URL_PREFIX = "bookstorage://"
 
-        @Throws(IOException::class)
         private fun loadSegmentPaths(bookFile: File): Array<String> {
             val paths = ArrayList<String>()
             if (!bookFile.exists()) {
@@ -80,8 +78,6 @@ class EPUBBookStorage : BookStorage {
             return paths.toList().map { URL_PREFIX + it }.toTypedArray()
         }
 
-        @SuppressLint("NewApi")
-        @Throws(IOException::class)
         private fun loadLengths(zipFile: File, paths: Array<String>): IntArray {
             val fileLengths = IntArray(paths.size)
             ZipFile(zipFile).use { zip ->

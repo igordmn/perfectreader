@@ -9,7 +9,6 @@ import com.dmi.perfectreader.setting.AppSettings
 import com.dmi.perfectreader.userdata.UserData
 import com.dmi.util.base.BasePresenter
 import com.dmi.util.setting.AbstractSettingsApplier
-import com.google.common.base.MoreObjects.firstNonNull
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
@@ -87,7 +86,7 @@ open class BookPresenter : BasePresenter() {
     }
 
     private fun loadLocation(): Double {
-        return firstNonNull(userData.loadBookLocation(bookFile), 0.0)
+        return userData.loadBookLocation(bookFile) ?: 0.0
     }
 
     protected fun saveLocation() {

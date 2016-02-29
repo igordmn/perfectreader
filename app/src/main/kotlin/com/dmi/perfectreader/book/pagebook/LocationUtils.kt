@@ -2,7 +2,7 @@ package com.dmi.perfectreader.book.pagebook
 
 import com.dmi.util.lang.MathExt
 
-internal object LocationUtils {
+object LocationUtils {
     fun percentToSegmentLocation(segmentSizes: IntArray, percent: Double): SegmentLocation {
         val totalSize = segmentSizes.sum()
         val position = (percent * totalSize).toInt()

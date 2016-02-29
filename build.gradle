@@ -46,7 +46,6 @@ configure(androidProjects + javaProjects) {
 
         dependencies {
             compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-            compile 'com.google.code.findbugs:jsr305:3.0.0'
             compile 'com.google.guava:guava:18.0'
             compile 'com.carrotsearch:hppc:0.7.1'
             compile 'com.jakewharton:disklrucache:2.0.2'

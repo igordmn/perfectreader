@@ -1,13 +1,11 @@
 package com.dmi.util
 
-import android.annotation.SuppressLint
 import android.content.res.Resources
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 
 object ResourceUtils {
-    @SuppressLint("NewApi")
     fun readTextRawResource(resources: Resources,
                             resourceId: Int): String {
         try {

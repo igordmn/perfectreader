@@ -4,7 +4,6 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 
 object Interrupts {
-    @Throws(InterruptedException::class)
     fun checkThreadInterrupted() {
         if (Thread.currentThread().isInterrupted) {
             throw InterruptedException()

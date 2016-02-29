@@ -51,13 +51,13 @@ class App : BaseApplication() {
     inner class Module {
         @Provides
         @Named("applicationContext")
-        internal fun context(): Context {
+        fun context(): Context {
             return this@App
         }
 
         @Provides
         @Named("userDatabase")
-        internal fun userDatabase(databases: Databases): SQLiteDatabase {
+        fun userDatabase(databases: Databases): SQLiteDatabase {
             return databases.user()
         }
     }

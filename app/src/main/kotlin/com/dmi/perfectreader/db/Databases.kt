@@ -15,9 +15,8 @@ class Databases {
 
     @Named("applicationContext")
     @Inject
-    internal lateinit  var context: Context
+    lateinit  var context: Context
 
-    @Throws(Throwable::class)
     protected fun finalize() {
         // it's safe keep databases opened during application life. @see http://stackoverflow.com/questions/6608498/best-place-to-close-database-connection
         close()
