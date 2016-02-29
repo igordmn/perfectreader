@@ -6,7 +6,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'groovyx.grooid.groovy-android'
-apply plugin: 'com.jakewharton.hugo'
 
 def buildCounter = Integer.getInteger('build.counter', 0)
 

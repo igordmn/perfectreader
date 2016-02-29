@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'groovyx.grooid.groovy-android'
-apply plugin: 'com.jakewharton.hugo'
 
 dependencies {
     compile project(':util:util-common')
