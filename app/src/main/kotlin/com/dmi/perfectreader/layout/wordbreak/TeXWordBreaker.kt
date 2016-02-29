@@ -5,7 +5,6 @@ import java.io.IOException
 import java.util.*
 
 class TeXWordBreaker(private val patternsSource: TeXPatternsSource) : WordBreaker {
-
     private val hyphenatorCache = HyphenatorCache()
 
     override fun breakWord(text: CharSequence, locale: Locale, beginIndex: Int, endIndex: Int): WordBreaker.WordBreaks {
@@ -16,20 +15,14 @@ class TeXWordBreaker(private val patternsSource: TeXPatternsSource) : WordBreake
         val builder = TeXHyphenator.Builder()
 
         try {
-            run {
-                val `is` = patternsSource.readPatternsFor(locale)
-                if (`is` != null) {
-                    builder.addPatternsFrom(`is`)
-                }
+            patternsSource.readPatternsFor(locale)?.use {
+                builder.addPatternsFrom(it)
             }
-            run {
-                val `is` = patternsSource.readExceptionsFor(locale)
-                if (`is` != null) {
-                    builder.addExceptionsFrom(`is`)
-                }
+            patternsSource.readExceptionsFor(locale)?.use {
+                builder.addExceptionsFrom(it)
             }
         } catch (e: IOException) {
-            Timber.w(e, "Cannot load hyphenation patterns for lang: %s", locale)
+            Timber.i(e, "Cannot load hyphenation patterns for lang: %s", locale)
         }
 
         return builder.build()

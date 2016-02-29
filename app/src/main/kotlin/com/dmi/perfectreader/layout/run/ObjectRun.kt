@@ -2,9 +2,9 @@ package com.dmi.perfectreader.layout.run
 
 import com.dmi.perfectreader.layout.LayoutObject
 
-class ObjectRun(private val `object`: LayoutObject) : Run() {
+class ObjectRun(private val obj: LayoutObject) : Run() {
 
-    fun `object`(): LayoutObject {
-        return `object`
+    fun obj(): LayoutObject {
+        return obj
     }
 }

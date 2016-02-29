@@ -14,9 +14,9 @@ class ObjectLayouter(textMetrics: TextMetrics, liner: Liner) : Layouter<LayoutOb
         this.paragraphLayouter = ParagraphLayouter(this, textMetrics, liner)
     }
 
-    override fun layout(`object`: LayoutObject, area: LayoutArea): RenderObject {
-        if (`object` is LayoutParagraph) {
-            return paragraphLayouter.layout(`object`, area)
+    override fun layout(obj: LayoutObject, area: LayoutArea): RenderObject {
+        if (obj is LayoutParagraph) {
+            return paragraphLayouter.layout(obj, area)
         } else {
             throw UnsupportedOperationException()
         }

@@ -38,7 +38,7 @@ abstract class RenderObject(private val width: Float, private val height: Float,
         for (i in 0..children.size - 1) {
             val child = children[i]
             canvas.translate(child.x(), child.y())
-            child.`object`().paintRecursive(canvas)
+            child.obj().paintRecursive(canvas)
             canvas.translate(-child.x(), -child.y())
         }
     }

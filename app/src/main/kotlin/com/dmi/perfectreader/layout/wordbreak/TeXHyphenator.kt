@@ -14,7 +14,6 @@ import java.util.*
 import java.util.Arrays.copyOf
 
 class TeXHyphenator private constructor(private val patterns: TeXHyphenator.Patterns, private val exceptions: TeXHyphenator.CharsLevels) {
-
     fun breakWord(text: CharSequence, beginIndex: Int, endIndex: Int): WordBreaker.WordBreaks {
         val length = endIndex - beginIndex
         val wordLevels = Reusables.wordLevels(length)
@@ -69,8 +68,8 @@ class TeXHyphenator private constructor(private val patterns: TeXHyphenator.Patt
         private val exceptions = CharsLevels()
 
         @Throws(IOException::class)
-        fun addPatternsFrom(`is`: InputStream): Builder {
-            val patterns = readLines(InputStreamReader(`is`, Charsets.UTF_8))
+        fun addPatternsFrom(stream: InputStream): Builder {
+            val patterns = readLines(InputStreamReader(stream, Charsets.UTF_8))
             for (pattern in patterns) {
                 addPattern(pattern)
             }
@@ -78,8 +77,8 @@ class TeXHyphenator private constructor(private val patterns: TeXHyphenator.Patt
         }
 
         @Throws(IOException::class)
-        fun addExceptionsFrom(`is`: InputStream): Builder {
-            val patterns = readLines(InputStreamReader(`is`, Charsets.UTF_8))
+        fun addExceptionsFrom(stream: InputStream): Builder {
+            val patterns = readLines(InputStreamReader(stream, Charsets.UTF_8))
             for (pattern in patterns) {
                 addException(pattern)
             }

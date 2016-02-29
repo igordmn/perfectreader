@@ -4,16 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
-
 import com.google.common.base.Charsets
 import com.google.common.io.CharStreams
-
 import java.io.IOException
-import java.io.InputStream
 import java.io.InputStreamReader
-import java.util.ArrayList
-
 import java.lang.String.format
+import java.util.*
 import java.util.Arrays.sort
 
 object DatabaseUpgrades {
@@ -70,7 +66,7 @@ object DatabaseUpgrades {
     @SuppressLint("NewApi")
     @Throws(IOException::class)
     private fun readSQLCommands(context: Context, scriptPath: String): List<String> {
-        context.assets.open(scriptPath).use { `is` -> return CharStreams.readLines(InputStreamReader(`is`, Charsets.UTF_8)) }
+        context.assets.open(scriptPath).use { stream -> return CharStreams.readLines(InputStreamReader(stream, Charsets.UTF_8)) }
     }
 
     private class NewScripts {

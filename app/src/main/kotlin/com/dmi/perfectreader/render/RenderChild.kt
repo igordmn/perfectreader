@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.render
 
-class RenderChild(val x: Float, val y: Float, val `object`: RenderObject) {
+class RenderChild(val x: Float, val y: Float, val obj: RenderObject) {
 
     fun x(): Float {
         return x
@@ -10,7 +10,7 @@ class RenderChild(val x: Float, val y: Float, val `object`: RenderObject) {
         return y
     }
 
-    fun `object`(): RenderObject {
-        return `object`
+    fun obj(): RenderObject {
+        return obj
     }
 }

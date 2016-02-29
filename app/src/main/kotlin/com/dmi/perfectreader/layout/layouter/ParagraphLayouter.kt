@@ -27,15 +27,15 @@ class ParagraphLayouter(
         private val textMetrics: TextMetrics,
         private val liner: Liner) : Layouter<LayoutParagraph, RenderParagraph> {
 
-    override fun layout(`object`: LayoutParagraph, area: LayoutArea): RenderParagraph {
+    override fun layout(obj: LayoutParagraph, area: LayoutArea): RenderParagraph {
         return object : Callable<RenderParagraph> {
-            internal var runs = `object`.runs()
-            internal var locale = `object`.locale()
+            internal var runs = obj.runs()
+            internal var locale = obj.locale()
 
             override fun call(): RenderParagraph {
                 val text = PrerenderedText()
                 val lines = liner.makeLines(text, lineConfig())
-                val width = if (`object`.fitAreaWidth()) area.width() else computeWidth(lines)
+                val width = if (obj.fitAreaWidth()) area.width() else computeWidth(lines)
 
                 val paragraph = ParagraphBuilder()
                 paragraph.reset(width)
@@ -48,10 +48,10 @@ class ParagraphLayouter(
             }
 
             private fun lineConfig(): Liner.Config {
-                val hangingConfig = `object`.hangingConfig()
+                val hangingConfig = obj.hangingConfig()
                 return object : Liner.Config {
                     override fun firstLineIndent(): Float {
-                        return `object`.firstLineIndent()
+                        return obj.firstLineIndent()
                     }
 
                     override fun maxWidth(): Float {
@@ -88,15 +88,15 @@ class ParagraphLayouter(
                 val freeSpace = width - lineRight
 
                 val midspaceScale: Float
-                if (!line.isLast() && `object`.textAlign() == TextAlign.JUSTIFY) {
+                if (!line.isLast() && obj.textAlign() == TextAlign.JUSTIFY) {
                     midspaceScale = computeMidspaceScale(text, line, freeSpace)
                 } else {
                     midspaceScale = 1.0f
                 }
 
-                if (`object`.textAlign() == TextAlign.RIGHT) {
+                if (obj.textAlign() == TextAlign.RIGHT) {
                     renderLine.addOffset(freeSpace)
-                } else if (`object`.textAlign() == TextAlign.CENTER) {
+                } else if (obj.textAlign() == TextAlign.CENTER) {
                     renderLine.addOffset(freeSpace / 2)
                 }
 
@@ -181,7 +181,7 @@ class ParagraphLayouter(
                 }
 
                 private fun prerenderObject(runIndex: Int, run: ObjectRun) {
-                    val obj = childrenLayouter.layout(run.`object`(), childrenArea)
+                    val obj = childrenLayouter.layout(run.obj(), childrenArea)
 
                     plainText.append(LayoutChars.OBJECT_REPLACEMENT_CHARACTER)
                     plainIndexToRunIndex.add(runIndex)
@@ -331,11 +331,11 @@ class ParagraphLayouter(
             this.offset += offset
         }
 
-        fun addObject(`object`: RenderObject, baseline: Float) {
-            objects.add(`object`)
+        fun addObject(obj: RenderObject, baseline: Float) {
+            objects.add(obj)
             baselines.add(baseline)
             lefts.add(offset)
-            offset += `object`.width()
+            offset += obj.width()
         }
 
         fun build(): RenderLine {
@@ -353,11 +353,11 @@ class ParagraphLayouter(
             for (i in 0..objects.size - 1) {
                 val x = lefts.get(i)
                 val y = lineBaseline - baselines.get(i)
-                val `object` = objects[i]
-                if (y + `object`.height() > lineHeight) {
-                    lineHeight = y + `object`.height()
+                val obj = objects[i]
+                if (y + obj.height() > lineHeight) {
+                    lineHeight = y + obj.height()
                 }
-                children.add(RenderChild(x, y, `object`))
+                children.add(RenderChild(x, y, obj))
             }
 
             return RenderLine(width, lineHeight, children)

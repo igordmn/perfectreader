@@ -29,7 +29,7 @@ class BookFragmentTestActivity : BaseActivity() {
         try {
             val fileName = File(path).name
             val tempFile = File(cacheDir, fileName)
-            assets.open(path).use { `is` -> FileOutputStream(tempFile).use { os -> ByteStreams.copy(`is`, os) } }
+            assets.open(path).use { stream -> FileOutputStream(tempFile).use { os -> ByteStreams.copy(stream, os) } }
             return tempFile
         } catch (e: IOException) {
             throw RuntimeException(e)
