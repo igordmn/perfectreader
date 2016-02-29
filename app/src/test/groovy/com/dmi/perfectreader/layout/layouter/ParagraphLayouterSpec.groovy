@@ -191,6 +191,7 @@ class ParagraphLayouterSpec extends Specification {
         final HYPHEN_WIDTH1 = 5F
         final ASCENT1 = -8F
         final DESCENT1 = 5F
+        final LEADING1 = 1F
         def style1 = GroovyMock(FontStyle)
 
         final LETTER_WIDTH2 = 15F
@@ -198,6 +199,7 @@ class ParagraphLayouterSpec extends Specification {
         final HYPHEN_WIDTH2 = 10F
         final ASCENT2 = -16F
         final DESCENT2 = 10F
+        final LEADING2 = 1F
         def style2 = GroovyMock(FontStyle)
 
         def runs = [
@@ -215,8 +217,8 @@ class ParagraphLayouterSpec extends Specification {
         def layouter = new ParagraphLayouter(
                 childLayouter(),
                 textMetrics([
-                        (style1): [LETTER_WIDTH1, SPACE_WIDTH1, HYPHEN_WIDTH1, ASCENT1, DESCENT1],
-                        (style2): [LETTER_WIDTH2, SPACE_WIDTH2, HYPHEN_WIDTH2, ASCENT2, DESCENT2]
+                        (style1): [LETTER_WIDTH1, SPACE_WIDTH1, HYPHEN_WIDTH1, ASCENT1, DESCENT1, LEADING1],
+                        (style2): [LETTER_WIDTH2, SPACE_WIDTH2, HYPHEN_WIDTH2, ASCENT2, DESCENT2, LEADING2]
                 ]),
                 liner(lines)
         )
@@ -229,8 +231,8 @@ class ParagraphLayouterSpec extends Specification {
 
         then:
         with(renderObject) {
-            float HEIGHT1 = -ASCENT1 + DESCENT1
-            float HEIGHT2 = -ASCENT2 + DESCENT2
+            float HEIGHT1 = -ASCENT1 + DESCENT1 + LEADING1
+            float HEIGHT2 = -ASCENT2 + DESCENT2 + LEADING2
 
             with(it.child(0).object() as RenderLine) {
                 childTexts(it) == ["some", " "]
@@ -820,6 +822,7 @@ class ParagraphLayouterSpec extends Specification {
                 return new TextMetrics.VerticalMetrics() {{
                     ascent = params[3] ?: 0
                     descent = params[4] ?: 0
+                    leading = params[5] ?: 0
                 }}
             }
         }

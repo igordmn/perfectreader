@@ -171,7 +171,7 @@ class ParagraphLayouter(
 
                     runIndexToPlainBeginIndex.add(plainText.length - text.length)
                     runIndexToObject.add(null)
-                    runIndexToHeight.add(-verticalMetrics.ascent() + verticalMetrics.descent())
+                    runIndexToHeight.add(-verticalMetrics.ascent() + verticalMetrics.descent() + verticalMetrics.leading())
                     runIndexToBaseline.add(-verticalMetrics.ascent())
                     runIndexToHyphenWidth.add(hyphenWidth(run))
                 }
