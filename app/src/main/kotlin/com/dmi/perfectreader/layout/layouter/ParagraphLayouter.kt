@@ -35,7 +35,7 @@ class ParagraphLayouter(
             override fun call(): RenderParagraph {
                 val text = PrerenderedText()
                 val lines = liner.makeLines(text, lineConfig())
-                val width = if (`object`.fillAreaWidth()) area.width() else computeWidth(lines)
+                val width = if (`object`.fitAreaWidth()) area.width() else computeWidth(lines)
 
                 val paragraph = ParagraphBuilder()
                 paragraph.reset(width)

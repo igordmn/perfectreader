@@ -708,7 +708,7 @@ class ParagraphLayouterSpec extends Specification {
         }
     }
 
-    def "compute lines width when not fill area"() {
+    def "compute lines width when not fit area width"() {
         given:
         def runs = [
                 new TextRun("texttexttext", GroovyMock(FontStyle))

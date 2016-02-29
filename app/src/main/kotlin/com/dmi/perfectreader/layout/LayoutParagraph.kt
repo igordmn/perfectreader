@@ -6,15 +6,15 @@ import com.dmi.perfectreader.style.TextAlign
 import java.util.*
 
 class LayoutParagraph(
-        private val fillAreaWidth: Boolean,
+        private val fitAreaWidth: Boolean,
         private val locale: Locale,
         private val runs: List<Run>,
         private val firstLineIndent: Float,
         private val textAlign: TextAlign,
         private val hangingConfig: HangingConfig) : LayoutObject() {
 
-    fun fillAreaWidth(): Boolean {
-        return fillAreaWidth
+    fun fitAreaWidth(): Boolean {
+        return fitAreaWidth
     }
 
     fun locale(): Locale {
