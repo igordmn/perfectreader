@@ -1,12 +1,10 @@
 package com.dmi.perfectreader.layout.liner
 
-import com.dmi.util.annotation.Reusable
 import java.util.*
 
 interface Liner {
     fun makeLines(measuredText: MeasuredText, config: Config): List<Line>
 
-    @Reusable
     class Line {
         var left = 0F
         var width = 0F
@@ -17,7 +15,6 @@ interface Liner {
             get() = left + width
     }
 
-    @Reusable
     class Token {
         var isSpace = false
         var beginIndex = 0

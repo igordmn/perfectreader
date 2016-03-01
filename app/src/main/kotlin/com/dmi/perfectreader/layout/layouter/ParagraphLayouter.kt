@@ -32,7 +32,21 @@ class ParagraphLayouter(
         var runs = obj.runs
         var locale = obj.locale
 
-        with(object {
+        return object {
+            fun build(): RenderParagraph {
+                val text = PrerenderedText()
+                val lines = liner.makeLines(text, lineConfig())
+                val width = if (obj.fitAreaWidth) area.width else computeWidth(lines)
+
+                return ParagraphBuilder().run {
+                    reset(width)
+                    for (line in lines) {
+                        addLine(renderLine(text, line, width))
+                    }
+                    build()
+                }
+            }
+
             fun lineConfig(): Liner.Config {
                 val hangingConfig = obj.hangingConfig
                 return object : Liner.Config {
@@ -79,7 +93,7 @@ class ParagraphLayouter(
             }
 
             /**
-             * midspace - пробелы между словами (но не в конце или в начале строке).
+             * midspace - пробелы между словами (но не в конце или в начале строки).
              * возвращает множитель, на который нужно умножить их ширину, чтобы строка стала выровненной по ширине параграфа
              */
             fun computeMidspaceScale(text: PrerenderedText, line: Liner.Line, freeSpace: Float): Float {
@@ -146,7 +160,7 @@ class ParagraphLayouter(
                 }
 
                 private fun prerenderObject(runIndex: Int, run: ObjectRun) {
-                    val renderObj = childrenLayouter.layout(run.obj(), childrenArea)
+                    val renderObj = childrenLayouter.layout(run.obj, childrenArea)
 
                     plainText.append(LayoutChars.OBJECT_REPLACEMENT_CHARACTER)
                     plainIndexToRunIndex.add(runIndex)
@@ -204,10 +218,14 @@ class ParagraphLayouter(
                 private fun renderRun(beginIndex: Int, endIndex: Int, runIndex: Int, isSpace: Boolean, scaleX: Float, line: LineBuilder) {
                     val run = runs[runIndex]
                     when {
-                        isSpace -> renderSpace(beginIndex, endIndex, runIndex, run as TextRun, scaleX, line)
-                        run is TextRun -> renderTextRun(beginIndex, endIndex, runIndex, run, line)
-                        run is ObjectRun -> renderObjectRun(runIndex, line)
-                        else -> throw UnsupportedOperationException()
+                        isSpace ->
+                            renderSpace(beginIndex, endIndex, runIndex, run as TextRun, scaleX, line)
+                        run is TextRun ->
+                            renderTextRun(beginIndex, endIndex, runIndex, run, line)
+                        run is ObjectRun ->
+                            renderObjectRun(runIndex, line)
+                        else ->
+                            throw UnsupportedOperationException()
                     }
                 }
 
@@ -217,13 +235,13 @@ class ParagraphLayouter(
 
                     line.addObject(
                             RenderSpace(
-                                    widthOf(beginIndex, endIndex) * scaleX,
-                                    runIndexToHeight[runIndex],
-                                    run.text.subSequence(beginIndex - runBegin, endIndex - runBegin),
-                                    locale,
-                                    baseline,
-                                    run.style,
-                                    scaleX
+                                    width = widthOf(beginIndex, endIndex) * scaleX,
+                                    height = runIndexToHeight[runIndex],
+                                    text = run.text.subSequence(beginIndex - runBegin, endIndex - runBegin),
+                                    locale = locale,
+                                    baseline = baseline,
+                                    style = run.style,
+                                    scaleX = scaleX
                             ),
                             baseline
                     )
@@ -235,12 +253,12 @@ class ParagraphLayouter(
 
                     line.addObject(
                             RenderText(
-                                    widthOf(beginIndex, endIndex),
-                                    runIndexToHeight[runIndex],
-                                    run.text.subSequence(beginIndex - runBegin, endIndex - runBegin),
-                                    locale,
-                                    baseline,
-                                    run.style
+                                    width = widthOf(beginIndex, endIndex),
+                                    height = runIndexToHeight[runIndex],
+                                    text = run.text.subSequence(beginIndex - runBegin, endIndex - runBegin),
+                                    locale = locale,
+                                    baseline = baseline,
+                                    style = run.style
                             ),
                             baseline
                     )
@@ -261,31 +279,19 @@ class ParagraphLayouter(
 
                         line.addObject(
                                 RenderText(
-                                        runIndexToHyphenWidth[runIndex],
-                                        runIndexToHeight[runIndex],
-                                        HYPHEN_STRING,
-                                        locale,
-                                        baseline,
-                                        run.style
+                                        width = runIndexToHyphenWidth[runIndex],
+                                        height = runIndexToHeight[runIndex],
+                                        text = HYPHEN_STRING,
+                                        locale = locale,
+                                        baseline = baseline,
+                                        style = run.style
                                 ),
                                 baseline
                         )
                     }
                 }
             }
-        }) {
-            val text = PrerenderedText()
-            val lines = liner.makeLines(text, lineConfig())
-            val width = if (obj.fitAreaWidth) area.width else computeWidth(lines)
-
-            return ParagraphBuilder().run {
-                reset(width)
-                for (line in lines) {
-                    addLine(renderLine(text, line, width))
-                }
-                build()
-            }
-        }
+        }.build()
     }
 
     private class LineBuilder {

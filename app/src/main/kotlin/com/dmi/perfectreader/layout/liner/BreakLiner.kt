@@ -8,33 +8,31 @@ import com.google.common.base.Preconditions.checkState
 import java.lang.Math.max
 
 class BreakLiner(private val breakFinder: BreakFinder) : Liner {
-
     override fun makeLines(measuredText: Liner.MeasuredText, config: Liner.Config): List<Liner.Line> {
-        val lines = Reusables.lines()
+        return object {
+            val lines = Reusables.lines()
+            val text = measuredText.plainText
+            val locale = measuredText.locale
 
-        val text = measuredText.plainText
-        val locale = measuredText.locale
-
-        object : Runnable {
             var part = LinePart()             // содержит символы, которые уже точно будет содержать строка
             var newPart = LinePart()          // содержит символы из part, а также новые добавочные. необходима для проверки, вмещается ли новая строка
 
-            override fun run() {
+            fun makeLines(): List<Liner.Line> {
                 part.reset(0, 0, config.firstLineIndent, false)
 
-                breakFinder.findBreaks(text, locale, { br ->
+                breakFinder.findBreaks(text, locale) { br ->
                     checkState(part.endIndex < br.index, "Wrong line end index")
 
                     pushChars(br.index, br.hasHyphen)
-
-                    if (br.isForce) {
+                    if (br.isForce)
                         pushLine(true)
-                    }
 
                     checkState(part.endIndex == br.index, "Wrong line end index")
-                })
+                }
 
                 pushLine(true)
+
+                return lines
             }
 
             fun pushChars(endIndex: Int, hasHyphenAfter: Boolean) {
@@ -48,7 +46,7 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
                 }
             }
 
-            private fun pushCharsAtBeginOfLine(endIndex: Int, hasHyphenAfter: Boolean) {
+            fun pushCharsAtBeginOfLine(endIndex: Int, hasHyphenAfter: Boolean) {
                 newPart.reset(part.beginIndex, endIndex, part.indent, hasHyphenAfter)
 
                 if (canUsePart(newPart)) {
@@ -58,7 +56,7 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
                 }
             }
 
-            private fun pushCharByChar(endIndex: Int, hasHyphenAfter: Boolean) {
+            fun pushCharByChar(endIndex: Int, hasHyphenAfter: Boolean) {
                 for (end in part.endIndex + 1..endIndex) {
                     val charHasHyphenAfter = end == endIndex && hasHyphenAfter
                     newPart.reset(part.beginIndex, end, part.indent, charHasHyphenAfter)
@@ -72,11 +70,9 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
                 }
             }
 
-            private fun canUsePart(newPart: LinePart): Boolean {
-                return newPart.left + newPart.width <= config.maxWidth || newPart.left + newPart.width == part.left + part.width
-            }
+            fun canUsePart(newPart: LinePart) = newPart.right <= config.maxWidth || newPart.right == part.right
 
-            private fun useNewPart() {
+            fun useNewPart() {
                 val temp = part
                 part = newPart
                 newPart = temp
@@ -84,49 +80,53 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
 
             fun pushLine(isLast: Boolean = false) {
                 if (!part.isEmpty) {
-                    val line = Line()
-                    line.left = part.left
-                    line.width = part.width
-                    line.hasHyphenAfter = part.hasHyphenAfter
-                    line.isLast = isLast
-                    addTokensInto(line.tokens, part.beginIndex, part.endIndex)
-                    lines.add(line)
-
-                    part.reset(part.endIndex, part.endIndex, 0f, false)
+                    lines.add(
+                            Line().apply {
+                                this.left = part.left
+                                this.width = part.width
+                                this.hasHyphenAfter = part.hasHyphenAfter
+                                this.isLast = isLast
+                                addTokensInto(tokens, part.beginIndex, part.endIndex)
+                            }
+                    )
+                    part.reset(part.endIndex, part.endIndex, 0F, false)
                 }
             }
 
-            private fun addTokensInto(tokens: MutableList<Liner.Token>, beginIndex: Int, endIndex: Int) {
-                var token: Token? = null
+            fun addTokensInto(tokens: MutableList<Liner.Token>, beginIndex: Int, endIndex: Int) {
                 for (begin in beginIndex..endIndex - 1) {
                     val ch = text[begin]
                     val isSpace = isSpace(ch)
                     val end = begin + 1
+                    val last = tokens.lastOrNull()
 
-                    if (token == null || token.isSpace != isSpace) {
-                        token = Token()
-                        token.isSpace = isSpace
-                        token.beginIndex = begin
-                        token.endIndex = end
-                        tokens.add(token)
+                    if (last == null || last.isSpace != isSpace) {
+                        tokens.add(Token().apply {
+                            this.isSpace = isSpace
+                            this.beginIndex = begin
+                            this.endIndex = end
+                        })
                     } else {
-                        token.endIndex = end
+                        last.endIndex = end
                     }
                 }
             }
 
-            private fun isSpace(ch: Char): Boolean {
-                return Character.isSpaceChar(ch) || Character.isWhitespace(ch)
-            }
+            fun isSpace(ch: Char) = Character.isSpaceChar(ch) || Character.isWhitespace(ch)
 
             inner class LinePart {
-                var beginIndex: Int = 0
-                var endIndex: Int = 0
+                var beginIndex = 0
+                var endIndex = 0
                 var indent = 0F
-                var hasHyphenAfter: Boolean = false
+                var hasHyphenAfter = false
 
                 var left = 0F
                 var width = 0F
+
+                val right: Float
+                    get() = left + width
+                val isEmpty: Boolean
+                    get() = endIndex == beginIndex
 
                 fun reset(beginIndex: Int, endIndex: Int, indent: Float, hasHyphenAfter: Boolean) {
                     this.beginIndex = beginIndex
@@ -135,52 +135,47 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
                     this.hasHyphenAfter = hasHyphenAfter
 
                     if (endIndex > beginIndex) {
-                        val trailingSpacesBeginIndex = findTrailingSpacesBeginIndex(beginIndex, endIndex)
-                        val symbolsWidth = measuredText.widthOf(beginIndex, trailingSpacesBeginIndex)
+                        val trailingSpacesBegin = trailingSpacesBegin(beginIndex, endIndex)
+                        val symbolsWidth = measuredText.widthOf(beginIndex, trailingSpacesBegin)
                         val hyphenWidth = if (hasHyphenAfter) measuredText.hyphenWidthAfter(endIndex - 1) else 0F
 
                         val leftHang = config.leftHangFactor(text[beginIndex]) * measuredText.widthOf(beginIndex)
-                        val rightHang = rightHang(beginIndex, trailingSpacesBeginIndex, hyphenWidth, hasHyphenAfter)
+                        val rightHang = rightHang(beginIndex, trailingSpacesBegin, hyphenWidth, hasHyphenAfter)
 
                         left = indent - leftHang
-                        width = max(0f, symbolsWidth + hyphenWidth - rightHang)
+                        width = max(0F, symbolsWidth + hyphenWidth - rightHang)
                     } else {
-                        left = 0f
-                        width = 0f
+                        left = 0F
+                        width = 0F
                     }
                 }
 
-                private fun rightHang(beginIndex: Int, trailingSpacesBeginIndex: Int, hyphenWidth: Float, hasHyphenAfter: Boolean): Float {
-                    val lastIndex = trailingSpacesBeginIndex - 1
-                    if (lastIndex >= beginIndex) {
-                        val lastChar = text[lastIndex]
-                        return if (hasHyphenAfter)
-                            config.rightHangFactor(LayoutChars.HYPHEN) * hyphenWidth
-                        else
-                            config.rightHangFactor(lastChar) * measuredText.widthOf(lastIndex)
-                    } else {
-                        return 0f
-                    }
-                }
-
-                private fun findTrailingSpacesBeginIndex(beginIndex: Int, endIndex: Int): Int {
+                private fun trailingSpacesBegin(beginIndex: Int, endIndex: Int): Int {
                     var i = endIndex - 1
                     while (i >= beginIndex) {
                         val ch = text[i]
-                        if (!isSpace(ch)) {
+                        if (!isSpace(ch))
                             return i + 1
-                        }
                         i--
                     }
                     return beginIndex
                 }
 
-                val isEmpty: Boolean
-                    get() = endIndex == beginIndex
+                private fun rightHang(beginIndex: Int, trailingSpacesBegin: Int, hyphenWidth: Float, hasHyphenAfter: Boolean): Float {
+                    val lastIndex = trailingSpacesBegin - 1
+                    if (lastIndex >= beginIndex) {
+                        if (hasHyphenAfter) {
+                            return config.rightHangFactor(LayoutChars.HYPHEN) * hyphenWidth
+                        } else {
+                            val lastChar = text[lastIndex]
+                            return config.rightHangFactor(lastChar) * measuredText.widthOf(lastIndex)
+                        }
+                    } else {
+                        return 0F
+                    }
+                }
             }
-        }.run()
-
-        return lines
+        }.makeLines()
     }
 
     private object Reusables {
