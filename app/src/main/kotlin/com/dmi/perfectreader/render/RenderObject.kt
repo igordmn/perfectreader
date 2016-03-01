@@ -2,20 +2,11 @@ package com.dmi.perfectreader.render
 
 import android.graphics.Canvas
 
-abstract class RenderObject(private val width: Float, private val height: Float, private val children: List<RenderChild>) {
-
-    fun width(): Float {
-        return width
-    }
-
-    fun height(): Float {
-        return height
-    }
-
-    fun children(): List<RenderChild> {
-        return children
-    }
-
+abstract class RenderObject(
+        val width: Float,
+        val height: Float,
+        val children: List<RenderChild>
+) {
     fun child(index: Int): RenderChild {
         return children[index]
     }
@@ -36,10 +27,11 @@ abstract class RenderObject(private val width: Float, private val height: Float,
     fun paintRecursive(canvas: Canvas) {
         paintItself(canvas)
         for (i in 0..children.size - 1) {
-            val child = children[i]
-            canvas.translate(child.x(), child.y())
-            child.obj().paintRecursive(canvas)
-            canvas.translate(-child.x(), -child.y())
+            with(children[i]) {
+                canvas.translate(x, y)
+                obj.paintRecursive(canvas)
+                canvas.translate(-x, -y)
+            }
         }
     }
 }

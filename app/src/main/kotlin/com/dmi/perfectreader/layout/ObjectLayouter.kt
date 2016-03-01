@@ -8,17 +8,12 @@ import com.dmi.perfectreader.layout.liner.Liner
 import com.dmi.perfectreader.render.RenderObject
 
 class ObjectLayouter(textMetrics: TextMetrics, liner: Liner) : Layouter<LayoutObject, RenderObject> {
-    private val paragraphLayouter: ParagraphLayouter
-
-    init {
-        this.paragraphLayouter = ParagraphLayouter(this, textMetrics, liner)
-    }
+    private val paragraphLayouter = ParagraphLayouter(this, textMetrics, liner)
 
     override fun layout(obj: LayoutObject, area: LayoutArea): RenderObject {
-        if (obj is LayoutParagraph) {
-            return paragraphLayouter.layout(obj, area)
-        } else {
-            throw UnsupportedOperationException()
+        return when (obj) {
+            is LayoutParagraph -> paragraphLayouter.layout(obj, area)
+            else -> throw UnsupportedOperationException()
         }
     }
 }

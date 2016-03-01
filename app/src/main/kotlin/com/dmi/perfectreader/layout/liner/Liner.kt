@@ -6,30 +6,32 @@ interface Liner {
     fun makeLines(measuredText: MeasuredText, config: Config): List<Line>
 
     interface Line {
-        fun left(): Float
-        fun width(): Float
-        fun hasHyphenAfter(): Boolean
-        fun isLast(): Boolean
-        fun tokens(): List<Token>
+        val left: Float
+        val width: Float
+        val hasHyphenAfter: Boolean
+        val isLast: Boolean
+        val tokens: List<Token>
+        val right: Float
+            get() = left + width
     }
 
     interface Token {
-        fun isSpace(): Boolean
-        fun beginIndex(): Int
-        fun endIndex(): Int
+        val isSpace: Boolean
+        val beginIndex: Int
+        val endIndex: Int
     }
 
     interface MeasuredText {
-        fun plainText(): CharSequence
-        fun locale(): Locale
+        val plainText: CharSequence
+        val locale: Locale
         fun widthOf(index: Int): Float
         fun widthOf(beginIndex: Int, endIndex: Int): Float
         fun hyphenWidthAfter(index: Int): Float
     }
 
     interface Config {
-        fun firstLineIndent(): Float
-        fun maxWidth(): Float
+        val firstLineIndent: Float
+        val maxWidth: Float
         fun leftHangFactor(ch: Char): Float
         fun rightHangFactor(ch: Char): Float
     }

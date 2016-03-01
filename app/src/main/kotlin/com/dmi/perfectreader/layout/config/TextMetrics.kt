@@ -11,20 +11,8 @@ interface TextMetrics {
 
     @Reusable
     open class VerticalMetrics {
-        var ascent: Float = 0.toFloat()
-        var descent: Float = 0.toFloat()
-        var leading: Float = 0.toFloat()
-
-        fun ascent(): Float {
-            return ascent
-        }
-
-        fun descent(): Float {
-            return descent
-        }
-
-        fun leading(): Float {
-            return leading
-        }
+        var ascent = 0F
+        var descent = 0F
+        var leading = 0F
     }
 }

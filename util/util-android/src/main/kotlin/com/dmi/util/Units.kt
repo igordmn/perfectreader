@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.DisplayMetrics
 
 object Units {
-    private var density: Float = 0.toFloat()
+    private var density = 0F
 
     fun init(context: Context) {
         val displayMetrics = context.applicationContext.resources.displayMetrics

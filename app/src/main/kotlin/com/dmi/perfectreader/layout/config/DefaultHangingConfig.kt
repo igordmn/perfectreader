@@ -3,76 +3,76 @@ package com.dmi.perfectreader.layout.config
 class DefaultHangingConfig : HangingConfig {
     override fun leftHangFactor(ch: Char): Float {
         when (ch) {
-        // скобки
-            '(' -> return 0.5f
-            '[' -> return 0.5f
-            '{' -> return 0.5f
-            '<' -> return 0.5f
+            // скобки
+            '(' -> return 0.5F
+            '[' -> return 0.5F
+            '{' -> return 0.5F
+            '<' -> return 0.5F
 
-        // кавычки
-            '"' -> return 0.5f
-            '\'' -> return 0.5f
-            '«' -> return 0.5f
-            '»' -> return 0.5f
-            '„' -> return 0.5f
-            '“' -> return 0.5f
-            '‘' -> return 0.5f
-            '‚' -> return 0.5f
-            '‹' -> return 0.5f
+            // кавычки
+            '"' -> return 0.5F
+            '\'' -> return 0.5F
+            '«' -> return 0.5F
+            '»' -> return 0.5F
+            '„' -> return 0.5F
+            '“' -> return 0.5F
+            '‘' -> return 0.5F
+            '‚' -> return 0.5F
+            '‹' -> return 0.5F
 
-            else -> return 0f
+            else -> return 0F
         }
     }
 
     override fun rightHangFactor(ch: Char): Float {
         when (ch) {
-        // скобки
-            ')' -> return 0.5f
-            ']' -> return 0.5f
-            '}' -> return 0.5f
-            '>' -> return 0.5f
+            // скобки
+            ')' -> return 0.5F
+            ']' -> return 0.5F
+            '}' -> return 0.5F
+            '>' -> return 0.5F
 
-        // кавычки
-            '"' -> return 0.5f
-            '\'' -> return 0.5f
-            '»' -> return 0.5f
-            '«' -> return 0.5f
-            '“' -> return 0.5f
-            '”' -> return 0.5f
-            '’' -> return 0.5f
-            '›' -> return 0.5f
+            // кавычки
+            '"' -> return 0.5F
+            '\'' -> return 0.5F
+            '»' -> return 0.5F
+            '«' -> return 0.5F
+            '“' -> return 0.5F
+            '”' -> return 0.5F
+            '’' -> return 0.5F
+            '›' -> return 0.5F
 
-        // знаки препинания
-            ',' -> return 0.5f
-            '.' -> return 0.5f
-            '…' -> return 0.25f
-            ':' -> return 0.50f
-            ';' -> return 0.50f
-            '!' -> return 0.50f
-            '‼' -> return 0.50f
-            '?' -> return 0.50f
-            '،' -> return 0.50f
-            '۔' -> return 0.50f
-            '、' -> return 0.50f
-            '。' -> return 0.50f
-            '，' -> return 0.50f
-            '．' -> return 0.50f
-            '﹐' -> return 0.50f
-            '﹑' -> return 0.50f
-            '﹒' -> return 0.50f
-            '｡' -> return 0.50f
-            '､' -> return 0.50f
+            // знаки препинания
+            ',' -> return 0.5F
+            '.' -> return 0.5F
+            '…' -> return 0.25F
+            ':' -> return 0.50F
+            ';' -> return 0.50F
+            '!' -> return 0.50F
+            '‼' -> return 0.50F
+            '?' -> return 0.50F
+            '،' -> return 0.50F
+            '\u06D4' -> return 0.50F
+            '、' -> return 0.50F
+            '。' -> return 0.50F
+            '，' -> return 0.50F
+            '．' -> return 0.50F
+            '﹐' -> return 0.50F
+            '﹑' -> return 0.50F
+            '﹒' -> return 0.50F
+            '｡' -> return 0.50F
+            '､' -> return 0.50F
 
-        // тире, дефисы, мягкий перенос
-            '\u2010' -> return 0.50f
-            '\u2011' -> return 0.50f
-            '\u2012' -> return 0.50f
-            '\u2013' -> return 0.50f
-            '\u2014' -> return 0.50f
-            '\u00AD' -> return 0.50f
-            '\u002D' -> return 0.50f
+            // тире, дефисы, мягкий перенос
+            '\u2010' -> return 0.50F
+            '\u2011' -> return 0.50F
+            '\u2012' -> return 0.50F
+            '\u2013' -> return 0.50F
+            '\u2014' -> return 0.50F
+            '\u00AD' -> return 0.50F
+            '\u002D' -> return 0.50F
 
-            else -> return 0f
+            else -> return 0F
         }
     }
 }

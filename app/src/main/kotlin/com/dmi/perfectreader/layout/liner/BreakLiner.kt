@@ -11,15 +11,15 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
     override fun makeLines(measuredText: Liner.MeasuredText, config: Liner.Config): List<Liner.Line> {
         val lines = Reusables.lines()
 
-        val text = measuredText.plainText()
-        val locale = measuredText.locale()
+        val text = measuredText.plainText
+        val locale = measuredText.locale
 
         object : Runnable {
             var part = LinePart()             // содержит символы, которые уже точно будет содержать строка
             var newPart = LinePart()          // содержит символы из part, а также новые добавочные. необходима для проверки, вмещается ли новая строка
 
             override fun run() {
-                part.reset(0, 0, config.firstLineIndent(), false)
+                part.reset(0, 0, config.firstLineIndent, false)
 
                 breakFinder.findBreaks(text, locale, { br ->
                     checkState(part.endIndex < br.index(), "Wrong line end index")
@@ -72,7 +72,7 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
             }
 
             private fun canUsePart(newPart: LinePart): Boolean {
-                return newPart.left + newPart.width <= config.maxWidth() || newPart.left + newPart.width == part.left + part.width
+                return newPart.left + newPart.width <= config.maxWidth || newPart.left + newPart.width == part.left + part.width
             }
 
             private fun useNewPart() {
@@ -87,7 +87,7 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
                     line.left = part.left
                     line.width = part.width
                     line.hasHyphenAfter = part.hasHyphenAfter
-                    line.last = isLast
+                    line.isLast = isLast
                     addTokensInto(line.tokens, part.beginIndex, part.endIndex)
                     lines.add(line)
 
@@ -102,9 +102,9 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
                     val isSpace = isSpace(ch)
                     val end = begin + 1
 
-                    if (token == null || token.isSpace() != isSpace) {
+                    if (token == null || token.isSpace != isSpace) {
                         token = TokenImpl()
-                        token.space = isSpace
+                        token.isSpace = isSpace
                         token.beginIndex = begin
                         token.endIndex = end
                         tokens.add(token)
@@ -121,11 +121,11 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
             inner class LinePart {
                 var beginIndex: Int = 0
                 var endIndex: Int = 0
-                var indent: Float = 0.toFloat()
+                var indent = 0F
                 var hasHyphenAfter: Boolean = false
 
-                var left: Float = 0.toFloat()
-                var width: Float = 0.toFloat()
+                var left = 0F
+                var width = 0F
 
                 fun reset(beginIndex: Int, endIndex: Int, indent: Float, hasHyphenAfter: Boolean) {
                     this.beginIndex = beginIndex
@@ -187,48 +187,16 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
     }
 
     private class LineImpl : Liner.Line {
-        var left: Float = 0.toFloat()
-        var width: Float = 0.toFloat()
-        var hasHyphenAfter: Boolean = false
-        var last: Boolean = false
-        var tokens: MutableList<Liner.Token> = ArrayList()
-
-        override fun left(): Float {
-            return left
-        }
-
-        override fun width(): Float {
-            return width
-        }
-
-        override fun hasHyphenAfter(): Boolean {
-            return hasHyphenAfter
-        }
-
-        override fun isLast(): Boolean {
-            return last
-        }
-
-        override fun tokens(): List<Liner.Token> {
-            return tokens
-        }
+        override var left = 0F
+        override var width = 0F
+        override var hasHyphenAfter: Boolean = false
+        override var isLast: Boolean = false
+        override var tokens: MutableList<Liner.Token> = ArrayList()
     }
 
     private class TokenImpl : Liner.Token {
-        var space: Boolean = false
-        var beginIndex: Int = 0
-        var endIndex: Int = 0
-
-        override fun isSpace(): Boolean {
-            return space
-        }
-
-        override fun beginIndex(): Int {
-            return beginIndex
-        }
-
-        override fun endIndex(): Int {
-            return endIndex
-        }
+        override var isSpace: Boolean = false
+        override var beginIndex: Int = 0
+        override var endIndex: Int = 0
     }
 }

@@ -21,9 +21,9 @@ class BookControlPresenter : BasePresenter() {
     @Inject
     protected lateinit var bookPresenter: BookPresenter
 
-    private var touchDownX: Float = 0.toFloat()
-    private var touchDownY: Float = 0.toFloat()
-    private var oldApplySlideActionTouchY: Float = 0.toFloat()
+    private var touchDownX = 0F
+    private var touchDownY = 0F
+    private var oldApplySlideActionTouchY = 0F
     private var nowIsSlideByLeftSide = false
 
     fun onTouchDown(touchInfo: TouchInfo) {

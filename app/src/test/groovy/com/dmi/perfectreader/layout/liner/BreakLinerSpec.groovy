@@ -437,11 +437,11 @@ class BreakLinerSpec extends Specification {
 
     def wrapLine(Line line) {
         return [
-                left: line.left(),
-                width: line.width(),
-                hasHyphenAfter: line.hasHyphenAfter(),
-                isLast: line.isLast(),
-                tokens: wrapTokens(line.tokens())
+                left: line.left,
+                width: line.width,
+                hasHyphenAfter: line.hasHyphenAfter,
+                isLast: line.last,
+                tokens: wrapTokens(line.tokens)
         ]
     }
 
@@ -455,9 +455,9 @@ class BreakLinerSpec extends Specification {
 
     def wrapToken(Token token) {
         return [
-                isSpace: token.isSpace(),
-                beginIndex: token.beginIndex(),
-                endIndex: token.endIndex(),
+                isSpace: token.space,
+                beginIndex: token.beginIndex,
+                endIndex: token.endIndex,
         ]
     }
 
@@ -488,12 +488,12 @@ class BreakLinerSpec extends Specification {
     def measuredText(String text) {
         return new MeasuredText() {
             @Override
-            CharSequence plainText() {
+            CharSequence getPlainText() {
                 return text
             }
 
             @Override
-            Locale locale() {
+            Locale getLocale() {
                 return Locale.US
             }
 
@@ -522,12 +522,12 @@ class BreakLinerSpec extends Specification {
                Map<Character, Float> leftHangFactors = [:], Map<Character, Float> rightHangFactors = [:]) {
         return new Config() {
             @Override
-            float firstLineIndent() {
+            float getFirstLineIndent() {
                 return indent
             }
 
             @Override
-            float maxWidth() {
+            float getMaxWidth() {
                 return maxWidth
             }
 
