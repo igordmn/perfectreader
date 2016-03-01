@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import com.dmi.perfectreader.BuildConfig
 import com.dmi.perfectreader.bookstorage.EPUBBookStorage
 import com.dmi.perfectreader.cache.BookResourceCache
-import com.dmi.perfectreader.db.Databases
+import com.dmi.perfectreader.db.AppDatabases
 import com.dmi.perfectreader.setting.AppSettings
 import com.dmi.perfectreader.userdata.UserData
 import com.dmi.util.Units
@@ -18,7 +18,7 @@ import javax.inject.Named
 
 class App : BaseApplication() {
     @Inject
-    protected lateinit var databases: Databases
+    protected lateinit var databases: AppDatabases
 
     override fun createObjectGraph(): ObjectGraph {
         return ObjectGraph.create()
@@ -47,7 +47,7 @@ class App : BaseApplication() {
         Units.init(this)
     }
 
-    @dagger.Module(library = true, injects = arrayOf(App::class, AppSettings::class, Databases::class, EPUBBookStorage::class, BookResourceCache::class, UserData::class))
+    @dagger.Module(library = true, injects = arrayOf(App::class, AppSettings::class, AppDatabases::class, EPUBBookStorage::class, BookResourceCache::class, UserData::class))
     inner class Module {
         @Provides
         @Named("applicationContext")
@@ -57,7 +57,7 @@ class App : BaseApplication() {
 
         @Provides
         @Named("userDatabase")
-        fun userDatabase(databases: Databases): SQLiteDatabase {
+        fun userDatabase(databases: AppDatabases): SQLiteDatabase {
             return databases.user()
         }
     }

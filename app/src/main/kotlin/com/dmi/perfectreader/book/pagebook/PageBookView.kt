@@ -7,10 +7,10 @@ import android.opengl.Matrix
 import android.support.annotation.UiThread
 import android.util.AttributeSet
 import com.dmi.perfectreader.R
+import com.dmi.perfectreader.app.AppThreads.postUITask
 import com.dmi.perfectreader.book.animation.PageAnimation
 import com.dmi.util.collection.DuplexBuffer
-import com.dmi.util.concurrent.Interrupts.waitTask
-import com.dmi.perfectreader.app.AppThreads.postUITask
+import com.dmi.util.concurrent.waitTask
 import com.dmi.util.opengl.DeltaTimeGLSurfaceView
 import com.dmi.util.opengl.Graphics.createProgram
 import com.dmi.util.opengl.Graphics.floatBuffer
@@ -185,10 +185,10 @@ class PageBookView : DeltaTimeGLSurfaceView {
 
     private fun freeInvisiblePages() {
         val animationState = pageAnimation!!.state()
-        for (i in -visiblePages.maxRelativeIndex()..animationState.minRelativeIndex() - 1) {
+        for (i in -visiblePages.maxRelativeIndex..animationState.minRelativeIndex() - 1) {
             freePage(visiblePages, i)
         }
-        for (i in visiblePages.maxRelativeIndex() downTo animationState.maxRelativeIndex() + 1) {
+        for (i in visiblePages.maxRelativeIndex downTo animationState.maxRelativeIndex() + 1) {
             freePage(visiblePages, i)
         }
     }
@@ -261,7 +261,8 @@ class PageBookView : DeltaTimeGLSurfaceView {
             if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
                 throw RuntimeException(
                         format("frame buffer init error. status: 0x%08X, error code: 0x%08X",
-                                glCheckFramebufferStatus(GL_FRAMEBUFFER), glGetError()))
+                                glCheckFramebufferStatus(GL_FRAMEBUFFER), glGetError())
+                )
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0)
         }

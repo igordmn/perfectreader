@@ -6,15 +6,17 @@ import android.util.AttributeSet
 import java.lang.Math.min
 
 abstract class DeltaTimeGLSurfaceView : GLSurfaceViewExt {
+    companion object {
+        private val SMOOTH_SAMPLES = 8
+        private val MAX_DELTA_TIME_SECONDS = 1 / 20.0f
+    }
 
     private var previewTime: Long = -1
     private val averageDeltaTime = AverageValue(SMOOTH_SAMPLES)
 
-    protected constructor(context: Context) : super(context) {
-    }
+    protected constructor(context: Context) : super(context)
 
-    protected constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-    }
+    protected constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
     protected fun runRender() {
         setRenderer(DeltaTimeRenderer())
@@ -61,7 +63,7 @@ abstract class DeltaTimeGLSurfaceView : GLSurfaceViewExt {
     private fun deltaTimeSeconds(): Float {
         val nowTime = System.nanoTime()
         if (previewTime != -1L) {
-            val deltaTimeSeconds = min((nowTime - previewTime) / 1E9f, MAX_DELTA_TIME_SECONDS)
+            val deltaTimeSeconds = min((nowTime - previewTime) / 1E9F, MAX_DELTA_TIME_SECONDS)
             averageDeltaTime.put(deltaTimeSeconds)
         } else {
             averageDeltaTime.reset()
@@ -102,10 +104,5 @@ abstract class DeltaTimeGLSurfaceView : GLSurfaceViewExt {
             }
             return if (count > 0) sum / count else 0F
         }
-    }
-
-    companion object {
-        private val SMOOTH_SAMPLES = 8
-        private val MAX_DELTA_TIME_SECONDS = 1 / 20.0f
     }
 }

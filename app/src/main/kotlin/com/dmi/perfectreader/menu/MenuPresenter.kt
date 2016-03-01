@@ -2,8 +2,7 @@ package com.dmi.perfectreader.menu
 
 import com.dmi.perfectreader.book.BookPresenter
 import com.dmi.util.base.BasePresenter
-import com.dmi.util.lang.MathExt
-
+import com.dmi.util.lang.clamp
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,7 +18,7 @@ class MenuPresenter : BasePresenter() {
     }
 
     fun goPosition(position: Int, maxPosition: Int) {
-        bookPresenter.goPercent(MathExt.clamp(0.0, 1.0, (position / maxPosition).toDouble()))
+        bookPresenter.goPercent(clamp(0.0, 1.0, (position / maxPosition).toDouble()))
     }
 
     fun requestCurrentPercent(maxPosition: Int) {

@@ -8,7 +8,7 @@ import com.dmi.util.TypeConverters.typeToString
 import timber.log.Timber
 
 abstract class AbstractSettings {
-    private var sharedPreferences: SharedPreferences? = null
+    private lateinit  var sharedPreferences: SharedPreferences
 
     protected fun init(context: Context, name: String) {
         sharedPreferences = context.getSharedPreferences(name, Context.MODE_PRIVATE)
@@ -16,7 +16,7 @@ abstract class AbstractSettings {
 
     private fun <T: Any> loadValue(setting: Setting<T>): T {
         val defValue = setting.toString(setting.defaultValue())
-        val valueString = sharedPreferences!!.getString(setting.name(), defValue)
+        val valueString = sharedPreferences.getString(setting.name(), defValue)
         try {
             return setting.parseString(valueString)
         } catch (e: TypeConverters.ParseException) {
@@ -28,7 +28,7 @@ abstract class AbstractSettings {
 
     protected fun <T: Any> saveValue(setting: Setting<T>, value: T) {
         val valueString = setting.toString(value)
-        sharedPreferences!!.edit().putString(setting.name(), valueString).apply()
+        sharedPreferences.edit().putString(setting.name(), valueString).apply()
     }
 
     protected fun <T: Any> setting(name: String, defaultValue: T): Setting<T> {

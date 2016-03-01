@@ -2,14 +2,14 @@ package com.dmi.perfectreader.cache
 
 import android.content.Context
 import com.dmi.perfectreader.BuildConfig.VERSION_CODE
-import com.dmi.util.AndroidPaths.getCachedDir
+import com.dmi.util.availableCacheDir
 import com.dmi.util.cache.DataCache
 import com.dmi.util.cache.DiskDataCache
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
-import java.lang.String.format
+import java.io.OutputStream
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -36,7 +36,7 @@ class BookResourceCache : DataCache {
         }
     }
 
-    override fun openRead(key: String, dataWriter: DataCache.DataWriter): InputStream {
+    override fun openRead(key: String, writeData: (OutputStream) -> Unit): InputStream {
         val cacheDir = cacheDir
         if (cacheDir != currentCacheDir && diskDataCache != null) {
             diskDataCache!!.close()
@@ -46,18 +46,18 @@ class BookResourceCache : DataCache {
             diskDataCache = DiskDataCache(cacheDir, VERSION_CODE, MAX_SIZE)
         }
         currentCacheDir = cacheDir
-        return diskDataCache!!.openRead(key, dataWriter)
+        return diskDataCache!!.openRead(key, writeData)
     }
 
     private val cacheDir: File
-        get() = File(getCachedDir(context), CACHE_DIR)
+        get() = File(context.availableCacheDir, CACHE_DIR)
 
     companion object {
         private val CACHE_DIR = "bookResource"
         private val MAX_SIZE = 32 * 1024 * 1024 // 32 MB
 
         fun resourceKey(bookFilePath: String, innerResourcePath: String, lastModified: Long): String {
-            return format("file: %s; url: %s; lastModified: %s", bookFilePath, innerResourcePath, lastModified)
+            return "file: $bookFilePath; url: $innerResourcePath; lastModified: $lastModified"
         }
     }
 }

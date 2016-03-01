@@ -194,7 +194,7 @@ class ParagraphLayouter(
                 }
 
                 fun render(token: Liner.Token, hasHyphenAfter: Boolean, scaleX: Float, line: LineBuilder) {
-                    with(token) {
+                    with (token) {
                         checkArgument(beginIndex < plainText.length && beginIndex < endIndex)
 
                         renderRuns(beginIndex, endIndex, isSpace, scaleX, line)

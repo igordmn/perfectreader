@@ -3,14 +3,14 @@ package com.dmi.perfectreader.db
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.database.sqlite.SQLiteDatabase
-import com.dmi.util.db.DatabaseUpgrades
-import com.dmi.util.db.DatabaseUpgrades.upgradeDatabase
+import com.dmi.util.db.DatabaseDowngradeException
+import com.dmi.util.db.upgradeDatabase
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-class Databases {
+class AppDatabases {
     private lateinit var user: SQLiteDatabase
 
     @Named("applicationContext")
@@ -26,7 +26,7 @@ class Databases {
         user = context.openOrCreateDatabase("user", MODE_PRIVATE, null)
         try {
             upgradeDatabase(context, user, "db/user")
-        } catch (e: DatabaseUpgrades.DowngradeException) {
+        } catch (e: DatabaseDowngradeException) {
             throw RuntimeException(e) // todo показывать диалог
         }
 

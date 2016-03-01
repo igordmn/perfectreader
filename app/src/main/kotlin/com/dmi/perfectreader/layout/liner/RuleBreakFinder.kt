@@ -22,7 +22,7 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
             }
 
             fun addLineBreaks() {
-                with(BreakIterator.getLineInstance(locale)) {
+                with (BreakIterator.getLineInstance(locale)) {
                     this.text = CharSequenceCharacterIterator(text)
                     first()
                     var i = next()
@@ -34,7 +34,7 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
             }
 
             fun addWordBreaks() {
-                with(BreakIterator.getWordInstance(locale)) {
+                with (BreakIterator.getWordInstance(locale)) {
                     this.text = CharSequenceCharacterIterator(text)
                     var begin = first()
                     var i = next()

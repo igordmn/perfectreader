@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.book.pagebook
 
-import com.dmi.util.lang.MathExt
+import com.dmi.util.lang.clamp
 
 object LocationUtils {
     fun percentToSegmentLocation(segmentSizes: IntArray, percent: Double): SegmentLocation {
@@ -27,7 +27,7 @@ object LocationUtils {
             position += segmentSizes[i]
         }
         position += (segmentSizes[segmentLocation.index] * segmentLocation.percent).toInt()
-        return MathExt.clamp(0.0, 1.0, (position / totalSize).toDouble())
+        return clamp(0.0, 1.0, (position / totalSize).toDouble())
     }
 
     fun percentToPage(pageCount: Int, percent: Double): Int {

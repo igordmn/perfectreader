@@ -27,7 +27,7 @@ abstract class RenderObject(
     fun paintRecursive(canvas: Canvas) {
         paintItself(canvas)
         for (i in 0..children.size - 1) {
-            with(children[i]) {
+            with (children[i]) {
                 canvas.translate(x, y)
                 obj.paintRecursive(canvas)
                 canvas.translate(-x, -y)

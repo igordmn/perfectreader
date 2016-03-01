@@ -12,7 +12,7 @@ class PaintTextMetrics : TextMetrics {
         val textPaint = Reusables.textPaint
         val charWidths = Reusables.charWidths(text.length)
 
-        with(textPaint) {
+        with (textPaint) {
             isAntiAlias = style.renderParams.antialias
             isSubpixelText = style.renderParams.subpixel
             hinting = if (style.renderParams.hinting) Paint.HINTING_ON else Paint.HINTING_OFF
@@ -30,7 +30,7 @@ class PaintTextMetrics : TextMetrics {
         val verticalMetrics = Reusables.verticalMetrics
         val paintFontMetrics = Reusables.paintFontMetrics
 
-        with(textPaint) {
+        with (textPaint) {
             textSize = style.size
             getFontMetrics(paintFontMetrics)
         }
