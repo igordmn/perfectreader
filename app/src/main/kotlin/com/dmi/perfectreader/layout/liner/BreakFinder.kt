@@ -7,9 +7,9 @@ interface BreakFinder {
     fun findBreaks(text: CharSequence, locale: Locale, accept: (Break) -> Unit)
 
     @Reusable
-    interface Break {
-        fun index(): Int
-        fun hasHyphen(): Boolean
-        fun isForce(): Boolean
+    class Break {
+        var index = 0
+        var hasHyphen = false
+        var isForce = false
     }
 }

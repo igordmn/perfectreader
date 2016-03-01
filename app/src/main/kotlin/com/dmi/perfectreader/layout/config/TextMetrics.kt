@@ -6,7 +6,6 @@ import com.dmi.util.annotation.Reusable
 interface TextMetrics {
     @Reusable
     fun charWidths(text: CharSequence, style: FontStyle): FloatArray
-
     fun verticalMetrics(style: FontStyle): VerticalMetrics
 
     @Reusable

@@ -1,9 +1,9 @@
 package com.dmi.perfectreader.layout.liner
 
 import com.dmi.perfectreader.layout.config.LayoutChars
+import com.dmi.perfectreader.layout.liner.BreakFinder.Break
 import com.dmi.perfectreader.layout.wordbreak.WordBreaker
 import com.dmi.perfectreader.layout.wordbreak.WordBreaker.WordBreaks
-import com.dmi.util.annotation.Reusable
 import com.dmi.util.cache.ReusableBooleanArray
 import com.dmi.util.text.CharSequenceCharacterIterator
 import com.google.common.base.Preconditions.checkArgument
@@ -72,21 +72,11 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
     }
 
     private class Breaks(private val length: Int) {
-        private val isBreak: BooleanArray
-        private val hasHyphen: BooleanArray
-        private val isForce: BooleanArray
+        private val isBreak = Reusables.isBreak(length).apply { fill(false) }
+        private val hasHyphen = Reusables.hasHyphen(length).apply { fill(false) }
+        private val isForce = Reusables.isForce(length).apply { fill(false) }
 
-        private val br = BreakImpl()
-
-        init {
-            isBreak = Reusables.isBreak(length)
-            hasHyphen = Reusables.hasHyphen(length)
-            isForce = Reusables.isForce(length)
-
-            Arrays.fill(isBreak, false)
-            Arrays.fill(hasHyphen, false)
-            Arrays.fill(isForce, false)
-        }
+        private val br = Break()
 
         operator fun set(index: Int, hasHyphen: Boolean, isForce: Boolean) {
             checkArgument(index < length)
@@ -105,33 +95,14 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
                 if (isBreak[i]) {
                     br.index = i
                     br.hasHyphen = hasHyphen[i]
-                    br.force = isForce[i]
+                    br.isForce = isForce[i]
                     accept(br)
                 }
             }
             br.index = length
             br.hasHyphen = false
-            br.force = false
+            br.isForce = false
             accept(br)
-        }
-    }
-
-    @Reusable
-    private class BreakImpl : BreakFinder.Break {
-        var index: Int = 0
-        var hasHyphen: Boolean = false
-        var force: Boolean = false
-
-        override fun index(): Int {
-            return index
-        }
-
-        override fun hasHyphen(): Boolean {
-            return hasHyphen
-        }
-
-        override fun isForce(): Boolean {
-            return force
         }
     }
 

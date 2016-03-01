@@ -588,21 +588,10 @@ class BreakLinerSpec extends Specification {
     }
 
     def br(index, hasHyphen, isForce) {
-        return new BreakFinder.Break() {
-            @Override
-            int index() {
-                return index
-            }
-
-            @Override
-            boolean hasHyphen() {
-                return hasHyphen
-            }
-
-            @Override
-            boolean isForce() {
-                return isForce
-            }
-        }
+        def br = new BreakFinder.Break()
+        br.setIndex(index)
+        br.setHasHyphen(hasHyphen)
+        br.setForce(isForce)
+        return br
     }
 }

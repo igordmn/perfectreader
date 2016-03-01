@@ -1,24 +1,27 @@
 package com.dmi.perfectreader.layout.liner
 
+import com.dmi.util.annotation.Reusable
 import java.util.*
 
 interface Liner {
     fun makeLines(measuredText: MeasuredText, config: Config): List<Line>
 
-    interface Line {
-        val left: Float
-        val width: Float
-        val hasHyphenAfter: Boolean
-        val isLast: Boolean
-        val tokens: List<Token>
+    @Reusable
+    class Line {
+        var left = 0F
+        var width = 0F
+        var hasHyphenAfter = false
+        var isLast = false
+        var tokens = ArrayList<Token>()
         val right: Float
             get() = left + width
     }
 
-    interface Token {
-        val isSpace: Boolean
-        val beginIndex: Int
-        val endIndex: Int
+    @Reusable
+    class Token {
+        var isSpace = false
+        var beginIndex = 0
+        var endIndex = 0
     }
 
     interface MeasuredText {

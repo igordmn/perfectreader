@@ -845,16 +845,13 @@ class ParagraphLayouterSpec extends Specification {
         def lines = []
         int beginIndex = 0
         for (def info : infoList) {
-            lines.add(
-                    Stub(Liner.Line) {
-                        it.getLeft() >> (info.left ?: 0)
-                        it.getWidth() >> (info.width ?: 0)
-                        it.getRight() >> it.left + it.width
-                        it.getHasHyphenAfter() >> (info.hasHyphenAfter ?: false)
-                        it.isLast() >> (info.isLast ?: false)
-                        it.getTokens() >> (info.text ? tokens(beginIndex, info.text) : emptyList())
-                    }
-            )
+            def line = new Liner.Line()
+            line.left = info.left ?: 0
+            line.width = info.width ?: 0
+            line.hasHyphenAfter = info.hasHyphenAfter ?: false
+            line.last = info.isLast ?: false
+            line.tokens = info.text ? tokens(beginIndex, info.text) : emptyList()
+            lines.add(line)
             beginIndex += info.text.length()
         }
         return lines
@@ -868,13 +865,11 @@ class ParagraphLayouterSpec extends Specification {
         int begin = 0
         for (int end = 1; end <= text.length(); end++) {
             if (end == text.length() || isSpace(end) != isSpace(begin)) {
-                tokens.add(
-                        Stub(Liner.Token) {
-                            it.isSpace() >> isSpace(begin)
-                            it.getBeginIndex() >> beginIndex + begin
-                            it.getEndIndex() >> beginIndex + end
-                        }
-                )
+                def token = new Liner.Token()
+                token.space = isSpace(begin)
+                token.beginIndex = beginIndex + begin
+                token.endIndex = beginIndex + end
+                tokens.add(token)
                 begin = end
             }
         }

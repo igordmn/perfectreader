@@ -1,10 +1,11 @@
 package com.dmi.perfectreader.layout.liner
 
 import com.dmi.perfectreader.layout.config.LayoutChars
+import com.dmi.perfectreader.layout.liner.Liner.Line
+import com.dmi.perfectreader.layout.liner.Liner.Token
 import com.dmi.util.cache.ReusableArrayList
 import com.google.common.base.Preconditions.checkState
 import java.lang.Math.max
-import java.util.*
 
 class BreakLiner(private val breakFinder: BreakFinder) : Liner {
 
@@ -22,15 +23,15 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
                 part.reset(0, 0, config.firstLineIndent, false)
 
                 breakFinder.findBreaks(text, locale, { br ->
-                    checkState(part.endIndex < br.index(), "Wrong line end index")
+                    checkState(part.endIndex < br.index, "Wrong line end index")
 
-                    pushChars(br.index(), br.hasHyphen())
+                    pushChars(br.index, br.hasHyphen)
 
-                    if (br.isForce()) {
+                    if (br.isForce) {
                         pushLine(true)
                     }
 
-                    checkState(part.endIndex == br.index(), "Wrong line end index")
+                    checkState(part.endIndex == br.index, "Wrong line end index")
                 })
 
                 pushLine(true)
@@ -83,7 +84,7 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
 
             fun pushLine(isLast: Boolean = false) {
                 if (!part.isEmpty) {
-                    val line = LineImpl()
+                    val line = Line()
                     line.left = part.left
                     line.width = part.width
                     line.hasHyphenAfter = part.hasHyphenAfter
@@ -96,14 +97,14 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
             }
 
             private fun addTokensInto(tokens: MutableList<Liner.Token>, beginIndex: Int, endIndex: Int) {
-                var token: TokenImpl? = null
+                var token: Token? = null
                 for (begin in beginIndex..endIndex - 1) {
                     val ch = text[begin]
                     val isSpace = isSpace(ch)
                     val end = begin + 1
 
                     if (token == null || token.isSpace != isSpace) {
-                        token = TokenImpl()
+                        token = Token()
                         token.isSpace = isSpace
                         token.beginIndex = begin
                         token.endIndex = end
@@ -184,19 +185,5 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
 
     private object Reusables {
         val lines = ReusableArrayList<Liner.Line>()
-    }
-
-    private class LineImpl : Liner.Line {
-        override var left = 0F
-        override var width = 0F
-        override var hasHyphenAfter: Boolean = false
-        override var isLast: Boolean = false
-        override var tokens: MutableList<Liner.Token> = ArrayList()
-    }
-
-    private class TokenImpl : Liner.Token {
-        override var isSpace: Boolean = false
-        override var beginIndex: Int = 0
-        override var endIndex: Int = 0
     }
 }

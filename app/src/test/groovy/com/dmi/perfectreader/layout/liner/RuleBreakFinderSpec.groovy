@@ -72,8 +72,8 @@ class RuleBreakFinderSpec extends Specification {
 
     def wrapBreak(Break br) {
         return [
-                index: br.index(),
-                hasHyphen: br.hasHyphen(),
+                index: br.getIndex(),
+                hasHyphen: br.getHasHyphen(),
                 isForce: br.isForce(),
         ]
     }
