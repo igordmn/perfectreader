@@ -4,14 +4,13 @@ import com.dmi.perfectreader.layout.config.LayoutChars.OBJECT_REPLACEMENT_CHARAC
 import com.dmi.perfectreader.layout.liner.BreakFinder.Break
 import com.dmi.perfectreader.layout.wordbreak.WordBreaker
 import com.dmi.util.cache.ReusableBooleanArray
-import com.dmi.util.text.CharSequenceCharacterIterator
 import com.google.common.base.Preconditions.checkArgument
 import java.text.BreakIterator
 import java.text.BreakIterator.DONE
 import java.util.*
 
 class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
-    override fun findBreaks(text: CharSequence, locale: Locale, accept: (BreakFinder.Break) -> Unit) {
+    override fun findBreaks(text: String, locale: Locale, accept: (BreakFinder.Break) -> Unit) {
         object {
             val breaks = Breaks(text.length)
 
@@ -24,7 +23,7 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
 
             fun addLineBreaks() {
                 with (BreakIterator.getLineInstance(locale)) {
-                    this.text = CharSequenceCharacterIterator(text)
+                    this.setText(text)
                     first()
                     var i = next()
                     while (i != text.length && i != DONE) {
@@ -36,7 +35,7 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
 
             fun addWordBreaks() {
                 with (BreakIterator.getWordInstance(locale)) {
-                    this.text = CharSequenceCharacterIterator(text)
+                    this.setText(text)
                     var begin = first()
                     var i = next()
                     while (i != DONE) {

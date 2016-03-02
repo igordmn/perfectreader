@@ -443,7 +443,7 @@ class BreakLinerSpec extends Specification {
     def measuredText(String text) {
         return new MeasuredText() {
             @Override
-            CharSequence getPlainText() {
+            String getPlainText() {
                 return text
             }
 
@@ -501,7 +501,7 @@ class BreakLinerSpec extends Specification {
     def spaceBreakFinder() {
         return new BreakFinder() {
             @Override
-            void findBreaks(CharSequence text, Locale locale, Function1<? super BreakFinder.Break, Unit> accept) {
+            void findBreaks(String text, Locale locale, Function1<? super BreakFinder.Break, Unit> accept) {
                 for (int i = 1; i < text.length(); i++) {
                     if (text.charAt(i - 1) == '\n' as char) {
                         accept.invoke(br(i, false))
@@ -518,7 +518,7 @@ class BreakLinerSpec extends Specification {
     def spaceAndWordBreakFinder(int breakBeforeWordIndex) {
         return new BreakFinder() {
             @Override
-            void findBreaks(CharSequence text, Locale locale, Function1<? super BreakFinder.Break, Unit> accept) {
+            void findBreaks(String text, Locale locale, Function1<? super BreakFinder.Break, Unit> accept) {
                 int wordBeginIndex = 0
                 for (int i = 1; i < text.length(); i++) {
                     int wordIndex = i - wordBeginIndex

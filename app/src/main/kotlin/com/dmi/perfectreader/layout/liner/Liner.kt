@@ -21,7 +21,7 @@ interface Liner {
     }
 
     interface MeasuredText {
-        val plainText: CharSequence
+        val plainText: String
         val locale: Locale
         fun widthOf(index: Int): Float
         fun widthOf(beginIndex: Int, endIndex: Int): Float

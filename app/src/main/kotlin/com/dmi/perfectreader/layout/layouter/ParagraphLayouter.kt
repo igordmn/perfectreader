@@ -112,6 +112,7 @@ class ParagraphLayouter(
             }
 
             inner class PrerenderedText : Liner.MeasuredText {
+                private val plainTextBuilder = Reusables.plainTextBuilder()
                 private val plainIndexToRunIndex = Reusables.plainIndexToRunIndex()
                 private val plainIndexToWidth = Reusables.plainIndexToWidth()
                 private val plainIndexToTotalWidth = Reusables.plainIndexToTotalWidth()
@@ -123,7 +124,7 @@ class ParagraphLayouter(
 
                 private val childrenArea = LayoutArea(area.width, 0F)
 
-                override val plainText = Reusables.plainText()
+                override lateinit var plainText: String
                 override val locale: Locale = locale
 
                 init {
@@ -134,13 +135,14 @@ class ParagraphLayouter(
                             is Run.Object -> prerenderObject(r, run)
                         }
                     }
+                    plainText = plainTextBuilder.toString()
                 }
 
                 private fun prerenderTextRun(runIndex: Int, run: Run.Text) {
                     val text = run.text
                     val verticalMetrics = textMetrics.verticalMetrics(run.style)
 
-                    plainText.append(text)
+                    plainTextBuilder.append(text)
 
                     val charWidths = textMetrics.charWidths(text, run.style)
                     for (i in 0..text.length - 1) {
@@ -148,7 +150,7 @@ class ParagraphLayouter(
                         addWidth(charWidths[i])
                     }
 
-                    runIndexToPlainBeginIndex.add(plainText.length - text.length)
+                    runIndexToPlainBeginIndex.add(plainTextBuilder.length - text.length)
                     runIndexToObject.add(null)
                     runIndexToHeight.add(-verticalMetrics.ascent + verticalMetrics.descent + verticalMetrics.leading)
                     runIndexToBaseline.add(-verticalMetrics.ascent)
@@ -162,11 +164,11 @@ class ParagraphLayouter(
                 private fun prerenderObject(runIndex: Int, run: Run.Object) {
                     val renderObj = childrenLayouter.layout(run.obj, childrenArea)
 
-                    plainText.append(LayoutChars.OBJECT_REPLACEMENT_CHARACTER)
+                    plainTextBuilder.append(LayoutChars.OBJECT_REPLACEMENT_CHARACTER)
                     plainIndexToRunIndex.add(runIndex)
                     addWidth(renderObj.width)
 
-                    runIndexToPlainBeginIndex.add(plainText.length - 1)
+                    runIndexToPlainBeginIndex.add(plainTextBuilder.length - 1)
                     runIndexToObject.add(renderObj)
                     runIndexToHeight.add(renderObj.height)
                     runIndexToBaseline.add(renderObj.height)
@@ -366,7 +368,7 @@ class ParagraphLayouter(
         private val INITIAL_CHARS_CAPACITY = 4000
         private val INITIAL_RUNS_CAPACITY = 16
 
-        val plainText = ReusableStringBuilder(INITIAL_CHARS_CAPACITY)
+        val plainTextBuilder = ReusableStringBuilder(INITIAL_CHARS_CAPACITY)
         val plainIndexToRunIndex = ReusableIntArrayList(INITIAL_CHARS_CAPACITY)
         val plainIndexToWidth = ReusableFloatArrayList(INITIAL_CHARS_CAPACITY)
         val plainIndexToTotalWidth = ReusableFloatArrayList(INITIAL_CHARS_CAPACITY)

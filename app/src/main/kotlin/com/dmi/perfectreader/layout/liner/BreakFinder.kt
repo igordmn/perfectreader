@@ -4,7 +4,7 @@ import com.dmi.util.annotation.Reusable
 import java.util.*
 
 interface BreakFinder {
-    fun findBreaks(text: CharSequence, locale: Locale, accept: (Break) -> Unit)
+    fun findBreaks(text: String, locale: Locale, accept: (Break) -> Unit)
 
     @Reusable
     class Break {
