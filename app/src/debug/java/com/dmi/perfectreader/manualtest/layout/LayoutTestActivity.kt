@@ -12,7 +12,7 @@ import com.dmi.perfectreader.layout.config.LayoutArea
 import com.dmi.perfectreader.layout.config.PaintTextMetrics
 import com.dmi.perfectreader.layout.liner.BreakLiner
 import com.dmi.perfectreader.layout.liner.RuleBreakFinder
-import com.dmi.perfectreader.layout.run.TextRun
+import com.dmi.perfectreader.layout.run.Run
 import com.dmi.perfectreader.layout.wordbreak.TeXPatternsSource
 import com.dmi.perfectreader.layout.wordbreak.TeXWordBreaker
 import com.dmi.perfectreader.render.RenderObject
@@ -64,7 +64,7 @@ class LayoutTestActivity : BaseActivity() {
 
         val fontRenderParams = FontStyle.RenderParams(true, true, true, false)
         val hangingConfig = DefaultHangingConfig()
-        val paragraph = LayoutParagraph(true, Locale("ru", "RU"), listOf(TextRun(text, FontStyle(12f, Color.BLACK, fontRenderParams))), 0f, TextAlign.JUSTIFY, hangingConfig)
+        val paragraph = LayoutParagraph(true, Locale("ru", "RU"), listOf(Run.Text(text, FontStyle(12f, Color.BLACK, fontRenderParams))), 0f, TextAlign.JUSTIFY, hangingConfig)
 
 
         val par = AtomicReference<RenderObject>()

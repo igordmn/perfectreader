@@ -7,15 +7,13 @@ import com.dmi.perfectreader.layout.config.LayoutArea
 import com.dmi.perfectreader.layout.config.LayoutChars
 import com.dmi.perfectreader.layout.config.TextMetrics
 import com.dmi.perfectreader.layout.liner.Liner
-import com.dmi.perfectreader.layout.run.ObjectRun
-import com.dmi.perfectreader.layout.run.TextRun
+import com.dmi.perfectreader.layout.run.Run
 import com.dmi.perfectreader.render.*
 import com.dmi.perfectreader.style.TextAlign
 import com.dmi.util.cache.ReusableArrayList
 import com.dmi.util.cache.ReusableFloatArrayList
 import com.dmi.util.cache.ReusableIntArrayList
 import com.dmi.util.cache.ReusableStringBuilder
-import com.google.common.base.Preconditions.checkArgument
 import java.lang.Math.max
 import java.util.*
 
@@ -82,13 +80,14 @@ class ParagraphLayouter(
                 else if (obj.textAlign == TextAlign.CENTER)
                     renderLine.addOffset(freeSpace / 2)
 
-                val tokens = line.tokens
-                for (i in 0..tokens.size - 1) {
-                    val token = tokens[i]
-                    val hasHyphenAfter = line.hasHyphenAfter && i == tokens.size - 1
-                    val isMidspace = token.isSpace && i > 0 && i < tokens.size - 1
-                    val scaleX = if (isMidspace) midspaceScale else 1F
-                    text.render(token, hasHyphenAfter, scaleX, renderLine)
+                with (line.tokens) {
+                    for (i in 0..size - 1) {
+                        val spaceScaleX = if (i > 0 && i < size - 1) midspaceScale else 1F
+                        text.render(this[i], spaceScaleX, renderLine)
+                    }
+
+                    if (line.hasHyphenAfter && size > 0)
+                        text.renderHyphen(last().endIndex - 1, renderLine)
                 }
 
                 return renderLine.build()
@@ -131,14 +130,13 @@ class ParagraphLayouter(
                     for (r in 0..runs.size - 1) {
                         val run = runs[r]
                         when (run) {
-                            is TextRun -> prerenderTextRun(r, run)
-                            is ObjectRun -> prerenderObject(r, run)
-                            else -> throw UnsupportedOperationException()
+                            is Run.Text -> prerenderTextRun(r, run)
+                            is Run.Object -> prerenderObject(r, run)
                         }
                     }
                 }
 
-                private fun prerenderTextRun(runIndex: Int, run: TextRun) {
+                private fun prerenderTextRun(runIndex: Int, run: Run.Text) {
                     val text = run.text
                     val verticalMetrics = textMetrics.verticalMetrics(run.style)
 
@@ -157,11 +155,11 @@ class ParagraphLayouter(
                     runIndexToHyphenWidth.add(hyphenWidth(run))
                 }
 
-                private fun hyphenWidth(run: TextRun): Float {
+                private fun hyphenWidth(run: Run.Text): Float {
                     return textMetrics.charWidths(HYPHEN_STRING, run.style)[0]
                 }
 
-                private fun prerenderObject(runIndex: Int, run: ObjectRun) {
+                private fun prerenderObject(runIndex: Int, run: Run.Object) {
                     val renderObj = childrenLayouter.layout(run.obj, childrenArea)
 
                     plainText.append(LayoutChars.OBJECT_REPLACEMENT_CHARACTER)
@@ -195,43 +193,34 @@ class ParagraphLayouter(
                     return runIndexToHyphenWidth[runIndex]
                 }
 
-                fun render(token: Liner.Token, hasHyphenAfter: Boolean, scaleX: Float, line: LineBuilder) {
-                    with (token) {
-                        checkArgument(beginIndex < plainText.length && beginIndex < endIndex)
-
-                        renderRuns(beginIndex, endIndex, isSpace, scaleX, line)
-                        if (hasHyphenAfter)
-                            renderHyphen(endIndex - 1, line)
+                fun render(token: Liner.Token, spaceScaleX: Float, line: LineBuilder) {
+                    forEachRun(token.beginIndex, token.endIndex) { begin, end, runIndex ->
+                        if (token.isSpace) {
+                            renderSpace(begin, end, runIndex, spaceScaleX, line)
+                        } else {
+                            renderRun(begin, end, runIndex, line)
+                        }
                     }
                 }
 
-                private fun renderRuns(beginIndex: Int, endIndex: Int, isSpace: Boolean, scaleX: Float, line: LineBuilder) {
+                private inline fun forEachRun(
+                        beginIndex: Int, endIndex: Int,
+                        action: (begin: Int, end: Int, runIndex: Int) -> Unit
+                ) {
                     var begin = beginIndex
                     for (end in beginIndex + 1..endIndex) {
                         val runIndex = plainIndexToRunIndex[begin]
                         val isEndOfRun = end == endIndex || runIndex != plainIndexToRunIndex[end]
                         if (isEndOfRun) {
-                            renderRun(begin, end, runIndex, isSpace, scaleX, line)
+                            action(begin, end, runIndex)
                             begin = end
                         }
                     }
                 }
 
-                private fun renderRun(beginIndex: Int, endIndex: Int, runIndex: Int, isSpace: Boolean, scaleX: Float, line: LineBuilder) {
-                    val run = runs[runIndex]
-                    when {
-                        isSpace ->
-                            renderSpace(beginIndex, endIndex, runIndex, run as TextRun, scaleX, line)
-                        run is TextRun ->
-                            renderTextRun(beginIndex, endIndex, runIndex, run, line)
-                        run is ObjectRun ->
-                            renderObjectRun(runIndex, line)
-                        else ->
-                            throw UnsupportedOperationException()
-                    }
-                }
+                private fun renderSpace(beginIndex: Int, endIndex: Int, runIndex: Int, scaleX: Float, line: LineBuilder) {
+                    val run = runs[runIndex] as Run.Text
 
-                private fun renderSpace(beginIndex: Int, endIndex: Int, runIndex: Int, run: TextRun, scaleX: Float, line: LineBuilder) {
                     val runBegin = runIndexToPlainBeginIndex[runIndex]
                     val baseline = runIndexToBaseline[runIndex]
 
@@ -249,7 +238,15 @@ class ParagraphLayouter(
                     )
                 }
 
-                private fun renderTextRun(beginIndex: Int, endIndex: Int, runIndex: Int, run: TextRun, line: LineBuilder) {
+                private fun renderRun(beginIndex: Int, endIndex: Int, runIndex: Int, line: LineBuilder) {
+                    val run = runs[runIndex]
+                    when (run) {
+                        is Run.Text -> renderTextRun(beginIndex, endIndex, runIndex, run, line)
+                        is Run.Object -> renderObjectRun(runIndex, line)
+                    }
+                }
+
+                private fun renderTextRun(beginIndex: Int, endIndex: Int, runIndex: Int, run: Run.Text, line: LineBuilder) {
                     val runBegin = runIndexToPlainBeginIndex[runIndex]
                     val baseline = runIndexToBaseline[runIndex]
 
@@ -273,10 +270,10 @@ class ParagraphLayouter(
                     )
                 }
 
-                private fun renderHyphen(plainIndex: Int, line: LineBuilder) {
+                fun renderHyphen(plainIndex: Int, line: LineBuilder) {
                     val runIndex = plainIndexToRunIndex[plainIndex]
                     val run = runs[runIndex]
-                    if (run is TextRun) {
+                    if (run is Run.Text) {
                         val baseline = runIndexToBaseline[runIndex]
 
                         line.addObject(
