@@ -40,8 +40,10 @@ class ParagraphLayouter(
 
                 return ParagraphBuilder().run {
                     reset(width)
-                    for (line in lines) {
-                        addLine(renderLine(text, line, width))
+                    for (i in 0..lines.size - 1) {
+                        val line = lines[i]
+                        val isLast = i == lines.size - 1
+                        addLine(renderLine(text, line, width, isLast))
                     }
                     build()
                 }
@@ -66,13 +68,13 @@ class ParagraphLayouter(
                 return maxWidth
             }
 
-            fun renderLine(text: PrerenderedText, line: Liner.Line, width: Float): RenderLine {
+            fun renderLine(text: PrerenderedText, line: Liner.Line, width: Float, isLast: Boolean): RenderLine {
                 val renderLine = LineBuilder()
                 renderLine.reset(width)
                 renderLine.addOffset(line.left)
 
                 val freeSpace = width - line.right
-                val canJustify = !line.isLast && obj.textAlign == TextAlign.JUSTIFY
+                val canJustify = !isLast && obj.textAlign == TextAlign.JUSTIFY
                 val midspaceScale = if (canJustify) computeMidspaceScale(text, line, freeSpace) else 1F
 
                 if (obj.textAlign == TextAlign.RIGHT)

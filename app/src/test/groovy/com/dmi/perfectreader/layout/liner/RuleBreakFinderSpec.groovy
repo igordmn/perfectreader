@@ -25,7 +25,6 @@ class RuleBreakFinderSpec extends Specification {
 
         then:
         indicesOf(breaks) == [10, 16, 24, 28, 34, 38, 43, 52, 53, 55]
-        forcesIn(breaks) == [28, 34, 52, 53]
     }
 
     def "break objects"() {
@@ -37,7 +36,6 @@ class RuleBreakFinderSpec extends Specification {
 
         then:
         indicesOf(breaks) == [9, 10, 11, 13, 15, 16, 18, 19]
-        forcesIn(breaks) == [9]
     }
 
     def "break words"() {
@@ -59,7 +57,6 @@ class RuleBreakFinderSpec extends Specification {
         then:
         indicesOf(breaks) == [3, 10, 12, 15, 18, 20, 23, 26, 29, 35, 39, 42, 46]
         hasHyphensIn(breaks) == [3, 20, 26, 29, 42]
-        forcesIn(breaks) == [10, 15]
     }
 
     def findBreaks(BreakFinder breakFinder, CharSequence text) {
@@ -74,7 +71,6 @@ class RuleBreakFinderSpec extends Specification {
         return [
                 index: br.getIndex(),
                 hasHyphen: br.getHasHyphen(),
-                isForce: br.isForce(),
         ]
     }
 
@@ -85,12 +81,6 @@ class RuleBreakFinderSpec extends Specification {
     def hasHyphensIn(breaks) {
         return breaks.
                 findAll({ it.hasHyphen }).
-                collect({ it.index })
-    }
-
-    def forcesIn(breaks) {
-        return breaks.
-                findAll({ it.isForce }).
                 collect({ it.index })
     }
 

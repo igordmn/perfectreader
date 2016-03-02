@@ -9,7 +9,6 @@ interface Liner {
         var left = 0F
         var width = 0F
         var hasHyphenAfter = false
-        var isLast = false
         var tokens = ArrayList<Token>()
         val right: Float
             get() = left + width

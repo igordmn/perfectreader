@@ -61,37 +61,6 @@ class BreakLinerSpec extends Specification {
         checkSpaces(lines, text)
     }
 
-    def "break after force break"() {
-        given:
-        def liner = new BreakLiner(spaceBreakFinder())
-        def text =
-                "\n" +
-                "break   \n" +
-                "\n" +
-                "  after force\n" +
-                "break\n"
-
-        when:
-        def lines = makeLines(liner, text, config(120))
-
-        then:
-        widthsOf(lines) == [
-                0,
-                5 * SYMBOL_WIDTH,
-                0,
-                2 * SPACE_WIDTH + 5 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 5 * SYMBOL_WIDTH,
-                5 * SYMBOL_WIDTH,
-        ]
-
-        tokenTextsOf(lines[0], text) == ["\n"]
-        tokenTextsOf(lines[1], text) == ["break", "   \n"]
-        tokenTextsOf(lines[2], text) == ["\n"]
-        tokenTextsOf(lines[3], text) == ["  ", "after", " ", "force", "\n"]
-        tokenTextsOf(lines[4], text) == ["break", "\n"]
-
-        checkSpaces(lines, text)
-    }
-
     def "break between words"() {
         given:
         final BREAK_BEFORE_WORD_INDEX = 2
@@ -234,8 +203,8 @@ class BreakLinerSpec extends Specification {
         given:
         def liner = new BreakLiner(spaceBreakFinder())
         def text =
-                "(some     (text)      text)\n" +
-                " (with hyphenated symbols), " +
+                " (some     (text)      text) " +
+                "(with hyphenated symbols), " +
                 "\"hyphenated, symbols\""
 
         when:
@@ -251,18 +220,18 @@ class BreakLinerSpec extends Specification {
         )
 
         then:
-        tokenTextsOf(lines[0], text) == ["(some", "     ", "(text)", "      ", "text)", "\n"]
-        tokenTextsOf(lines[1], text) == [" ", "(with", " ", "hyphenated", " ", "symbols),", " "]
+        tokenTextsOf(lines[0], text) == [" ", "(some", "     ", "(text)", "      ", "text)", " "]
+        tokenTextsOf(lines[1], text) == ["(with", " ", "hyphenated", " ", "symbols),", " "]
         tokenTextsOf(lines[2], text) == ["\"hyphenated,", " ", "symbols\""]
 
         widthsOf(lines) == [
-                5 * SYMBOL_WIDTH + 5 * SPACE_WIDTH + 6 * SYMBOL_WIDTH + 6 * SPACE_WIDTH + 5 * SYMBOL_WIDTH - 1.0F * SYMBOL_WIDTH,
-                1 * SPACE_WIDTH + 5 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 10 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 9 * SYMBOL_WIDTH - 0.5F * SYMBOL_WIDTH,
+                1 * SPACE_WIDTH + 5 * SYMBOL_WIDTH + 5 * SPACE_WIDTH + 6 * SYMBOL_WIDTH + 6 * SPACE_WIDTH + 5 * SYMBOL_WIDTH - 1.0F * SYMBOL_WIDTH,
+                5 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 10 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 9 * SYMBOL_WIDTH - 0.5F * SYMBOL_WIDTH,
                 12 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 8 * SYMBOL_WIDTH - 0.5F * SYMBOL_WIDTH,
         ]
         leftsOf(lines) == [
-                8 - 1.0F * SYMBOL_WIDTH,
-                0,
+                8,
+                -1.0F * SYMBOL_WIDTH,
                 0 - 0.5F * SYMBOL_WIDTH
         ]
 
@@ -303,7 +272,7 @@ class BreakLinerSpec extends Specification {
         given:
         final BREAK_BEFORE_WORD_INDEX = 2
         def liner = new BreakLiner(spaceAndWordBreakFinder(BREAK_BEFORE_WORD_INDEX))
-        def text = "some  text,   \"text\"  q\n  \n\n"
+        def text = "some  text,   \"text\"  q  "
 
         when:
         def lines = makeLines(liner, text,
@@ -331,9 +300,7 @@ class BreakLinerSpec extends Specification {
         tokenTextsOf(lines[12], text) == ["x"]
         tokenTextsOf(lines[13], text) == ["t"]
         tokenTextsOf(lines[14], text) == ["\"", "  "]
-        tokenTextsOf(lines[15], text) == ["q", "\n"]
-        tokenTextsOf(lines[16], text) == ["  \n"]
-        tokenTextsOf(lines[17], text) == ["\n"]
+        tokenTextsOf(lines[15], text) == ["q", "  "]
 
         widthsOf(lines) == [
                 SYMBOL_WIDTH,                        /* s */
@@ -351,9 +318,7 @@ class BreakLinerSpec extends Specification {
                 SYMBOL_WIDTH,                        /* x */
                 SYMBOL_WIDTH,                        /* t */
                 SYMBOL_WIDTH - 0.5F * SYMBOL_WIDTH,  /* "   */
-                SYMBOL_WIDTH,                        /* q\n */
-                0,                                   /*   \n */
-                0,                                   /* \n */
+                SYMBOL_WIDTH,                        /* q   */
         ]
         leftsOf(lines) == [
                 8,                        /* s */
@@ -371,9 +336,7 @@ class BreakLinerSpec extends Specification {
                 0,                        /* x */
                 0,                        /* t */
                 -0.5F * SYMBOL_WIDTH,     /* "   */
-                0,                        /* q\n */
-                0,                        /*   \n */
-                0,                        /* \n */
+                0,                        /* q   */
         ]
         hasHyphensAfterOf(lines) == [
                 false,  /* s */
@@ -391,30 +354,12 @@ class BreakLinerSpec extends Specification {
                 false,  /* x */
                 false,  /* t */
                 false,  /* "   */
-                false,  /* q\n */
-                false,  /*   \n */
-                false,  /* \n */
+                false,  /* q   */
         ]
 
         checkSpaces(lines, text)
     }
 
-    def "set last lines"() {
-        given:
-        def liner = new BreakLiner(spaceBreakFinder())
-        def text =
-                "\n" +
-                "set \n" +
-                "set last " +
-                "lines"
-
-        when:
-        def lines = makeLines(liner, text, config(80))
-
-        then:
-        isLastOf(lines) == [true, true, false, true]
-    }
-    
     void checkSpaces(lines, text) {
         for (line in lines) {
             for (token in line.tokens) {
@@ -440,7 +385,6 @@ class BreakLinerSpec extends Specification {
                 left: line.left,
                 width: line.width,
                 hasHyphenAfter: line.hasHyphenAfter,
-                isLast: line.last,
                 tokens: wrapTokens(line.tokens)
         ]
     }
@@ -549,12 +493,12 @@ class BreakLinerSpec extends Specification {
             void findBreaks(CharSequence text, Locale locale, Function1<? super BreakFinder.Break, Unit> accept) {
                 for (int i = 1; i < text.length(); i++) {
                     if (text.charAt(i - 1) == '\n' as char) {
-                        accept.invoke(br(i, false, true))
+                        accept.invoke(br(i, false))
                     } else if (text.charAt(i - 1) == ' ' as char && text.charAt(i) != ' ' as char) {
-                        accept.invoke(br(i, false, false))
+                        accept.invoke(br(i, false))
                     }
                 }
-                accept.invoke(br(text.length(), false, false))
+                accept.invoke(br(text.length(), false))
             }
         }
     }
@@ -567,18 +511,18 @@ class BreakLinerSpec extends Specification {
                 for (int i = 1; i < text.length(); i++) {
                     int wordIndex = i - wordBeginIndex
                     if (text.charAt(i - 1) == '\n' as char) {
-                        accept.invoke(br(i, false, true))
+                        accept.invoke(br(i, false))
                     } else if (text.charAt(i - 1) == ' ' as char && text.charAt(i) != ' ' as char) {
-                        accept.invoke(br(i, false, false))
+                        accept.invoke(br(i, false))
                     } else if (wordIndex == breakBeforeWordIndex) {
-                        accept.invoke(br(i, true, false))
+                        accept.invoke(br(i, true))
                     }
 
                     if (isSpaceChar(text.charAt(i))) {
                         wordBeginIndex = i + 1
                     }
                 }
-                accept.invoke(br(text.length(), false, false))
+                accept.invoke(br(text.length(), false))
             }
         }
     }
@@ -587,11 +531,10 @@ class BreakLinerSpec extends Specification {
         return ch == ' ' as char || ch == '\n' as char || ch == '\u00A0' as char
     }
 
-    def br(index, hasHyphen, isForce) {
+    def br(index, hasHyphen) {
         def br = new BreakFinder.Break()
         br.setIndex(index)
         br.setHasHyphen(hasHyphen)
-        br.setForce(isForce)
         return br
     }
 }

@@ -10,6 +10,5 @@ interface BreakFinder {
     class Break {
         var index = 0
         var hasHyphen = false
-        var isForce = false
     }
 }

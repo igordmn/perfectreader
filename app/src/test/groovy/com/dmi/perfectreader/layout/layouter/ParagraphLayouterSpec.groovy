@@ -612,7 +612,7 @@ class ParagraphLayouterSpec extends Specification {
                 [left: -10, width: 180, text: " text1   t ext2 "],
                 [left: 20, width: 50, text: "  t", hasHyphenAfter: true],
                 [left: 0, width: 300, text: "ext3 t"],
-                [left: 0, width: 100, text: "ext4  text5 ", isLast: true],
+                [left: 0, width: 100, text: "ext4  text5 "],
         ])
 
         def layouter = new ParagraphLayouter(
@@ -849,7 +849,6 @@ class ParagraphLayouterSpec extends Specification {
             line.left = info.left ?: 0
             line.width = info.width ?: 0
             line.hasHyphenAfter = info.hasHyphenAfter ?: false
-            line.last = info.isLast ?: false
             line.tokens = info.text ? tokens(beginIndex, info.text) : emptyList()
             lines.add(line)
             beginIndex += info.text.length()

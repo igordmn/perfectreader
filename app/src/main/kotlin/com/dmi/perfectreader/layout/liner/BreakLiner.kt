@@ -22,15 +22,11 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
 
                 breakFinder.findBreaks(text, locale) { br ->
                     checkState(part.endIndex < br.index, "Wrong line end index")
-
                     pushChars(br.index, br.hasHyphen)
-                    if (br.isForce)
-                        pushLine(true)
-
                     checkState(part.endIndex == br.index, "Wrong line end index")
                 }
 
-                pushLine(true)
+                pushLine()
 
                 return lines
             }
@@ -78,14 +74,13 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
                 newPart = temp
             }
 
-            fun pushLine(isLast: Boolean = false) {
+            fun pushLine() {
                 if (!part.isEmpty) {
                     lines.add(
                             Line().apply {
                                 this.left = part.left
                                 this.width = part.width
                                 this.hasHyphenAfter = part.hasHyphenAfter
-                                this.isLast = isLast
                                 addTokensInto(tokens, part.beginIndex, part.endIndex)
                             }
                     )

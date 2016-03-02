@@ -27,7 +27,7 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
                     first()
                     var i = next()
                     while (i != text.length) {
-                        addBreak(i)
+                        breaks.add(i, false)
                         i = next()
                     }
                 }
@@ -54,26 +54,18 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
                 val wordBreaks = wordBreaker.breakWord(text, locale, begin, end)
                 for (i in begin + 1..end - 1) {
                     if (wordBreaks.canBreakBefore(i))
-                        addBreak(i, true)
+                        breaks.add(i, true)
                 }
             }
 
             fun addObjectBreaks() {
                 for (i in 0..text.length - 1) {
                     if (text[i] == OBJECT_REPLACEMENT_CHARACTER) {
-                        breaks.add(i, false, isLineSeparator(text[i - 1]))
+                        breaks.add(i, false)
                         if (i + 1 < text.length)
-                            addBreak(i + 1)
+                            breaks.add(i + 1, false)
                     }
                 }
-            }
-
-            fun addBreak(index: Int, hasHyphen: Boolean = false) {
-                breaks.add(index, hasHyphen, isLineSeparator(text[index - 1]))
-            }
-
-            fun isLineSeparator(ch: Char): Boolean {
-                return ch == '\n' || ch == '\r' || ch == '\u000B' || ch == '\u000C' || ch == '\u0085' || ch == '\u2028' || ch == '\u2029'
             }
         }.findBreaks()
     }
@@ -81,15 +73,13 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
     class Breaks(private val length: Int) {
         private val isBreak = Reusables.isBreak(length).apply { fill(false) }
         private val hasHyphen = Reusables.hasHyphen(length).apply { fill(false) }
-        private val isForce = Reusables.isForce(length).apply { fill(false) }
 
         private val br = Break()
 
-        fun add(index: Int, hasHyphen: Boolean, isForce: Boolean) {
+        fun add(index: Int, hasHyphen: Boolean) {
             checkArgument(index < length)
             this.isBreak[index] = true
             this.hasHyphen[index] = hasHyphen
-            this.isForce[index] = isForce
         }
 
         fun isBreak(index: Int): Boolean {
@@ -102,13 +92,11 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
                 if (isBreak[i]) {
                     br.index = i
                     br.hasHyphen = hasHyphen[i]
-                    br.isForce = isForce[i]
                     accept(br)
                 }
             }
             br.index = length
             br.hasHyphen = false
-            br.isForce = false
             accept(br)
         }
     }
@@ -118,6 +106,5 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
 
         val isBreak = ReusableBooleanArray(INITIAL_CHARS_CAPACITY)
         val hasHyphen = ReusableBooleanArray(INITIAL_CHARS_CAPACITY)
-        val isForce = ReusableBooleanArray(INITIAL_CHARS_CAPACITY)
     }
 }
