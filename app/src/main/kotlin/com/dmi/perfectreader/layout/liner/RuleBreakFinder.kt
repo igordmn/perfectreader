@@ -7,6 +7,7 @@ import com.dmi.util.cache.ReusableBooleanArray
 import com.dmi.util.text.CharSequenceCharacterIterator
 import com.google.common.base.Preconditions.checkArgument
 import java.text.BreakIterator
+import java.text.BreakIterator.DONE
 import java.util.*
 
 class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
@@ -26,7 +27,7 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
                     this.text = CharSequenceCharacterIterator(text)
                     first()
                     var i = next()
-                    while (i != text.length) {
+                    while (i != text.length && i != DONE) {
                         breaks.add(i, false)
                         i = next()
                     }
@@ -38,7 +39,7 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
                     this.text = CharSequenceCharacterIterator(text)
                     var begin = first()
                     var i = next()
-                    while (i != BreakIterator.DONE) {
+                    while (i != DONE) {
                         for (end in begin + 1..i) {
                             if (end == i || breaks.isBreak(end)) {
                                 addWordBreaks(begin, end)
@@ -95,9 +96,11 @@ class RuleBreakFinder(private val wordBreaker: WordBreaker) : BreakFinder {
                     accept(br)
                 }
             }
-            br.index = length
-            br.hasHyphen = false
-            accept(br)
+            if (length > 0) {
+                br.index = length
+                br.hasHyphen = false
+                accept(br)
+            }
         }
     }
 

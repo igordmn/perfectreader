@@ -59,6 +59,17 @@ class RuleBreakFinderSpec extends Specification {
         hasHyphensIn(breaks) == [3, 20, 26, 29, 42]
     }
 
+    def "break empty line"() {
+        given:
+        def breakFinder = new RuleBreakFinder(nonWordBreaker())
+
+        when:
+        def breaks = findBreaks(breakFinder, "")
+
+        then:
+        indicesOf(breaks) == []
+    }
+
     def findBreaks(BreakFinder breakFinder, CharSequence text) {
         def breaks = []
         breakFinder.findBreaks(text, Locale.US, {

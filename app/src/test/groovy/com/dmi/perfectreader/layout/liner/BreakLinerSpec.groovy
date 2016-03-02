@@ -360,6 +360,17 @@ class BreakLinerSpec extends Specification {
         checkSpaces(lines, text)
     }
 
+    def "make for empty text"() {
+        given:
+        def liner = new BreakLiner(spaceBreakFinder())
+
+        when:
+        def lines = makeLines(liner, "", config(300))
+
+        then:
+        lines.size() == 0
+    }
+
     void checkSpaces(lines, text) {
         for (line in lines) {
             for (token in line.tokens) {
@@ -498,7 +509,8 @@ class BreakLinerSpec extends Specification {
                         accept.invoke(br(i, false))
                     }
                 }
-                accept.invoke(br(text.length(), false))
+                if (text.length() > 0)
+                    accept.invoke(br(text.length(), false))
             }
         }
     }
