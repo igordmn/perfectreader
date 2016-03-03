@@ -7,7 +7,7 @@ import com.dmi.perfectreader.layout.config.LayoutArea
 import com.dmi.perfectreader.layout.config.LayoutChars
 import com.dmi.perfectreader.layout.config.TextMetrics
 import com.dmi.perfectreader.layout.liner.Liner
-import com.dmi.perfectreader.layout.run.Run
+import com.dmi.perfectreader.layout.config.Run
 import com.dmi.perfectreader.render.*
 import com.dmi.perfectreader.style.TextAlign
 import com.dmi.util.cache.ReusableArrayList

@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.layout.run
+package com.dmi.perfectreader.layout.config
 
 import com.dmi.perfectreader.layout.LayoutObject
 import com.dmi.perfectreader.style.FontStyle

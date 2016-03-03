@@ -7,14 +7,17 @@ import android.view.View
 import com.dmi.perfectreader.app.AppThreads.postUITask
 import com.dmi.perfectreader.layout.LayoutParagraph
 import com.dmi.perfectreader.layout.ObjectLayouter
+import com.dmi.perfectreader.layout.liner.breaker.CompositeBreaker
+import com.dmi.perfectreader.layout.liner.breaker.LineBreaker
+import com.dmi.perfectreader.layout.liner.breaker.ObjectBreaker
+import com.dmi.perfectreader.layout.liner.breaker.WordBreaker
 import com.dmi.perfectreader.layout.config.DefaultHangingConfig
 import com.dmi.perfectreader.layout.config.LayoutArea
 import com.dmi.perfectreader.layout.config.PaintTextMetrics
+import com.dmi.perfectreader.layout.config.Run
+import com.dmi.perfectreader.layout.liner.hyphenator.TeXHyphenatorResolver
+import com.dmi.perfectreader.layout.liner.hyphenator.TeXPatternsSource
 import com.dmi.perfectreader.layout.liner.BreakLiner
-import com.dmi.perfectreader.layout.liner.RuleBreakFinder
-import com.dmi.perfectreader.layout.run.Run
-import com.dmi.perfectreader.layout.wordbreak.TeXPatternsSource
-import com.dmi.perfectreader.layout.wordbreak.TeXWordBreaker
 import com.dmi.perfectreader.render.RenderObject
 import com.dmi.perfectreader.style.FontStyle
 import com.dmi.perfectreader.style.TextAlign
@@ -27,7 +30,8 @@ class LayoutTestActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val text = "      Рассказ у нас пойдет в особенности о хоббитах, и любознательный читатель многое узнает об их нравах и кое-что из их истории. Самых любознательных отсылаем к повести под названием «Хоббит», где пересказаны начальные главы Алой Книги Западных Пределов, которые написал Бильбо Торбинс, впервые прославивший свой народец в большом мире. Главы эти носят общий подзаголовок «Туда и обратно», потому что повествуют о странствии Бильбо на восток и возвращении домой. Как раз по милости Бильбо хоббиты и угодили в самую лавину грозных событий, о которых нам предстоит поведать.\n" +
+        val text =
+                "      Рассказ у нас пойдет в особенности о хоббитах, и любознательный читатель многое узнает об их нравах и кое-что из их истории. Самых любознательных отсылаем к повести под названием «Хоббит», где пересказаны начальные главы Алой Книги Западных Пределов, которые написал Бильбо Торбинс, впервые прославивший свой народец в большом мире. Главы эти носят общий подзаголовок «Туда и обратно», потому что повествуют о странствии Бильбо на восток и возвращении домой. Как раз по милости Бильбо хоббиты и угодили в самую лавину грозных событий, о которых нам предстоит поведать.\n" +
                 "      Многие, однако, и вообще про хоббитов ничего не знают, а хотели бы знать — но не у всех же есть под рукой книга «Хоббит». Вот и прочтите, если угодно, начальные сведения о хоббитах, а заодно и краткий пересказ приключений Бильбо.\n" +
                 "      Хоббиты — неприметный, но очень древний народец; раньше их было куда больше, чем нынче: они любят тишину и покой, тучную пашню и цветущие луга, а сейчас в мире стало что-то очень шумно и довольно тесно. Умелые и сноровистые, хоббиты, однако, терпеть не могли — не могут и поныне — устройств сложнее кузнечных мехов, водяной мельницы и прялки.\n" +
                 "      Издревле сторонились они людей — на их языке Громадин, — а теперь даже и на глаза им не показываются. Слух у них завидный, глаз острый; они, правда, толстоваты и не любят спешки, но в случае чего проворства и ловкости им не занимать. Хоббиты привыкли исчезать мгновенно и бесшумно при виде незваной Громадины, да так наловчились, что людям это стало казаться волшебством. А хоббиты ни о каком волшебстве и понятия не имели: отроду мастера прятаться, они — чуть что — скрывались из глаз, на удивление своим большим и неуклюжим соседям.\n" +
@@ -56,8 +60,16 @@ class LayoutTestActivity : BaseActivity() {
         val layouter = ObjectLayouter(
                 PaintTextMetrics(),
                 BreakLiner(
-                        RuleBreakFinder(
-                                TeXWordBreaker(TeXPatternsSource(this))
+                        CompositeBreaker(
+                                LineBreaker(),
+                                ObjectBreaker(),
+                                WordBreaker(
+                                        TeXHyphenatorResolver(
+                                                TeXPatternsSource(
+                                                        this
+                                                )
+                                        )
+                                )
                         )
                 )
         )

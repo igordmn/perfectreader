@@ -1,21 +1,24 @@
-package com.dmi.perfectreader.layout.wordbreak
+package com.dmi.perfectreader.layout.liner.hyphenator
 
 import com.carrotsearch.hppc.ByteArrayList
 import com.carrotsearch.hppc.CharArrayList
+import com.carrotsearch.hppc.CharScatterSet
+import com.carrotsearch.hppc.CharSet
 import com.dmi.util.annotation.Reusable
 import com.dmi.util.cache.ReusableValue
-import com.google.common.base.Charsets
 import com.google.common.io.CharStreams.readLines
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.lang.Character.toLowerCase
 import java.lang.Math.min
 import java.util.*
 import java.util.Arrays.copyOf
 
 class TeXHyphenator private constructor(
-        private val patterns: TeXHyphenator.Patterns,
-        private val exceptions: TeXHyphenator.CharsLevels
-) {
+        private val alphabet: CharSet,
+        private val patterns: Patterns,
+        private val exceptions: CharsLevels
+) : Hyphenator {
     /**
      * алгоритм: https://habrahabr.ru/post/138088/
      */
@@ -24,7 +27,7 @@ class TeXHyphenator private constructor(
         private val EDGE_OF_WORD = '.'
     }
 
-    fun breakWord(text: CharSequence, beginIndex: Int, endIndex: Int): WordBreaker.WordBreaks {
+    override fun hyphenateWord(text: CharSequence, beginIndex: Int, endIndex: Int): Hyphens {
         val length = endIndex - beginIndex
         val wordLevels = Reusables.wordLevels(length)
 
@@ -35,8 +38,10 @@ class TeXHyphenator private constructor(
             }
         }
 
-        return Reusables.wordBreaks(wordLevels, beginIndex)
+        return Reusables.hyphens(wordLevels, beginIndex)
     }
+
+    override fun alphabetContains(ch: Char) = alphabet.contains(toLowerCase(ch))
 
     private fun applyException(text: CharSequence, beginIndex: Int, endIndex: Int, wordLevels: PatternLevels, chars: PatternChars): Boolean {
         chars.reset(text, beginIndex, endIndex, true, true)
@@ -76,6 +81,7 @@ class TeXHyphenator private constructor(
     class Builder {
         private val patterns = Patterns()
         private val exceptions = CharsLevels()
+        private val alphabet = CharScatterSet()
 
         fun addPatternsFrom(stream: InputStream): Builder {
             readStreamLines(stream) { addPattern(it) }
@@ -88,7 +94,7 @@ class TeXHyphenator private constructor(
         }
 
         private inline fun readStreamLines(stream: InputStream, forEach: (String) -> Unit) {
-            readLines(InputStreamReader(stream, Charsets.UTF_8)).forEach(forEach)
+            readLines(InputStreamReader(stream, com.google.common.base.Charsets.UTF_8)).forEach(forEach)
         }
 
         fun addPattern(pattern: String): Builder {
@@ -109,6 +115,7 @@ class TeXHyphenator private constructor(
                 }
             }
 
+            alphabet.addAll(letters)
             patterns.put(
                     patternChars(letters, atWordBegin, atWordEnd),
                     trimLevels(letters.size(), levels)
@@ -129,6 +136,7 @@ class TeXHyphenator private constructor(
                 }
             }
 
+            alphabet.addAll(letters)
             exceptions.put(
                     patternChars(letters, true, true),
                     trimLevels(letters.size(), levels)
@@ -148,7 +156,7 @@ class TeXHyphenator private constructor(
         }
 
         fun build(): TeXHyphenator {
-            return TeXHyphenator(patterns, exceptions)
+            return TeXHyphenator(alphabet, patterns, exceptions)
         }
     }
 
@@ -223,7 +231,7 @@ class TeXHyphenator private constructor(
             var i = begin
             var j = other.begin
             while (i < end) {
-                if (str[i] != other.str[j]) {
+                if (toLowerCase(str[i]) != toLowerCase(other.str[j])) {
                     return false
                 }
                 i++
@@ -238,7 +246,7 @@ class TeXHyphenator private constructor(
         private fun computeHashCode() {
             hashCode = 0
             for (i in begin..end - 1) {
-                hashCode = 31 * hashCode + str[i].toInt()
+                hashCode = 31 * hashCode + toLowerCase(str[i]).toInt()
             }
             hashCode = 31 * hashCode + atWordBegin.hashCode()
             hashCode = 31 * hashCode + atWordEnd.hashCode()
@@ -262,8 +270,9 @@ class TeXHyphenator private constructor(
     }
 
     @Reusable
-    private class WordBreaksImpl : WordBreaker.WordBreaks {
+    private class TeXHyphens : Hyphens {
         private lateinit var levels: PatternLevels
+
         private var beginIndex: Int = 0
 
         fun reset(levels: PatternLevels, beginIndex: Int) {
@@ -271,7 +280,7 @@ class TeXHyphenator private constructor(
             this.beginIndex = beginIndex
         }
 
-        override fun canBreakBefore(index: Int): Boolean {
+        override fun hasHyphenBefore(index: Int): Boolean {
             val wordIndex = index - beginIndex
             // переносить одну букву нельзя
             val isMiddleBreak = wordIndex >= 2 && wordIndex < levels.elementsCount - 2
@@ -282,12 +291,12 @@ class TeXHyphenator private constructor(
     private object Reusables {
         val wordChars = ReusableValue({ PatternChars() })
         val wordLevels = ReusableWordLevels()
-        val wordBreaks = ReusableWordBreaks()
+        val hyphens = ReusableHyphens()
 
-        class ReusableWordBreaks {
-            private val value = ReusableValue({ WordBreaksImpl() })
+        class ReusableHyphens {
+            private val value = ReusableValue({ TeXHyphens() })
 
-            operator fun invoke(levels: PatternLevels, beginIndex: Int): WordBreaksImpl {
+            operator fun invoke(levels: PatternLevels, beginIndex: Int): TeXHyphens {
                 return value().apply {
                     reset(levels, beginIndex)
                 }

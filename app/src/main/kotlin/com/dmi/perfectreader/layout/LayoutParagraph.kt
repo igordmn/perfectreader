@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.layout
 
 import com.dmi.perfectreader.layout.config.HangingConfig
-import com.dmi.perfectreader.layout.run.Run
+import com.dmi.perfectreader.layout.config.Run
 import com.dmi.perfectreader.style.TextAlign
 import java.util.*
 

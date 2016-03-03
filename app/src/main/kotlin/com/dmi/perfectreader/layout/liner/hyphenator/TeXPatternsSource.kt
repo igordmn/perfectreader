@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.layout.wordbreak
+package com.dmi.perfectreader.layout.liner.hyphenator
 
 import android.content.Context
 import java.io.FileNotFoundException
@@ -6,9 +6,7 @@ import java.io.InputStream
 import java.lang.String.format
 import java.util.*
 
-class TeXPatternsSource(
-        private val context: Context
-) {
+class TeXPatternsSource(private val context: Context) {
     companion object {
         private val PATTERN_FORMAT = "hyphenation/hyph-%s.pat.txt"
         private val EXCEPTION_FORMAT = "hyphenation/hyph-%s.hyp.txt"

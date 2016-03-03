@@ -1,91 +1,111 @@
 package com.dmi.perfectreader.layout.liner
 
+import com.dmi.perfectreader.layout.liner.breaker.Breaker
 import com.dmi.perfectreader.layout.config.LayoutChars
 import com.dmi.perfectreader.layout.liner.Liner.Line
 import com.dmi.perfectreader.layout.liner.Liner.Token
 import com.dmi.util.cache.ReusableArrayList
-import com.google.common.base.Preconditions.checkState
+import com.google.common.base.Preconditions.checkArgument
 import java.lang.Math.max
+import java.lang.Math.min
 
-class BreakLiner(private val breakFinder: BreakFinder) : Liner {
+class BreakLiner(private val breaker: Breaker) : Liner {
+    companion object {
+        val PROCESS_CHARS_STEP = 8
+    }
+
     override fun makeLines(measuredText: Liner.MeasuredText, config: Liner.Config): List<Liner.Line> {
         return object {
             val lines = Reusables.lines()
             val text = measuredText.plainText
             val locale = measuredText.locale
-
-            var part = LinePart()             // содержит символы, которые уже точно будет содержать строка
-            var newPart = LinePart()          // содержит символы из part, а также новые добавочные. необходима для проверки, вмещается ли новая строка
+            val breaks = breaker.breakText(text, locale)
 
             fun makeLines(): List<Liner.Line> {
-                part.reset(0, 0, config.firstLineIndent, false)
+                var part = LinePart().apply { reset(0, config.firstLineIndent) }
 
-                breakFinder.findBreaks(text, locale) { br ->
-                    checkState(part.endIndex < br.index, "Wrong line end index")
-                    pushChars(br.index, br.hasHyphen)
-                    checkState(part.endIndex == br.index, "Wrong line end index")
+                iteratePotentialEnds{ end ->
+                    checkArgument(end > part.endIndex)
+
+                    part.setEnd(end, false)
+                    if (part.right > config.maxWidth) {
+                        part = fitPartByBreak(part, part.beginIndex, part.endIndex)
+                        pushLine(part)
+                        part.reset(part.endIndex, 0F)
+                    }
+
+                    return@iteratePotentialEnds part.endIndex
                 }
 
-                pushLine()
+                if (!part.isEmpty)
+                    pushLine(part)
 
                 return lines
             }
 
-            fun pushChars(endIndex: Int, hasHyphenAfter: Boolean) {
-                newPart.reset(part.beginIndex, endIndex, part.indent, hasHyphenAfter)
-
-                if (canUsePart(newPart)) {
-                    useNewPart()
-                } else {
-                    pushLine()
-                    pushCharsAtBeginOfLine(endIndex, hasHyphenAfter)
+            fun iteratePotentialEnds(action: (Int) -> Int) {
+                if (text.length > 0) {
+                    var end = min(PROCESS_CHARS_STEP, text.length)
+                    while (end < text.length)
+                        end = action(end) + PROCESS_CHARS_STEP
+                    end = action(text.length) + 1
+                    while (end <= text.length)
+                        end = action(end) + 1
                 }
             }
 
-            fun pushCharsAtBeginOfLine(endIndex: Int, hasHyphenAfter: Boolean) {
-                newPart.reset(part.beginIndex, endIndex, part.indent, hasHyphenAfter)
-
-                if (canUsePart(newPart)) {
-                    useNewPart()
-                } else {
-                    pushCharByChar(endIndex, hasHyphenAfter)
-                }
-            }
-
-            fun pushCharByChar(endIndex: Int, hasHyphenAfter: Boolean) {
-                for (end in part.endIndex + 1..endIndex) {
-                    val charHasHyphenAfter = end == endIndex && hasHyphenAfter
-                    newPart.reset(part.beginIndex, end, part.indent, charHasHyphenAfter)
-
-                    if (!canUsePart(newPart)) {
-                        pushLine()
-                        newPart.reset(part.beginIndex, end, part.indent, charHasHyphenAfter)
+            fun fitPartByBreak(part: LinePart, beginIndex: Int, endIndex: Int): LinePart {
+                var i = endIndex - 1
+                while (i > beginIndex) {
+                    if (breaks.hasBreakBefore(i)) {
+                        part.setEnd(i, breaks.hasHyphenBefore(i))
+                        if (part.right <= config.maxWidth)
+                            return part
                     }
-
-                    useNewPart()
+                    i--
                 }
+
+                return fitPartCharByChar(part, beginIndex, endIndex)
             }
 
-            fun canUsePart(newPart: LinePart) = newPart.right <= config.maxWidth || newPart.right == part.right
+            fun fitPartCharByChar(part: LinePart, beginIndex: Int, endIndex: Int): LinePart {
+                var end = endIndex - 1
+                while (end > beginIndex) {
+                    part.setEnd(end, false)
+                    if (part.right <= config.maxWidth)
+                        return part
+                    end--
+                }
 
-            fun useNewPart() {
-                val temp = part
-                part = newPart
-                newPart = temp
+                return fitMinimalChars(part, beginIndex)
             }
 
-            fun pushLine() {
-                if (!part.isEmpty) {
-                    lines.add(
-                            Line().apply {
-                                this.left = part.left
-                                this.width = part.width
-                                this.hasHyphenAfter = part.hasHyphenAfter
-                                addTokensInto(tokens, part.beginIndex, part.endIndex)
-                            }
-                    )
-                    part.reset(part.endIndex, part.endIndex, 0F, false)
+            fun fitMinimalChars(part: LinePart, beginIndex: Int): LinePart {
+                part.setEnd(beginIndex + 1, false)
+                val maxWidth = part.right
+
+                var end = beginIndex + 2
+                while (end <= text.length) {
+                    part.setEnd(end, false)
+                    if (part.right > maxWidth)
+                        break
+                    end++
                 }
+
+                part.setEnd(end - 1, false)
+                return part
+            }
+
+            fun pushLine(part: LinePart) {
+                checkArgument(part.endIndex > part.beginIndex)
+                lines.add(
+                        Line().apply {
+                            this.left = part.left
+                            this.width = part.width
+                            this.hasHyphenAfter = part.hasHyphenAfter
+                            addTokensInto(tokens, part.beginIndex, part.endIndex)
+                        }
+                )
             }
 
             fun addTokensInto(tokens: MutableList<Liner.Token>, beginIndex: Int, endIndex: Int) {
@@ -123,33 +143,35 @@ class BreakLiner(private val breakFinder: BreakFinder) : Liner {
                 val isEmpty: Boolean
                     get() = endIndex == beginIndex
 
-                fun reset(beginIndex: Int, endIndex: Int, indent: Float, hasHyphenAfter: Boolean) {
-                    this.beginIndex = beginIndex
-                    this.endIndex = endIndex
+                fun reset(initialIndex: Int, indent: Float) {
+                    this.beginIndex = initialIndex
+                    this.endIndex = initialIndex
                     this.indent = indent
+                    this.hasHyphenAfter = false
+                    this.left = indent
+                    this.width = 0F
+                }
+
+                fun setEnd(endIndex: Int, hasHyphenAfter: Boolean) {
+                    if (isEmpty) {
+                        val leftHang = config.leftHangFactor(text[beginIndex]) * measuredText.widthOf(beginIndex)
+                        left = indent - leftHang
+                    }
+
+                    this.endIndex = endIndex
                     this.hasHyphenAfter = hasHyphenAfter
 
-                    if (endIndex > beginIndex) {
-                        val trailingSpacesBegin = trailingSpacesBegin(beginIndex, endIndex)
-                        val symbolsWidth = measuredText.widthOf(beginIndex, trailingSpacesBegin)
-                        val hyphenWidth = if (hasHyphenAfter) measuredText.hyphenWidthAfter(endIndex - 1) else 0F
-
-                        val leftHang = config.leftHangFactor(text[beginIndex]) * measuredText.widthOf(beginIndex)
-                        val rightHang = rightHang(beginIndex, trailingSpacesBegin, hyphenWidth, hasHyphenAfter)
-
-                        left = indent - leftHang
-                        width = max(0F, symbolsWidth + hyphenWidth - rightHang)
-                    } else {
-                        left = 0F
-                        width = 0F
-                    }
+                    val trailingSpacesBegin = trailingSpacesBegin(beginIndex, endIndex)
+                    val symbolsWidth = measuredText.widthOf(beginIndex, trailingSpacesBegin)
+                    val hyphenWidth = if (hasHyphenAfter) measuredText.hyphenWidthAfter(endIndex - 1) else 0F
+                    val rightHang = rightHang(beginIndex, trailingSpacesBegin, hyphenWidth, hasHyphenAfter)
+                    width = max(0F, symbolsWidth + hyphenWidth - rightHang)
                 }
 
                 private fun trailingSpacesBegin(beginIndex: Int, endIndex: Int): Int {
                     var i = endIndex - 1
                     while (i >= beginIndex) {
-                        val ch = text[i]
-                        if (!isSpace(ch))
+                        if (!isSpace(text[i]))
                             return i + 1
                         i--
                     }

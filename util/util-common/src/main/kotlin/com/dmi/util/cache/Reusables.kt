@@ -98,3 +98,17 @@ class ReusableBooleanArray(capacity: Int = 16) {
         return value
     }
 }
+
+class ReusableByteArray(capacity: Int = 16) {
+    private val value = ReusableValue({ AtomicReference<ByteArray>(ByteArray(capacity)) })
+
+    operator fun invoke(capacity: Int): ByteArray {
+        val ref = value()
+        var value = ref.get()
+        if (value.size < capacity) {
+            value = ByteArray(capacity + capacity shr 1)
+            ref.set(value)
+        }
+        return value
+    }
+}
