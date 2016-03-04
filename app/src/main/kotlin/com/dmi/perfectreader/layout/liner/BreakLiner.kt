@@ -48,9 +48,10 @@ class BreakLiner(private val breaker: Breaker) : Liner {
                     var end = min(PROCESS_CHARS_STEP, text.length)
                     while (end < text.length)
                         end = action(end) + PROCESS_CHARS_STEP
-                    end = action(text.length) + 1
+
+                    end = text.length
                     while (end <= text.length)
-                        end = action(end) + 1
+                        end = action(text.length) + 1
                 }
             }
 
@@ -82,12 +83,12 @@ class BreakLiner(private val breaker: Breaker) : Liner {
 
             fun fitMinimalChars(part: LinePart, beginIndex: Int): LinePart {
                 part.setEnd(beginIndex + 1, false)
-                val maxWidth = part.right
+                val minimalWidth = part.right
 
                 var end = beginIndex + 2
                 while (end <= text.length) {
                     part.setEnd(end, false)
-                    if (part.right > maxWidth)
+                    if (part.right > minimalWidth)
                         break
                     end++
                 }
