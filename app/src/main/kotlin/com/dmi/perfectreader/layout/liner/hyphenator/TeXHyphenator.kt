@@ -295,22 +295,14 @@ class TeXHyphenator private constructor(
 
         class ReusableHyphens {
             private val value = ReusableValue({ TeXHyphens() })
-
-            operator fun invoke(levels: PatternLevels, beginIndex: Int): TeXHyphens {
-                return value().apply {
-                    reset(levels, beginIndex)
-                }
-            }
+            operator fun invoke(levels: PatternLevels, beginIndex: Int) = value().apply { reset(levels, beginIndex) }
         }
 
         class ReusableWordLevels {
             private val value = ReusableValue({ PatternLevels() })
-
-            operator fun invoke(wordLength: Int): PatternLevels {
-                return value().apply {
-                    clear()
-                    resize(wordLength + 1)
-                }
+            operator fun invoke(wordLength: Int) = value().apply {
+                clear()
+                resize(wordLength + 1)
             }
         }
     }
