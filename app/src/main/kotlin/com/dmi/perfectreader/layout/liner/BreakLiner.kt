@@ -1,9 +1,9 @@
 package com.dmi.perfectreader.layout.liner
 
-import com.dmi.perfectreader.layout.liner.breaker.Breaker
 import com.dmi.perfectreader.layout.config.LayoutChars
 import com.dmi.perfectreader.layout.liner.Liner.Line
 import com.dmi.perfectreader.layout.liner.Liner.Token
+import com.dmi.perfectreader.layout.liner.breaker.Breaker
 import com.dmi.util.cache.ReusableArrayList
 import com.google.common.base.Preconditions.checkArgument
 import java.lang.Math.max
@@ -11,7 +11,7 @@ import java.lang.Math.min
 
 class BreakLiner(private val breaker: Breaker) : Liner {
     companion object {
-        val PROCESS_CHARS_STEP = 8
+        val PROCESS_CHARS_STEP = 4
     }
 
     override fun makeLines(measuredText: Liner.MeasuredText, config: Liner.Config): List<Liner.Line> {
