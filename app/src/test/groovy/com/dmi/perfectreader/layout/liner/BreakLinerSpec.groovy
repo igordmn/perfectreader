@@ -146,6 +146,47 @@ class BreakLinerSpec extends Specification {
         checkSpaces(lines, text)
     }
 
+    def "break fully non-breaking text"() {
+        given:
+        def liner = new BreakLiner(breaker())
+        def text = "longw" +
+                   "ordlo" +
+                   "ngwor" +
+                   "dsolo" +
+                   "nglon" +
+                   "gword"
+
+        when:
+        def lines = makeLines(liner, text, config(50))
+
+        then:
+        tokenTextsOf(lines[0], text) == ["longw"]
+        tokenTextsOf(lines[1], text) == ["ordlo"]
+        tokenTextsOf(lines[2], text) == ["ngwor"]
+        tokenTextsOf(lines[3], text) == ["dsolo"]
+        tokenTextsOf(lines[4], text) == ["nglon"]
+        tokenTextsOf(lines[5], text) == ["gword"]
+
+        widthsOf(lines) == [
+                5 * SYMBOL_WIDTH,
+                5 * SYMBOL_WIDTH,
+                5 * SYMBOL_WIDTH,
+                5 * SYMBOL_WIDTH,
+                5 * SYMBOL_WIDTH,
+                5 * SYMBOL_WIDTH,
+        ]
+        hasHyphensAfterOf(lines) == [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+        ]
+
+        checkSpaces(lines, text)
+    }
+
     def "don't break at non-breaking space but consider it as space"() {
         given:
         def liner = new BreakLiner(breaker())
