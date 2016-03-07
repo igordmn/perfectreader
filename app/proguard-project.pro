@@ -14,8 +14,10 @@
 
 -dontwarn java.lang.invoke.**
 -dontwarn javax.annotation.**
--dontwarn org.springframework.**
 -dontwarn sun.misc.Unsafe
+-dontwarn java.lang.ClassValue
+-dontwarn com.google.j2objc.annotations.Weak
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
 
 # SimpleFragment

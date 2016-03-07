@@ -1,4 +1,0 @@
-configurations.create("default")
-artifacts.add("default", file('readiumSdk.aar'))
-
-task testClasses << {}

@@ -1,8 +1,26 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'groovyx.grooid.groovy-android'
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
+apply plugin: "groovyx.grooid.groovy-android"
+
+android {
+    compileSdkVersion projectVersions.compileSdk
+    buildToolsVersion projectVersions.buildTools
+
+    defaultConfig {
+        minSdkVersion projectVersions.minSdk
+        targetSdkVersion projectVersions.targetSdk
+    }
+
+    sourceSets {
+        main.java.srcDirs += "src/main/kotlin"
+        test.java.srcDirs += "src/main/kotlin"
+    }
+}
 
 dependencies {
-    compile project(':util:util-common')
+    compile project(":util:util-common")
+    compile projectDependencies.common
+    compile projectDependencies.android
+    testCompile projectDependencies.testCommon
 }

@@ -1,27 +1,31 @@
-import AndroidUtils
-import com.android.build.OutputFile
-
-apply plugin: 'android-sdk-manager'
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'groovyx.grooid.groovy-android'
-
-def buildCounter = Integer.getInteger('build.counter', 0)
+apply plugin: "android-sdk-manager"
+apply plugin: "android-sdk-manager"
+apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
+apply plugin: "groovyx.grooid.groovy-android"
 
 android {
+    compileSdkVersion projectVersions.compileSdk
+    buildToolsVersion projectVersions.buildTools
+
     defaultConfig {
-        applicationId 'com.dmi.perfectreader'
-        versionName rootProject.version.toString()
+        applicationId "com.dmi.perfectreader"
+        versionName Utils.versionNameFromGit()
+        versionCode Utils.versionCodeFromGit()
+        setProperty("archivesBaseName", "$rootProject.name-$versionName-rev$versionCode")
+
+        minSdkVersion projectVersions.minSdk
+        targetSdkVersion projectVersions.targetSdk
     }
 
-    if (config['sign.enabled']) {
+    if (config["sign.enabled"]) {
         signingConfigs {
             main {
-                storeFile new File(rootProject.projectDir, '.sign/' + config['sign.store.file'])
-                storePassword config['sign.store.password']
-                keyAlias config['sign.key.alias']
-                keyPassword config['sign.key.password']
+                storeFile new File(rootProject.projectDir, ".sign/" + config["sign.store.file"])
+                storePassword config["sign.store.password"]
+                keyAlias config["sign.key.alias"]
+                keyPassword config["sign.key.password"]
             }
         }
     }
@@ -31,33 +35,30 @@ android {
             debuggable true
             jniDebuggable true
             minifyEnabled true
-            signingConfig config['sign.enabled'] ? signingConfigs.main : null
-            proguardFiles 'proguard-android.pro', 'proguard-rules.pro'
+            signingConfig config["sign.enabled"] ? signingConfigs.main : null
+            proguardFiles "proguard-android.pro", "proguard-project.pro"
         }
         release {
             minifyEnabled true
             shrinkResources true
-            signingConfig config['sign.enabled'] ? signingConfigs.main : null
-            proguardFiles 'proguard-android-optimize.pro', 'proguard-rules.pro'
+            signingConfig config["sign.enabled"] ? signingConfigs.main : null
+            proguardFiles "proguard-android-optimize.pro", "proguard-project.pro"
         }
     }
 
-    // Each APK must have a different version code
-    // (see "Rules for multiple APKs" at http://developer.android.com/intl/ru/google/play/publishing/multiple-apks.html)
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            def buildNumber = buildCounter
-            def abi = output.getFilter(OutputFile.ABI)
-            output.versionCodeOverride = AndroidUtils.computeVersionCode(buildNumber, abi)
-        }
+    sourceSets {
+        main.java.srcDirs += "src/main/kotlin"
+        test.java.srcDirs += "src/main/kotlin"
+    }
+
+    aaptOptions {
+        ignoreAssetsPattern "!.readme"
     }
 }
 
 dependencies {
-    compile project(':lib:readiumSdk')
-    compile project(':util:util-android')
-}
-
-ext {
-    archivesBaseName = rootProject.name + '-' + rootProject.version + '-b' + buildCounter
+    compile project(":util:util-android")
+    compile projectDependencies.common
+    compile projectDependencies.android
+    testCompile projectDependencies.testCommon
 }
