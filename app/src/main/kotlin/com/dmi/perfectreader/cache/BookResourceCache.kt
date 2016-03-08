@@ -5,7 +5,7 @@ import com.dmi.perfectreader.BuildConfig.VERSION_CODE
 import com.dmi.util.availableCacheDir
 import com.dmi.util.cache.DataCache
 import com.dmi.util.cache.DiskDataCache
-import timber.log.Timber
+import com.dmi.util.log.Log
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -30,7 +30,7 @@ class BookResourceCache : DataCache {
                 diskDataCache!!.close()
                 diskDataCache = null
             } catch (e: IOException) {
-                Timber.e(e, "Book resource cache closing error")
+                Log.e(e, "Book resource cache closing error")
             }
 
         }

@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.layout.liner.hyphenator
 
-import timber.log.Timber
+import com.dmi.util.log.Log
 import java.io.IOException
 import java.util.*
 
@@ -38,7 +38,7 @@ class TeXHyphenatorResolver(private val patternsSource: TeXPatternsSource) : Hyp
                 builder.addExceptionsFrom(it)
             }
         } catch (e: IOException) {
-            Timber.i(e, "Cannot load hyphenation patterns for lang: %s", locale)
+            Log.i(e, "Cannot load hyphenation patterns for lang: $locale")
         }
 
         return builder.build()

@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import com.dmi.util.TypeConverters
 import com.dmi.util.TypeConverters.stringToType
 import com.dmi.util.TypeConverters.typeToString
-import timber.log.Timber
+import com.dmi.util.log.Log
 
 abstract class AbstractSettings {
     private lateinit  var sharedPreferences: SharedPreferences
@@ -20,7 +20,7 @@ abstract class AbstractSettings {
         try {
             return setting.parseString(valueString)
         } catch (e: TypeConverters.ParseException) {
-            Timber.w(e, "Parse saved value error")
+            Log.w(e, "Parse saved value error")
             return setting.defaultValue()
         }
 

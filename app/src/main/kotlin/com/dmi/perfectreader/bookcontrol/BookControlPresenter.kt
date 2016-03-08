@@ -5,7 +5,7 @@ import com.dmi.perfectreader.bookreader.BookReaderPresenter
 import com.dmi.perfectreader.setting.AppSettings
 import com.dmi.util.Units.dipToPx
 import com.dmi.util.base.BasePresenter
-import timber.log.Timber
+import com.dmi.util.log.Log
 import java.lang.Math.abs
 import java.lang.Math.sqrt
 import javax.inject.Inject
@@ -99,7 +99,7 @@ class BookControlPresenter : BasePresenter() {
             Action.EXIT -> bookReaderPresenter.exit()
             Action.GO_NEXT_PAGE -> bookPresenter.goNextPage()
             Action.GO_PREVIEW_PAGE -> bookPresenter.goPreviewPage()
-            Action.SELECT_TEXT -> Timber.w("select text not implemented")
+            Action.SELECT_TEXT -> Log.w("select text not implemented")
             else -> throw UnsupportedOperationException()
         }
     }

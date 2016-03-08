@@ -10,9 +10,12 @@ import com.dmi.perfectreader.setting.AppSettings
 import com.dmi.perfectreader.userdata.UserData
 import com.dmi.util.Units
 import com.dmi.util.base.BaseApplication
+import com.dmi.util.log.DebugLog
+import com.dmi.util.log.Log
+import com.dmi.util.log.ReleaseLog
+import com.dmi.util.log.TimberLog
 import dagger.ObjectGraph
 import dagger.Provides
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -33,9 +36,13 @@ class App : BaseApplication() {
 
     private fun initLogging() {
         if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
+            Log.init(
+                    DebugLog(TimberLog())
+            )
         } else {
-            Timber.plant(TimberReleaseTree())
+            Log.init(
+                    ReleaseLog(TimberLog())
+            )
         }
     }
 

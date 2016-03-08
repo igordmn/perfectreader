@@ -10,12 +10,12 @@ import com.dmi.perfectreader.bookreader.BookReaderPresenter
 import com.dmi.perfectreader.setting.AppSettings
 import com.dmi.util.base.BaseActivity
 import com.dmi.util.layout.HasLayout
+import com.dmi.util.log.Log
 import com.dmi.util.setting.AbstractSettings
 import com.dmi.util.setting.AbstractSettingsApplier
 import com.dmi.util.setting.SettingListener
 import dagger.ObjectGraph
 import dagger.Provides
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -51,7 +51,7 @@ class BookControlFragmentTestActivity : BaseActivity() {
         private fun <T> listener(settingName: String): SettingListener<T> {
             return object: SettingListener<T> {
                 override fun onValueSet(value: T) {
-                    Timber.d("DDD $settingName=$value")
+                    Log.d("DDD $settingName=$value")
                 }
             }
         }
@@ -69,11 +69,11 @@ class BookControlFragmentTestActivity : BaseActivity() {
             fun bookReaderPresenter(): BookReaderPresenter {
                 return object : BookReaderPresenter() {
                     override fun toggleMenu() {
-                        Timber.d("DDD toggleMenu")
+                        Log.d("DDD toggleMenu")
                     }
 
                     override fun exit() {
-                        Timber.d("DDD exit")
+                        Log.d("DDD exit")
                     }
                 }
             }
@@ -87,20 +87,20 @@ class BookControlFragmentTestActivity : BaseActivity() {
                     }
 
                     override fun tap(x: Float, y: Float, tapDiameter: Float, tapHandler: BookPresenter.TapHandler) {
-                        Timber.d("DDD tap (%.2f, %.2f, %.2f)", x, y, tapDiameter)
+                        Log.d("DDD tap (%.2f, %.2f, %.2f)".format(x, y, tapDiameter))
                         tapHandler.handleTap()
                     }
 
                     override fun goPercent(percent: Double) {
-                        Timber.d("DDD goPercent " + String.format("(%.2f)", percent))
+                        Log.d("DDD goPercent (%.2f)".format(percent))
                     }
 
                     override fun goNextPage() {
-                        Timber.d("DDD goNextPage")
+                        Log.d("DDD goNextPage")
                     }
 
                     override fun goPreviewPage() {
-                        Timber.d("DDD goPreviewPage")
+                        Log.d("DDD goPreviewPage")
                     }
                 }
             }

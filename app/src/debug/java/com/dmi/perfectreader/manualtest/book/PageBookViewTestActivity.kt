@@ -8,7 +8,7 @@ import com.dmi.perfectreader.book.animation.SlidePageAnimation
 import com.dmi.perfectreader.book.pagebook.PageBookRenderer
 import com.dmi.perfectreader.book.pagebook.PageBookView
 import com.dmi.util.base.BaseActivity
-import timber.log.Timber
+import com.dmi.util.log.Log
 import java.util.concurrent.Executors
 
 class PageBookViewTestActivity : BaseActivity() {
@@ -115,7 +115,7 @@ class PageBookViewTestActivity : BaseActivity() {
                     loadCount--
                 }
             } else {
-                Timber.w("DDD cannot go next page")
+                Log.w("DDD cannot go next page")
             }
         }
 
@@ -128,7 +128,7 @@ class PageBookViewTestActivity : BaseActivity() {
                     loadCount--
                 }
             } else {
-                Timber.w("DDD cannot go preview page")
+                Log.w("DDD cannot go preview page")
             }
         }
 

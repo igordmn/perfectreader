@@ -8,8 +8,8 @@ import com.dmi.perfectreader.bookstorage.EPUBBookStorage
 import com.dmi.perfectreader.setting.AppSettings
 import com.dmi.perfectreader.userdata.UserData
 import com.dmi.util.base.BasePresenter
+import com.dmi.util.log.Log
 import com.dmi.util.setting.AbstractSettingsApplier
-import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -75,7 +75,7 @@ open class BookPresenter : BasePresenter() {
             bookStorage.load(bookFile)
             postIOTask { this.afterBookStorageLoad() }
         } catch (e: IOException) {
-            Timber.e(e, "Load book error")
+            Log.e(e, "Load book error")
             view.showBookLoadingError()
         }
 
