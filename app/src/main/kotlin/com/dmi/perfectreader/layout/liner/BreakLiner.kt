@@ -5,7 +5,6 @@ import com.dmi.perfectreader.layout.liner.Liner.Line
 import com.dmi.perfectreader.layout.liner.Liner.Token
 import com.dmi.perfectreader.layout.liner.breaker.Breaker
 import com.dmi.util.cache.ReusableArrayList
-import com.google.common.base.Preconditions.checkArgument
 import java.lang.Math.max
 import java.lang.Math.min
 
@@ -25,7 +24,7 @@ class BreakLiner(private val breaker: Breaker) : Liner {
                 var part = LinePart().apply { reset(0, config.firstLineIndent) }
 
                 iteratePotentialEnds{ end ->
-                    checkArgument(end > part.endIndex)
+                    require(end > part.endIndex)
 
                     part.setEnd(end, false)
                     if (part.right > config.maxWidth) {
@@ -98,7 +97,7 @@ class BreakLiner(private val breaker: Breaker) : Liner {
             }
 
             fun pushLine(part: LinePart) {
-                checkArgument(part.endIndex > part.beginIndex)
+                require(part.endIndex > part.beginIndex)
                 lines.add(
                         Line().apply {
                             this.left = part.left

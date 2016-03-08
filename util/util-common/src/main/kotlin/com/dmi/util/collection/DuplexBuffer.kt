@@ -1,7 +1,6 @@
 package com.dmi.util.collection
 
 import com.dmi.util.lang.modPositive
-import com.google.common.base.Preconditions.checkArgument
 import java.lang.Math.abs
 
 class DuplexBuffer<T>(val maxRelativeIndex: Int) {
@@ -10,12 +9,12 @@ class DuplexBuffer<T>(val maxRelativeIndex: Int) {
     private var shift = 0
 
     operator fun set(relativeIndex: Int, item: T?) {
-        checkArgument(abs(relativeIndex) <= maxRelativeIndex)
+        require(abs(relativeIndex) <= maxRelativeIndex)
         items[arrayIndex(relativeIndex)] = item
     }
 
     operator fun get(relativeIndex: Int): T? {
-        checkArgument(abs(relativeIndex) <= maxRelativeIndex)
+        require(abs(relativeIndex) <= maxRelativeIndex)
         return items[arrayIndex(relativeIndex)]
     }
 

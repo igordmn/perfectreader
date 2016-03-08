@@ -10,7 +10,6 @@ import com.dmi.perfectreader.bookcontrol.BookControlFragment
 import com.dmi.perfectreader.menu.MenuFragment
 import com.dmi.util.base.BaseFragment
 import com.dmi.util.layout.HasLayout
-import com.google.common.base.Preconditions.checkState
 import dagger.ObjectGraph
 import dagger.Provides
 import me.tatarka.simplefragment.SimpleFragment
@@ -40,7 +39,7 @@ class BookReaderFragment : BaseFragment() {
     }
 
     fun openBook(bookFile: File) {
-        checkState(findChild<SimpleFragment?>(R.id.bookContainer) == null)
+        check(findChild<SimpleFragment?>(R.id.bookContainer) == null)
         addChild(BookFragment.intent(bookFile), R.id.bookContainer)
         addChild(BookControlFragment::class.java, R.id.bookControlContainer)
     }

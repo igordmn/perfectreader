@@ -2,7 +2,6 @@ package com.dmi.perfectreader.layout.liner.breaker
 
 import com.dmi.perfectreader.layout.liner.hyphenator.HyphenatorResolver
 import com.dmi.util.cache.ReusableByteArray
-import com.google.common.base.Preconditions.checkArgument
 import java.util.*
 
 class WordBreaker(private val hyphenatorResolver: HyphenatorResolver) : Breaker {
@@ -28,7 +27,7 @@ class WordBreaker(private val hyphenatorResolver: HyphenatorResolver) : Breaker 
                     if (isWord) {
                         val begin = findBegin(index) { alphabetContains(it) }
                         val end = findEnd(index) { alphabetContains(it) }
-                        checkArgument(end > begin)
+                        check(end > begin)
                         val hyphens = hyphenator.hyphenateWord(text, begin, end)
                         for (i in begin..end - 1) {
                             hasHyphenBefore[i] = if (hyphens.hasHyphenBefore(i)) 1 else 0
@@ -36,7 +35,7 @@ class WordBreaker(private val hyphenatorResolver: HyphenatorResolver) : Breaker 
                     } else {
                         val begin = findBegin(index) { !alphabetContains(it) }
                         val end = findEnd(index) { !alphabetContains(it) }
-                        checkArgument(end > begin)
+                        check(end > begin)
                         for (i in begin..end - 1) {
                             hasHyphenBefore[i] = 0
                         }

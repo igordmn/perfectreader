@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.bookstorage
 
 import com.dmi.perfectreader.cache.BookResourceCache
-import com.google.common.base.Preconditions.checkState
 import com.google.common.io.ByteStreams
 import org.readium.sdk.android.EPub3
 import java.io.File
@@ -31,7 +30,7 @@ class EPUBBookStorage : BookStorage {
     }
 
     override fun readURL(url: String): InputStream {
-        checkState(loaded)
+        check(loaded)
         if (!url.startsWith(URL_PREFIX)) {
             throw SecurityException()
         }
