@@ -23,20 +23,16 @@ class CompositeBreakerSpec extends Specification {
         hyphenIndicesOf(breaks, text) == [2, 7]
     }
 
-    Breaker breaker(List<Integer> breakIndices, List<Integer> hyphenIndeces) {
+    Breaker breaker(List<Integer> breakIndices, List<Integer> hyphenIndices) {
         return new Breaker() {
             @Override
             Breaks breakText(@NotNull String text, @NotNull Locale locale) {
                 return new Breaks() {
                     @Override
-                    boolean hasBreakBefore(int index) {
-                        return breakIndices.contains(index)
-                    }
+                    boolean hasBreakBefore(int index) { return breakIndices.contains(index) }
 
                     @Override
-                    boolean hasHyphenBefore(int index) {
-                        return hyphenIndeces.contains(index)
-                    }
+                    boolean hasHyphenBefore(int index) { return hyphenIndices.contains(index) }
                 }
             }
         }

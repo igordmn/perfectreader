@@ -25,14 +25,10 @@ class ParagraphLayouterSpec extends Specification {
         )
         def hangingConfig = new HangingConfig() {
             @Override
-            float leftHangFactor(char ch) {
-                return 0.6
-            }
+            float leftHangFactor(char ch) { return 0.6 }
 
             @Override
-            float rightHangFactor(char ch) {
-                return 0.5
-            }
+            float rightHangFactor(char ch) { return 0.5 }
         }
 
         when:
