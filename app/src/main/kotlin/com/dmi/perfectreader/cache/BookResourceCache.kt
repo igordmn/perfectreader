@@ -50,7 +50,7 @@ class BookResourceCache : DataCache {
     }
 
     private val cacheDir: File
-        get() = File(context.availableCacheDir, CACHE_DIR)
+        get() = File(context.availableCacheDir(), CACHE_DIR)
 
     companion object {
         private val CACHE_DIR = "bookResource"

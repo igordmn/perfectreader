@@ -4,11 +4,10 @@ import android.content.Context
 import android.os.Environment.*
 import java.io.File
 
-val Context.availableCacheDir: File
-    get() {
-        if (MEDIA_MOUNTED == getExternalStorageState() || !isExternalStorageRemovable()) {
-            return externalCacheDir
-        } else {
-            return cacheDir
-        }
+fun Context.availableCacheDir(): File {
+    if (MEDIA_MOUNTED == getExternalStorageState() || !isExternalStorageRemovable()) {
+        return externalCacheDir
+    } else {
+        return cacheDir
     }
+}
