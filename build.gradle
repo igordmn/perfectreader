@@ -1,7 +1,6 @@
 buildscript {
     ext {
-        config = Utils.loadProperties(".sign/sign.properties", "workspace.properties");
-        buildNumber = Integer.getInteger("build.counter", 0)
+        config = Utils.loadProperties(".sign/sign.properties", "workspace.properties")
 
         projectVersions = [
                 project: "0.7",
@@ -54,7 +53,6 @@ buildscript {
                 ],
 
                 testCommon: [
-                        "org.jetbrains.kotlin:kotlin-test:$projectVersions.kotlin",
                         "org.spockframework:spock-core:1.0-groovy-2.4",
                         "org.codehaus.groovy:groovy-all:2.4.3",
                         "cglib:cglib-nodep:3.1",
