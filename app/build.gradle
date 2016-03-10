@@ -3,7 +3,6 @@ apply plugin: "android-sdk-manager"
 apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
 apply plugin: "kotlin-android-extensions"
-apply plugin: "groovyx.grooid.groovy-android"
 
 android {
     compileSdkVersion projectVersions.compileSdk
@@ -58,7 +57,5 @@ android {
 
 dependencies {
     compile project(":util:util-android")
-    compile projectDependencies.common
-    compile projectDependencies.android
-    testCompile projectDependencies.testCommon
+    testCompile project(":util:util-testCommon")
 }

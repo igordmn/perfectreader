@@ -7,5 +7,5 @@ sourceSets {
 
 dependencies {
     compile projectDependencies.common
-    testCompile project(":util:util-testCommon")
+    compile projectDependencies.testCommon
 }

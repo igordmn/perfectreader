@@ -9,7 +9,7 @@ interface TextMetrics {
     fun verticalMetrics(style: FontStyle): VerticalMetrics
 
     @Reusable
-    open class VerticalMetrics {
+    class VerticalMetrics {
         var ascent = 0F
         var descent = 0F
         var leading = 0F
