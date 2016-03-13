@@ -7,9 +7,7 @@ abstract class RenderObject(
         val height: Float,
         val children: List<RenderChild>
 ) {
-    fun child(index: Int): RenderChild {
-        return children[index]
-    }
+    fun child(index: Int) = children[index]
 
     /**
      * Необходимо для механизма разделения на страницы.
@@ -21,8 +19,7 @@ abstract class RenderObject(
     /**
      * Нарисовать только содержимое данного объекта, без рисования дочерних объектов
      */
-    open fun paintItself(canvas: Canvas) {
-    }
+    open fun paintItself(canvas: Canvas) = Unit
 
     fun paintRecursive(canvas: Canvas) {
         paintItself(canvas)

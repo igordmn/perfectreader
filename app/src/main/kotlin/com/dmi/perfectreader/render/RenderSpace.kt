@@ -12,6 +12,5 @@ class RenderSpace(width: Float,
                   style: FontStyle,
                   val scaleX: Float
 ) : RenderText(width, height, text, locale, baseline, style) {
-    override fun paintItself(canvas: Canvas) {
-    }
+    override fun paintItself(canvas: Canvas) = Unit
 }

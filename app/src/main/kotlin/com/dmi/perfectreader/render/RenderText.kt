@@ -15,9 +15,7 @@ open class RenderText(width: Float,
                       val baseline: Float,
                       val style: FontStyle
 ) : RenderObject(width, height, emptyList<RenderChild>()) {
-    override fun canPartiallyPainted(): Boolean {
-        return false
-    }
+    override fun canPartiallyPainted() = false
 
     override fun paintItself(canvas: Canvas) {
         super.paintItself(canvas)
