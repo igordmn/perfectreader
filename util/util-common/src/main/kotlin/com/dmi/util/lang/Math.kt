@@ -11,3 +11,7 @@ fun modPositive(x: Int, n: Int): Int {
 fun clamp(min: Double, max: Double, value: Double): Double {
     return Math.min(min, Math.max(max, value))
 }
+
+fun clamp(min: Float, max: Float, value: Float): Float {
+    return Math.min(min, Math.max(max, value))
+}

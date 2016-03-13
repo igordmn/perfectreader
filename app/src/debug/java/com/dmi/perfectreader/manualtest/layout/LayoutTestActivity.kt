@@ -7,17 +7,18 @@ import android.view.View
 import com.dmi.perfectreader.app.AppThreads.postUITask
 import com.dmi.perfectreader.layout.LayoutParagraph
 import com.dmi.perfectreader.layout.ObjectLayouter
+import com.dmi.perfectreader.layout.config.LayoutContext
+import com.dmi.perfectreader.layout.config.LayoutSize
+import com.dmi.perfectreader.layout.liner.BreakLiner
 import com.dmi.perfectreader.layout.liner.breaker.CompositeBreaker
 import com.dmi.perfectreader.layout.liner.breaker.LineBreaker
 import com.dmi.perfectreader.layout.liner.breaker.ObjectBreaker
 import com.dmi.perfectreader.layout.liner.breaker.WordBreaker
-import com.dmi.perfectreader.layout.paragraph.DefaultHangingConfig
-import com.dmi.perfectreader.layout.config.LayoutArea
-import com.dmi.perfectreader.layout.paragraph.PaintTextMetrics
-import com.dmi.perfectreader.layout.paragraph.Run
 import com.dmi.perfectreader.layout.liner.hyphenator.TeXHyphenatorResolver
 import com.dmi.perfectreader.layout.liner.hyphenator.TeXPatternsSource
-import com.dmi.perfectreader.layout.liner.BreakLiner
+import com.dmi.perfectreader.layout.paragraph.DefaultHangingConfig
+import com.dmi.perfectreader.layout.paragraph.PaintTextMetrics
+import com.dmi.perfectreader.layout.paragraph.Run
 import com.dmi.perfectreader.render.RenderObject
 import com.dmi.perfectreader.style.FontStyle
 import com.dmi.perfectreader.style.TextAlign
@@ -76,7 +77,19 @@ class LayoutTestActivity : BaseActivity() {
 
         val fontRenderParams = FontStyle.RenderParams(true, true, true, false)
         val hangingConfig = DefaultHangingConfig()
-        val paragraph = LayoutParagraph(true, Locale("ru", "RU"), listOf(Run.Text(text, FontStyle(12f, Color.BLACK, fontRenderParams))), 0f, TextAlign.JUSTIFY, hangingConfig)
+        val paragraph = LayoutParagraph(
+                LayoutSize(
+                        LayoutSize.LimitedValue(
+                                LayoutSize.Value.Absolute(700F), LayoutSize.Limit.None(), LayoutSize.Limit.None()
+                        ),
+                        LayoutSize.LimitedValue(
+                                LayoutSize.Value.WrapContent(), LayoutSize.Limit.None(), LayoutSize.Limit.None()
+                        )
+                ),
+                Locale("ru", "RU"),
+                listOf(Run.Text(text, FontStyle(12f, Color.BLACK, fontRenderParams))),
+                0f, TextAlign.JUSTIFY, hangingConfig
+        )
 
 
         val par = AtomicReference<RenderObject>()
@@ -127,7 +140,7 @@ class LayoutTestActivity : BaseActivity() {
 
             private fun layout() {
                 measureTime("layout") {
-                    val renderParagraph = layouter.layout(paragraph, LayoutArea(700f, 100f))
+                    val renderParagraph = layouter.layout(paragraph, LayoutContext.root(700F, 700F))
                     par.set(renderParagraph)
                 }
             }

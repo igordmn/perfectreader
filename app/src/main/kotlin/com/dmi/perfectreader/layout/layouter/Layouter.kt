@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.layout.layouter
 
-import com.dmi.perfectreader.layout.config.LayoutArea
+import com.dmi.perfectreader.layout.config.LayoutContext
 
 interface Layouter<L, R> {
-    fun layout(obj: L, area: LayoutArea): R
+    fun layout(obj: L, context: LayoutContext): R
 }
