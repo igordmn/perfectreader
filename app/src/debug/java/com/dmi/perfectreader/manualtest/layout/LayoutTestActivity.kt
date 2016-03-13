@@ -11,10 +11,10 @@ import com.dmi.perfectreader.layout.liner.breaker.CompositeBreaker
 import com.dmi.perfectreader.layout.liner.breaker.LineBreaker
 import com.dmi.perfectreader.layout.liner.breaker.ObjectBreaker
 import com.dmi.perfectreader.layout.liner.breaker.WordBreaker
-import com.dmi.perfectreader.layout.config.DefaultHangingConfig
+import com.dmi.perfectreader.layout.paragraph.DefaultHangingConfig
 import com.dmi.perfectreader.layout.config.LayoutArea
-import com.dmi.perfectreader.layout.config.PaintTextMetrics
-import com.dmi.perfectreader.layout.config.Run
+import com.dmi.perfectreader.layout.paragraph.PaintTextMetrics
+import com.dmi.perfectreader.layout.paragraph.Run
 import com.dmi.perfectreader.layout.liner.hyphenator.TeXHyphenatorResolver
 import com.dmi.perfectreader.layout.liner.hyphenator.TeXPatternsSource
 import com.dmi.perfectreader.layout.liner.BreakLiner

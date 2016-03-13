@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.layout.config
+package com.dmi.perfectreader.layout.paragraph
 
 object LayoutChars {
     val HYPHEN = '\u2010'

@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.layout.liner
 
-import com.dmi.perfectreader.layout.config.LayoutChars
+import com.dmi.perfectreader.layout.paragraph.LayoutChars
 import com.dmi.perfectreader.layout.liner.Liner.Line
 import com.dmi.perfectreader.layout.liner.Liner.Token
 import com.dmi.perfectreader.layout.liner.breaker.Breaker

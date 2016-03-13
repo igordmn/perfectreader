@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.layout.config
+package com.dmi.perfectreader.layout.paragraph
 
 interface HangingConfig {
     fun leftHangFactor(ch: Char): Float

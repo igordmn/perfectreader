@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.layout.config
+package com.dmi.perfectreader.layout.paragraph
 
 import com.dmi.perfectreader.style.FontStyle
 import com.dmi.util.annotation.Reusable

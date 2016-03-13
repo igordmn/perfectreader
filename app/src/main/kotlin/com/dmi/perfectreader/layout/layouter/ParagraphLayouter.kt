@@ -4,10 +4,10 @@ import com.carrotsearch.hppc.FloatArrayList
 import com.dmi.perfectreader.layout.LayoutObject
 import com.dmi.perfectreader.layout.LayoutParagraph
 import com.dmi.perfectreader.layout.config.LayoutArea
-import com.dmi.perfectreader.layout.config.LayoutChars
-import com.dmi.perfectreader.layout.config.TextMetrics
 import com.dmi.perfectreader.layout.liner.Liner
-import com.dmi.perfectreader.layout.config.Run
+import com.dmi.perfectreader.layout.paragraph.LayoutChars
+import com.dmi.perfectreader.layout.paragraph.Run
+import com.dmi.perfectreader.layout.paragraph.TextMetrics
 import com.dmi.perfectreader.render.*
 import com.dmi.perfectreader.style.TextAlign
 import com.dmi.util.cache.ReusableArrayList
@@ -23,7 +23,7 @@ class ParagraphLayouter(
         private val liner: Liner
 ) : Layouter<LayoutParagraph, RenderParagraph> {
     companion object {
-        private val HYPHEN_STRING = String(charArrayOf(LayoutChars.HYPHEN))
+        private val HYPHEN_STRING = LayoutChars.HYPHEN.toString()
     }
 
     override fun layout(obj: LayoutParagraph, area: LayoutArea): RenderParagraph {

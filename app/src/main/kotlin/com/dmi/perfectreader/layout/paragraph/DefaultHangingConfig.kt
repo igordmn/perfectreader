@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.layout.config
+package com.dmi.perfectreader.layout.paragraph
 
 class DefaultHangingConfig : HangingConfig {
     override fun leftHangFactor(ch: Char): Float {

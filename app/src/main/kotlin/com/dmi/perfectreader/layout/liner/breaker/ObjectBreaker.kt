@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.layout.liner.breaker
 
-import com.dmi.perfectreader.layout.config.LayoutChars.OBJECT_REPLACEMENT_CHARACTER
+import com.dmi.perfectreader.layout.paragraph.LayoutChars.OBJECT_REPLACEMENT_CHARACTER
 import java.util.*
 
 class ObjectBreaker: Breaker {

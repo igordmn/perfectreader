@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.layout.config
+package com.dmi.perfectreader.layout.paragraph
 
 import android.graphics.Paint
 import android.text.TextPaint

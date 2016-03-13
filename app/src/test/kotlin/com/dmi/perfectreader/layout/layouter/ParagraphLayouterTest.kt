@@ -4,6 +4,7 @@ import com.dmi.perfectreader.layout.LayoutObject
 import com.dmi.perfectreader.layout.LayoutParagraph
 import com.dmi.perfectreader.layout.config.*
 import com.dmi.perfectreader.layout.liner.Liner
+import com.dmi.perfectreader.layout.paragraph.*
 import com.dmi.perfectreader.render.RenderLine
 import com.dmi.perfectreader.render.RenderObject
 import com.dmi.perfectreader.render.RenderSpace

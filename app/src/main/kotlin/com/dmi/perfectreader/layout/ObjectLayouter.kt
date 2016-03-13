@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.layout
 
 import com.dmi.perfectreader.layout.config.LayoutArea
-import com.dmi.perfectreader.layout.config.TextMetrics
+import com.dmi.perfectreader.layout.paragraph.TextMetrics
 import com.dmi.perfectreader.layout.layouter.Layouter
 import com.dmi.perfectreader.layout.layouter.ParagraphLayouter
 import com.dmi.perfectreader.layout.liner.Liner
