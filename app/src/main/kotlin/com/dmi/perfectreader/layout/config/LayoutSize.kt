@@ -12,12 +12,6 @@ class LayoutSize(val width: LimitedValue, val height: LimitedValue) {
     class LimitedValue(val value: Value, val min: Limit, val max: Limit) {
         inline fun compute(parentSize: Float, areaSize: Float, wrapped: () -> Float): Float {
             return clamp(
-                    when (value) {
-                        is Value.Absolute -> value.value
-                        is Value.ParentPercent -> parentSize * value.percent
-                        is Value.FillArea -> areaSize
-                        is Value.WrapContent -> wrapped()
-                    },
                     when (min) {
                         is Limit.None -> 0F
                         is Limit.Absolute -> min.value
@@ -27,6 +21,12 @@ class LayoutSize(val width: LimitedValue, val height: LimitedValue) {
                         is Limit.None -> Float.MAX_VALUE
                         is Limit.Absolute -> max.value
                         is Limit.ParentPercent -> parentSize * max.percent
+                    },
+                    when (value) {
+                        is Value.Absolute -> value.value
+                        is Value.ParentPercent -> parentSize * value.percent
+                        is Value.FillArea -> areaSize
+                        is Value.WrapContent -> wrapped()
                     }
             )
         }

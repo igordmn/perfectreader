@@ -4,7 +4,7 @@ interface Log {
     companion object : Log {
         private lateinit var log: Log
 
-        fun init(log: Log) = { this.log = log }
+        fun init(log: Log) { this.log = log }
 
         override fun v(message: String) = log.v(message)
         override fun v(t: Throwable, message: String) = log.v(t, message)
