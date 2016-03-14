@@ -32,10 +32,17 @@ class ParagraphLayouter(
         val locale = obj.locale
         val maxWidth = obj.size.computeWidth(context, { context.areaSize.width })
 
+        val lineConfig = object : Liner.Config {
+            override val firstLineIndent = obj.firstLineIndent
+            override val maxWidth = maxWidth
+            override fun leftHangFactor(ch: Char) = obj.hangingConfig.leftHangFactor(ch)
+            override fun rightHangFactor(ch: Char) = obj.hangingConfig.rightHangFactor(ch)
+        }
+
         return object {
             fun layout(): RenderParagraph {
                 val text = PrerenderedText()
-                val lines = liner.makeLines(text, lineConfig())
+                val lines = liner.makeLines(text, lineConfig)
                 val width = obj.size.computeWidth(context, { maxLineWidth(lines) })
                 fun height(wrappedHeight: Float) = obj.size.computeHeight(context, { wrappedHeight })
 
@@ -49,15 +56,6 @@ class ParagraphLayouter(
                 }
             }
 
-            fun lineConfig(): Liner.Config {
-                val hangingConfig = obj.hangingConfig
-                return object : Liner.Config {
-                    override val firstLineIndent = obj.firstLineIndent
-                    override val maxWidth = maxWidth
-                    override fun leftHangFactor(ch: Char) = hangingConfig.leftHangFactor(ch)
-                    override fun rightHangFactor(ch: Char) = hangingConfig.rightHangFactor(ch)
-                }
-            }
 
             fun maxLineWidth(lines: List<Liner.Line>): Float {
                 var width = 0F
