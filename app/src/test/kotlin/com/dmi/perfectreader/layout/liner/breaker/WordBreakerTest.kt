@@ -3,13 +3,13 @@ package com.dmi.perfectreader.layout.liner.breaker
 import com.dmi.perfectreader.layout.liner.hyphenator.Hyphenator
 import com.dmi.perfectreader.layout.liner.hyphenator.HyphenatorResolver
 import com.dmi.perfectreader.layout.liner.hyphenator.Hyphens
-import com.dmi.util.shouldEquals
+import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.util.*
 
 class WordBreakerTest {
     @Test
-    fun break_words() {
+    fun `break words`() {
         // given
         val text = "simple   \n  te\nxt word bigbigword, bigg-bigword"
         val breaker = WordBreaker(hyphenatorResolver(
@@ -28,12 +28,12 @@ class WordBreakerTest {
         val breaks = breaker.breakText(text, Locale.US)
 
         // then
-        breakIndicesOf(breaks, text) shouldEquals listOf(3, 20, 26, 29, 37, 43)
-        hyphenIndicesOf(breaks, text) shouldEquals listOf(3, 20, 26, 29, 37, 43)
+        breakIndicesOf(breaks, text) shouldEqual listOf(3, 20, 26, 29, 37, 43)
+        hyphenIndicesOf(breaks, text) shouldEqual listOf(3, 20, 26, 29, 37, 43)
     }
 
     @Test
-    fun break_empty_line() {
+    fun `break empty line`() {
         // given
         val text = ""
         val breaker = WordBreaker(hyphenatorResolver())
@@ -42,8 +42,8 @@ class WordBreakerTest {
         val breaks = breaker.breakText(text, Locale.US)
 
         // then
-        breakIndicesOf(breaks, text) shouldEquals emptyList<Int>()
-        hyphenIndicesOf(breaks, text) shouldEquals emptyList<Int>()
+        breakIndicesOf(breaks, text) shouldEqual emptyList<Int>()
+        hyphenIndicesOf(breaks, text) shouldEqual emptyList<Int>()
     }
 
     fun hyphenatorResolver(wordToBreakIndices: Map<String, List<Int>> = emptyMap()) = object : HyphenatorResolver {

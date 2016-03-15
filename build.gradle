@@ -54,7 +54,7 @@ buildscript {
 
                 testCommon: [
                         "junit:junit:4.12",
-                        "com.natpryce:hamkrest:1.1.0.0",
+                        "org.amshove.kluent:kluent:1.4",
                         "com.nhaarman:mockito-kotlin:0.2.1",
                 ]
         ]

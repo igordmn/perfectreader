@@ -1,12 +1,12 @@
 package com.dmi.perfectreader.layout.liner.breaker
 
-import com.dmi.util.shouldEquals
+import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.util.*
 
 class ObjectBreakerTest {
     @Test
-    fun break_objects() {
+    fun `break objects`() {
         // given
         val text = "simple  \n\uFFFC\uFFFC  te\uFFFCxt\uFFFC"
         val breaker = ObjectBreaker()
@@ -15,12 +15,12 @@ class ObjectBreakerTest {
         val breaks = breaker.breakText(text, Locale.US)
 
         // then
-        breakIndicesOf(breaks, text) shouldEquals listOf(9, 10, 11, 15, 16, 18)
-        hyphenIndicesOf(breaks, text) shouldEquals emptyList<Int>()
+        breakIndicesOf(breaks, text) shouldEqual listOf(9, 10, 11, 15, 16, 18)
+        hyphenIndicesOf(breaks, text) shouldEqual emptyList<Int>()
     }
 
     @Test
-    fun reverse_access() {
+    fun `reverse access`() {
         // given
         val text = "simple  \n\uFFFC\uFFFC  te\uFFFCxt\uFFFC"
         val breaker = ObjectBreaker()
@@ -28,16 +28,16 @@ class ObjectBreakerTest {
         // when
         val breaks = breaker.breakText(text, Locale.US)
         for (i in text.length - 1..0) {
-            breaks.hasBreakBefore(i) shouldEquals true
+            breaks.hasBreakBefore(i) shouldEqual true
         }
 
         // then
-        breakIndicesOf(breaks, text) shouldEquals listOf(9, 10, 11, 15, 16, 18)
-        hyphenIndicesOf(breaks, text) shouldEquals emptyList<Int>()
+        breakIndicesOf(breaks, text) shouldEqual listOf(9, 10, 11, 15, 16, 18)
+        hyphenIndicesOf(breaks, text) shouldEqual emptyList<Int>()
     }
 
     @Test
-    fun random_access() {
+    fun `random access`() {
         // given
         val text = "simple  \n\uFFFC\uFFFC  te\uFFFCxt\uFFFC"
         val breaker = ObjectBreaker()
@@ -50,12 +50,12 @@ class ObjectBreakerTest {
         breaks.hasBreakBefore(3)
 
         // then
-        breakIndicesOf(breaks, text) shouldEquals listOf(9, 10, 11, 15, 16, 18)
-        hyphenIndicesOf(breaks, text) shouldEquals emptyList<Int>()
+        breakIndicesOf(breaks, text) shouldEqual listOf(9, 10, 11, 15, 16, 18)
+        hyphenIndicesOf(breaks, text) shouldEqual emptyList<Int>()
     }
 
     @Test
-    fun break_empty_line() {
+    fun `break empty line`() {
         // given
         val text = ""
         val breaker = ObjectBreaker()
@@ -64,7 +64,7 @@ class ObjectBreakerTest {
         val breaks = breaker.breakText(text, Locale.US)
 
         // then
-        breakIndicesOf(breaks, text) shouldEquals emptyList<Int>()
-        hyphenIndicesOf(breaks, text) shouldEquals emptyList<Int>()
+        breakIndicesOf(breaks, text) shouldEqual emptyList<Int>()
+        hyphenIndicesOf(breaks, text) shouldEqual emptyList<Int>()
     }
 }

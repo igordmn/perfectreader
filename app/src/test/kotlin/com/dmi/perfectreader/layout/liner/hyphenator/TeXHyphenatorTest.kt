@@ -1,12 +1,12 @@
 package com.dmi.perfectreader.layout.liner.hyphenator
 
-import com.dmi.util.shouldEquals
+import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.io.FileInputStream
 
 class TeXHyphenatorTest {
     @Test
-    fun break_word_by_TeX_rules() {
+    fun `break word by TeX rules`() {
         // given
         val text = "алгоритм"
         val hyphenator =
@@ -23,11 +23,11 @@ class TeXHyphenatorTest {
         val breaks = hyphenator.hyphenateWord(text, 0, text.length)
 
         // then
-        formatBreaks(text, breaks) shouldEquals "ал-го-ритм"
+        formatBreaks(text, breaks) shouldEqual "ал-го-ритм"
     }
 
     @Test
-    fun break_word_in_the_middle_of_text() {
+    fun `break word in the middle of text`() {
         // given
         val text = "  алгоритм   "
         val hyphenator =
@@ -44,11 +44,11 @@ class TeXHyphenatorTest {
         val breaks = hyphenator.hyphenateWord(text, 2, 2 + "алгоритм".length)
 
         // then
-        formatBreaks(text, breaks) shouldEquals "  ал-го-ритм   "
+        formatBreaks(text, breaks) shouldEqual "  ал-го-ритм   "
     }
 
     @Test
-    fun break_word_with_edge_TeX_rule() {
+    fun `break word with edge TeX rule`() {
         // given
         val text = "алгоритм"
         val hyphenator =
@@ -66,11 +66,11 @@ class TeXHyphenatorTest {
         val breaks = hyphenator.hyphenateWord(text, 0, text.length)
 
         // then
-        formatBreaks(text, breaks) shouldEquals "алгори-тм"
+        formatBreaks(text, breaks) shouldEqual "алгори-тм"
     }
 
     @Test
-    fun break_word_with_exception_TeX_rule() {
+    fun `break word with exception TeX rule`() {
         // given
         val text = "абвабвабв"
         val hyphenator =
@@ -84,11 +84,11 @@ class TeXHyphenatorTest {
         val breaks = hyphenator.hyphenateWord(text, 0, text.length)
 
         // then
-        formatBreaks(text, breaks) shouldEquals "абв-а-бвабв"
+        formatBreaks(text, breaks) shouldEqual "абв-а-бвабв"
     }
 
     @Test
-    fun break_without_rules() {
+    fun `break without rules`() {
         // given
         val text = "абвабвабв"
         val hyphenator = TeXHyphenator.Builder().build()
@@ -97,11 +97,11 @@ class TeXHyphenatorTest {
         val breaks = hyphenator.hyphenateWord(text, 0, text.length)
 
         // then
-        formatBreaks(text, breaks) shouldEquals "абвабвабв"
+        formatBreaks(text, breaks) shouldEqual "абвабвабв"
     }
 
     @Test
-    fun not_break_one_letter_at_edge() {
+    fun `not break one letter at edge`() {
         // given
         val text = "абвабв"
         val hyphenator =
@@ -115,11 +115,11 @@ class TeXHyphenatorTest {
         val breaks = hyphenator.hyphenateWord(text, 0, text.length)
 
         // then
-        formatBreaks(text, breaks) shouldEquals "аб-в-а-бв"
+        formatBreaks(text, breaks) shouldEqual "аб-в-а-бв"
     }
 
     @Test
-    fun break_with_real_patterns() {
+    fun `break with real patterns`() {
         // given
         val hyphenator =
                 TeXHyphenator.Builder()
@@ -133,16 +133,16 @@ class TeXHyphenatorTest {
         )
 
         // then
-        breakWord("программист") shouldEquals "про-грам-мист"
-        breakWord("кибернетика") shouldEquals "ки-бер-не-ти-ка"
-        breakWord("вопль") shouldEquals "вопль"
-        breakWord("интуиция") shouldEquals "ин-ту-и-ция"
-        breakWord("достопримечательность") shouldEquals "до-сто-при-ме-ча-тель-ность"
-        breakWord("ривет") shouldEquals "ри-вет"
+        breakWord("программист") shouldEqual "про-грам-мист"
+        breakWord("кибернетика") shouldEqual "ки-бер-не-ти-ка"
+        breakWord("вопль") shouldEqual "вопль"
+        breakWord("интуиция") shouldEqual "ин-ту-и-ция"
+        breakWord("достопримечательность") shouldEqual "до-сто-при-ме-ча-тель-ность"
+        breakWord("ривет") shouldEqual "ри-вет"
     }
 
     @Test
-    fun case_insensitive() {
+    fun `case insensitive`() {
         // given
         val text = "АлгОритМ"
         val hyphenator =
@@ -159,11 +159,11 @@ class TeXHyphenatorTest {
         val breaks = hyphenator.hyphenateWord(text, 0, text.length)
 
         // then
-        formatBreaks(text, breaks) shouldEquals "Ал-гО-ритМ"
+        formatBreaks(text, breaks) shouldEqual "Ал-гО-ритМ"
     }
 
     @Test
-    fun update_alphabet() {
+    fun `update alphabet`() {
         // given
         val hyphenator =
                 TeXHyphenator.Builder()
@@ -174,22 +174,22 @@ class TeXHyphenatorTest {
                         .build()
 
         // then
-        hyphenator.alphabetContains('а') shouldEquals true
-        hyphenator.alphabetContains('б') shouldEquals true
-        hyphenator.alphabetContains('в') shouldEquals true
-        hyphenator.alphabetContains('у') shouldEquals true
-        hyphenator.alphabetContains('ф') shouldEquals true
-        hyphenator.alphabetContains('х') shouldEquals true
-        hyphenator.alphabetContains('А') shouldEquals true
-        hyphenator.alphabetContains('Б') shouldEquals true
-        hyphenator.alphabetContains('В') shouldEquals true
-        hyphenator.alphabetContains('У') shouldEquals true
-        hyphenator.alphabetContains('Ф') shouldEquals true
-        hyphenator.alphabetContains('Х') shouldEquals true
-        hyphenator.alphabetContains('г') shouldEquals false
-        hyphenator.alphabetContains('3') shouldEquals false
-        hyphenator.alphabetContains('-') shouldEquals false
-        hyphenator.alphabetContains('.') shouldEquals false
+        hyphenator.alphabetContains('а') shouldEqual true
+        hyphenator.alphabetContains('б') shouldEqual true
+        hyphenator.alphabetContains('в') shouldEqual true
+        hyphenator.alphabetContains('у') shouldEqual true
+        hyphenator.alphabetContains('ф') shouldEqual true
+        hyphenator.alphabetContains('х') shouldEqual true
+        hyphenator.alphabetContains('А') shouldEqual true
+        hyphenator.alphabetContains('Б') shouldEqual true
+        hyphenator.alphabetContains('В') shouldEqual true
+        hyphenator.alphabetContains('У') shouldEqual true
+        hyphenator.alphabetContains('Ф') shouldEqual true
+        hyphenator.alphabetContains('Х') shouldEqual true
+        hyphenator.alphabetContains('г') shouldEqual false
+        hyphenator.alphabetContains('3') shouldEqual false
+        hyphenator.alphabetContains('-') shouldEqual false
+        hyphenator.alphabetContains('.') shouldEqual false
     }
 
     fun formatBreaks(text: String, hyphens: Hyphens): String =

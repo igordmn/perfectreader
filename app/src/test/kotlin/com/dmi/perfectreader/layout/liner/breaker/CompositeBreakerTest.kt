@@ -1,12 +1,12 @@
 package com.dmi.perfectreader.layout.liner.breaker
 
-import com.dmi.util.shouldEquals
+import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.util.*
 
 class CompositeBreakerTest {
     @Test
-    fun composite_breaks() {
+    fun `composite breaks`() {
         // given
         val text = "simple  text"
         val breaker1 = breaker(listOf(4, 7), emptyList<Int>())
@@ -18,8 +18,8 @@ class CompositeBreakerTest {
         val breaks = breaker.breakText(text, Locale.US)
 
         // then
-        breakIndicesOf(breaks, text) shouldEquals listOf(1, 2, 4, 7, 9)
-        hyphenIndicesOf(breaks, text) shouldEquals listOf(2, 7)
+        breakIndicesOf(breaks, text) shouldEqual listOf(1, 2, 4, 7, 9)
+        hyphenIndicesOf(breaks, text) shouldEqual listOf(2, 7)
     }
 
     fun breaker(breakIndices: List<Int>, hyphenIndices: List<Int>) = object : Breaker {
