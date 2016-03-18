@@ -25,6 +25,6 @@ class DuplexBuffer<T>(val maxRelativeIndex: Int) {
     fun clear() = items.fill(null)
 
     private fun arrayIndex(relativeIndex: Int): Int {
-        return modPositive(maxRelativeIndex + relativeIndex - shift, items.size)
+        return (maxRelativeIndex + relativeIndex - shift) modPositive items.size
     }
 }

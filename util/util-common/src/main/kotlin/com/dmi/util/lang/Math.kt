@@ -1,7 +1,7 @@
 package com.dmi.util.lang
 
-fun modPositive(x: Int, n: Int): Int {
-    var result = x % n
+infix fun Int.modPositive(n: Int): Int {
+    var result = this % n
     if (result < 0) {
         result += n
     }
