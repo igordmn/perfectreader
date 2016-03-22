@@ -8,7 +8,7 @@ import com.dmi.perfectreader.layout.LayoutImage
 import com.dmi.perfectreader.layout.ObjectLayouter
 import com.dmi.perfectreader.layout.common.LayoutDimensions
 import com.dmi.perfectreader.layout.common.LayoutDimensions.Dimension
-import com.dmi.perfectreader.layout.common.LayoutDimensions.FixedValue
+import com.dmi.perfectreader.layout.common.LayoutLength
 import com.dmi.perfectreader.layout.common.LayoutSpace
 import com.dmi.perfectreader.layout.common.ResourceLoader
 import com.dmi.perfectreader.layout.image.CachedBitmapLoader
@@ -71,11 +71,11 @@ class LayoutTestActivity : BaseActivity() {
         val rootBox = LayoutImage(
                 LayoutDimensions(
                         Dimension.Auto(
-                                FixedValue.Absolute(700F),
-                                FixedValue.Absolute(700F)
+                                LayoutLength.Absolute(700F),
+                                LayoutLength.Absolute(700F)
                         ),
                         Dimension.Fixed(
-                                FixedValue.Absolute(500F)
+                                LayoutLength.Absolute(500F)
                         )
                 ),
                 "manualtest/pagebook/image.png"
