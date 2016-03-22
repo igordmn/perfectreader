@@ -1,12 +1,12 @@
 package com.dmi.perfectreader.layout
 
-import com.dmi.perfectreader.layout.config.LayoutSpace
-import com.dmi.perfectreader.layout.layouter.BitmapLoader
-import com.dmi.perfectreader.layout.layouter.ImageLayouter
-import com.dmi.perfectreader.layout.layouter.Layouter
-import com.dmi.perfectreader.layout.layouter.ParagraphLayouter
-import com.dmi.perfectreader.layout.liner.Liner
+import com.dmi.perfectreader.layout.common.LayoutSpace
+import com.dmi.perfectreader.layout.common.Layouter
+import com.dmi.perfectreader.layout.image.BitmapLoader
+import com.dmi.perfectreader.layout.image.ImageLayouter
+import com.dmi.perfectreader.layout.paragraph.ParagraphLayouter
 import com.dmi.perfectreader.layout.paragraph.TextMetrics
+import com.dmi.perfectreader.layout.paragraph.liner.Liner
 import com.dmi.perfectreader.render.RenderObject
 
 class ObjectLayouter(

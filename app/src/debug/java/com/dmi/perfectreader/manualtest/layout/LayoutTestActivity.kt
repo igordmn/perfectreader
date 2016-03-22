@@ -6,21 +6,21 @@ import android.os.Bundle
 import android.view.View
 import com.dmi.perfectreader.layout.LayoutImage
 import com.dmi.perfectreader.layout.ObjectLayouter
-import com.dmi.perfectreader.layout.config.LayoutDimensions
-import com.dmi.perfectreader.layout.config.LayoutDimensions.Dimension
-import com.dmi.perfectreader.layout.config.LayoutDimensions.FixedValue
-import com.dmi.perfectreader.layout.config.LayoutSpace
-import com.dmi.perfectreader.layout.config.ResourceLoader
-import com.dmi.perfectreader.layout.layouter.CachedBitmapLoader
-import com.dmi.perfectreader.layout.layouter.DecodeBitmapLoader
-import com.dmi.perfectreader.layout.liner.BreakLiner
-import com.dmi.perfectreader.layout.liner.breaker.CompositeBreaker
-import com.dmi.perfectreader.layout.liner.breaker.LineBreaker
-import com.dmi.perfectreader.layout.liner.breaker.ObjectBreaker
-import com.dmi.perfectreader.layout.liner.breaker.WordBreaker
-import com.dmi.perfectreader.layout.liner.hyphenator.TeXHyphenatorResolver
-import com.dmi.perfectreader.layout.liner.hyphenator.TeXPatternsSource
+import com.dmi.perfectreader.layout.common.LayoutDimensions
+import com.dmi.perfectreader.layout.common.LayoutDimensions.Dimension
+import com.dmi.perfectreader.layout.common.LayoutDimensions.FixedValue
+import com.dmi.perfectreader.layout.common.LayoutSpace
+import com.dmi.perfectreader.layout.common.ResourceLoader
+import com.dmi.perfectreader.layout.image.CachedBitmapLoader
+import com.dmi.perfectreader.layout.image.DecodeBitmapLoader
 import com.dmi.perfectreader.layout.paragraph.PaintTextMetrics
+import com.dmi.perfectreader.layout.paragraph.liner.BreakLiner
+import com.dmi.perfectreader.layout.paragraph.liner.breaker.CompositeBreaker
+import com.dmi.perfectreader.layout.paragraph.liner.breaker.LineBreaker
+import com.dmi.perfectreader.layout.paragraph.liner.breaker.ObjectBreaker
+import com.dmi.perfectreader.layout.paragraph.liner.breaker.WordBreaker
+import com.dmi.perfectreader.layout.paragraph.liner.hyphenator.TeXHyphenatorResolver
+import com.dmi.perfectreader.layout.paragraph.liner.hyphenator.TeXPatternsSource
 import com.dmi.util.base.BaseActivity
 
 class LayoutTestActivity : BaseActivity() {
