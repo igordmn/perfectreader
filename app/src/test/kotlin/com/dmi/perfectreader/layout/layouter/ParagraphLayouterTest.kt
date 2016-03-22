@@ -2,8 +2,9 @@ package com.dmi.perfectreader.layout.layouter
 
 import com.dmi.perfectreader.layout.LayoutObject
 import com.dmi.perfectreader.layout.LayoutParagraph
-import com.dmi.perfectreader.layout.config.LayoutContext
-import com.dmi.perfectreader.layout.config.LayoutSize
+import com.dmi.perfectreader.layout.config.LayoutSpace
+import com.dmi.perfectreader.layout.config.LayoutSpace.Area
+import com.dmi.perfectreader.layout.config.LayoutSpace.Metric
 import com.dmi.perfectreader.layout.liner.Liner
 import com.dmi.perfectreader.layout.paragraph.*
 import com.dmi.perfectreader.render.RenderLine
@@ -16,6 +17,7 @@ import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.util.*
 
+@Suppress("IllegalIdentifier")
 class ParagraphLayouterTest {
     val HYPHEN_STRING = LayoutChars.HYPHEN.toString()
 
@@ -44,13 +46,13 @@ class ParagraphLayouterTest {
         // when
         layouter.layout(
                 LayoutParagraph(
-                        size(200F), Locale.US,
+                        Locale.US,
                         listOf(
                                 Run.Text("text", style())
                         ),
                         20F, TextAlign.LEFT, hangingConfig
                 ),
-                context()
+                LayoutSpace.root(200F, 200F)
         )
 
         // then
@@ -96,14 +98,14 @@ class ParagraphLayouterTest {
         // when
         layouter.layout(
                 LayoutParagraph(
-                        size(200F), Locale.US,
+                        Locale.US,
                         listOf(
                                 Run.Text("some ", style1),
                                 Run.Text("text", style2)
                         ),
                         20F, TextAlign.LEFT, DefaultHangingConfig()
                 ),
-                context()
+                LayoutSpace.root(200F, 200F)
         )
 
         // then
@@ -148,7 +150,7 @@ class ParagraphLayouterTest {
         // when
         layouter.layout(
                 LayoutParagraph(
-                        size(200F), Locale.US,
+                        Locale.US,
                         listOf(
                                 Run.Object(object1),
                                 Run.Text("text", style()),
@@ -156,7 +158,7 @@ class ParagraphLayouterTest {
                         ),
                         20F, TextAlign.LEFT, DefaultHangingConfig()
                 ),
-                context()
+                LayoutSpace.root(200F, 200F)
         )
 
         // then
@@ -171,14 +173,14 @@ class ParagraphLayouterTest {
     }
 
     @Test
-    fun `layout context for object runs`() {
+    fun `layout space for object runs`() {
         // given
         var params = object {
-            lateinit var context: LayoutContext
+            lateinit var space: LayoutSpace
         }
         val childLayouter = object : Layouter<LayoutObject, RenderObject> {
-            override fun layout(obj: LayoutObject, context: LayoutContext): RenderObject {
-                params.context = context
+            override fun layout(obj: LayoutObject, space: LayoutSpace): RenderObject {
+                params.space = space
                 return renderObj()
             }
         }
@@ -192,22 +194,22 @@ class ParagraphLayouterTest {
         // when
         layouter.layout(
                 LayoutParagraph(
-                        size(200F), Locale.US,
+                        Locale.US,
                         listOf(Run.Object(obj)),
                         20F, TextAlign.LEFT, DefaultHangingConfig()
                 ),
-                context()
+                LayoutSpace.root(200F, 200F)
         )
 
         // then
-        with (params.context) {
-            with (parentSize) {
-                width shouldEqual 200F
-                height shouldEqual 0F
+        with (params.space) {
+            with (width) {
+                percentBase shouldEqual 200F
+                area shouldEqual Area.WrapContent(200F)
             }
-            with (areaSize) {
-                width shouldEqual 200F
-                height shouldEqual 0F
+            with (height) {
+                percentBase shouldEqual 0F
+                area shouldEqual Area.WrapContent(Float.MAX_VALUE)
             }
         }
     }
@@ -254,8 +256,8 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(size(200F), Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig()),
-                context()
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig()),
+                LayoutSpace.root(200F, 200F)
         )
 
         // then
@@ -370,8 +372,8 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(size(200F), Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig()),
-                context()
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig()),
+                LayoutSpace.root(200F, 200F)
         )
 
         // then
@@ -445,8 +447,8 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(size(200F), Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig()),
-                context()
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig()),
+                LayoutSpace.root(200F, 200F)
         )
 
         // then
@@ -531,8 +533,8 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(size(200F), Locale.US, runs, 20F, TextAlign.RIGHT, DefaultHangingConfig()),
-                context()
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.RIGHT, DefaultHangingConfig()),
+                LayoutSpace.root(200F, 200F)
         )
 
         // then
@@ -595,8 +597,8 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(size(200F), Locale.US, runs, 20F, TextAlign.CENTER, DefaultHangingConfig()),
-                context()
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.CENTER, DefaultHangingConfig()),
+                LayoutSpace.root(200F, 200F)
         )
 
         // then
@@ -660,8 +662,8 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(size(200F), Locale.US, runs, 20F, TextAlign.JUSTIFY, DefaultHangingConfig()),
-                context()
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.JUSTIFY, DefaultHangingConfig()),
+                LayoutSpace.root(200F, 200F)
         )
 
         // then
@@ -742,8 +744,8 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(size(200F), Locale.US, listOf(), 20F, TextAlign.LEFT, DefaultHangingConfig()),
-                context()
+                LayoutParagraph(Locale.US, listOf(), 20F, TextAlign.LEFT, DefaultHangingConfig()),
+                LayoutSpace.root(200F, 200F)
         )
 
         // then
@@ -755,7 +757,7 @@ class ParagraphLayouterTest {
     }
 
     @Test
-    fun `compute lines width when wrap width`() {
+    fun `compute width when wraps content`() {
         // given
         val runs = listOf(
                 Run.Text("texttexttext", style())
@@ -772,38 +774,16 @@ class ParagraphLayouterTest {
                 liner(lines)
         )
 
-        // when
-        var renderObj = layouter.layout(
-                LayoutParagraph(fixedHeightSize(500F), Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig()),
-                context()
-        )
-
-        // then
-        renderObj.height shouldEqual 500F
-    }
-
-    @Test
-    fun `set height`() {
-        // given
-        val runs = listOf(
-                Run.Text("texttexttext", style())
-        )
-        val lines = listOf(
-                TestLine(left = 30F, width = 100F, text = "text"),
-                TestLine(left = -10F, width = 180F, text = "text"),
-                TestLine(left = 0F, width = 50F, text = "text")
-        )
-
-        val layouter = ParagraphLayouter(
-                childLayouter(),
-                textMetrics(),
-                liner(lines)
+        val maxWidth = 200F
+        val layoutSpace = LayoutSpace(
+                Metric(0F, Area.WrapContent(maxWidth)),
+                Metric(0F, Area.Fixed(0F))
         )
 
         // when
         var renderObj = layouter.layout(
-                LayoutParagraph(wrapWidthSize(), Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig()),
-                context()
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig()),
+                layoutSpace
         )
 
         // then
@@ -812,8 +792,8 @@ class ParagraphLayouterTest {
 
         // when
         renderObj = layouter.layout(
-                LayoutParagraph(wrapWidthSize(), Locale.US, runs, 20F, TextAlign.RIGHT, DefaultHangingConfig()),
-                context()
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.RIGHT, DefaultHangingConfig()),
+                layoutSpace
         )
 
         // then
@@ -825,8 +805,8 @@ class ParagraphLayouterTest {
 
         // when
         renderObj = layouter.layout(
-                LayoutParagraph(wrapWidthSize(), Locale.US, runs, 20F, TextAlign.CENTER, DefaultHangingConfig()),
-                context()
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.CENTER, DefaultHangingConfig()),
+                layoutSpace
         )
 
         // then
@@ -839,37 +819,8 @@ class ParagraphLayouterTest {
 
     fun childLayouter(layoutToRenderObject: Map<LayoutObject, RenderObject> = emptyMap()) =
             object : Layouter<LayoutObject, RenderObject> {
-                override fun layout(obj: LayoutObject, context: LayoutContext) = layoutToRenderObject[obj]!!
+                override fun layout(obj: LayoutObject, space: LayoutSpace) = layoutToRenderObject[obj]!!
             }
-    
-    fun size(width: Float) =  LayoutSize(
-            LayoutSize.LimitedValue(
-                    LayoutSize.Value.Absolute(width), LayoutSize.Limit.None(), LayoutSize.Limit.None()
-            ),
-            LayoutSize.LimitedValue(
-                    LayoutSize.Value.WrapContent(), LayoutSize.Limit.None(), LayoutSize.Limit.None()
-            )
-    )
-    
-    fun wrapWidthSize() =  LayoutSize(
-            LayoutSize.LimitedValue(
-                    LayoutSize.Value.WrapContent(), LayoutSize.Limit.None(), LayoutSize.Limit.None()
-            ),
-            LayoutSize.LimitedValue(
-                    LayoutSize.Value.WrapContent(), LayoutSize.Limit.None(), LayoutSize.Limit.None()
-            )
-    )
-
-    fun fixedHeightSize(height: Float) =  LayoutSize(
-            LayoutSize.LimitedValue(
-                    LayoutSize.Value.WrapContent(), LayoutSize.Limit.None(), LayoutSize.Limit.None()
-            ),
-            LayoutSize.LimitedValue(
-                    LayoutSize.Value.Absolute(height), LayoutSize.Limit.None(), LayoutSize.Limit.None()
-            )
-    )
-    
-    fun context() = LayoutContext.root(200F, 200F)
 
     fun layoutObj() = object : LayoutObject() {}
 

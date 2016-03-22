@@ -8,10 +8,10 @@ infix fun Int.modPositive(n: Int): Int {
     return result
 }
 
-fun clamp(min: Double, max: Double, value: Double): Double {
+fun clamp(value: Double, min: Double, max: Double): Double {
     return Math.max(min, Math.min(max, value))
 }
 
-fun clamp(min: Float, max: Float, value: Float): Float {
+fun clamp(value: Float, min: Float, max: Float): Float {
     return Math.max(min, Math.min(max, value))
 }

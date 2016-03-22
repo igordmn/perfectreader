@@ -9,6 +9,7 @@ import org.junit.Test
 import java.lang.Character.isUpperCase
 import java.util.*
 
+@Suppress("IllegalIdentifier")
 class BreakLinerTest {
     val SYMBOL_WIDTH = 10F
     val SPACE_WIDTH = 5F

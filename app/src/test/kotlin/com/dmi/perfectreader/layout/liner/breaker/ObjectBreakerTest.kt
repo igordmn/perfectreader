@@ -4,6 +4,7 @@ import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.util.*
 
+@Suppress("IllegalIdentifier")
 class ObjectBreakerTest {
     @Test
     fun `break objects`() {

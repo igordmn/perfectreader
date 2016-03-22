@@ -18,7 +18,7 @@ class MenuPresenter : BasePresenter() {
     }
 
     fun goPosition(position: Int, maxPosition: Int) {
-        bookPresenter.goPercent(clamp(0.0, 1.0, (position / maxPosition).toDouble()))
+        bookPresenter.goPercent(clamp((position / maxPosition).toDouble(), 0.0, 1.0))
     }
 
     fun requestCurrentPercent(maxPosition: Int) {

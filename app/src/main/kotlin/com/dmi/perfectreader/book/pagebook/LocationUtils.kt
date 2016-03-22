@@ -27,7 +27,7 @@ object LocationUtils {
             position += segmentSizes[i]
         }
         position += (segmentSizes[segmentLocation.index] * segmentLocation.percent).toInt()
-        return clamp(0.0, 1.0, (position / totalSize).toDouble())
+        return clamp((position / totalSize).toDouble(), 0.0, 1.0)
     }
 
     fun percentToPage(pageCount: Int, percent: Double): Int {

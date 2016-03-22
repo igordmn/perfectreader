@@ -3,8 +3,8 @@ package com.dmi.perfectreader.layout.layouter
 import com.carrotsearch.hppc.FloatArrayList
 import com.dmi.perfectreader.layout.LayoutObject
 import com.dmi.perfectreader.layout.LayoutParagraph
-import com.dmi.perfectreader.layout.config.LayoutContext
-import com.dmi.perfectreader.layout.config.LayoutContext.Size
+import com.dmi.perfectreader.layout.config.LayoutSpace
+import com.dmi.perfectreader.layout.config.LayoutSpace.Area
 import com.dmi.perfectreader.layout.liner.Liner
 import com.dmi.perfectreader.layout.paragraph.LayoutChars
 import com.dmi.perfectreader.layout.paragraph.Run
@@ -27,10 +27,14 @@ class ParagraphLayouter(
         private val HYPHEN_STRING = LayoutChars.HYPHEN.toString()
     }
 
-    override fun layout(obj: LayoutParagraph, context: LayoutContext): RenderParagraph {
+    override fun layout(obj: LayoutParagraph, space: LayoutSpace): RenderParagraph {
         val runs = obj.runs
         val locale = obj.locale
-        val maxWidth = obj.size.computeWidth(context, { context.areaSize.width })
+        val widthArea = space.width.area
+        val maxWidth = when (widthArea) {
+            is Area.WrapContent -> widthArea.max
+            is Area.Fixed -> widthArea.value
+        }
 
         val lineConfig = object : Liner.Config {
             override val firstLineIndent = obj.firstLineIndent
@@ -43,10 +47,11 @@ class ParagraphLayouter(
             fun layout(): RenderParagraph {
                 val text = PrerenderedText()
                 val lines = liner.makeLines(text, lineConfig)
-                val width = obj.size.computeWidth(context, { maxLineWidth(lines) })
-                fun height(wrappedHeight: Float) = obj.size.computeHeight(context, { wrappedHeight })
-
-                return ParagraphBuilder(width, ::height).run {
+                val width = when (widthArea) {
+                    is Area.WrapContent -> maxLineWidth(lines)
+                    is Area.Fixed -> widthArea.value
+                }
+                return ParagraphBuilder(width).run {
                     for (i in 0..lines.size - 1) {
                         val line = lines[i]
                         val isLast = i == lines.size - 1
@@ -122,9 +127,15 @@ class ParagraphLayouter(
                 private val runIndexToBaseline = Reusables.runIndexToBaseline()
                 private val runIndexToHyphenWidth = Reusables.runIndexToHyphenWidth()
 
-                private val childrenContext = LayoutContext(
-                        Size(maxWidth, 0F),
-                        Size(maxWidth, 0F)
+                private val childrenSpace = LayoutSpace(
+                        LayoutSpace.Metric(
+                                space.width.percentBase,
+                                Area.WrapContent(maxWidth)
+                        ),
+                        LayoutSpace.Metric(
+                                0F,
+                                Area.WrapContent(Float.MAX_VALUE)
+                        )
                 )
 
                 override lateinit var plainText: String
@@ -165,7 +176,7 @@ class ParagraphLayouter(
                 }
 
                 private fun prerenderObject(runIndex: Int, run: Run.Object) {
-                    val renderObj = childrenLayouter.layout(run.obj, childrenContext)
+                    val renderObj = childrenLayouter.layout(run.obj, childrenSpace)
 
                     plainTextBuilder.append(LayoutChars.OBJECT_REPLACEMENT_CHARACTER)
                     plainIndexToRunIndex.add(runIndex)
@@ -351,18 +362,17 @@ class ParagraphLayouter(
     }
 
     private class ParagraphBuilder(
-            private val width: Float,
-            private val computeHeight: (Float) -> Float
+            private val width: Float
     ) {
         private val children = ArrayList<RenderChild>()
-        private var wrappedHeight = 0F
+        private var height = 0F
 
         fun addLine(line: RenderLine) {
-            children.add(RenderChild(0F, wrappedHeight, line))
-            wrappedHeight += line.height
+            children.add(RenderChild(0F, height, line))
+            height += line.height
         }
 
-        fun build(): RenderParagraph = RenderParagraph(width, computeHeight(wrappedHeight), children)
+        fun build(): RenderParagraph = RenderParagraph(width, height, children)
     }
 
     private object Reusables {

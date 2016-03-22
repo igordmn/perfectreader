@@ -7,6 +7,7 @@ import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.util.*
 
+@Suppress("IllegalIdentifier")
 class WordBreakerTest {
     @Test
     fun `break words`() {

@@ -4,6 +4,7 @@ import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.io.FileInputStream
 
+@Suppress("IllegalIdentifier")
 class TeXHyphenatorTest {
     @Test
     fun `break word by TeX rules`() {

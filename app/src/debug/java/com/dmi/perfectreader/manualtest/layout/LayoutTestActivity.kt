@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.view.View
 import com.dmi.perfectreader.layout.LayoutImage
 import com.dmi.perfectreader.layout.ObjectLayouter
-import com.dmi.perfectreader.layout.config.LayoutContext
-import com.dmi.perfectreader.layout.config.LayoutSize
+import com.dmi.perfectreader.layout.config.LayoutDimensions
+import com.dmi.perfectreader.layout.config.LayoutDimensions.Dimension
+import com.dmi.perfectreader.layout.config.LayoutDimensions.FixedValue
+import com.dmi.perfectreader.layout.config.LayoutSpace
 import com.dmi.perfectreader.layout.config.ResourceLoader
 import com.dmi.perfectreader.layout.layouter.CachedBitmapLoader
 import com.dmi.perfectreader.layout.layouter.DecodeBitmapLoader
@@ -67,18 +69,19 @@ class LayoutTestActivity : BaseActivity() {
         */
 
         val rootBox = LayoutImage(
-                LayoutSize(
-                        LayoutSize.LimitedValue(
-                                LayoutSize.Value.WrapContent(), LayoutSize.Limit.Absolute(700F), LayoutSize.Limit.Absolute(1000F)
+                LayoutDimensions(
+                        Dimension.Auto(
+                                FixedValue.Absolute(700F),
+                                FixedValue.Absolute(700F)
                         ),
-                        LayoutSize.LimitedValue(
-                                LayoutSize.Value.Absolute(500F), LayoutSize.Limit.None(), LayoutSize.Limit.None()
+                        Dimension.Fixed(
+                                FixedValue.Absolute(500F)
                         )
                 ),
                 "manualtest/pagebook/image.png"
         )
 
-        val renderRoot = layouter.layout(rootBox, LayoutContext.root(700F, 700F))
+        val renderRoot = layouter.layout(rootBox, LayoutSpace.root(700F, 700F))
 
         val view = object : View(this) {
             override fun onDraw(canvas: Canvas) {
