@@ -2,6 +2,7 @@ package com.dmi.perfectreader.layout
 
 import com.dmi.perfectreader.layout.common.LayoutSpace
 import com.dmi.perfectreader.layout.common.Layouter
+import com.dmi.perfectreader.layout.frame.FrameLayouter
 import com.dmi.perfectreader.layout.image.BitmapLoader
 import com.dmi.perfectreader.layout.image.ImageLayouter
 import com.dmi.perfectreader.layout.paragraph.ParagraphLayouter
@@ -16,11 +17,13 @@ class ObjectLayouter(
 ) : Layouter<LayoutObject, RenderObject> {
     private val paragraphLayouter = ParagraphLayouter(this, textMetrics, liner)
     private val imageLayouter = ImageLayouter(bitmapLoader)
+    private val frameLayouter = FrameLayouter(this)
 
     override fun layout(obj: LayoutObject, space: LayoutSpace): RenderObject {
         return when (obj) {
             is LayoutParagraph -> paragraphLayouter.layout(obj, space)
             is LayoutImage -> imageLayouter.layout(obj, space)
+            is LayoutFrame -> frameLayouter.layout(obj, space)
             else -> throw UnsupportedOperationException()
         }
     }
