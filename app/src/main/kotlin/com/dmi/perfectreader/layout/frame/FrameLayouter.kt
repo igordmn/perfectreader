@@ -39,6 +39,7 @@ class FrameLayouter(
                         renderObj.width + additionalWidth,
                         renderObj.height + additionalHeight,
                         toRenderBorders(obj.borders),
+                        toRenderBackground(obj.background),
                         RenderChild(borderLeft + paddingLeft, borderTop + paddingTop, renderObj)
                 )
             }
@@ -48,7 +49,6 @@ class FrameLayouter(
                             metric.percentBase,
                             childArea(metric.area, subtractedWidth)
                     )
-
 
             private fun childArea(area: Area, subtractedWidth: Float) =
                 when (area) {
@@ -68,6 +68,7 @@ class FrameLayouter(
             )
 
             private fun toRenderBorder(border: LayoutFrame.Border) = RenderFrame.Border(border.width, border.color)
+            private fun toRenderBackground(background: LayoutFrame.Background) = RenderFrame.Background(background.color)
         }.layout()
     }
 }
