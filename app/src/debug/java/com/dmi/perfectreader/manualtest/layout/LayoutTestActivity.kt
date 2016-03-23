@@ -71,11 +71,17 @@ class LayoutTestActivity : BaseActivity() {
         val rootBox = LayoutImage(
                 LayoutDimensions(
                         Dimension.Auto(
-                                LayoutLength.Absolute(700F),
-                                LayoutLength.Absolute(700F)
+                                LayoutDimensions.Limits(
+                                        LayoutLength.Absolute(700F),
+                                        LayoutLength.Absolute(700F)
+                                )
                         ),
                         Dimension.Fixed(
-                                LayoutLength.Absolute(500F)
+                                LayoutLength.Absolute(500F),
+                                LayoutDimensions.Limits(
+                                        LayoutLength.Absolute(Float.MAX_VALUE),
+                                        LayoutLength.Absolute(Float.MAX_VALUE)
+                                )
                         )
                 ),
                 "manualtest/pagebook/image.png"

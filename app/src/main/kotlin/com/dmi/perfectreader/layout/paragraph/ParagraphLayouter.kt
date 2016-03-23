@@ -6,6 +6,7 @@ import com.dmi.perfectreader.layout.LayoutParagraph
 import com.dmi.perfectreader.layout.common.LayoutSpace
 import com.dmi.perfectreader.layout.common.LayoutSpace.Area
 import com.dmi.perfectreader.layout.common.Layouter
+import com.dmi.perfectreader.layout.LayoutParagraph.Run
 import com.dmi.perfectreader.layout.paragraph.liner.Liner
 import com.dmi.perfectreader.render.*
 import com.dmi.perfectreader.style.TextAlign

@@ -1,5 +1,7 @@
 package com.dmi.perfectreader.layout.paragraph
 
+import com.dmi.perfectreader.layout.LayoutParagraph.HangingConfig
+
 class DefaultHangingConfig : HangingConfig {
     override fun leftHangFactor(ch: Char): Float {
         when (ch) {

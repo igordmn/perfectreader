@@ -1,9 +1,6 @@
 package com.dmi.perfectreader.style
 
-class StyleLength {
-    private val value = 0F
-    private val type: Type? = null
-
+class StyleLength(val value: Float, val type: Type) {
     // См. http://www.w3schools.com/cssref/css_units.asp
     enum class Type {
         // Абсолютные

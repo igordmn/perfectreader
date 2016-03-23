@@ -2,12 +2,17 @@ package com.dmi.perfectreader.layout.image
 
 import com.dmi.perfectreader.layout.LayoutObject
 import com.dmi.perfectreader.layout.LayoutParagraph
-import com.dmi.perfectreader.layout.common.Layouter
+import com.dmi.perfectreader.layout.LayoutParagraph.HangingConfig
+import com.dmi.perfectreader.layout.LayoutParagraph.Run
 import com.dmi.perfectreader.layout.common.LayoutSpace
 import com.dmi.perfectreader.layout.common.LayoutSpace.Area
 import com.dmi.perfectreader.layout.common.LayoutSpace.Metric
+import com.dmi.perfectreader.layout.common.Layouter
+import com.dmi.perfectreader.layout.paragraph.DefaultHangingConfig
+import com.dmi.perfectreader.layout.paragraph.LayoutChars
+import com.dmi.perfectreader.layout.paragraph.ParagraphLayouter
+import com.dmi.perfectreader.layout.paragraph.TextMetrics
 import com.dmi.perfectreader.layout.paragraph.liner.Liner
-import com.dmi.perfectreader.layout.paragraph.*
 import com.dmi.perfectreader.render.RenderLine
 import com.dmi.perfectreader.render.RenderObject
 import com.dmi.perfectreader.render.RenderSpace
