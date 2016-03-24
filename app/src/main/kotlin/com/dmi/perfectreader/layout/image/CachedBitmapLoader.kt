@@ -15,7 +15,7 @@ class CachedBitmapLoader(private val bitmapLoader: BitmapLoader) : BitmapLoader 
                     CacheLoader.from<String, BitmapLoader.Dimensions> {
                         bitmapLoader.loadDimensions(it!!)
                     }
-            );
+            )
     private val bitmaps = CacheBuilder.newBuilder()
             .maximumSize(SIZE)
             .weakValues()
@@ -23,7 +23,7 @@ class CachedBitmapLoader(private val bitmapLoader: BitmapLoader) : BitmapLoader 
                     CacheLoader.from<BitmapKey, Bitmap> {
                         bitmapLoader.load(it!!.src, it.inSampleSize)
                     }
-            );
+            )
 
     override fun loadDimensions(src: String) = try {
         dimensions[src]

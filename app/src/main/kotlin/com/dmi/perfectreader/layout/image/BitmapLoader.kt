@@ -5,19 +5,19 @@ import android.graphics.Bitmap
 interface BitmapLoader {
     companion object {
         fun calculateInSampleSize(imageWidth: Float, imageHeight: Float, maxWidth: Float, maxHeight: Float): Int {
-            var inSampleSize = 1;
+            var inSampleSize = 1
 
             if (imageHeight > maxHeight || imageWidth > maxWidth) {
-                val halfHeight = imageHeight / 2;
-                val halfWidth = imageWidth / 2;
+                val halfHeight = imageHeight / 2
+                val halfWidth = imageWidth / 2
 
                 while ((halfWidth / inSampleSize) > maxWidth &&
                        (halfHeight / inSampleSize) > maxHeight) {
-                    inSampleSize *= 2;
+                    inSampleSize *= 2
                 }
             }
 
-            return inSampleSize;
+            return inSampleSize
         }
     }
 
