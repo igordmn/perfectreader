@@ -1,8 +1,8 @@
 package com.dmi.perfectreader.layout
 
-import com.dmi.perfectreader.layout.common.LayoutDimensions
+import com.dmi.perfectreader.layout.common.LayoutSize
 
 class LayoutImage(
-        val dimensions: LayoutDimensions,
+        val size: LayoutSize,
         val src: String
 ) : LayoutObject()

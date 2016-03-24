@@ -2,8 +2,8 @@ package com.dmi.perfectreader.layout.image
 
 import android.graphics.Bitmap
 import com.dmi.perfectreader.layout.LayoutImage
-import com.dmi.perfectreader.layout.common.LayoutDimensions.Dimension.Auto
-import com.dmi.perfectreader.layout.common.LayoutDimensions.Dimension.Fixed
+import com.dmi.perfectreader.layout.common.LayoutSize.Dimension.Auto
+import com.dmi.perfectreader.layout.common.LayoutSize.Dimension.Fixed
 import com.dmi.perfectreader.layout.common.LayoutSpace
 import com.dmi.perfectreader.layout.common.Layouter
 import com.dmi.perfectreader.layout.image.BitmapLoader.Companion.calculateInSampleSize
@@ -39,27 +39,27 @@ class ImageLayouter(private val bitmapLoader: BitmapLoader) : Layouter<LayoutIma
             }
 
             private fun computeDimensions(imageHeight: Float, imageWidth: Float): Pair<Float, Float> {
-                with (obj.dimensions) {
+                with (obj.size) {
                     val imageRatio = imageWidth / imageHeight
                     val factWidth: Float
                     val factHeight: Float
 
                     when {
                         width is Fixed && height is Fixed -> {
-                            factWidth = width.compute(space.width)
-                            factHeight = height.compute(space.height)
+                            factWidth = width.compute(space.width.percentBase)
+                            factHeight = height.compute(space.height.percentBase)
                         }
                         width is Fixed && height is Auto -> {
-                            factWidth = width.compute(space.width)
-                            factHeight = height.compute(factWidth / imageRatio, space.height)
+                            factWidth = width.compute(space.width.percentBase)
+                            factHeight = height.compute(factWidth / imageRatio, space.height.percentBase)
                         }
                         width is Auto && height is Fixed -> {
-                            factHeight = height.compute(space.height)
-                            factWidth = width.compute(factHeight * imageRatio, space.width)
+                            factHeight = height.compute(space.height.percentBase)
+                            factWidth = width.compute(factHeight * imageRatio, space.width.percentBase)
                         }
                         width is Auto && height is Auto -> {
-                            factWidth = width.compute(imageWidth, space.width)
-                            factHeight = height.compute(factWidth / imageRatio, space.height)
+                            factWidth = width.compute(imageWidth, space.width.percentBase)
+                            factHeight = height.compute(factWidth / imageRatio, space.height.percentBase)
                         }
                         else -> throw IllegalStateException()
                     }

@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.view.View
 import com.dmi.perfectreader.layout.LayoutImage
 import com.dmi.perfectreader.layout.ObjectLayouter
-import com.dmi.perfectreader.layout.common.LayoutDimensions
-import com.dmi.perfectreader.layout.common.LayoutDimensions.Dimension
+import com.dmi.perfectreader.layout.common.LayoutSize
+import com.dmi.perfectreader.layout.common.LayoutSize.Dimension
 import com.dmi.perfectreader.layout.common.LayoutLength
 import com.dmi.perfectreader.layout.common.LayoutSpace
 import com.dmi.perfectreader.layout.common.ResourceLoader
@@ -69,16 +69,16 @@ class LayoutTestActivity : BaseActivity() {
         */
 
         val rootBox = LayoutImage(
-                LayoutDimensions(
+                LayoutSize(
                         Dimension.Auto(
-                                LayoutDimensions.Limits(
+                                LayoutSize.Limits(
                                         LayoutLength.Absolute(700F),
                                         LayoutLength.Absolute(700F)
                                 )
                         ),
                         Dimension.Fixed(
                                 LayoutLength.Absolute(500F),
-                                LayoutDimensions.Limits(
+                                LayoutSize.Limits(
                                         LayoutLength.Absolute(Float.MAX_VALUE),
                                         LayoutLength.Absolute(Float.MAX_VALUE)
                                 )

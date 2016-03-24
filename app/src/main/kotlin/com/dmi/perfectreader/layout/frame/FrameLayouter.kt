@@ -21,17 +21,17 @@ class FrameLayouter(
                 val borderTop = max(0F, obj.borders.top.width)
                 val borderBottom = max(0F, obj.borders.bottom.width)
 
-                val paddingLeft = max(0F, obj.paddings.left.compute(space.width))
-                val paddingRight = max(0F, obj.paddings.right.compute(space.width))
-                val paddingTop = max(0F, obj.paddings.top.compute(space.height))
-                val paddingBottom = max(0F, obj.paddings.bottom.compute(space.height))
+                val paddingLeft = max(0F, obj.paddings.left.compute(space.width.percentBase))
+                val paddingRight = max(0F, obj.paddings.right.compute(space.width.percentBase))
+                val paddingTop = max(0F, obj.paddings.top.compute(space.height.percentBase))
+                val paddingBottom = max(0F, obj.paddings.bottom.compute(space.height.percentBase))
 
                 val additionalWidth = borderLeft + borderRight + paddingLeft + paddingRight
                 val additionalHeight = borderTop + borderBottom + paddingTop + paddingBottom
 
                 val childSpace = LayoutSpace(
-                        childMetric(space.width, additionalWidth),
-                        childMetric(space.height, additionalHeight)
+                        childDimension(space.width, additionalWidth),
+                        childDimension(space.height, additionalHeight)
                 )
                 val renderObj = childLayouter.layout(obj.child, childSpace)
 
@@ -44,10 +44,10 @@ class FrameLayouter(
                 )
             }
 
-            private fun childMetric(metric: LayoutSpace.Metric, subtractedWidth: Float) =
-                    LayoutSpace.Metric(
-                            metric.percentBase,
-                            childArea(metric.area, subtractedWidth)
+            private fun childDimension(dimension: LayoutSpace.Dimension, subtractedWidth: Float) =
+                    LayoutSpace.Dimension(
+                            dimension.percentBase,
+                            childArea(dimension.area, subtractedWidth)
                     )
 
             private fun childArea(area: Area, subtractedWidth: Float) =

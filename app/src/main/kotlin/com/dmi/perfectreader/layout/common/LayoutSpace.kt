@@ -3,19 +3,19 @@ package com.dmi.perfectreader.layout.common
 import hashCode
 import safeEquals
 
-data class LayoutSpace(val width: Metric, val height: Metric) {
+data class LayoutSpace(val width: Dimension, val height: Dimension) {
     companion object {
         fun root(width: Float, height: Float) = LayoutSpace(
-                Metric(width, Area.Fixed(width)),
-                Metric(height, Area.Fixed(height))
+                Dimension(width, Area.Fixed(width)),
+                Dimension(height, Area.Fixed(height))
         )
     }
 
     /**
-     * @param percentBase величиная, равная 100%. по ней будут считаться все дочерние объекты, определенные в процентах
+     * @param percentBase величина, равная 100%. по ней будут считаться все дочерние объекты, определенные в процентах
      * @param area свободное пространство, в которое помещаются дочерние объекты
      */
-    data class Metric(val percentBase: Float, val area: Area)
+    data class Dimension(val percentBase: Float, val area: Area)
 
     sealed class Area {
         class WrapContent(val max: Float) : Area() {

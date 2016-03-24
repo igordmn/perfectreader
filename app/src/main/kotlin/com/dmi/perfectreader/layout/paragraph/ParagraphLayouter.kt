@@ -3,10 +3,10 @@ package com.dmi.perfectreader.layout.paragraph
 import com.carrotsearch.hppc.FloatArrayList
 import com.dmi.perfectreader.layout.LayoutObject
 import com.dmi.perfectreader.layout.LayoutParagraph
+import com.dmi.perfectreader.layout.LayoutParagraph.Run
 import com.dmi.perfectreader.layout.common.LayoutSpace
 import com.dmi.perfectreader.layout.common.LayoutSpace.Area
 import com.dmi.perfectreader.layout.common.Layouter
-import com.dmi.perfectreader.layout.LayoutParagraph.Run
 import com.dmi.perfectreader.layout.paragraph.liner.Liner
 import com.dmi.perfectreader.render.*
 import com.dmi.perfectreader.style.TextAlign
@@ -127,11 +127,11 @@ class ParagraphLayouter(
                 private val runIndexToHyphenWidth = Reusables.runIndexToHyphenWidth()
 
                 private val childrenSpace = LayoutSpace(
-                        LayoutSpace.Metric(
+                        LayoutSpace.Dimension(
                                 space.width.percentBase,
                                 Area.WrapContent(maxWidth)
                         ),
-                        LayoutSpace.Metric(
+                        LayoutSpace.Dimension(
                                 0F,
                                 Area.WrapContent(Float.MAX_VALUE)
                         )

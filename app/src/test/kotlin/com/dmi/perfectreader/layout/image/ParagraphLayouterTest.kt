@@ -6,7 +6,6 @@ import com.dmi.perfectreader.layout.LayoutParagraph.HangingConfig
 import com.dmi.perfectreader.layout.LayoutParagraph.Run
 import com.dmi.perfectreader.layout.common.LayoutSpace
 import com.dmi.perfectreader.layout.common.LayoutSpace.Area
-import com.dmi.perfectreader.layout.common.LayoutSpace.Metric
 import com.dmi.perfectreader.layout.common.Layouter
 import com.dmi.perfectreader.layout.paragraph.DefaultHangingConfig
 import com.dmi.perfectreader.layout.paragraph.LayoutChars
@@ -782,8 +781,8 @@ class ParagraphLayouterTest {
 
         val maxWidth = 200F
         val layoutSpace = LayoutSpace(
-                Metric(0F, Area.WrapContent(maxWidth)),
-                Metric(0F, Area.Fixed(0F))
+                LayoutSpace.Dimension(0F, Area.WrapContent(maxWidth)),
+                LayoutSpace.Dimension(0F, Area.Fixed(0F))
         )
 
         // when
