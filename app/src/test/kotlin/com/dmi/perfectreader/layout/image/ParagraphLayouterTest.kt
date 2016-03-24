@@ -214,7 +214,7 @@ class ParagraphLayouterTest {
             }
             with (height) {
                 percentBase shouldEqual 0F
-                area shouldEqual Area.WrapContent(Float.MAX_VALUE)
+                area shouldEqual Area.WrapContent(200F)
             }
         }
     }

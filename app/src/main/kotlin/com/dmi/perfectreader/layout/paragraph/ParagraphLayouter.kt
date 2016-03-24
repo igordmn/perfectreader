@@ -30,9 +30,14 @@ class ParagraphLayouter(
         val runs = obj.runs
         val locale = obj.locale
         val widthArea = space.width.area
+        val heightArea = space.width.area
         val maxWidth = when (widthArea) {
             is Area.WrapContent -> widthArea.max
             is Area.Fixed -> widthArea.value
+        }
+        val maxHeight = when (heightArea) {
+            is Area.WrapContent -> heightArea.max
+            is Area.Fixed -> heightArea.value
         }
 
         val lineConfig = object : Liner.Config {
@@ -133,7 +138,7 @@ class ParagraphLayouter(
                         ),
                         LayoutSpace.Dimension(
                                 0F,
-                                Area.WrapContent(Float.MAX_VALUE)
+                                Area.WrapContent(maxHeight)
                         )
                 )
 
