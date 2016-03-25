@@ -22,5 +22,5 @@ class CachedLayouter(private val layouter: Layouter<LayoutObject, RenderObject>)
         }.layout()
     }
 
-    data class CacheKey(val obj: LayoutObject, val space: LayoutSpace)
+    private data class CacheKey(val obj: LayoutObject, val space: LayoutSpace)
 }

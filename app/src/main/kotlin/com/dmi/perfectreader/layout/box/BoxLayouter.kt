@@ -118,11 +118,11 @@ class BoxLayouter(
                     )
             )
 
-            fun childX(objWidth: Float, areaWidth: Float, marginLeft: Float, marginRight: Float) =
+            fun childX(objWidth: Float, boxWidth: Float, marginLeft: Float, marginRight: Float) =
                 when (obj.contentAlign) {
                     Align.LEFT -> marginLeft
-                    Align.CENTER -> marginLeft + (areaWidth - marginLeft - objWidth - marginRight) / 2
-                    Align.RIGHT -> areaWidth - marginRight - objWidth
+                    Align.CENTER -> marginLeft + (boxWidth - marginLeft - objWidth - marginRight) / 2
+                    Align.RIGHT -> boxWidth - marginRight - objWidth
                 }
         }.layout()
     }
