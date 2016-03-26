@@ -1,10 +1,8 @@
 package com.dmi.perfectreader.layout.box
 
 import com.dmi.perfectreader.layout.LayoutBox
-import com.dmi.perfectreader.layout.LayoutBox.Child
 import com.dmi.perfectreader.layout.LayoutObject
 import com.dmi.perfectreader.layout.common.LayoutLength.Absolute
-import com.dmi.perfectreader.layout.common.LayoutLength.Percent
 import com.dmi.perfectreader.layout.common.LayoutSize
 import com.dmi.perfectreader.layout.common.LayoutSpace
 import com.dmi.perfectreader.layout.common.Layouter
@@ -12,7 +10,6 @@ import com.dmi.perfectreader.render.RenderObject
 import com.dmi.perfectreader.style.Align
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
-import java.util.*
 
 @Suppress("IllegalIdentifier")
 class BoxLayouterTest {
@@ -24,13 +21,10 @@ class BoxLayouterTest {
                 fixedSize(200F, 100F),
                 Align.LEFT,
                 listOf(
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(200F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(100F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(300F, 200F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FillObject()),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), PercentObject(2F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), PercentObject(0F)),
-                        Child(percentMargins(1F, 2F, 0.5F, 3F), FillObject())
+                        FixedObject(200F, 20F),
+                        FixedObject(300F, 200F),
+                        FillObject(),
+                        PercentObject(2F)
                 )
         )
 
@@ -41,46 +35,10 @@ class BoxLayouterTest {
         with (renderBox) {
             width shouldEqual 200F
             height shouldEqual 100F
-
-            childWidths shouldEqual listOf(
-                    200F,
-                    100F,
-                    300F,
-                    200F - 50F - 40F,
-                    2F * 200F,
-                    0F * 200F,
-                    0F
-            )
-
-            childHeights shouldEqual listOf(
-                    20F,
-                    20F,
-                    200F,
-                    100F - 30F - 20F,
-                    2F * 100F,
-                    0F * 100F,
-                    0F
-            )
-
-            childXs shouldEqual listOf(
-                    50F,
-                    50F,
-                    50F,
-                    50F,
-                    50F,
-                    50F,
-                    1F * 200
-            )
-
-            childYOffsets shouldEqual listOf(
-                    30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 0.5F * 100
-            )
+            childWidths shouldEqual listOf(200F, 300F, 200F, 2F * 200F)
+            childHeights shouldEqual listOf(20F, 200F, 100F, 2F * 100F)
+            childXs shouldEqual listOf(0F, 0F, 0F, 0F)
+            childYs shouldEqual listOf(0F, 20F, 20F + 200F, 220F + 100F)
         }
     }
 
@@ -92,13 +50,10 @@ class BoxLayouterTest {
                 fixedSize(200F, 100F),
                 Align.LEFT,
                 listOf(
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(200F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(100F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(300F, 200F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FillObject()),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), PercentObject(2F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), PercentObject(0F)),
-                        Child(percentMargins(1F, 2F, 0.5F, 3F), FillObject())
+                        FixedObject(200F, 20F),
+                        FixedObject(300F, 200F),
+                        FillObject(),
+                        PercentObject(2F)
                 )
         )
 
@@ -109,46 +64,8 @@ class BoxLayouterTest {
         with (renderBox) {
             width shouldEqual 200F
             height shouldEqual 100F
-
-            childWidths shouldEqual listOf(
-                    200F,
-                    100F,
-                    300F,
-                    200F - 50F - 40F,
-                    2F * 200F,
-                    0F * 200F,
-                    0F
-            )
-
-            childHeights shouldEqual listOf(
-                    20F,
-                    20F,
-                    200F,
-                    100F - 30F - 20F,
-                    2F * 100F,
-                    0F * 100F,
-                    0F
-            )
-
-            childXs shouldEqual listOf(
-                    50F,
-                    50F,
-                    50F,
-                    50F,
-                    50F,
-                    50F,
-                    1F * 200
-            )
-
-            childYOffsets shouldEqual listOf(
-                    30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 0.5F * 100
-            )
+            childWidths shouldEqual listOf(200F, 300F, 200F, 2F * 200F)
+            childHeights shouldEqual listOf(20F, 200F, 100F, 2F * 100F)
         }
     }
 
@@ -160,13 +77,10 @@ class BoxLayouterTest {
                 autoSize(),
                 Align.LEFT,
                 listOf(
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(200F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(100F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(300F, 200F)),
-                        Child(fixedMargins(10F, 20F, 30F, 20F), FillObject()),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), PercentObject(2F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), PercentObject(0F)),
-                        Child(percentMargins(1F, 2F, 0.5F, 3F), FillObject())
+                        FixedObject(200F, 20F),
+                        FixedObject(300F, 200F),
+                        FillObject(),
+                        PercentObject(2F)
                 )
         )
 
@@ -176,54 +90,9 @@ class BoxLayouterTest {
         // then
         with (renderBox) {
             width shouldEqual 100F
-            height shouldEqual 6 * (20F + 30F) +
-                    20F +
-                    20F +
-                    200F +
-                    100F - 30F - 20F +
-                    0F +
-                    0F +
-                    100F
-
-            childWidths shouldEqual listOf(
-                    200F,
-                    100F,
-                    300F,
-                    100F - 10F - 20F,
-                    2F * 100F,
-                    0F * 100F,
-                    0F
-            )
-
-            childHeights shouldEqual listOf(
-                    20F,
-                    20F,
-                    200F,
-                    100F - 30F - 20F,
-                    0F,
-                    0F,
-                    100F - 0F - 0F
-            )
-
-            childXs shouldEqual listOf(
-                    50F,
-                    50F,
-                    50F,
-                    10F,
-                    50F,
-                    50F,
-                    1F * 100
-            )
-
-            childYOffsets shouldEqual listOf(
-                    30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 0F
-            )
+            height shouldEqual 20F + 200F + 100F + 2F * 0F
+            childWidths shouldEqual listOf(200F, 300F, 100F, 2F * 100F)
+            childHeights shouldEqual listOf(20F, 200F, 100F, 2F * 0F)
         }
     }
 
@@ -235,13 +104,10 @@ class BoxLayouterTest {
                 autoSize(),
                 Align.LEFT,
                 listOf(
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(200F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(100F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(300F, 200F)),
-                        Child(fixedMargins(10F, 20F, 30F, 20F), FillObject()),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), PercentObject(2F)),
-                        Child(percentMargins(0.1F, 0.2F, 0F, 0F), PercentObject(0F)),
-                        Child(percentMargins(1F, 2F, 0.5F, 3F), FillObject())
+                        FixedObject(200F, 20F),
+                        FixedObject(300F, 200F),
+                        FillObject(),
+                        PercentObject(2F)
                 )
         )
 
@@ -250,55 +116,10 @@ class BoxLayouterTest {
 
         // then
         with (renderBox) {
-            width shouldEqual 300F + 50F + 40F
-            height shouldEqual 5 * (20F + 30F) +
-                    20F +
-                    20F +
-                    200F +
-                    100F - 30F - 20F +
-                    0F +
-                    0F +
-                    100F
-
-            childWidths shouldEqual listOf(
-                    200F,
-                    100F,
-                    300F,
-                    390F - 10F - 20F,
-                    2F * 390F,
-                    0F * 390F,
-                    0F
-            )
-
-            childHeights shouldEqual listOf(
-                    20F,
-                    20F,
-                    200F,
-                    100F - 30F - 20F,
-                    0F,
-                    0F,
-                    100F - 0F - 0F
-            )
-
-            childXs shouldEqual listOf(
-                    50F,
-                    50F,
-                    50F,
-                    10F,
-                    50F,
-                    0.1F * 390,
-                    1F * 390
-            )
-
-            childYOffsets shouldEqual listOf(
-                    30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 0F,
-                    0F + 0F
-            )
+            width shouldEqual 300F
+            height shouldEqual 20F + 200F + 100F + 2F * 0F
+            childWidths shouldEqual listOf(200F, 300F, 300F, 2F * 300F)
+            childHeights shouldEqual listOf(20F, 200F, 100F, 2F * 0F)
         }
     }
 
@@ -310,13 +131,10 @@ class BoxLayouterTest {
                 autoSize(limits(0F, 100F)),
                 Align.LEFT,
                 listOf(
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(200F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(100F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(300F, 200F)),
-                        Child(fixedMargins(10F, 20F, 30F, 20F), FillObject()),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), PercentObject(2F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), PercentObject(0F)),
-                        Child(percentMargins(1F, 2F, 0.5F, 3F), FillObject())
+                        FixedObject(200F, 20F),
+                        FixedObject(300F, 200F),
+                        FillObject(),
+                        PercentObject(2F)
                 )
         )
 
@@ -327,46 +145,8 @@ class BoxLayouterTest {
         with (renderBox) {
             width shouldEqual 100F
             height shouldEqual 100F
-
-            childWidths shouldEqual listOf(
-                    200F,
-                    100F,
-                    300F,
-                    100F - 10F - 20F,
-                    2F * 100F,
-                    0F * 100F,
-                    0F
-            )
-
-            childHeights shouldEqual listOf(
-                    20F,
-                    20F,
-                    200F,
-                    100F - 30F - 20F,
-                    0F,
-                    0F,
-                    100F - 0F - 0F
-            )
-
-            childXs shouldEqual listOf(
-                    50F,
-                    50F,
-                    50F,
-                    10F,
-                    50F,
-                    50F,
-                    1F * 100
-            )
-
-            childYOffsets shouldEqual listOf(
-                    30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 0F
-            )
+            childWidths shouldEqual listOf(200F, 300F, 100F, 2F * 100F)
+            childHeights shouldEqual listOf(20F, 200F, 100F, 2F * 0F)
         }
     }
 
@@ -378,13 +158,10 @@ class BoxLayouterTest {
                 autoSize(),
                 Align.LEFT,
                 listOf(
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(200F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(100F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(300F, 200F)),
-                        Child(fixedMargins(10F, 20F, 30F, 20F), FillObject()),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), PercentObject(2F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), PercentObject(0F)),
-                        Child(percentMargins(1F, 2F, 0.5F, 3F), FillObject())
+                        FixedObject(200F, 20F),
+                        FixedObject(300F, 200F),
+                        FillObject(),
+                        PercentObject(2F)
                 )
         )
 
@@ -394,54 +171,9 @@ class BoxLayouterTest {
         // then
         with (renderBox) {
             width shouldEqual 1000F
-            height shouldEqual 6 * (20F + 30F) +
-                    20F +
-                    20F +
-                    200F +
-                    1000F - 30F - 20F +
-                    0F +
-                    0F +
-                    1000F
-
-            childWidths shouldEqual listOf(
-                    200F,
-                    100F,
-                    300F,
-                    1000F - 10F - 20F,
-                    2F * 1000F,
-                    0F * 1000F,
-                    0F
-            )
-
-            childHeights shouldEqual listOf(
-                    20F,
-                    20F,
-                    200F,
-                    1000F - 30F - 20F,
-                    0F,
-                    0F,
-                    1000F - 0F - 0F
-            )
-
-            childXs shouldEqual listOf(
-                    50F,
-                    50F,
-                    50F,
-                    10F,
-                    50F,
-                    50F,
-                    1F * 1000
-            )
-
-            childYOffsets shouldEqual listOf(
-                    30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 30F,
-                    20F + 0F
-            )
+            height shouldEqual 20F + 200F + 1000F + 2F * 0F
+            childWidths shouldEqual listOf(200F, 300F, 1000F, 2F * 1000F)
+            childHeights shouldEqual listOf(20F, 200F, 1000F, 2F* 0F)
         }
     }
 
@@ -453,13 +185,10 @@ class BoxLayouterTest {
                 autoSize(),
                 Align.RIGHT,
                 listOf(
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(200F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(100F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(300F, 200F)),
-                        Child(fixedMargins(10F, 20F, 30F, 20F), FillObject()),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), PercentObject(2F)),
-                        Child(percentMargins(0.1F, 0.2F, 0F, 0F), PercentObject(0F)),
-                        Child(percentMargins(1F, 2F, 0.5F, 3F), FillObject())
+                        FixedObject(200F, 20F),
+                        FixedObject(300F, 200F),
+                        FillObject(),
+                        PercentObject(2F)
                 )
         )
 
@@ -468,35 +197,13 @@ class BoxLayouterTest {
 
         // then
         with (renderBox) {
-            width shouldEqual 300F + 50F + 40F
-            height shouldEqual 5 * (20F + 30F) +
-                    20F +
-                    20F +
-                    200F +
-                    100F - 30F - 20F +
-                    0F +
-                    0F +
-                    100F
-
-            childWidths shouldEqual listOf(
-                    200F,
-                    100F,
-                    300F,
-                    390F - 10F - 20F,
-                    2F * 390F,
-                    0F * 390F,
-                    0F
-            )
-
-            // boxWidth - marginRight - objWidth
+            width shouldEqual 300F
+            childWidths shouldEqual listOf(200F, 300F, 300F, 2F * 300F)
             childXs shouldEqual listOf(
-                    390F - 40F - 200F,
-                    390F - 40F - 100F,
-                    390F - 40F - 300F,
-                    390F - 20F - 360F,
-                    390F - 40F - 780F,
-                    390F - 0.2F * 390F - 0F,
-                    390F - 2F * 390F - 0F
+                    300F - 200F,
+                    300F - 300F,
+                    300F - 300F,
+                    300F - 2F * 300F
             )
         }
     }
@@ -507,15 +214,12 @@ class BoxLayouterTest {
         val layouter = BoxLayouter(childLayouter())
         val box = LayoutBox(
                 autoSize(),
-                Align.RIGHT,
+                Align.CENTER,
                 listOf(
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(200F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(100F, 20F)),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), FixedObject(300F, 200F)),
-                        Child(fixedMargins(10F, 20F, 30F, 20F), FillObject()),
-                        Child(fixedMargins(50F, 40F, 30F, 20F), PercentObject(2F)),
-                        Child(percentMargins(0.1F, 0.2F, 0F, 0F), PercentObject(0F)),
-                        Child(percentMargins(1F, 2F, 0.5F, 3F), FillObject())
+                        FixedObject(200F, 20F),
+                        FixedObject(300F, 200F),
+                        FillObject(),
+                        PercentObject(2F)
                 )
         )
 
@@ -524,35 +228,13 @@ class BoxLayouterTest {
 
         // then
         with (renderBox) {
-            width shouldEqual 300F + 50F + 40F
-            height shouldEqual 5 * (20F + 30F) +
-                    20F +
-                    20F +
-                    200F +
-                    100F - 30F - 20F +
-                    0F +
-                    0F +
-                    100F
-
-            childWidths shouldEqual listOf(
-                    200F,
-                    100F,
-                    300F,
-                    390F - 10F - 20F,
-                    2F * 390F,
-                    0F * 390F,
-                    0F
-            )
-
-            // marginLeft + (boxWidth - marginLeft - objWidth - marginRight) / 2
+            width shouldEqual 300F
+            childWidths shouldEqual listOf(200F, 300F, 300F, 2F * 300F)
             childXs shouldEqual listOf(
-                    50F + (390F - 50F - 200F - 40F),
-                    50F + (390F - 50F - 100F - 40F),
-                    50F + (390F - 50F - 300F - 40F),
-                    10F + (390F - 10F - 360F - 20F),
-                    50F + (390F - 50F - 780F - 40F),
-                    0.1F * 390F + (390F - 0.1F * 390F - 0F - 0.2F * 390F),
-                    1F * 390F + (390F - 1F * 390F - 0F - 2F * 390F)
+                    (300F - 200F) / 2F,
+                    (300F - 300F) / 2F,
+                    (300F - 300F) / 2F,
+                    (300F - 2F * 300F) / 2F
             )
         }
     }
@@ -613,22 +295,6 @@ class BoxLayouterTest {
 
     fun limits(min: Float, max: Float) = LayoutSize.Limits(Absolute(min), Absolute(max))
 
-    fun fixedMargins(left: Float, right: Float, top: Float, bottom: Float) =
-            LayoutBox.Margins(
-                    Absolute(left),
-                    Absolute(right),
-                    Absolute(top),
-                    Absolute(bottom)
-            )
-
-    fun percentMargins(left: Float, right: Float, top: Float, bottom: Float) =
-            LayoutBox.Margins(
-                    Percent(left),
-                    Percent(right),
-                    Percent(top),
-                    Percent(bottom)
-            )
-
     fun fixedSpace(width: Float, height: Float) = LayoutSpace(
             LayoutSpace.Dimension(width, LayoutSpace.Area.Fixed(width)),
             LayoutSpace.Dimension(height, LayoutSpace.Area.Fixed(height))
@@ -652,14 +318,8 @@ class BoxLayouterTest {
     val RenderObject.childXs: List<Float>
         get() = children.map { it.x }
 
-    val RenderObject.childYOffsets: List<Float>
-        get() = ArrayList<Float>().apply {
-            var previewBottom = 0F
-            for (child in children) {
-                add(child.y - previewBottom)
-                previewBottom = child.y + child.obj.height
-            }
-        }
+    val RenderObject.childYs: List<Float>
+        get() = children.map { it.y }
 
     class FixedObject(val width: Float, val height: Float) : LayoutObject()
     class FillObject() : LayoutObject()
