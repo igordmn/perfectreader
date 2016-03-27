@@ -1,8 +1,8 @@
 package com.dmi.perfectreader.layout.common
 
 import com.dmi.util.lang.clamp
-import hashCode
-import safeEquals
+import com.dmi.util.lang.safeEquals
+import com.dmi.util.lang.hashCode
 
 data class LayoutSize(val width: Dimension, val height: Dimension) {
     sealed class Dimension {

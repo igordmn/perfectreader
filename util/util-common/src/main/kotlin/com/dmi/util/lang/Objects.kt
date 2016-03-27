@@ -1,3 +1,5 @@
+package com.dmi.util.lang
+
 inline fun <reified T : Any> T.safeEquals(other: Any?, equals: T.(T) -> Boolean): Boolean {
     if (this === other) return true
     if (other?.javaClass != javaClass) return false

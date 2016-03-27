@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.layout.common
 
-import hashCode
-import safeEquals
+import com.dmi.util.lang.hashCode
+import com.dmi.util.lang.safeEquals
 
 data class LayoutSpace(val width: Dimension, val height: Dimension) {
     companion object {
