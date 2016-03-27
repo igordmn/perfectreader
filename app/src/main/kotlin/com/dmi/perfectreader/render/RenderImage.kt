@@ -7,8 +7,6 @@ class RenderImage(width: Float, height: Float, val bitmap: Bitmap) : RenderObjec
         private val paint = Paint()
     }
 
-    override fun canPartiallyPainted() = false
-
     override fun paintItself(canvas: Canvas) {
         if (bitmap.width.toFloat() == width && bitmap.height.toFloat() == height) {
             canvas.drawBitmap(bitmap, 0F, 0F, paint)

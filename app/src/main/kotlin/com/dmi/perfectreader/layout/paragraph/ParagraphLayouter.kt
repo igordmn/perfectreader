@@ -21,12 +21,12 @@ class ParagraphLayouter(
         private val childrenLayouter: Layouter<LayoutObject, RenderObject>,
         private val textMetrics: TextMetrics,
         private val liner: Liner
-) : Layouter<LayoutParagraph, RenderParagraph> {
+) : Layouter<LayoutParagraph, RenderBox> {
     companion object {
         private val HYPHEN_STRING = LayoutChars.HYPHEN.toString()
     }
 
-    override fun layout(obj: LayoutParagraph, space: LayoutSpace): RenderParagraph {
+    override fun layout(obj: LayoutParagraph, space: LayoutSpace): RenderBox {
         val runs = obj.runs
         val locale = obj.locale
         val widthArea = space.width.area
@@ -48,7 +48,7 @@ class ParagraphLayouter(
         }
 
         return object {
-            fun layout(): RenderParagraph {
+            fun layout(): RenderBox {
                 val text = PrerenderedText()
                 val lines = liner.makeLines(text, lineConfig)
                 val width = when (widthArea) {
@@ -376,7 +376,7 @@ class ParagraphLayouter(
             height += line.height
         }
 
-        fun build(): RenderParagraph = RenderParagraph(width, height, children)
+        fun build() = RenderBox(width, height, children)
     }
 
     private object Reusables {
