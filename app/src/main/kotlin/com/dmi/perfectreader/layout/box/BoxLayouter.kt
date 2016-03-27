@@ -10,7 +10,6 @@ import com.dmi.perfectreader.render.RenderBox
 import com.dmi.perfectreader.render.RenderChild
 import com.dmi.perfectreader.render.RenderObject
 import com.dmi.perfectreader.style.Align
-import java.lang.Math.max
 import java.util.*
 
 class BoxLayouter(
@@ -84,15 +83,8 @@ class BoxLayouter(
                 )
             }
 
-            fun childFixedDimension(size: Float) = LayoutSpace.Dimension(
-                    size,
-                    Area.Fixed(max(0F, size))
-            )
-
-            fun childWrapDimension(maxSize: Float) = LayoutSpace.Dimension(
-                    0F,
-                    Area.WrapContent(max(0F, maxSize))
-            )
+            fun childFixedDimension(size: Float) = LayoutSpace.Dimension(size, Area.Fixed(size))
+            fun childWrapDimension(maxSize: Float) = LayoutSpace.Dimension(0F, Area.WrapContent(maxSize))
 
             fun childX(objWidth: Float, boxWidth: Float) =
                 when (obj.contentAlign) {

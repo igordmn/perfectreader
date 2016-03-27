@@ -4,10 +4,16 @@ interface LayoutLength {
     fun compute(percentBase: Float): Float
 
     data class Absolute(val value: Float) : LayoutLength {
+        init {
+            check(value >= 0F)
+        }
         override fun compute(percentBase: Float) = value
     }
 
     data class Percent(val percent: Float) : LayoutLength {
+        init {
+            check(percent >= 0F)
+        }
         override fun compute(percentBase: Float) = percent * percentBase
     }
 

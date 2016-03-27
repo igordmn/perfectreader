@@ -6,6 +6,7 @@ import android.graphics.Paint.Style
 class RenderFrame(
         width: Float,
         height: Float,
+        val internalMargins: Margins,
         val borders: Borders,
         val background: Background,
         val child: RenderChild
@@ -17,9 +18,19 @@ class RenderFrame(
     }
 
     override fun canPartiallyPainted() = true
+    override fun internalMargins() = internalMargins
 
     override fun paintItself(canvas: Canvas) {
-        paintBackground(canvas)
+        canvas.translate(internalMargins.left, internalMargins.top)
+        paintContents(canvas,
+                width - internalMargins.left - internalMargins.right,
+                height - internalMargins.top - internalMargins.bottom
+        )
+        canvas.translate(-internalMargins.left, -internalMargins.top)
+    }
+
+    private fun paintContents(canvas: Canvas, width: Float, height: Float) {
+        paintBackground(canvas, width, height)
         paintBorder(canvas, borders.left, { borderWidth ->
             moveTo(0F, 0F)
             lineTo(0F, width)
@@ -46,7 +57,7 @@ class RenderFrame(
         })
     }
 
-    private fun paintBackground(canvas: Canvas) {
+    private fun paintBackground(canvas: Canvas, width: Float, height: Float) {
         if (background.color != Color.TRANSPARENT) {
             canvas.drawRect(
                     RectF(0F, 0F, width, height),

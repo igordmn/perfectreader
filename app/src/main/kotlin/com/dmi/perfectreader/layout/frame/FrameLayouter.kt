@@ -16,18 +16,23 @@ class FrameLayouter(
     override fun layout(obj: LayoutFrame, space: LayoutSpace): RenderFrame {
         return object {
             fun layout(): RenderFrame {
-                val borderLeft = max(0F, obj.borders.left.width)
-                val borderRight = max(0F, obj.borders.right.width)
-                val borderTop = max(0F, obj.borders.top.width)
-                val borderBottom = max(0F, obj.borders.bottom.width)
+                val marginLeft = obj.margins.left.compute(space.width.percentBase)
+                val marginRight = obj.margins.right.compute(space.width.percentBase)
+                val marginTop = obj.margins.top.compute(space.height.percentBase)
+                val marginBottom = obj.margins.bottom.compute(space.height.percentBase)
 
-                val paddingLeft = max(0F, obj.paddings.left.compute(space.width.percentBase))
-                val paddingRight = max(0F, obj.paddings.right.compute(space.width.percentBase))
-                val paddingTop = max(0F, obj.paddings.top.compute(space.height.percentBase))
-                val paddingBottom = max(0F, obj.paddings.bottom.compute(space.height.percentBase))
+                val borderLeft = obj.borders.left.width
+                val borderRight = obj.borders.right.width
+                val borderTop = obj.borders.top.width
+                val borderBottom = obj.borders.bottom.width
 
-                val additionalWidth = borderLeft + borderRight + paddingLeft + paddingRight
-                val additionalHeight = borderTop + borderBottom + paddingTop + paddingBottom
+                val paddingLeft = obj.paddings.left.compute(space.width.percentBase)
+                val paddingRight = obj.paddings.right.compute(space.width.percentBase)
+                val paddingTop = obj.paddings.top.compute(space.height.percentBase)
+                val paddingBottom = obj.paddings.bottom.compute(space.height.percentBase)
+
+                val additionalWidth = marginLeft + marginRight + borderLeft + borderRight + paddingLeft + paddingRight
+                val additionalHeight = marginTop + marginBottom + borderTop + borderBottom + paddingTop + paddingBottom
 
                 val childSpace = LayoutSpace(
                         childDimension(space.width, additionalWidth),
@@ -38,6 +43,7 @@ class FrameLayouter(
                 return RenderFrame(
                         renderObj.width + additionalWidth,
                         renderObj.height + additionalHeight,
+                        RenderObject.Margins(marginLeft, marginRight, marginTop, marginBottom),
                         toRenderBorders(obj.borders),
                         toRenderBackground(obj.background),
                         RenderChild(borderLeft + paddingLeft, borderTop + paddingTop, renderObj)
