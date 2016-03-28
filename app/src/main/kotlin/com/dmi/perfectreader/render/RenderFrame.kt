@@ -33,14 +33,14 @@ class RenderFrame(
         paintBackground(canvas, width, height)
         paintBorder(canvas, borders.left, { borderWidth ->
             moveTo(0F, 0F)
-            lineTo(0F, width)
-            lineTo(borderWidth, width - borderWidth)
+            lineTo(0F, height)
+            lineTo(borderWidth, height - borderWidth)
             lineTo(borderWidth, borderWidth)
         })
         paintBorder(canvas, borders.right, { borderWidth ->
             moveTo(width, 0F)
-            lineTo(width, width)
-            lineTo(width - borderWidth, width - borderWidth)
+            lineTo(width, height)
+            lineTo(width - borderWidth, height - borderWidth)
             lineTo(width - borderWidth, borderWidth)
         })
         paintBorder(canvas, borders.top, { borderWidth ->
@@ -50,10 +50,10 @@ class RenderFrame(
             lineTo(borderWidth, borderWidth)
         })
         paintBorder(canvas, borders.bottom, { borderWidth ->
-            moveTo(0F, width)
-            lineTo(width, width)
-            lineTo(width - borderWidth, width - borderWidth)
-            lineTo(borderWidth, width - borderWidth)
+            moveTo(0F, height)
+            lineTo(width, height)
+            lineTo(width - borderWidth, height - borderWidth)
+            lineTo(borderWidth, height - borderWidth)
         })
     }
 

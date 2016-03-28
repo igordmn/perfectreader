@@ -46,7 +46,7 @@ class FrameLayouter(
                         RenderObject.Margins(marginLeft, marginRight, marginTop, marginBottom),
                         toRenderBorders(obj.borders),
                         toRenderBackground(obj.background),
-                        RenderChild(borderLeft + paddingLeft, borderTop + paddingTop, renderObj)
+                        RenderChild(marginLeft + borderLeft + paddingLeft, marginTop + borderTop + paddingTop, renderObj)
                 )
             }
 
