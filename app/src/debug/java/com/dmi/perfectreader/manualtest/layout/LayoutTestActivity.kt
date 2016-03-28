@@ -6,9 +6,9 @@ import android.os.Bundle
 import android.view.View
 import com.dmi.perfectreader.layout.LayoutImage
 import com.dmi.perfectreader.layout.ObjectLayouter
+import com.dmi.perfectreader.layout.common.LayoutLength
 import com.dmi.perfectreader.layout.common.LayoutSize
 import com.dmi.perfectreader.layout.common.LayoutSize.Dimension
-import com.dmi.perfectreader.layout.common.LayoutLength
 import com.dmi.perfectreader.layout.common.LayoutSpace
 import com.dmi.perfectreader.layout.common.ResourceLoader
 import com.dmi.perfectreader.layout.image.CachedBitmapLoader
@@ -92,7 +92,7 @@ class LayoutTestActivity : BaseActivity() {
         val view = object : View(this) {
             override fun onDraw(canvas: Canvas) {
                 canvas.drawColor(Color.WHITE)
-                renderRoot.paintRecursive(canvas)
+                renderRoot.paint(canvas)
             }
         }
 

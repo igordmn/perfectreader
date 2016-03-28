@@ -306,7 +306,7 @@ class BoxLayouterTest {
     )
 
     fun renderObject(width: Float, height: Float) = object : RenderObject(width, height, emptyList()) {
-        override fun canPartiallyPainted() = false
+        override fun canPartiallyPaint() = false
     }
 
     val RenderObject.childWidths: List<Float>

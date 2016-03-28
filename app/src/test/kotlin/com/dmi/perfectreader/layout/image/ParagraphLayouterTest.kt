@@ -270,7 +270,7 @@ class ParagraphLayouterTest {
             val HEIGHT1 = -ASCENT1 + DESCENT1 + LEADING1
             val HEIGHT2 = -ASCENT2 + DESCENT2 + LEADING2
 
-            with (child(0).obj as RenderLine) {
+            with (children[0].obj as RenderLine) {
                 childTexts shouldEqual listOf("some", " ")
                 childIsSpaces shouldEqual listOf(false, true)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
@@ -282,7 +282,7 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(0F, 0F)
             }
 
-            with (child(1).obj as RenderLine) {
+            with (children[1].obj as RenderLine) {
                 childTexts shouldEqual listOf("t", "ext", " ", "words")
                 childIsSpaces shouldEqual listOf(false, false, true, false)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT2, -ASCENT2, -ASCENT2)
@@ -299,7 +299,7 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(ASCENT1 - ASCENT2, 0F, 0F, 0F)
             }
 
-            with (child(2).obj as RenderLine) {
+            with (children[2].obj as RenderLine) {
                 childTexts shouldEqual listOf(" ", " ", "qwert")
                 childIsSpaces shouldEqual listOf(true, true, false)
                 childBaselines shouldEqual listOf(-ASCENT2, -ASCENT1, -ASCENT1)
@@ -311,7 +311,7 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(0F, ASCENT1 - ASCENT2, ASCENT1 - ASCENT2)
             }
 
-            with (child(3).obj as RenderLine) {
+            with (children[3].obj as RenderLine) {
                 childTexts shouldEqual listOf("y")
                 childIsSpaces shouldEqual listOf(false)
                 childBaselines shouldEqual listOf(-ASCENT1)
@@ -382,11 +382,11 @@ class ParagraphLayouterTest {
 
         // then
         with (renderObj) {
-            with (child(0).obj as RenderLine) {
-                child(0).obj shouldEqual renderObj1
-                child(2).obj shouldEqual renderObj2
+            with (children[0].obj as RenderLine) {
+                children[0].obj shouldEqual renderObj1
+                children[2].obj shouldEqual renderObj2
 
-                with (child(1).obj as RenderText) {
+                with (children[1].obj as RenderText) {
                     text.toString() shouldEqual "text"
                     baseline shouldEqual 20F
                     style shouldEqual style
@@ -460,7 +460,7 @@ class ParagraphLayouterTest {
             val HEIGHT1 = -ASCENT1 + DESCENT1
             val HEIGHT2 = -ASCENT2 + DESCENT2
 
-            with (child(0).obj as RenderLine) {
+            with (children[0].obj as RenderLine) {
                 childTexts shouldEqual listOf("t", HYPHEN_STRING)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
                 childStyles shouldEqual listOf(style1, style1)
@@ -471,7 +471,7 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(0F, 0F)
             }
 
-            with (child(1).obj as RenderLine) {
+            with (children[1].obj as RenderLine) {
                 childTexts shouldEqual listOf("ext", HYPHEN_STRING)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
                 childStyles shouldEqual listOf(style1, style1)
@@ -482,8 +482,8 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(0F, 0F)
             }
 
-            with (child(2).obj as RenderLine) {
-                child(0).obj shouldEqual renderObj1
+            with (children[2].obj as RenderLine) {
+                children[0].obj shouldEqual renderObj1
 
                 childWidths shouldEqual listOf(50F)
                 childHeights shouldEqual listOf(10F)
@@ -491,7 +491,7 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(0F)
             }
 
-            with (child(3).obj as RenderLine) {
+            with (children[3].obj as RenderLine) {
                 childTexts shouldEqual listOf("t", "ext2", HYPHEN_STRING)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT2, -ASCENT2)
                 childStyles shouldEqual listOf(style1, style2, style2)
@@ -542,7 +542,7 @@ class ParagraphLayouterTest {
         )
 
         // then
-        with (renderObj.child(0).obj as RenderLine) {
+        with (renderObj.children[0].obj as RenderLine) {
             val widths = listOf(1 * SPACE_WIDTH, 5 * LETTER_WIDTH, 3 * SPACE_WIDTH, 5 * LETTER_WIDTH, 1 * SPACE_WIDTH)
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
@@ -554,7 +554,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.child(1).obj as RenderLine) {
+        with (renderObj.children[1].obj as RenderLine) {
             val widths = listOf(2 * SPACE_WIDTH, 1 * LETTER_WIDTH, 1 * LETTER_WIDTH)
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
@@ -564,7 +564,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.child(2).obj as RenderLine) {
+        with (renderObj.children[2].obj as RenderLine) {
             val widths = listOf(4 * LETTER_WIDTH, 1 * SPACE_WIDTH, 5 * LETTER_WIDTH)
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
@@ -606,7 +606,7 @@ class ParagraphLayouterTest {
         )
 
         // then
-        with (renderObj.child(0).obj as RenderLine) {
+        with (renderObj.children[0].obj as RenderLine) {
             val widths = listOf(1 * SPACE_WIDTH, 5 * LETTER_WIDTH, 3 * SPACE_WIDTH, 5 * LETTER_WIDTH, 1 * SPACE_WIDTH)
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
@@ -618,7 +618,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.child(1).obj as RenderLine) {
+        with (renderObj.children[1].obj as RenderLine) {
             val widths = listOf(2 * SPACE_WIDTH, 1 * LETTER_WIDTH, 1 * LETTER_WIDTH)
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
@@ -628,7 +628,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.child(2).obj as RenderLine) {
+        with (renderObj.children[2].obj as RenderLine) {
             val widths = listOf(4 * LETTER_WIDTH, 1 * SPACE_WIDTH, 5 * LETTER_WIDTH)
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
@@ -671,7 +671,7 @@ class ParagraphLayouterTest {
         )
 
         // then
-        with (renderObj.child(0).obj as RenderLine)
+        with (renderObj.children[0].obj as RenderLine)
         {
             val freeSpace = 200F - 180F + 10F
             val midSpaceWidths = (3 + 1) * SPACE_WIDTH
@@ -699,7 +699,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.child(1).obj as RenderLine)
+        with (renderObj.children[1].obj as RenderLine)
         {
             val widths = listOf(2 * SPACE_WIDTH, 1 * LETTER_WIDTH, 1 * LETTER_WIDTH)
             childScaleX shouldEqual listOf(1F, null, null)
@@ -711,7 +711,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.child(2).obj as RenderLine)
+        with (renderObj.children[2].obj as RenderLine)
         {
             val widths = listOf(4 * LETTER_WIDTH, 1 * SPACE_WIDTH, 1 * LETTER_WIDTH)
             childScaleX shouldEqual listOf(null, 1F, null)
@@ -723,7 +723,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.child(3).obj as RenderLine)
+        with (renderObj.children[3].obj as RenderLine)
         {
             val widths = listOf(4 * LETTER_WIDTH, 2 * SPACE_WIDTH, 5 * LETTER_WIDTH, 1 * SPACE_WIDTH)
             childScaleX shouldEqual listOf(null, 1F, null, 1F)
@@ -803,9 +803,9 @@ class ParagraphLayouterTest {
         // then
         renderObj.width shouldEqual 170F
         renderObj.childWidths shouldEqual listOf(170F, 170F, 170F)
-        renderObj.child(0).obj.childXs shouldEqual listOf(170F - 100)
-        renderObj.child(1).obj.childXs shouldEqual listOf(170F - 180)
-        renderObj.child(2).obj.childXs shouldEqual listOf(170F - 50)
+        renderObj.children[0].obj.childXs shouldEqual listOf(170F - 100)
+        renderObj.children[1].obj.childXs shouldEqual listOf(170F - 180)
+        renderObj.children[2].obj.childXs shouldEqual listOf(170F - 50)
 
         // when
         renderObj = layouter.layout(
@@ -816,9 +816,9 @@ class ParagraphLayouterTest {
         // then
         renderObj.width shouldEqual 170F
         renderObj.childWidths shouldEqual listOf(170F, 170F, 170F)
-        renderObj.child(0).obj.childXs shouldEqual listOf(30F + (170 - 30 - 100) / 2)
-        renderObj.child(1).obj.childXs shouldEqual listOf(-10F + (170 + 10 - 180) / 2)
-        renderObj.child(2).obj.childXs shouldEqual listOf(0F + (170 + 0 - 50) / 2)
+        renderObj.children[0].obj.childXs shouldEqual listOf(30F + (170 - 30 - 100) / 2)
+        renderObj.children[1].obj.childXs shouldEqual listOf(-10F + (170 + 10 - 180) / 2)
+        renderObj.children[2].obj.childXs shouldEqual listOf(0F + (170 + 0 - 50) / 2)
     }
 
     fun childLayouter(layoutToRenderObject: Map<LayoutObject, RenderObject> = emptyMap()) =
@@ -830,7 +830,7 @@ class ParagraphLayouterTest {
 
     fun renderObj(width: Float = 0F, height: Float = 0F) =
             object : RenderObject(width, height, emptyList()) {
-                override fun canPartiallyPainted() = false
+                override fun canPartiallyPaint() = false
             }
 
     fun style() = FontStyle(0F, 0, FontStyle.RenderParams(false, false, false, false))

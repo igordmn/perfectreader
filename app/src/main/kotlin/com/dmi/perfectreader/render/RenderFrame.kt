@@ -17,7 +17,7 @@ class RenderFrame(
         private val path = Path()
     }
 
-    override fun canPartiallyPainted() = true
+    override fun canPartiallyPaint() = true
     override fun internalMargins() = internalMargins
 
     override fun paintItself(canvas: Canvas) {
