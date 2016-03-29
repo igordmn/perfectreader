@@ -23,6 +23,9 @@ import com.dmi.perfectreader.layout.paragraph.liner.breaker.WordBreaker
 import com.dmi.perfectreader.layout.paragraph.liner.hyphenator.CachedHyphenatorResolver
 import com.dmi.perfectreader.layout.paragraph.liner.hyphenator.TeXHyphenatorResolver
 import com.dmi.perfectreader.layout.paragraph.liner.hyphenator.TeXPatternsSource
+import com.dmi.perfectreader.render.page.RenderPage
+import com.dmi.perfectreader.render.page.merge
+import com.dmi.perfectreader.render.page.splitIntoRows
 import com.dmi.perfectreader.style.Align
 import com.dmi.perfectreader.style.FontStyle
 import com.dmi.perfectreader.style.TextAlign
@@ -124,17 +127,24 @@ class LayoutTestActivity : BaseActivity() {
 
         val renderRoot = layouter.layout(rootBox, LayoutSpace.root(700F, 700F))
 
+        val renderRows = splitIntoRows(renderRoot)
+
+        var page = RenderPage()
+        for (row in renderRows) {
+            page = page merge row
+        }
+
         val view = object : View(this) {
             override fun onDraw(canvas: Canvas) {
                 canvas.drawColor(Color.WHITE)
-                renderRoot.paint(canvas)
+                page.paint(canvas)
             }
         }
 
         setContentView(view)
     }
 
-    fun testFrame(obj: LayoutObject) =  LayoutFrame(
+    fun testFrame(obj: LayoutObject) = LayoutFrame(
             LayoutFrame.Margins(
                     LayoutLength.Absolute(10F),
                     LayoutLength.Absolute(10F),

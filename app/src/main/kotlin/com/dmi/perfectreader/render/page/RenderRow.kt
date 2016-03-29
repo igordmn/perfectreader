@@ -25,17 +25,16 @@ class RenderRow(val obj: RenderObject, val top: Edge,val bottom: Edge) {
             val lastChildIndex = bottom.childIndex(level, isLastBranch, children.size - 1)
 
             for (i in firstChildIndex..lastChildIndex) {
-                with (children[i]) {
-                    canvas.translate(x, y)
-                    paintRecursive(
-                            canvas,
-                            obj,
-                            level + 1,
-                            isFirstBranch && i == firstChildIndex,
-                            isLastBranch && i == lastChildIndex
-                    )
-                    canvas.translate(-x, -y)
-                }
+                val child = children[i]
+                canvas.translate(child.x, child.y)
+                paintRecursive(
+                        canvas,
+                        child.obj,
+                        level + 1,
+                        isFirstBranch && i == firstChildIndex,
+                        isLastBranch && i == lastChildIndex
+                )
+                canvas.translate(-child.x, -child.y)
             }
         }
     }
