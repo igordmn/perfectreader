@@ -20,6 +20,7 @@ import com.dmi.perfectreader.layout.paragraph.liner.breaker.CompositeBreaker
 import com.dmi.perfectreader.layout.paragraph.liner.breaker.LineBreaker
 import com.dmi.perfectreader.layout.paragraph.liner.breaker.ObjectBreaker
 import com.dmi.perfectreader.layout.paragraph.liner.breaker.WordBreaker
+import com.dmi.perfectreader.layout.paragraph.liner.hyphenator.CachedHyphenatorResolver
 import com.dmi.perfectreader.layout.paragraph.liner.hyphenator.TeXHyphenatorResolver
 import com.dmi.perfectreader.layout.paragraph.liner.hyphenator.TeXPatternsSource
 import com.dmi.perfectreader.style.Align
@@ -42,9 +43,11 @@ class LayoutTestActivity : BaseActivity() {
                                 LineBreaker(),
                                 ObjectBreaker(),
                                 WordBreaker(
-                                        TeXHyphenatorResolver(
-                                                TeXPatternsSource(
-                                                        this
+                                        CachedHyphenatorResolver(
+                                                TeXHyphenatorResolver(
+                                                        TeXPatternsSource(
+                                                                this
+                                                        )
                                                 )
                                         )
                                 )

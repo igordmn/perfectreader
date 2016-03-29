@@ -5,7 +5,7 @@ import com.dmi.perfectreader.layout.common.LayoutSpace
 import com.dmi.perfectreader.layout.common.Layouter
 import com.dmi.perfectreader.layout.frame.FrameLayouter
 import com.dmi.perfectreader.layout.image.BitmapLoader
-import com.dmi.perfectreader.layout.image.CachedLayouter
+import com.dmi.perfectreader.layout.common.CachedLayouter
 import com.dmi.perfectreader.layout.image.ImageLayouter
 import com.dmi.perfectreader.layout.paragraph.ParagraphLayouter
 import com.dmi.perfectreader.layout.paragraph.TextMetrics

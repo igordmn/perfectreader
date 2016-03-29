@@ -1,26 +1,15 @@
-package com.dmi.perfectreader.layout.image
+package com.dmi.perfectreader.layout.common
 
 import com.dmi.perfectreader.layout.LayoutObject
-import com.dmi.perfectreader.layout.common.LayoutSpace
-import com.dmi.perfectreader.layout.common.Layouter
 import com.dmi.perfectreader.render.RenderObject
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
+import com.dmi.util.libext.weakValuesCache
 
 class CachedLayouter(private val layouter: Layouter<LayoutObject, RenderObject>) : Layouter<LayoutObject, RenderObject> {
-    private val renderObjects = CacheBuilder.newBuilder()
-            .weakValues()
-            .build(
-                    CacheLoader.from<CacheKey, RenderObject> {
-                        layouter.layout(it!!.obj, it.space)
-                    }
-            )
-
-    override fun layout(obj: LayoutObject, space: LayoutSpace): RenderObject {
-        return object {
-            fun layout() = renderObjects.get(CacheKey(obj, space))
-        }.layout()
+    private val renderObjects = weakValuesCache<CacheKey, RenderObject> {
+        layouter.layout(it.obj, it.space)
     }
+
+    override fun layout(obj: LayoutObject, space: LayoutSpace) = renderObjects.get(CacheKey(obj, space))
 
     private data class CacheKey(val obj: LayoutObject, val space: LayoutSpace)
 }

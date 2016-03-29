@@ -1,29 +1,16 @@
 package com.dmi.perfectreader.layout.image
 
 import android.graphics.Bitmap
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
+import com.dmi.util.libext.weakValuesCache
 import java.io.IOException
 
 class CachedBitmapLoader(private val bitmapLoader: BitmapLoader) : BitmapLoader {
-    private val SIZE = 30L
-
-    private val dimensions = CacheBuilder.newBuilder()
-            .maximumSize(SIZE)
-            .weakValues()
-            .build(
-                    CacheLoader.from<String, BitmapLoader.Dimensions> {
-                        bitmapLoader.loadDimensions(it!!)
-                    }
-            )
-    private val bitmaps = CacheBuilder.newBuilder()
-            .maximumSize(SIZE)
-            .weakValues()
-            .build(
-                    CacheLoader.from<BitmapKey, Bitmap> {
-                        bitmapLoader.load(it!!.src, it.inSampleSize)
-                    }
-            )
+    private val dimensions = weakValuesCache<String, BitmapLoader.Dimensions> {
+        bitmapLoader.loadDimensions(it)
+    }
+    private val bitmaps = weakValuesCache<BitmapKey, Bitmap> {
+        bitmapLoader.load(it.src, it.inSampleSize)
+    }
 
     override fun loadDimensions(src: String) = try {
         dimensions[src]
