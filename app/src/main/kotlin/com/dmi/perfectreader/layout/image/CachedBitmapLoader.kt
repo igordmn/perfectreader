@@ -1,14 +1,14 @@
 package com.dmi.perfectreader.layout.image
 
 import android.graphics.Bitmap
-import com.dmi.util.libext.weakValuesCache
+import com.dmi.util.libext.cache
 import java.io.IOException
 
 class CachedBitmapLoader(private val bitmapLoader: BitmapLoader) : BitmapLoader {
-    private val dimensions = weakValuesCache<String, BitmapLoader.Dimensions> {
+    private val dimensions = cache<String, BitmapLoader.Dimensions>(softValues = true) {
         bitmapLoader.loadDimensions(it)
     }
-    private val bitmaps = weakValuesCache<BitmapKey, Bitmap> {
+    private val bitmaps = cache<BitmapKey, Bitmap>(softValues = true) {
         bitmapLoader.load(it.src, it.inSampleSize)
     }
 
