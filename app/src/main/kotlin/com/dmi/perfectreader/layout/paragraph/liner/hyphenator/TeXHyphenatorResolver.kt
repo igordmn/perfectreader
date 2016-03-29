@@ -11,13 +11,13 @@ class TeXHyphenatorResolver(private val patternsSource: TeXPatternsSource) : Hyp
     private var previewLocale: Locale? = null
 
     override fun hyphenatorFor(locale: Locale): TeXHyphenator {
-        if (locale === previewLocale) {
+        if (locale == previewLocale) {
             val temp = previewHyphenator
             previewHyphenator = currentHyphenator
             currentHyphenator = temp
             previewLocale = currentLocale
             currentLocale = locale
-        } else if (locale !== currentLocale) {
+        } else if (locale != currentLocale) {
             previewHyphenator = currentHyphenator
             currentHyphenator = loadHyphenatorFor(locale)
             previewLocale = currentLocale
