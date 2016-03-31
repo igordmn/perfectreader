@@ -4,7 +4,7 @@ buildscript {
 
         projectVersions = [
                 project: "0.7",
-                kotlin: "1.0.0",
+                kotlin: "1.0.1-2",
                 supportLibrary: "23.1.1",
                 buildTools: "23.0.2",
                 minSdk: 16,
