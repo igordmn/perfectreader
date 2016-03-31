@@ -32,7 +32,6 @@ buildscript {
                 android: [
                         ":simplefragment:",
                         ":simplefragment-appcompat:",
-                        ":readiumSdk:@aar",
                         "com.android.support:appcompat-v7:$projectVersions.supportLibrary",
                         "com.android.support:support-annotations:$projectVersions.supportLibrary",
                         "com.android.support:cardview-v7:$projectVersions.supportLibrary",

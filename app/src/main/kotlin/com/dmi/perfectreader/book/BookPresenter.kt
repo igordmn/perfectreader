@@ -4,7 +4,6 @@ import android.content.Context
 import com.dmi.perfectreader.app.AppThreads.postIOTask
 import com.dmi.perfectreader.book.pagebook.PageBook
 import com.dmi.perfectreader.book.pagebook.PageBookRenderer
-import com.dmi.perfectreader.bookstorage.EPUBBookStorage
 import com.dmi.perfectreader.setting.AppSettings
 import com.dmi.perfectreader.userdata.UserData
 import com.dmi.util.base.BasePresenter
@@ -28,8 +27,6 @@ open class BookPresenter : BasePresenter() {
     protected lateinit var userData: UserData
     @Inject
     protected lateinit var appSettings: AppSettings
-    @Inject
-    protected lateinit var bookStorage: EPUBBookStorage
     @Inject
     protected lateinit var view: BookFragment
 
@@ -72,7 +69,7 @@ open class BookPresenter : BasePresenter() {
 
     protected fun loadBook() {
         try {
-            bookStorage.load(bookFile)
+            //bookStorage.load(bookFile)
             postIOTask { this.afterBookStorageLoad() }
         } catch (e: IOException) {
             Log.e(e, "Load book error")
