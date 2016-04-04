@@ -10,7 +10,8 @@ class RenderSpace(width: Float,
                   locale: Locale,
                   baseline: Float,
                   style: FontStyle,
-                  val scaleX: Float
-) : RenderText(width, height, text, locale, baseline, style) {
+                  val scaleX: Float,
+                  layoutInfo: LayoutInfo
+) : RenderText(width, height, text, locale, baseline, style, layoutInfo) {
     override fun paintItself(canvas: Canvas) = Unit
 }

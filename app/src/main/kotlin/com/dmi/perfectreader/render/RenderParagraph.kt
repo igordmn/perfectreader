@@ -1,12 +1,12 @@
 package com.dmi.perfectreader.render
 
-import com.dmi.perfectreader.layout.LayoutBox
+import com.dmi.perfectreader.layout.LayoutParagraph
 
-class RenderBox(
+class RenderParagraph(
         width: Float,
         height: Float,
         children: List<RenderChild>,
-        val layoutObject: LayoutBox
+        val layoutObject: LayoutParagraph
 ) : RenderObject(width, height, children) {
     override fun canPartiallyPaint() = true
 }

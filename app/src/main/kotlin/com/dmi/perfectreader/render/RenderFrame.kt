@@ -2,6 +2,7 @@ package com.dmi.perfectreader.render
 
 import android.graphics.*
 import android.graphics.Paint.Style
+import com.dmi.perfectreader.layout.LayoutFrame
 
 class RenderFrame(
         width: Float,
@@ -9,7 +10,8 @@ class RenderFrame(
         val internalMargins: Margins,
         val borders: Borders,
         val background: Background,
-        val child: RenderChild
+        val child: RenderChild,
+        val layoutObject: LayoutFrame
 ) : RenderObject(width, height, listOf(child)) {
     companion object {
         private val backgroundPaint = Paint()

@@ -21,12 +21,12 @@ class ParagraphLayouter(
         private val childrenLayouter: Layouter<LayoutObject, RenderObject>,
         private val textMetrics: TextMetrics,
         private val liner: Liner
-) : Layouter<LayoutParagraph, RenderBox> {
+) : Layouter<LayoutParagraph, RenderParagraph> {
     companion object {
         private val HYPHEN_STRING = LayoutChars.HYPHEN.toString()
     }
 
-    override fun layout(obj: LayoutParagraph, space: LayoutSpace): RenderBox {
+    override fun layout(obj: LayoutParagraph, space: LayoutSpace): RenderParagraph {
         val runs = obj.runs
         val locale = obj.locale
         val widthArea = space.width.area
@@ -48,14 +48,14 @@ class ParagraphLayouter(
         }
 
         return object {
-            fun layout(): RenderBox {
+            fun layout(): RenderParagraph {
                 val text = PrerenderedText()
                 val lines = liner.makeLines(text, lineConfig)
                 val width = when (widthArea) {
                     is Area.WrapContent -> maxLineWidth(lines)
                     is Area.Fixed -> widthArea.value
                 }
-                return ParagraphBuilder(width).run {
+                return ParagraphBuilder(width, obj).run {
                     for (i in 0..lines.size - 1) {
                         val line = lines[i]
                         val isLast = i == lines.size - 1
@@ -96,7 +96,7 @@ class ParagraphLayouter(
                     }
 
                     if (line.hasHyphenAfter && size > 0)
-                        text.renderHyphen(last().endIndex - 1, renderLine)
+                        text.renderHyphenAfter(last().endIndex - 1, renderLine)
                 }
 
                 return renderLine.build()
@@ -241,18 +241,21 @@ class ParagraphLayouter(
                 private fun renderSpace(beginIndex: Int, endIndex: Int, runIndex: Int, scaleX: Float, line: LineBuilder) {
                     val run = runs[runIndex] as Run.Text
 
-                    val runBegin = runIndexToPlainBeginIndex[runIndex]
+                    val plainBeginOfRun = runIndexToPlainBeginIndex[runIndex]
                     val baseline = runIndexToBaseline[runIndex]
+                    val beginOfRunText = beginIndex - plainBeginOfRun
+                    val endOfRunText = endIndex - plainBeginOfRun
 
                     line.addObject(
                             RenderSpace(
                                     width = widthOf(beginIndex, endIndex) * scaleX,
                                     height = runIndexToHeight[runIndex],
-                                    text = run.text.subSequence(beginIndex - runBegin, endIndex - runBegin),
+                                    text = run.text.subSequence(beginOfRunText, endOfRunText),
                                     locale = locale,
                                     baseline = baseline,
                                     style = run.style,
-                                    scaleX = scaleX
+                                    scaleX = scaleX,
+                                    layoutInfo = RenderText.LayoutInfo(obj, run, beginOfRunText, endOfRunText)
                             ),
                             baseline
                     )
@@ -267,17 +270,20 @@ class ParagraphLayouter(
                 }
 
                 private fun renderTextRun(beginIndex: Int, endIndex: Int, runIndex: Int, run: Run.Text, line: LineBuilder) {
-                    val runBegin = runIndexToPlainBeginIndex[runIndex]
+                    val plainBeginOfRun = runIndexToPlainBeginIndex[runIndex]
                     val baseline = runIndexToBaseline[runIndex]
+                    val beginOfRunText = beginIndex - plainBeginOfRun
+                    val endOfRunText = endIndex - plainBeginOfRun
 
                     line.addObject(
                             RenderText(
                                     width = widthOf(beginIndex, endIndex),
                                     height = runIndexToHeight[runIndex],
-                                    text = run.text.subSequence(beginIndex - runBegin, endIndex - runBegin),
+                                    text = run.text.subSequence(beginOfRunText, endOfRunText),
                                     locale = locale,
                                     baseline = baseline,
-                                    style = run.style
+                                    style = run.style,
+                                    layoutInfo = RenderText.LayoutInfo(obj, run, beginOfRunText, endOfRunText)
                             ),
                             baseline
                     )
@@ -290,9 +296,11 @@ class ParagraphLayouter(
                     )
                 }
 
-                fun renderHyphen(plainIndex: Int, line: LineBuilder) {
+                fun renderHyphenAfter(plainIndex: Int, line: LineBuilder) {
                     val runIndex = plainIndexToRunIndex[plainIndex]
                     val run = runs[runIndex]
+                    val plainBeginOfRun = runIndexToPlainBeginIndex[runIndex]
+                    val indexOfHyphen = (plainIndex - plainBeginOfRun) + 1
                     if (run is Run.Text) {
                         val baseline = runIndexToBaseline[runIndex]
 
@@ -303,7 +311,8 @@ class ParagraphLayouter(
                                         text = HYPHEN_STRING,
                                         locale = locale,
                                         baseline = baseline,
-                                        style = run.style
+                                        style = run.style,
+                                        layoutInfo = RenderText.LayoutInfo(obj, run, indexOfHyphen, indexOfHyphen)
                                 ),
                                 baseline
                         )
@@ -366,7 +375,8 @@ class ParagraphLayouter(
     }
 
     private class ParagraphBuilder(
-            private val width: Float
+            private val width: Float,
+            private val layoutObject: LayoutParagraph
     ) {
         private val children = ArrayList<RenderChild>()
         private var height = 0F
@@ -376,7 +386,7 @@ class ParagraphLayouter(
             height += line.height
         }
 
-        fun build() = RenderBox(width, height, children)
+        fun build() = RenderParagraph(width, height, children, layoutObject)
     }
 
     private object Reusables {

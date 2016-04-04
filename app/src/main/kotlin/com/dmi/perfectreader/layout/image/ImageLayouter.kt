@@ -26,7 +26,7 @@ class ImageLayouter(private val bitmapLoader: BitmapLoader) : Layouter<LayoutIma
                     val inSampleSize = calculateInSampleSize(imageWidth, imageHeight, width, height)
                     val bitmap = bitmapLoader.load(obj.src, inSampleSize)
 
-                    return RenderImage(width, height, bitmap)
+                    return RenderImage(width, height, bitmap, obj)
                 } catch (e: IOException) {
                     Log.i(e, "image loading error: ${obj.src}")
 
@@ -34,7 +34,7 @@ class ImageLayouter(private val bitmapLoader: BitmapLoader) : Layouter<LayoutIma
                     val imageHeight = errorBitmap.height.toFloat()
                     val (width, height) = computeDimensions(imageHeight, imageWidth)
 
-                    return RenderImage(width, height, errorBitmap)
+                    return RenderImage(width, height, errorBitmap, obj)
                 }
             }
 

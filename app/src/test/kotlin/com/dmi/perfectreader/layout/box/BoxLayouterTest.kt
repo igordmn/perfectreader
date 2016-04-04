@@ -39,6 +39,7 @@ class BoxLayouterTest {
             childHeights shouldEqual listOf(20F, 200F, 100F, 2F * 100F)
             childXs shouldEqual listOf(0F, 0F, 0F, 0F)
             childYs shouldEqual listOf(0F, 20F, 20F + 200F, 220F + 100F)
+            layoutObject shouldEqual box
         }
     }
 

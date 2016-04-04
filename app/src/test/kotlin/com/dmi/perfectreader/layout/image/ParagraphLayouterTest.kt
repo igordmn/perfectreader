@@ -243,6 +243,8 @@ class ParagraphLayouterTest {
                 Run.Text("ext words ", style2),
                 Run.Text(" qwerty", style1)
         )
+        val obj = LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig())
+
         val lines = listOf(
                 TestLine(left = 20F, width = 100F, text = "some "),
                 TestLine(left = -5F, width = 150F, text = "text words"),
@@ -260,10 +262,7 @@ class ParagraphLayouterTest {
         )
 
         // when
-        val renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig()),
-                LayoutSpace.root(200F, 200F)
-        )
+        val renderObj = layouter.layout(obj, LayoutSpace.root(200F, 200F))
 
         // then
         with (renderObj) {
@@ -280,6 +279,11 @@ class ParagraphLayouterTest {
                 childHeights shouldEqual listOf(HEIGHT1, HEIGHT1)
                 childXs shouldEqual listOf(20F, 20 + 4 * LETTER_WIDTH1)
                 childYs shouldEqual listOf(0F, 0F)
+
+                childTextLayoutObjects shouldEqual listOf(obj, obj)
+                childTextLayoutRuns shouldEqual listOf(runs[0], runs[0])
+                childTextLayoutBeginIndices shouldEqual listOf(0, 4)
+                childTextLayoutEndIndices shouldEqual   listOf(4, 5)
             }
 
             with (children[1].obj as RenderLine) {
@@ -297,6 +301,11 @@ class ParagraphLayouterTest {
                         -5F + 1 * LETTER_WIDTH1 + 3 * LETTER_WIDTH2 + 1 * SPACE_WIDTH2
                 )
                 childYs shouldEqual listOf(ASCENT1 - ASCENT2, 0F, 0F, 0F)
+
+                childTextLayoutObjects shouldEqual listOf(obj, obj, obj, obj)
+                childTextLayoutRuns shouldEqual listOf(runs[0], runs[1], runs[1], runs[1])
+                childTextLayoutBeginIndices shouldEqual listOf(5, 0, 3, 4)
+                childTextLayoutEndIndices shouldEqual   listOf(6, 3, 4, 9)
             }
 
             with (children[2].obj as RenderLine) {
@@ -309,6 +318,11 @@ class ParagraphLayouterTest {
                 childHeights shouldEqual listOf(HEIGHT2, HEIGHT1, HEIGHT1)
                 childXs shouldEqual listOf(0F, SPACE_WIDTH2, SPACE_WIDTH2 + SPACE_WIDTH1)
                 childYs shouldEqual listOf(0F, ASCENT1 - ASCENT2, ASCENT1 - ASCENT2)
+
+                childTextLayoutObjects shouldEqual listOf(obj, obj, obj)
+                childTextLayoutRuns shouldEqual listOf(runs[1], runs[2], runs[2])
+                childTextLayoutBeginIndices shouldEqual listOf(9, 0, 1)
+                childTextLayoutEndIndices shouldEqual   listOf(10, 1, 6)
             }
 
             with (children[3].obj as RenderLine) {
@@ -321,6 +335,11 @@ class ParagraphLayouterTest {
                 childHeights shouldEqual listOf(HEIGHT1)
                 childXs shouldEqual listOf(0F)
                 childYs shouldEqual listOf(0F)
+
+                childTextLayoutObjects shouldEqual listOf(obj)
+                childTextLayoutRuns shouldEqual listOf(runs[2])
+                childTextLayoutBeginIndices shouldEqual listOf(6)
+                childTextLayoutEndIndices shouldEqual   listOf(7)
             }
 
             width shouldEqual 200F
@@ -329,6 +348,7 @@ class ParagraphLayouterTest {
             childHeights shouldEqual listOf(HEIGHT1, HEIGHT2, HEIGHT2, HEIGHT1)
             childXs shouldEqual listOf(0F, 0F, 0F, 0F)
             childYs shouldEqual listOf(0F, HEIGHT1, HEIGHT1 + HEIGHT2, HEIGHT1 + HEIGHT2 + HEIGHT2)
+            layoutObject shouldEqual obj
         }
 
         renderObj.children.map { it.obj }.forEach {
@@ -431,6 +451,8 @@ class ParagraphLayouterTest {
                 Run.Text("t", style1),
                 Run.Text("ext2", style2)
         )
+        val obj = LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig())
+
         val lines = listOf(
                 TestLine(left = 0F, width = 100F, text = "t", hasHyphenAfter = true),
                 TestLine(left = 0F, width = 100F, text = "ext", hasHyphenAfter = true),
@@ -450,10 +472,7 @@ class ParagraphLayouterTest {
         )
 
         // when
-        val renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig()),
-                LayoutSpace.root(200F, 200F)
-        )
+        val renderObj = layouter.layout(obj, LayoutSpace.root(200F, 200F))
 
         // then
         with (renderObj) {
@@ -469,6 +488,11 @@ class ParagraphLayouterTest {
                 childHeights shouldEqual listOf(HEIGHT1, HEIGHT1)
                 childXs shouldEqual listOf(0F, 1 * CHAR_WIDTH1)
                 childYs shouldEqual listOf(0F, 0F)
+
+                childTextLayoutObjects shouldEqual listOf(obj, obj)
+                childTextLayoutRuns shouldEqual listOf(runs[0], runs[0])
+                childTextLayoutBeginIndices shouldEqual listOf(0, 1)
+                childTextLayoutEndIndices shouldEqual   listOf(1, 1)
             }
 
             with (children[1].obj as RenderLine) {
@@ -480,6 +504,11 @@ class ParagraphLayouterTest {
                 childHeights shouldEqual listOf(HEIGHT1, HEIGHT1)
                 childXs shouldEqual listOf(0F, 3 * CHAR_WIDTH1)
                 childYs shouldEqual listOf(0F, 0F)
+
+                childTextLayoutObjects shouldEqual listOf(obj, obj)
+                childTextLayoutRuns shouldEqual listOf(runs[0], runs[0])
+                childTextLayoutBeginIndices shouldEqual listOf(1, 4)
+                childTextLayoutEndIndices shouldEqual   listOf(4, 4)
             }
 
             with (children[2].obj as RenderLine) {
@@ -500,6 +529,11 @@ class ParagraphLayouterTest {
                 childHeights shouldEqual listOf(HEIGHT1, HEIGHT2, HEIGHT2)
                 childXs shouldEqual listOf(0F, 1 * CHAR_WIDTH1, 1 * CHAR_WIDTH1 + 4 * CHAR_WIDTH2)
                 childYs shouldEqual listOf(8F, 0F, 0F)
+
+                childTextLayoutObjects shouldEqual listOf(obj, obj, obj)
+                childTextLayoutRuns shouldEqual listOf(runs[2], runs[3], runs[3])
+                childTextLayoutBeginIndices shouldEqual listOf(0, 0, 4)
+                childTextLayoutEndIndices shouldEqual   listOf(1, 4, 4)
             }
 
             width shouldEqual 200F
@@ -939,6 +973,26 @@ class ParagraphLayouterTest {
     val RenderObject.childStyles: List<FontStyle>
         get() = children.map {
             with (it.obj as RenderText) { style }
+        }
+
+    val RenderObject.childTextLayoutObjects: List<LayoutParagraph>
+        get() = children.map {
+            with (it.obj as RenderText) { layoutInfo.obj }
+        }
+
+    val RenderObject.childTextLayoutRuns: List<LayoutParagraph.Run.Text>
+        get() = children.map {
+            with (it.obj as RenderText) { layoutInfo.run }
+        }
+
+    val RenderObject.childTextLayoutBeginIndices: List<Int>
+        get() = children.map {
+            with (it.obj as RenderText) { layoutInfo.beginIndex }
+        }
+
+    val RenderObject.childTextLayoutEndIndices: List<Int>
+        get() = children.map {
+            with (it.obj as RenderText) { layoutInfo.endIndex }
         }
 
     data class TestMetrics(

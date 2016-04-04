@@ -34,7 +34,7 @@ class BoxLayouter(
                     y += renderObj.height
                 }
 
-                return RenderBox(width, computeHeight(y), renderChildren)
+                return RenderBox(width, computeHeight(y), renderChildren, obj)
             }
 
             fun computeWidth() = size.width.compute(space.width.percentBase, { computeAutoWidth() })
