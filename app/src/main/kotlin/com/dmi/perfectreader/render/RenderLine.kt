@@ -1,4 +1,10 @@
 package com.dmi.perfectreader.render
 
-class RenderLine(width: Float, height: Float, children: List<RenderChild>) :
-        RenderObject(width, height, children)
+import com.dmi.perfectreader.location.BookRange
+
+class RenderLine(
+        width: Float,
+        height: Float,
+        children: List<RenderChild>,
+        range: BookRange
+) : RenderObject(width, height, children, range)

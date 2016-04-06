@@ -12,6 +12,8 @@ import com.dmi.perfectreader.layout.paragraph.LayoutChars
 import com.dmi.perfectreader.layout.paragraph.ParagraphLayouter
 import com.dmi.perfectreader.layout.paragraph.TextMetrics
 import com.dmi.perfectreader.layout.paragraph.liner.Liner
+import com.dmi.perfectreader.location.BookLocation
+import com.dmi.perfectreader.location.BookRange
 import com.dmi.perfectreader.render.RenderLine
 import com.dmi.perfectreader.render.RenderObject
 import com.dmi.perfectreader.render.RenderSpace
@@ -53,9 +55,10 @@ class ParagraphLayouterTest {
                 LayoutParagraph(
                         Locale.US,
                         listOf(
-                                Run.Text("text", style())
+                                Run.Text("text", style(), runRange(0))
                         ),
-                        20F, TextAlign.LEFT, hangingConfig
+                        20F, TextAlign.LEFT, hangingConfig,
+                        rootRange()
                 ),
                 LayoutSpace.root(200F, 200F)
         )
@@ -105,10 +108,11 @@ class ParagraphLayouterTest {
                 LayoutParagraph(
                         Locale.US,
                         listOf(
-                                Run.Text("some ", style1),
-                                Run.Text("text", style2)
+                                Run.Text("some ", style1, runRange(0)),
+                                Run.Text("text", style2, runRange(1))
                         ),
-                        20F, TextAlign.LEFT, DefaultHangingConfig()
+                        20F, TextAlign.LEFT, DefaultHangingConfig(),
+                        rootRange()
                 ),
                 LayoutSpace.root(200F, 200F)
         )
@@ -158,10 +162,11 @@ class ParagraphLayouterTest {
                         Locale.US,
                         listOf(
                                 Run.Object(object1),
-                                Run.Text("text", style()),
+                                Run.Text("text", style(), runRange(1)),
                                 Run.Object(object2)
                         ),
-                        20F, TextAlign.LEFT, DefaultHangingConfig()
+                        20F, TextAlign.LEFT, DefaultHangingConfig(),
+                        rootRange()
                 ),
                 LayoutSpace.root(200F, 200F)
         )
@@ -201,7 +206,8 @@ class ParagraphLayouterTest {
                 LayoutParagraph(
                         Locale.US,
                         listOf(Run.Object(obj)),
-                        20F, TextAlign.LEFT, DefaultHangingConfig()
+                        20F, TextAlign.LEFT, DefaultHangingConfig(),
+                        rootRange()
                 ),
                 LayoutSpace.root(200F, 200F)
         )
@@ -239,11 +245,11 @@ class ParagraphLayouterTest {
         val style2 = style()
 
         val runs = listOf(
-                Run.Text("some t", style1),
-                Run.Text("ext words ", style2),
-                Run.Text(" qwerty", style1)
+                Run.Text("some t", style1, runRange(0)),
+                Run.Text("ext words ", style2, runRange(1)),
+                Run.Text(" qwerty", style1, runRange(2))
         )
-        val obj = LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig())
+        val obj = LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig(), rootRange())
 
         val lines = listOf(
                 TestLine(left = 20F, width = 100F, text = "some "),
@@ -280,10 +286,14 @@ class ParagraphLayouterTest {
                 childXs shouldEqual listOf(20F, 20 + 4 * LETTER_WIDTH1)
                 childYs shouldEqual listOf(0F, 0F)
 
-                childTextLayoutObjects shouldEqual listOf(obj, obj)
-                childTextLayoutRuns shouldEqual listOf(runs[0], runs[0])
-                childTextLayoutBeginIndices shouldEqual listOf(0, 4)
-                childTextLayoutEndIndices shouldEqual   listOf(4, 5)
+                range == BookRange(
+                        runs[0].sublocation(0),
+                        runs[0].sublocation(5)
+                )
+                childRanges shouldEqual listOf(
+                        runs[0].subrange(0, 4),
+                        runs[0].subrange(4, 5)
+                )
             }
 
             with (children[1].obj as RenderLine) {
@@ -302,10 +312,16 @@ class ParagraphLayouterTest {
                 )
                 childYs shouldEqual listOf(ASCENT1 - ASCENT2, 0F, 0F, 0F)
 
-                childTextLayoutObjects shouldEqual listOf(obj, obj, obj, obj)
-                childTextLayoutRuns shouldEqual listOf(runs[0], runs[1], runs[1], runs[1])
-                childTextLayoutBeginIndices shouldEqual listOf(5, 0, 3, 4)
-                childTextLayoutEndIndices shouldEqual   listOf(6, 3, 4, 9)
+                range == BookRange(
+                        runs[0].sublocation(5),
+                        runs[1].sublocation(9)
+                )
+                childRanges shouldEqual listOf(
+                        runs[0].subrange(5, 6),
+                        runs[1].subrange(0, 3),
+                        runs[1].subrange(3, 4),
+                        runs[1].subrange(4, 9)
+                )
             }
 
             with (children[2].obj as RenderLine) {
@@ -319,10 +335,15 @@ class ParagraphLayouterTest {
                 childXs shouldEqual listOf(0F, SPACE_WIDTH2, SPACE_WIDTH2 + SPACE_WIDTH1)
                 childYs shouldEqual listOf(0F, ASCENT1 - ASCENT2, ASCENT1 - ASCENT2)
 
-                childTextLayoutObjects shouldEqual listOf(obj, obj, obj)
-                childTextLayoutRuns shouldEqual listOf(runs[1], runs[2], runs[2])
-                childTextLayoutBeginIndices shouldEqual listOf(9, 0, 1)
-                childTextLayoutEndIndices shouldEqual   listOf(10, 1, 6)
+                range == BookRange(
+                        runs[1].sublocation(9),
+                        runs[2].sublocation(6)
+                )
+                childRanges shouldEqual listOf(
+                        runs[1].subrange(9, 10),
+                        runs[2].subrange(0, 1),
+                        runs[2].subrange(1, 6)
+                )
             }
 
             with (children[3].obj as RenderLine) {
@@ -336,10 +357,13 @@ class ParagraphLayouterTest {
                 childXs shouldEqual listOf(0F)
                 childYs shouldEqual listOf(0F)
 
-                childTextLayoutObjects shouldEqual listOf(obj)
-                childTextLayoutRuns shouldEqual listOf(runs[2])
-                childTextLayoutBeginIndices shouldEqual listOf(6)
-                childTextLayoutEndIndices shouldEqual   listOf(7)
+                range == BookRange(
+                        runs[2].sublocation(6),
+                        runs[2].sublocation(7)
+                )
+                childRanges shouldEqual listOf(
+                        runs[2].subrange(6, 7)
+                )
             }
 
             width shouldEqual 200F
@@ -348,7 +372,7 @@ class ParagraphLayouterTest {
             childHeights shouldEqual listOf(HEIGHT1, HEIGHT2, HEIGHT2, HEIGHT1)
             childXs shouldEqual listOf(0F, 0F, 0F, 0F)
             childYs shouldEqual listOf(0F, HEIGHT1, HEIGHT1 + HEIGHT2, HEIGHT1 + HEIGHT2 + HEIGHT2)
-            layoutObject shouldEqual obj
+            range shouldEqual obj.range
         }
 
         renderObj.children.map { it.obj }.forEach {
@@ -376,7 +400,7 @@ class ParagraphLayouterTest {
 
         val runs = listOf(
                 Run.Object(object1),
-                Run.Text("text", style),
+                Run.Text("text", style, runRange(1)),
                 Run.Object(object2)
         )
         val lines = listOf(
@@ -396,7 +420,7 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig()),
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig(), rootRange()),
                 LayoutSpace.root(200F, 200F)
         )
 
@@ -446,12 +470,16 @@ class ParagraphLayouterTest {
         val renderObj1 = renderObj(50F, 10F)
 
         val runs = listOf(
-                Run.Text("text", style1),
+                Run.Text("text", style1, runRange(0)),
                 Run.Object(object1),
-                Run.Text("t", style1),
-                Run.Text("ext2", style2)
+                Run.Text("t", style1, runRange(2)),
+                Run.Text("ext2", style2, runRange(3))
         )
-        val obj = LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig())
+        val run0 = runs[0] as Run.Text
+        val run2 = runs[2] as Run.Text
+        val run3 = runs[3] as Run.Text
+
+        val obj = LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig(), rootRange())
 
         val lines = listOf(
                 TestLine(left = 0F, width = 100F, text = "t", hasHyphenAfter = true),
@@ -489,10 +517,14 @@ class ParagraphLayouterTest {
                 childXs shouldEqual listOf(0F, 1 * CHAR_WIDTH1)
                 childYs shouldEqual listOf(0F, 0F)
 
-                childTextLayoutObjects shouldEqual listOf(obj, obj)
-                childTextLayoutRuns shouldEqual listOf(runs[0], runs[0])
-                childTextLayoutBeginIndices shouldEqual listOf(0, 1)
-                childTextLayoutEndIndices shouldEqual   listOf(1, 1)
+                range == BookRange(
+                        run0.sublocation(0),
+                        run0.sublocation(1)
+                )
+                childRanges shouldEqual listOf(
+                        run0.subrange(0, 1),
+                        run0.subrange(1, 1)
+                )
             }
 
             with (children[1].obj as RenderLine) {
@@ -505,10 +537,14 @@ class ParagraphLayouterTest {
                 childXs shouldEqual listOf(0F, 3 * CHAR_WIDTH1)
                 childYs shouldEqual listOf(0F, 0F)
 
-                childTextLayoutObjects shouldEqual listOf(obj, obj)
-                childTextLayoutRuns shouldEqual listOf(runs[0], runs[0])
-                childTextLayoutBeginIndices shouldEqual listOf(1, 4)
-                childTextLayoutEndIndices shouldEqual   listOf(4, 4)
+                range == BookRange(
+                        run0.sublocation(0),
+                        run0.sublocation(4)
+                )
+                childRanges shouldEqual listOf(
+                        run0.subrange(1, 4),
+                        run0.subrange(4, 4)
+                )
             }
 
             with (children[2].obj as RenderLine) {
@@ -530,10 +566,15 @@ class ParagraphLayouterTest {
                 childXs shouldEqual listOf(0F, 1 * CHAR_WIDTH1, 1 * CHAR_WIDTH1 + 4 * CHAR_WIDTH2)
                 childYs shouldEqual listOf(8F, 0F, 0F)
 
-                childTextLayoutObjects shouldEqual listOf(obj, obj, obj)
-                childTextLayoutRuns shouldEqual listOf(runs[2], runs[3], runs[3])
-                childTextLayoutBeginIndices shouldEqual listOf(0, 0, 4)
-                childTextLayoutEndIndices shouldEqual   listOf(1, 4, 4)
+                range == BookRange(
+                        run2.sublocation(0),
+                        run3.sublocation(4)
+                )
+                childRanges shouldEqual listOf(
+                        run2.subrange(0, 1),
+                        run3.subrange(0, 4),
+                        run3.subrange(4, 4)
+                )
             }
 
             width shouldEqual 200F
@@ -553,7 +594,7 @@ class ParagraphLayouterTest {
         val style = style()
 
         val runs = listOf(
-                Run.Text(" text1   text2   text3 text4", style)
+                Run.Text(" text1   text2   text3 text4", style, runRange(0))
         )
         val lines = listOf(
                 TestLine(left = -10F, width = 180F, text = " text1   text2 "),
@@ -571,7 +612,7 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.RIGHT, DefaultHangingConfig()),
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.RIGHT, DefaultHangingConfig(), rootRange()),
                 LayoutSpace.root(200F, 200F)
         )
 
@@ -617,7 +658,7 @@ class ParagraphLayouterTest {
         val style = style()
 
         val runs = listOf(
-                Run.Text(" text1   text2   text3 text4", style)
+                Run.Text(" text1   text2   text3 text4", style, runRange(0))
         )
         val lines = listOf(
                 TestLine(left = -10F, width = 180F, text = " text1   text2 "),
@@ -635,7 +676,7 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.CENTER, DefaultHangingConfig()),
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.CENTER, DefaultHangingConfig(), rootRange()),
                 LayoutSpace.root(200F, 200F)
         )
 
@@ -681,7 +722,7 @@ class ParagraphLayouterTest {
         val style = style()
 
         val runs = listOf(
-                Run.Text(" text1   t ext2   text3 text4  text5 ", style)
+                Run.Text(" text1   t ext2   text3 text4  text5 ", style, runRange(0))
         )
         val lines = listOf(
                 TestLine(left = -10F, width = 180F, text = " text1   t ext2 "),
@@ -700,7 +741,7 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.JUSTIFY, DefaultHangingConfig()),
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.JUSTIFY, DefaultHangingConfig(), rootRange()),
                 LayoutSpace.root(200F, 200F)
         )
 
@@ -782,7 +823,7 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, listOf(), 20F, TextAlign.LEFT, DefaultHangingConfig()),
+                LayoutParagraph(Locale.US, listOf(), 20F, TextAlign.LEFT, DefaultHangingConfig(), rootRange()),
                 LayoutSpace.root(200F, 200F)
         )
 
@@ -798,7 +839,7 @@ class ParagraphLayouterTest {
     fun `compute width when wraps content`() {
         // given
         val runs = listOf(
-                Run.Text("texttexttext", style())
+                Run.Text("texttexttext", style(), runRange(0))
         )
         val lines = listOf(
                 TestLine(left = 30F, width = 100F, text = "text"),
@@ -820,7 +861,7 @@ class ParagraphLayouterTest {
 
         // when
         var renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig()),
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, DefaultHangingConfig(), rootRange()),
                 layoutSpace
         )
 
@@ -830,7 +871,7 @@ class ParagraphLayouterTest {
 
         // when
         renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.RIGHT, DefaultHangingConfig()),
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.RIGHT, DefaultHangingConfig(), rootRange()),
                 layoutSpace
         )
 
@@ -843,7 +884,7 @@ class ParagraphLayouterTest {
 
         // when
         renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.CENTER, DefaultHangingConfig()),
+                LayoutParagraph(Locale.US, runs, 20F, TextAlign.CENTER, DefaultHangingConfig(), rootRange()),
                 layoutSpace
         )
 
@@ -860,10 +901,10 @@ class ParagraphLayouterTest {
                 override fun layout(obj: LayoutObject, space: LayoutSpace) = layoutToRenderObject[obj]!!
             }
 
-    fun layoutObj() = object : LayoutObject() {}
+    fun layoutObj() = object : LayoutObject(rootRange()) {}
 
     fun renderObj(width: Float = 0F, height: Float = 0F) =
-            object : RenderObject(width, height, emptyList()) {
+            object : RenderObject(width, height, emptyList(), rootRange()) {
                 override fun canPartiallyPaint() = false
             }
 
@@ -975,25 +1016,16 @@ class ParagraphLayouterTest {
             with (it.obj as RenderText) { style }
         }
 
-    val RenderObject.childTextLayoutObjects: List<LayoutParagraph>
-        get() = children.map {
-            with (it.obj as RenderText) { layoutInfo.obj }
-        }
+    val RenderObject.childRanges: List<BookRange>
+        get() = children.map { it.obj.range }
 
-    val RenderObject.childTextLayoutRuns: List<LayoutParagraph.Run.Text>
-        get() = children.map {
-            with (it.obj as RenderText) { layoutInfo.run }
-        }
+    fun Run.Text.sublocation(index: Int) = range.sublocation(index.toDouble() / text.length)
 
-    val RenderObject.childTextLayoutBeginIndices: List<Int>
-        get() = children.map {
-            with (it.obj as RenderText) { layoutInfo.beginIndex }
-        }
-
-    val RenderObject.childTextLayoutEndIndices: List<Int>
-        get() = children.map {
-            with (it.obj as RenderText) { layoutInfo.endIndex }
-        }
+    fun rootRange() = BookRange(BookLocation(0.0), BookLocation(100.0))
+    fun runRange(index: Int) = rootRange().subrange(
+            index.toDouble() / 1000,
+            (index.toDouble() + 1) / 1000
+    )
 
     data class TestMetrics(
             val letterWidth: Float = 0F,

@@ -1,11 +1,13 @@
 package com.dmi.perfectreader.render
 
 import android.graphics.Canvas
+import com.dmi.perfectreader.location.BookRange
 
 abstract class RenderObject(
         val width: Float,
         val height: Float,
-        val children: List<RenderChild>
+        val children: List<RenderChild>,
+        val range: BookRange
 ) {
     /**
      * Необходимо для механизма разделения на страницы.

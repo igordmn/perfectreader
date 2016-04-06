@@ -1,5 +1,7 @@
 package com.dmi.perfectreader.render.page
 
+import com.dmi.perfectreader.location.BookLocation
+import com.dmi.perfectreader.location.BookRange
 import com.dmi.perfectreader.render.RenderChild
 import com.dmi.perfectreader.render.RenderObject
 import org.amshove.kluent.shouldEqual
@@ -130,26 +132,14 @@ class RenderRowsTest {
         bottomChildIndicesOf(rows) shouldEqual listOf(emptyList())
     }
 
-    class TestObject(
+    inner class TestObject(
             val id: String,
             private val canPartiallyPaint: Boolean,
             height: Float,
             private val marginTop: Float,
             private val marginBottom: Float,
             private val childObjects: List<RenderObject> = emptyList()
-    ) : RenderObject(0F, height, toChildren(marginTop, childObjects)) {
-        companion object {
-            fun toChildren(initialY: Float, childObjects: List<RenderObject>) = ArrayList<RenderChild>().apply {
-                var y = initialY
-                for (childObj in childObjects) {
-                    add(RenderChild(
-                            0F, y, childObj
-                    ))
-                    y += childObj.height
-                }
-            }
-        }
-
+    ) : RenderObject(0F, height, toChildren(marginTop, childObjects), range()) {
         override fun canPartiallyPaint() = canPartiallyPaint
         override fun internalMargins() = Margins(0F, 0F, marginTop, marginBottom)
 
@@ -157,6 +147,18 @@ class RenderRowsTest {
         override fun hashCode() = id.hashCode()
         override fun toString() = id
     }
+
+    fun toChildren(initialY: Float, childObjects: List<RenderObject>) = ArrayList<RenderChild>().apply {
+        var y = initialY
+        for (childObj in childObjects) {
+            add(RenderChild(
+                    0F, y, childObj
+            ))
+            y += childObj.height
+        }
+    }
+
+    fun range() = BookRange(BookLocation(0.0), BookLocation(0.0))
 
     fun objectsOf(rows: List<RenderRow>) = rows.map { it.obj }
     fun topChildIndicesOf(rows: List<RenderRow>) = rows.map { it.top.childIndices }

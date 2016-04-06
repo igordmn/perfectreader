@@ -6,6 +6,8 @@ import com.dmi.perfectreader.layout.common.LayoutLength.Absolute
 import com.dmi.perfectreader.layout.common.LayoutSize
 import com.dmi.perfectreader.layout.common.LayoutSpace
 import com.dmi.perfectreader.layout.common.Layouter
+import com.dmi.perfectreader.location.BookLocation
+import com.dmi.perfectreader.location.BookRange
 import com.dmi.perfectreader.render.RenderObject
 import com.dmi.perfectreader.style.Align
 import org.amshove.kluent.shouldEqual
@@ -25,7 +27,8 @@ class BoxLayouterTest {
                         FixedObject(300F, 200F),
                         FillObject(),
                         PercentObject(2F)
-                )
+                ),
+                range()
         )
 
         // when
@@ -39,7 +42,7 @@ class BoxLayouterTest {
             childHeights shouldEqual listOf(20F, 200F, 100F, 2F * 100F)
             childXs shouldEqual listOf(0F, 0F, 0F, 0F)
             childYs shouldEqual listOf(0F, 20F, 20F + 200F, 220F + 100F)
-            layoutObject shouldEqual box
+            range shouldEqual box.range
         }
     }
 
@@ -55,7 +58,8 @@ class BoxLayouterTest {
                         FixedObject(300F, 200F),
                         FillObject(),
                         PercentObject(2F)
-                )
+                ),
+                range()
         )
 
         // when
@@ -82,7 +86,8 @@ class BoxLayouterTest {
                         FixedObject(300F, 200F),
                         FillObject(),
                         PercentObject(2F)
-                )
+                ),
+                range()
         )
 
         // when
@@ -109,7 +114,8 @@ class BoxLayouterTest {
                         FixedObject(300F, 200F),
                         FillObject(),
                         PercentObject(2F)
-                )
+                ),
+                range()
         )
 
         // when
@@ -136,7 +142,8 @@ class BoxLayouterTest {
                         FixedObject(300F, 200F),
                         FillObject(),
                         PercentObject(2F)
-                )
+                ),
+                range()
         )
 
         // when
@@ -163,7 +170,8 @@ class BoxLayouterTest {
                         FixedObject(300F, 200F),
                         FillObject(),
                         PercentObject(2F)
-                )
+                ),
+                range()
         )
 
         // when
@@ -190,7 +198,8 @@ class BoxLayouterTest {
                         FixedObject(300F, 200F),
                         FillObject(),
                         PercentObject(2F)
-                )
+                ),
+                range()
         )
 
         // when
@@ -221,7 +230,8 @@ class BoxLayouterTest {
                         FixedObject(300F, 200F),
                         FillObject(),
                         PercentObject(2F)
-                )
+                ),
+                range()
         )
 
         // when
@@ -247,7 +257,8 @@ class BoxLayouterTest {
         val box = LayoutBox(
                 autoSize(),
                 Align.LEFT,
-                listOf()
+                listOf(),
+                range()
         )
 
         // when
@@ -306,7 +317,7 @@ class BoxLayouterTest {
             LayoutSpace.Dimension(0F, LayoutSpace.Area.WrapContent(maxHeight))
     )
 
-    fun renderObject(width: Float, height: Float) = object : RenderObject(width, height, emptyList()) {
+    fun renderObject(width: Float, height: Float) = object : RenderObject(width, height, emptyList(), range()) {
         override fun canPartiallyPaint() = false
     }
 
@@ -322,7 +333,9 @@ class BoxLayouterTest {
     val RenderObject.childYs: List<Float>
         get() = children.map { it.y }
 
-    class FixedObject(val width: Float, val height: Float) : LayoutObject()
-    class FillObject() : LayoutObject()
-    class PercentObject(val percent: Float) : LayoutObject()
+    fun range() = BookRange(BookLocation(0.0), BookLocation(0.0))
+
+    inner class FixedObject(val width: Float, val height: Float) : LayoutObject(range())
+    inner class FillObject() : LayoutObject(range())
+    inner class PercentObject(val percent: Float) : LayoutObject(range())
 }

@@ -1,3 +1,5 @@
 package com.dmi.perfectreader.layout
 
-abstract class LayoutObject
+import com.dmi.perfectreader.location.BookRange
+
+abstract class LayoutObject(val range: BookRange)

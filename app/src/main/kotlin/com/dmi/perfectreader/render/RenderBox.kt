@@ -1,12 +1,12 @@
 package com.dmi.perfectreader.render
 
-import com.dmi.perfectreader.layout.LayoutBox
+import com.dmi.perfectreader.location.BookRange
 
 class RenderBox(
         width: Float,
         height: Float,
         children: List<RenderChild>,
-        val layoutObject: LayoutBox
-) : RenderObject(width, height, children) {
+        range: BookRange
+) : RenderObject(width, height, children, range) {
     override fun canPartiallyPaint() = true
 }

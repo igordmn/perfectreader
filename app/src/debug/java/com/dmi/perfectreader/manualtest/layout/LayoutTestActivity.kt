@@ -23,6 +23,8 @@ import com.dmi.perfectreader.layout.paragraph.liner.breaker.WordBreaker
 import com.dmi.perfectreader.layout.paragraph.liner.hyphenator.CachedHyphenatorResolver
 import com.dmi.perfectreader.layout.paragraph.liner.hyphenator.TeXHyphenatorResolver
 import com.dmi.perfectreader.layout.paragraph.liner.hyphenator.TeXPatternsSource
+import com.dmi.perfectreader.location.BookLocation
+import com.dmi.perfectreader.location.BookRange
 import com.dmi.perfectreader.render.page.RenderPage
 import com.dmi.perfectreader.render.page.merge
 import com.dmi.perfectreader.render.page.splitIntoRows
@@ -33,6 +35,8 @@ import com.dmi.util.base.BaseActivity
 import java.util.*
 
 class LayoutTestActivity : BaseActivity() {
+    val range = BookRange(BookLocation(0.0), BookLocation(0.0))
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -80,23 +84,25 @@ class LayoutTestActivity : BaseActivity() {
         val testParagraph = LayoutParagraph(
                 Locale.US,
                 listOf(
-                        Run.Text("This is text. This is text. This is te", FontStyle(25F, Color.RED, fontRenderParams)),
-                        Run.Text("xt. This is text.             This is text", FontStyle(15F, Color.BLUE, fontRenderParams)),
-                        Run.Text(" texttextextetetxetextxtextx", FontStyle(15F, Color.BLACK, fontRenderParams)),
-                        Run.Text("-text-text-text-exte-tet-xete-xtxt-extx,hhh,jj,,kk,llh,hh", FontStyle(15F, Color.BLACK, fontRenderParams))
+                        Run.Text("This is text. This is text. This is te", FontStyle(25F, Color.RED, fontRenderParams), range),
+                        Run.Text("xt. This is text.             This is text", FontStyle(15F, Color.BLUE, fontRenderParams), range),
+                        Run.Text(" texttextextetetxetextxtextx", FontStyle(15F, Color.BLACK, fontRenderParams), range),
+                        Run.Text("-text-text-text-exte-tet-xete-xtxt-extx,hhh,jj,,kk,llh,hh", FontStyle(15F, Color.BLACK, fontRenderParams), range)
                 ),
                 0F,
                 TextAlign.JUSTIFY,
-                hangingConfig
+                hangingConfig,
+                range
         )
 
         val bookParagraphs = bookText.split("\n").map {
             LayoutParagraph(
                     Locale("ru", "RU"),
-                    listOf(Run.Text(it, FontStyle(10F, Color.BLACK, fontRenderParams))),
+                    listOf(Run.Text(it, FontStyle(10F, Color.BLACK, fontRenderParams), range)),
                     0F,
                     TextAlign.JUSTIFY,
-                    hangingConfig
+                    hangingConfig,
+                    range
             )
         }
 
@@ -104,25 +110,29 @@ class LayoutTestActivity : BaseActivity() {
             testFrame(LayoutBox(
                     LayoutSize(Dimension.Auto(), Dimension.Auto()),
                     Align.LEFT,
-                    listOf(it)
+                    listOf(it),
+                    range
             ))
         }
 
         val image = testFrame(LayoutImage(
                 LayoutSize(Dimension.Auto(), Dimension.Auto()),
-                "manualtest/pagebook/image.png"
+                "manualtest/pagebook/image.png",
+                range
         ))
 
         val box1 = testFrame(LayoutBox(
                 LayoutSize(Dimension.Auto(), Dimension.Auto()),
                 Align.LEFT,
-                boxedParagraphs
+                boxedParagraphs,
+                range
         ))
 
         val rootBox = LayoutBox(
                 LayoutSize(Dimension.Auto(), Dimension.Auto()),
                 Align.LEFT,
-                listOf(testParagraph, image) + box1
+                listOf(testParagraph, image) + box1,
+                range
         )
 
         val renderRoot = layouter.layout(rootBox, LayoutSpace.root(700F, 700F))
@@ -164,6 +174,7 @@ class LayoutTestActivity : BaseActivity() {
                     LayoutFrame.Border(4F, Color.MAGENTA)
             ),
             LayoutFrame.Background(Color.LTGRAY),
-            obj
+            obj,
+            range
     )
 }

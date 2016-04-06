@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Paint.HINTING_OFF
 import android.graphics.Paint.HINTING_ON
 import android.text.TextPaint
-import com.dmi.perfectreader.layout.LayoutParagraph
+import com.dmi.perfectreader.location.BookRange
 import com.dmi.perfectreader.style.FontStyle
 import java.util.*
 import java.util.Collections.emptyList
@@ -15,8 +15,8 @@ open class RenderText(width: Float,
                       val locale: Locale,
                       val baseline: Float,
                       val style: FontStyle,
-                      val layoutInfo: LayoutInfo
-) : RenderObject(width, height, emptyList<RenderChild>()) {
+                      range: BookRange
+) : RenderObject(width, height, emptyList<RenderChild>(), range) {
     override fun paintItself(canvas: Canvas) {
         super.paintItself(canvas)
         val paint = PaintCache.forStyle(style)
@@ -41,11 +41,4 @@ open class RenderText(width: Float,
             return paint
         }
     }
-
-    class LayoutInfo(
-            val obj: LayoutParagraph,
-            val run: LayoutParagraph.Run.Text,
-            val beginIndex: Int,
-            val endIndex: Int
-    )
 }

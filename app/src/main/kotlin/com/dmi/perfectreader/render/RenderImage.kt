@@ -1,14 +1,14 @@
 package com.dmi.perfectreader.render
 
 import android.graphics.*
-import com.dmi.perfectreader.layout.LayoutImage
+import com.dmi.perfectreader.location.BookRange
 
 class RenderImage(
         width: Float,
         height: Float,
         val bitmap: Bitmap,
-        val layoutObject: LayoutImage
-) : RenderObject(width, height, emptyList()) {
+        range: BookRange
+) : RenderObject(width, height, emptyList(), range) {
     companion object {
         private val paint = Paint()
     }

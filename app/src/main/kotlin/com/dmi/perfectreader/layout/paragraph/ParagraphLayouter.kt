@@ -8,6 +8,7 @@ import com.dmi.perfectreader.layout.common.LayoutSpace
 import com.dmi.perfectreader.layout.common.LayoutSpace.Area
 import com.dmi.perfectreader.layout.common.Layouter
 import com.dmi.perfectreader.layout.paragraph.liner.Liner
+import com.dmi.perfectreader.location.BookRange
 import com.dmi.perfectreader.render.*
 import com.dmi.perfectreader.style.TextAlign
 import com.dmi.util.cache.ReusableArrayList
@@ -90,12 +91,14 @@ class ParagraphLayouter(
                     renderLine.addOffset(freeSpace / 2)
 
                 with (line.tokens) {
+                    check(size > 0)
+
                     for (i in 0..size - 1) {
                         val spaceScaleX = if (i > 0 && i < size - 1) midspaceScale else 1F
                         text.render(this[i], spaceScaleX, renderLine)
                     }
 
-                    if (line.hasHyphenAfter && size > 0)
+                    if (line.hasHyphenAfter)
                         text.renderHyphenAfter(last().endIndex - 1, renderLine)
                 }
 
@@ -255,7 +258,7 @@ class ParagraphLayouter(
                                     baseline = baseline,
                                     style = run.style,
                                     scaleX = scaleX,
-                                    layoutInfo = RenderText.LayoutInfo(obj, run, beginOfRunText, endOfRunText)
+                                    range = run.subrange(beginOfRunText, endOfRunText)
                             ),
                             baseline
                     )
@@ -283,7 +286,7 @@ class ParagraphLayouter(
                                     locale = locale,
                                     baseline = baseline,
                                     style = run.style,
-                                    layoutInfo = RenderText.LayoutInfo(obj, run, beginOfRunText, endOfRunText)
+                                    range = run.subrange(beginOfRunText, endOfRunText)
                             ),
                             baseline
                     )
@@ -312,7 +315,7 @@ class ParagraphLayouter(
                                         locale = locale,
                                         baseline = baseline,
                                         style = run.style,
-                                        layoutInfo = RenderText.LayoutInfo(obj, run, indexOfHyphen, indexOfHyphen)
+                                        range = run.subrange(indexOfHyphen, indexOfHyphen)
                                 ),
                                 baseline
                         )
@@ -370,7 +373,12 @@ class ParagraphLayouter(
                 children.add(RenderChild(x, y, obj))
             }
 
-            return RenderLine(width, lineHeight, children)
+            val range = BookRange(
+                    objects.first().range.begin,
+                    objects.last().range.end
+            )
+
+            return RenderLine(width, lineHeight, children, range)
         }
     }
 
@@ -386,7 +394,7 @@ class ParagraphLayouter(
             height += line.height
         }
 
-        fun build() = RenderParagraph(width, height, children, layoutObject)
+        fun build() = RenderParagraph(width, height, children, layoutObject.range)
     }
 
     private object Reusables {

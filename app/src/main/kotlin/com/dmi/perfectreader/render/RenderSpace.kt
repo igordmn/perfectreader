@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.render
 
 import android.graphics.Canvas
+import com.dmi.perfectreader.location.BookRange
 import com.dmi.perfectreader.style.FontStyle
 import java.util.*
 
@@ -11,7 +12,7 @@ class RenderSpace(width: Float,
                   baseline: Float,
                   style: FontStyle,
                   val scaleX: Float,
-                  layoutInfo: LayoutInfo
-) : RenderText(width, height, text, locale, baseline, style, layoutInfo) {
+                  range: BookRange
+) : RenderText(width, height, text, locale, baseline, style, range) {
     override fun paintItself(canvas: Canvas) = Unit
 }

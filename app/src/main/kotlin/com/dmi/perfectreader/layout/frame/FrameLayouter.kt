@@ -47,7 +47,7 @@ class FrameLayouter(
                         toRenderBorders(obj.borders),
                         toRenderBackground(obj.background),
                         RenderChild(marginLeft + borderLeft + paddingLeft, marginTop + borderTop + paddingTop, renderObj),
-                        obj
+                        obj.range
                 )
             }
 
