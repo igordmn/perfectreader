@@ -15,7 +15,7 @@ class RenderRow(
     fun paint(canvas: Canvas) {
         canvas.save()
 
-        canvas.clipRect(0F, top.offset, Float.MAX_VALUE, bottom.offset)
+        canvas.clipRect(0F, 0F, Float.MAX_VALUE, height)
         canvas.translate(0F, -top.offset)
         paintRecursive(canvas, obj, 0, true, true)
 
