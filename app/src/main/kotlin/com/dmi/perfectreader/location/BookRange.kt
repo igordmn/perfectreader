@@ -1,6 +1,10 @@
 package com.dmi.perfectreader.location
 
 data class BookRange(val begin: BookLocation, val end: BookLocation) {
+    init {
+        check(end >= begin)
+    }
+
     fun sublocation(percent: Double): BookLocation {
         check(percent >= 0.0 && percent <= 1.0)
         val distance = end.offset - begin.offset
@@ -14,4 +18,6 @@ data class BookRange(val begin: BookLocation, val end: BookLocation) {
                 sublocation(endPercent)
         )
     }
+
+    operator fun contains(location: BookLocation) = location >= begin && location < end
 }

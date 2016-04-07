@@ -1,3 +1,7 @@
 package com.dmi.perfectreader.location
 
-data class BookLocation(val offset: Double)
+import com.google.common.primitives.Doubles
+
+data class BookLocation(val offset: Double) {
+    operator fun compareTo(other: BookLocation) = Doubles.compare(offset, other.offset)
+}
