@@ -3,10 +3,9 @@ buildscript {
         config = Utils.loadProperties(".sign/sign.properties", "workspace.properties")
 
         projectVersions = [
-                project: "0.7",
                 kotlin: "1.0.1-2",
-                supportLibrary: "23.1.1",
-                buildTools: "23.0.2",
+                supportLibrary: "23.2.1",
+                buildTools: "23.0.3",
                 minSdk: 16,
                 targetSdk: 23,
                 compileSdk: 23,
@@ -62,7 +61,7 @@ buildscript {
     repositories projectRepositories
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0'
+        classpath "com.android.tools.build:gradle:2.0.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$projectVersions.kotlin"
         classpath "com.github.JakeWharton:sdk-manager-plugin:220bf7a88a7072df3ed16dc8466fb144f2817070"
     }
