@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.KeyEvent
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.book.BookFragment
-import com.dmi.perfectreader.manualtest.testbook.TestBooks
 import com.dmi.util.base.BaseActivity
 import com.dmi.util.layout.HasLayout
 import com.google.common.io.ByteStreams
@@ -54,6 +53,6 @@ class BookFragmentTestActivity : BaseActivity() {
     }
 
     companion object {
-        private val TEST_BOOK = TestBooks.PRATCHETT_INTERESTING_TIMES
+        private val TEST_BOOK = ""
     }
 }
