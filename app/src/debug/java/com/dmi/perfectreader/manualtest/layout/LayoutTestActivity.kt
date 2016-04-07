@@ -139,7 +139,8 @@ class LayoutTestActivity : BaseActivity() {
 
         val renderRows = splitIntoRows(renderRoot)
 
-        var page = RenderPage()
+        var begin = renderRows.first().range.begin
+        var page = RenderPage(emptyList(), 0F, BookRange(begin, begin))
         for (row in renderRows) {
             page = page merge row
         }

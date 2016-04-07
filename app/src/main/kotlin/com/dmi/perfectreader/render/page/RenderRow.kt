@@ -1,9 +1,15 @@
 package com.dmi.perfectreader.render.page
 
 import android.graphics.Canvas
+import com.dmi.perfectreader.location.BookRange
 import com.dmi.perfectreader.render.RenderObject
 
-class RenderRow(val obj: RenderObject, val top: Edge,val bottom: Edge) {
+class RenderRow(
+        val obj: RenderObject,
+        val top: Edge,
+        val bottom: Edge,
+        val range: BookRange
+) {
     val height = bottom.offset - top.offset
 
     fun paint(canvas: Canvas) {

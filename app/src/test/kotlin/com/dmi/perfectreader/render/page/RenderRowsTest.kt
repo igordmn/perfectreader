@@ -14,27 +14,27 @@ class RenderRowsTest {
     fun `split complex object into rows`() {
         // given
         val rootObj =
-                TestObject("root", true, 100F, 10F, 40F, listOf(
-                        TestObject("child_0", true, 110F, 11F, 39F, listOf(
-                                TestObject("!child_0_0", false, 120F, 12F, 38F),
-                                TestObject("child_0_1", true, 130F, 13F, 37F, listOf(
-                                        TestObject("!child_0_1_0", false, 140F, 14F, 36F, listOf(
-                                                TestObject("child_0_1_0_0", true, 150F, 15F, 35F)
+                TestObject("root", true, 100F, 10F, 40F, 0..1000, listOf(
+                        TestObject("child_0", true, 110F, 11F, 39F, 100..500, listOf(
+                                TestObject("!child_0_0", false, 120F, 12F, 38F, 110..120),
+                                TestObject("child_0_1", true, 130F, 13F, 37F, 130..490, listOf(
+                                        TestObject("!child_0_1_0", false, 140F, 14F, 36F, 140..200, listOf(
+                                                TestObject("child_0_1_0_0", true, 150F, 15F, 35F, 150..190)
                                         )),
-                                        TestObject("!child_0_1_1", true, 160F, 16F, 34F),
-                                        TestObject("!child_0_1_2", false, 170F, 17F, 33F),
-                                        TestObject("child_0_1_3", true, 180F, 18F, 32F, listOf(
-                                                TestObject("!child_0_1_3_0", false, 190F, 19F, 31F),
-                                                TestObject("!child_0_1_3_1", false, 200F, 20F, 30F)
+                                        TestObject("!child_0_1_1", true, 160F, 16F, 34F, 210..220),
+                                        TestObject("!child_0_1_2", false, 170F, 17F, 33F, 230..240),
+                                        TestObject("child_0_1_3", true, 180F, 18F, 32F, 250..300, listOf(
+                                                TestObject("!child_0_1_3_0", false, 190F, 19F, 31F, 260..270),
+                                                TestObject("!child_0_1_3_1", false, 200F, 20F, 30F, 280..290)
                                         )),
-                                        TestObject("!child_0_1_4", false, 210F, 21F, 29F)
+                                        TestObject("!child_0_1_4", false, 210F, 21F, 29F, 310..400)
                                 ))
                         )),
-                        TestObject("!child_1", false, 220F, 22F, 28F),
-                        TestObject("child_2", true, 230F, 23F, 27F, listOf(
-                                TestObject("child_2_0", true, 240F, 24F, 26F, listOf(
-                                        TestObject("child_2_0_0", true, 240F, 25F, 24F, listOf(
-                                                TestObject("!child_2_0_0_0", true, 260F, 26F, 23F)
+                        TestObject("!child_1", false, 220F, 22F, 28F, 600..700),
+                        TestObject("child_2", true, 230F, 23F, 27F, 800..900, listOf(
+                                TestObject("child_2_0", true, 240F, 24F, 26F, 810..890, listOf(
+                                        TestObject("child_2_0_0", true, 240F, 25F, 24F, 820..880, listOf(
+                                                TestObject("!child_2_0_0_0", true, 260F, 26F, 23F, 830..870)
                                         ))
                                 ))
                         ))
@@ -92,17 +92,29 @@ class RenderRowsTest {
                 absoluteBottomOf("!child_1") - 28F,
                 absoluteBottomOf("root") - 40F
         )
+
+        rangesOf(rows) shouldEqual listOf(
+                range(0..120), //   root           .. !child_0_0
+                range(130..200), // child_0_1      .. !child_0_1_0
+                range(210..220), // !child_0_1_1   .. !child_0_1_1
+                range(230..240), // !child_0_1_2   .. !child_0_1_2
+                range(250..270), // child_0_1_3    .. !child_0_1_3_0
+                range(280..300), // !child_0_1_3_1 .. child_0_1_3
+                range(310..500), // !child_0_1_4   .. child_0
+                range(600..700), // !child_1       .. !child_1
+                range(800..1000) // child_2        .. root
+        )
     }
 
     @Test
     fun `split solid object into single row`() {
         // given
-        val obj = TestObject("", false, 100F, 10F, 20F, listOf(
-                TestObject("", true, 100F, 10F, 20F, listOf(
-                        TestObject("", false, 100F, 10F, 20F),
-                        TestObject("", false, 100F, 10F, 20F)
+        val obj = TestObject("", false, 100F, 10F, 20F, 0..1000, listOf(
+                TestObject("", true, 100F, 10F, 20F, 10..900, listOf(
+                        TestObject("", false, 100F, 10F, 20F, 20..30),
+                        TestObject("", false, 100F, 10F, 20F, 40..890)
                 )),
-                TestObject("", false, 100F, 10F, 20F)
+                TestObject("", false, 100F, 10F, 20F, 910..990)
         ))
 
         // when
@@ -114,12 +126,13 @@ class RenderRowsTest {
         bottomsOf(rows) shouldEqual listOf(100F - 20F)
         topChildIndicesOf(rows) shouldEqual listOf(emptyList())
         bottomChildIndicesOf(rows) shouldEqual listOf(emptyList())
+        rangesOf(rows) shouldEqual listOf(range(0..1000))
     }
 
     @Test
     fun `split single object into single row`() {
         // given
-        val obj = TestObject("", true, 100F, 10F, 20F)
+        val obj = TestObject("", true, 100F, 10F, 20F, 0..1000)
 
         // when
         val rows = splitIntoRows(obj)
@@ -130,6 +143,7 @@ class RenderRowsTest {
         bottomsOf(rows) shouldEqual listOf(100F - 20F)
         topChildIndicesOf(rows) shouldEqual listOf(emptyList())
         bottomChildIndicesOf(rows) shouldEqual listOf(emptyList())
+        rangesOf(rows) shouldEqual listOf(range(0..1000))
     }
 
     inner class TestObject(
@@ -138,8 +152,9 @@ class RenderRowsTest {
             height: Float,
             private val marginTop: Float,
             private val marginBottom: Float,
+            private val intRange: IntRange,
             private val childObjects: List<RenderObject> = emptyList()
-    ) : RenderObject(0F, height, toChildren(marginTop, childObjects), range()) {
+    ) : RenderObject(0F, height, toChildren(marginTop, childObjects), range(intRange)) {
         override fun canPartiallyPaint() = canPartiallyPaint
         override fun internalMargins() = Margins(0F, 0F, marginTop, marginBottom)
 
@@ -158,9 +173,12 @@ class RenderRowsTest {
         }
     }
 
-    fun range() = BookRange(BookLocation(0.0), BookLocation(0.0))
+    fun range(intRange: IntRange) = BookRange(
+            BookLocation(intRange.start.toDouble()), BookLocation(intRange.last.toDouble())
+    )
 
     fun objectsOf(rows: List<RenderRow>) = rows.map { it.obj }
+    fun rangesOf(rows: List<RenderRow>) = rows.map { it.range }
     fun topChildIndicesOf(rows: List<RenderRow>) = rows.map { it.top.childIndices }
     fun bottomChildIndicesOf(rows: List<RenderRow>) = rows.map { it.top.childIndices }
 
