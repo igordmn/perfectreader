@@ -8,10 +8,10 @@ static Properties loadProperties(String... paths) throws IOException {
     return all;
 }
 
-static versionNameFromGit() {
-    return "git describe --tags --match \"v[0-9]*\" --abbrev=0".execute().text.trim()
+static versionNameFromGit(path) {
+    return "git describe --tags --match \"v[0-9]*\" --abbrev=0".execute([], path).text.trim()
 }
 
-static versionCodeFromGit() {
-    return Integer.parseInt("git rev-list master --first-parent --count".execute().text.trim())
+static versionCodeFromGit(path) {
+    return Integer.parseInt("git rev-list master --first-parent --count".execute([], path).text.trim())
 }
