@@ -2,7 +2,7 @@ package com.dmi.perfectreader.setting
 
 import android.content.Context
 import com.dmi.perfectreader.bookcontrol.*
-import com.dmi.perfectreader.style.TextAlign
+import com.dmi.perfectreader.layout.layoutobj.common.TextAlign
 import com.dmi.util.setting.AbstractSettings
 import javax.inject.Inject
 import javax.inject.Named

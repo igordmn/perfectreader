@@ -1,11 +1,11 @@
 package com.dmi.perfectreader.book.page
 
 import com.dmi.perfectreader.book.page.LocatedSequence.Entry
-import com.dmi.perfectreader.layout.LayoutObject
-import com.dmi.perfectreader.layout.common.LayoutSpace
-import com.dmi.perfectreader.layout.common.Layouter
+import com.dmi.perfectreader.layout.layoutobj.LayoutObject
+import com.dmi.perfectreader.layout.layouter.common.LayoutSpace
+import com.dmi.perfectreader.layout.layouter.Layouter
 import com.dmi.perfectreader.location.BookLocation
-import com.dmi.perfectreader.render.RenderObject
+import com.dmi.perfectreader.layout.renderobj.RenderObject
 
 class BookRenderObjects(
         val layoutObjects: LocatedSequence<LayoutObject>,

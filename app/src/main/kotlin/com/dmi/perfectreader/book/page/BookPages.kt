@@ -2,10 +2,10 @@ package com.dmi.perfectreader.book.page
 
 import com.dmi.perfectreader.book.page.LocatedSequence.Entry
 import com.dmi.perfectreader.location.BookLocation
-import com.dmi.perfectreader.render.page.RenderPage
-import com.dmi.perfectreader.render.page.RenderRow
-import com.dmi.perfectreader.render.page.merge
-import com.dmi.perfectreader.render.page.singleRowPage
+import com.dmi.perfectreader.layout.pagination.RenderPage
+import com.dmi.perfectreader.layout.pagination.RenderRow
+import com.dmi.perfectreader.layout.pagination.merge
+import com.dmi.perfectreader.layout.pagination.singleRowPage
 
 class BookPages(val rows: LocatedSequence<RenderRow>, val pageHeight: Float) : LocatedSequence<RenderPage> {
     override fun get(location: BookLocation): Entry<RenderPage> = makeCurrent(rows[location])

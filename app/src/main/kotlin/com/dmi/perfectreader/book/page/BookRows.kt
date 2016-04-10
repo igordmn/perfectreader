@@ -3,9 +3,9 @@ package com.dmi.perfectreader.book.page
 import com.dmi.perfectreader.book.page.LocatedSequence.Entry
 import com.dmi.perfectreader.location.BookLocation
 import com.dmi.perfectreader.location.indexOfNearest
-import com.dmi.perfectreader.render.RenderObject
-import com.dmi.perfectreader.render.page.RenderRow
-import com.dmi.perfectreader.render.page.splitIntoRows
+import com.dmi.perfectreader.layout.renderobj.RenderObject
+import com.dmi.perfectreader.layout.pagination.RenderRow
+import com.dmi.perfectreader.layout.pagination.splitIntoRows
 
 class BookRows(val objects: LocatedSequence<RenderObject>) : LocatedSequence<RenderRow> {
     override fun get(location: BookLocation): Entry<RenderRow> = rowAt(objects[location], location)
