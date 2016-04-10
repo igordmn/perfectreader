@@ -6,6 +6,8 @@ sourceSets {
 }
 
 dependencies {
-    compile projectDependencies.common
-    compile projectDependencies.testCommon
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$projectVersions.kotlin"
+    compile "junit:junit:4.12"
+    compile "org.amshove.kluent:kluent:1.4"
+    compile "com.nhaarman:mockito-kotlin:0.2.1"
 }

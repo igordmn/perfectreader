@@ -1,0 +1,19 @@
+ext {
+    loadProperties = { String... paths ->
+        def all = new Properties();
+        for (String path in paths) {
+            File file = new File(path);
+            if (file.exists())
+                all.load(new FileInputStream(file));
+        }
+        return all;
+    }
+
+    versionNameFromGit = { path ->
+        "git describe --tags --match \"v[0-9]*\" --abbrev=0".execute([], path).text.trim()
+    }
+
+    versionCodeFromGit = { path ->
+        Integer.parseInt("git rev-list master --first-parent --count".execute([], path).text.trim())
+    }
+}

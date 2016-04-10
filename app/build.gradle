@@ -10,8 +10,8 @@ android {
 
     defaultConfig {
         applicationId "com.dmi.perfectreader"
-        versionName Utils.versionNameFromGit(rootProject.projectDir)
-        versionCode Utils.versionCodeFromGit(rootProject.projectDir)
+        versionName versionNameFromGit(rootProject.projectDir)
+        versionCode versionCodeFromGit(rootProject.projectDir)
         setProperty("archivesBaseName", "$rootProject.name-$versionName-rev$versionCode")
 
         minSdkVersion projectVersions.minSdk
