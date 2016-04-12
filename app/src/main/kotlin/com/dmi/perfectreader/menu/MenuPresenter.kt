@@ -11,7 +11,7 @@ class MenuPresenter : BasePresenter() {
     @Inject
     protected lateinit var bookPresenter: BookPresenter
     @Inject
-    protected lateinit var view: MenuFragment
+    protected lateinit var view: MenuController
 
     fun showSettings() {
         view.close()

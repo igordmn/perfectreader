@@ -23,9 +23,6 @@
 -dontwarn com.google.j2objc.annotations.Weak
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
-# SimpleFragment
--dontwarn me.tatarka.simplefragment.SimpleFragment$**
-
 # Readium
 -keep class org.readium.sdk.android.**
 -keepclassmembers class org.readium.sdk.android.** {

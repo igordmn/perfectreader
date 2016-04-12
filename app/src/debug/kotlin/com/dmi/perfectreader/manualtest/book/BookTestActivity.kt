@@ -2,22 +2,19 @@ package com.dmi.perfectreader.manualtest.book
 
 import android.os.Bundle
 import android.view.KeyEvent
-import com.dmi.perfectreader.R
-import com.dmi.perfectreader.book.BookFragment
+import com.dmi.perfectreader.book.BookController
 import com.dmi.util.base.BaseActivity
-import com.dmi.util.layout.HasLayout
 import com.google.common.io.ByteStreams
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-@HasLayout(R.layout.activity_container)
-class BookFragmentTestActivity : BaseActivity() {
-    private var bookFragment: BookFragment? = null
+class BookTestActivity : BaseActivity() {
+    private lateinit var bookController: BookController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bookFragment = findOrAddChild(BookFragment.intent(tempBook(TEST_BOOK)), R.id.rootContainer)
+        bookController = initRootController { BookController(tempBook(TEST_BOOK)) }
     }
 
     private fun tempBook(path: String): File {
@@ -36,10 +33,10 @@ class BookFragmentTestActivity : BaseActivity() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            bookFragment!!.presenter().goNextPage()
+            bookController.goNextPage()
             return true
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            bookFragment!!.presenter().goPreviewPage()
+            bookController.goPreviewPage()
             return true
         } else {
             return super.onKeyDown(keyCode, event)

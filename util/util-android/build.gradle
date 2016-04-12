@@ -19,8 +19,6 @@ android {
 
 dependencies {
     compile project(":util:util-common")
-    compile ":simplefragment:"
-    compile ":simplefragment-appcompat:"
     compile "com.android.support:appcompat-v7:$projectVersions.supportLibrary"
     compile "com.android.support:support-annotations:$projectVersions.supportLibrary"
     compile "com.android.support:cardview-v7:$projectVersions.supportLibrary"
@@ -38,5 +36,7 @@ dependencies {
     compile "frankiesardo:icepick:3.1.0"
     compile "org.jetbrains.anko:anko-sdk15:0.8.2"
     compile "org.jetbrains.anko:anko-appcompat-v7:0.8.2"
+    compile 'com.bluelinelabs:conductor:1.1.2'
+    compile 'com.bluelinelabs:conductor-support:1.1.2'
     testCompile project(":util:util-testCommon")
 }

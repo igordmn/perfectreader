@@ -28,19 +28,19 @@ open class BookPresenter : BasePresenter() {
     @Inject
     protected lateinit var appSettings: AppSettings
     @Inject
-    protected lateinit var view: BookFragment
+    protected lateinit var view: BookController
 
     private val settingsApplier = SettingsApplier()
     private val pageBook: PageBook? = null
     private var tapHandler: TapHandler? = null
 
-    public override fun onCreate() {
+    init {
         settingsApplier.startListen()
         pageBook!!.goPercent(loadLocation())
         postIOTask { this.loadBook() }
     }
 
-    public override fun onDestroy() {
+    override fun onDestroy() {
         settingsApplier.stopListen()
     }
 
@@ -93,12 +93,6 @@ open class BookPresenter : BasePresenter() {
 
     fun resize(width: Int, height: Int) {
         pageBook!!.resize(width, height)
-    }
-
-    fun resume() {
-    }
-
-    fun pause() {
     }
 
     open fun currentPercent(): Double {

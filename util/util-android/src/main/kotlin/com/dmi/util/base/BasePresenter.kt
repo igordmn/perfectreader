@@ -1,9 +1,6 @@
 package com.dmi.util.base
 
-open class BasePresenter {
-    open fun onCreate() {
-    }
-
+abstract class BasePresenter {
     open fun onDestroy() {
     }
 }

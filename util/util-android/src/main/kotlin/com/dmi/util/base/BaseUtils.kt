@@ -1,20 +1,13 @@
 package com.dmi.util.base
 
-import me.tatarka.simplefragment.SimpleFragmentManagerProvider
+import android.os.Bundle
+import java.io.Serializable
 
-internal object BaseUtils {
-    fun handleAttachedFragments(managerProvider: SimpleFragmentManagerProvider,
-                                handle: (BaseFragment) -> Boolean): Boolean {
-        val fragments = managerProvider.simpleFragmentManager.attachedFragments
-        val iterator = fragments.listIterator(fragments.size)
-        while (iterator.hasPrevious()) {
-            val fragment = iterator.previous()
-            if (fragment is BaseFragment) {
-                if (handle(fragment)) {
-                    return true
-                }
-            }
-        }
-        return false
+fun argumentsBundle(vararg arguments: Serializable?) = Bundle().apply {
+    arguments.forEachIndexed { i, argument ->
+        putSerializable("ARGUMENT$i", argument)
     }
 }
+
+@Suppress("UNCHECKED_CAST")
+fun <A> Bundle.argumentAt(index: Int) = getSerializable("ARGUMENT$index") as A

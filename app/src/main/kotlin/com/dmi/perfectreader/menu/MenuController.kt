@@ -10,17 +10,17 @@ import android.widget.TextView
 import butterknife.Bind
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.book.BookPresenter
-import com.dmi.perfectreader.bookreader.BookReaderFragment
+import com.dmi.perfectreader.bookreader.BookReaderController
 import com.dmi.util.Units.dipToPx
-import com.dmi.util.base.BaseFragment
+import com.dmi.util.base.BaseController
 import com.dmi.util.layout.HasLayout
 import dagger.ObjectGraph
 import dagger.Provides
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 import javax.inject.Inject
 
-@HasLayout(R.layout.fragment_menu)
-class MenuFragment : BaseFragment() { // implements KeyEvent.Callback {
+@HasLayout(R.layout.controller_menu)
+class MenuController : BaseController() { // implements KeyEvent.Callback {
 
     @Bind(R.id.toolbar)
     protected lateinit var toolbar: Toolbar
@@ -34,14 +34,10 @@ class MenuFragment : BaseFragment() { // implements KeyEvent.Callback {
     protected lateinit var middleSpace: FrameLayout
 
     @Inject
-    protected lateinit var presenter: MenuPresenter
+    lateinit override var presenter: MenuPresenter
 
     override fun createObjectGraph(parentGraph: ObjectGraph): ObjectGraph {
         return parentGraph.plus(Module())
-    }
-
-    public override fun presenter(): MenuPresenter {
-        return presenter
     }
 
     override fun onViewCreated(view: View) {
@@ -92,7 +88,8 @@ class MenuFragment : BaseFragment() { // implements KeyEvent.Callback {
         locationSlider.progress = position
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+    // todo реализовать
+    fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU) {
             close()
         }
@@ -100,21 +97,22 @@ class MenuFragment : BaseFragment() { // implements KeyEvent.Callback {
     }
 
     fun close() {
-        val bookReaderFragment = parent as BookReaderFragment
-        bookReaderFragment.toggleMenu()
+        val bookReaderController = parentController as BookReaderController
+        bookReaderController.toggleMenu()
     }
 
-    @dagger.Module(addsTo = BookReaderFragment.Module::class, injects = arrayOf(MenuFragment::class, MenuPresenter::class))
+    @dagger.Module(addsTo = BookReaderController.Module::class, injects = arrayOf(MenuController::class, MenuPresenter::class))
     inner class Module {
         @Provides
-        fun view(): MenuFragment {
-            return this@MenuFragment
+        fun view(): MenuController {
+            return this@MenuController
         }
 
         @Provides
         fun bookPresenter(): BookPresenter {
-            val bookReaderFragment = parentFragment<BookReaderFragment>()
-            return bookReaderFragment.book().presenter()
+            TODO()
+//            val bookReaderController = parentController<BookReaderController>()
+//            return bookReaderController.book().presenter
         }
     }
 

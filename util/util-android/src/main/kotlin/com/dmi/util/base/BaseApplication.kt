@@ -4,7 +4,7 @@ import android.app.Application
 
 import dagger.ObjectGraph
 
-open class BaseApplication : Application() {
+abstract class BaseApplication : Application() {
     private lateinit var objectGraph: ObjectGraph
 
     @SuppressWarnings("unchecked")

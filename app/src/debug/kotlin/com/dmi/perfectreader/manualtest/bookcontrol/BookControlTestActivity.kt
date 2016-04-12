@@ -1,15 +1,13 @@
 package com.dmi.perfectreader.manualtest.bookcontrol
 
 import android.os.Bundle
-import com.dmi.perfectreader.R
 import com.dmi.perfectreader.app.App
 import com.dmi.perfectreader.book.BookPresenter
-import com.dmi.perfectreader.bookcontrol.BookControlFragment
+import com.dmi.perfectreader.bookcontrol.BookControlController
 import com.dmi.perfectreader.bookcontrol.BookControlPresenter
 import com.dmi.perfectreader.bookreader.BookReaderPresenter
 import com.dmi.perfectreader.setting.AppSettings
 import com.dmi.util.base.BaseActivity
-import com.dmi.util.layout.HasLayout
 import com.dmi.util.log.Log
 import com.dmi.util.setting.AbstractSettings
 import com.dmi.util.setting.AbstractSettingsApplier
@@ -19,8 +17,7 @@ import dagger.Provides
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@HasLayout(R.layout.activity_container)
-class BookControlFragmentTestActivity : BaseActivity() {
+class BookControlTestActivity : BaseActivity() {
     @Inject
     protected lateinit var appSettings: AppSettings
 
@@ -30,7 +27,7 @@ class BookControlFragmentTestActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         inject(Module())
         settingsApplier.startListen()
-        findOrAddChild(TestFragment::class.java, R.id.rootContainer)
+        initRootController { TestController() }
     }
 
     override fun onDestroy() {
@@ -57,12 +54,12 @@ class BookControlFragmentTestActivity : BaseActivity() {
         }
     }
 
-    class TestFragment : BookControlFragment() {
+    class TestController : BookControlController() {
         override fun createObjectGraph(parentGraph: ObjectGraph): ObjectGraph {
             return parentGraph.plus(Module())
         }
 
-        @dagger.Module(addsTo = App.Module::class, injects = arrayOf(TestFragment::class, BookControlPresenter::class))
+        @dagger.Module(addsTo = App.Module::class, injects = arrayOf(TestController::class, BookControlPresenter::class))
         inner class Module {
             @Provides
             @Singleton
@@ -107,6 +104,6 @@ class BookControlFragmentTestActivity : BaseActivity() {
         }
     }
 
-    @dagger.Module(addsTo = App.Module::class, injects = arrayOf(BookControlFragmentTestActivity::class))
+    @dagger.Module(addsTo = App.Module::class, injects = arrayOf(BookControlTestActivity::class))
     inner class Module
 }

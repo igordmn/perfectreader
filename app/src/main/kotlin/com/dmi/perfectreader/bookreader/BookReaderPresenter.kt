@@ -18,7 +18,7 @@ open class BookReaderPresenter : BasePresenter() {
     @Inject
     protected lateinit var userData: UserData
     @Inject
-    protected lateinit var view: BookReaderFragment
+    protected lateinit var view: BookReaderController
     @Inject
     protected lateinit var bookResourceCache: BookResourceCache
 

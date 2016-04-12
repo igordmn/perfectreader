@@ -7,29 +7,25 @@ import android.widget.FrameLayout
 import butterknife.Bind
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.book.BookPresenter
-import com.dmi.perfectreader.bookreader.BookReaderFragment
-import com.dmi.util.base.BaseFragment
+import com.dmi.perfectreader.bookreader.BookReaderController
+import com.dmi.util.base.BaseController
 import com.dmi.util.layout.HasLayout
 import dagger.ObjectGraph
 import dagger.Provides
 import javax.inject.Inject
 
-@HasLayout(R.layout.fragment_bookcontrol)
-open class BookControlFragment : BaseFragment(), View.OnTouchListener {
+@HasLayout(R.layout.controller_bookcontrol)
+open class BookControlController : BaseController(), View.OnTouchListener {
     @Bind(R.id.spaceView)
     protected lateinit var spaceView: FrameLayout
 
     @Inject
-    protected lateinit var presenter: BookControlPresenter
+    lateinit override var presenter: BookControlPresenter
 
     private val touchInfo = TouchInfo()
 
     override fun createObjectGraph(parentGraph: ObjectGraph): ObjectGraph {
         return parentGraph.plus(Module())
-    }
-
-    public override fun presenter(): BookControlPresenter {
-        return presenter
     }
 
     override fun onViewCreated(view: View) {
@@ -53,26 +49,29 @@ open class BookControlFragment : BaseFragment(), View.OnTouchListener {
         return true
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        presenter().onKeyDown(HardKey.fromKeyCode(keyCode))
+    // todo реализовать
+
+    fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        presenter.onKeyDown(HardKey.fromKeyCode(keyCode))
         return true
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+    fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         return true
     }
 
-    @dagger.Module(addsTo = BookReaderFragment.Module::class, injects = arrayOf(BookControlFragment::class, BookControlPresenter::class))
+    @dagger.Module(addsTo = BookReaderController.Module::class, injects = arrayOf(BookControlController::class, BookControlPresenter::class))
     inner class Module {
         @Provides
-        fun view(): BookControlFragment {
-            return this@BookControlFragment
+        fun view(): BookControlController {
+            return this@BookControlController
         }
 
         @Provides
         fun bookPresenter(): BookPresenter {
-            val bookReaderFragment = parentFragment<BookReaderFragment>()
-            return bookReaderFragment.book().presenter()
+            TODO()
+//            val bookReaderFragment = parentController<BookReaderController>()
+//            return bookReaderFragment.book().presenter
         }
     }
 }
