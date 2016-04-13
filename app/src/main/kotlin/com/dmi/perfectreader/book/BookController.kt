@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.book
 
+import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import com.dmi.perfectreader.R
@@ -15,12 +16,22 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @HasLayout(R.layout.controller_book)
-class BookController(private val bookFile: File) : BaseController() {
+class BookController : BaseController {
     companion object {
         private val TIME_FOR_ONE_SLIDE_IN_SECONDS = 0.4f
     }
 
+    private val bookFile: File
+
     private val pageBookView by bindView<PageBookView>(R.id.pageBookView)
+
+    constructor(bookFile: File) {
+        this.bookFile = saveArgument(bookFile)
+    }
+
+    constructor(bundle: Bundle) {
+        this.bookFile = restoreArgument(bundle)
+    }
 
     @Inject
     override lateinit var presenter: BookPresenter

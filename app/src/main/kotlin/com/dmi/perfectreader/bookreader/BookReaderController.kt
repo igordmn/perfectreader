@@ -10,8 +10,6 @@ import com.dmi.perfectreader.book.BookController
 import com.dmi.perfectreader.bookcontrol.BookControlController
 import com.dmi.perfectreader.menu.MenuController
 import com.dmi.util.base.BaseController
-import com.dmi.util.base.argumentAt
-import com.dmi.util.base.argumentsBundle
 import com.dmi.util.layout.HasLayout
 import dagger.ObjectGraph
 import dagger.Provides
@@ -28,12 +26,12 @@ class BookReaderController : BaseController {
 
     val book = findChild<BookController>()
 
-    constructor(requestedBookFile: File?) : this(argumentsBundle(
-            requestedBookFile
-    ))
+    constructor(requestedBookFile: File?) {
+        this.requestedBookFile = saveArgument(requestedBookFile)
+    }
 
-    protected constructor(bundle: Bundle) : super(bundle) {
-        requestedBookFile = bundle.argumentAt(0)
+    constructor(bundle: Bundle) {
+        this.requestedBookFile = restoreArgument(bundle)
     }
 
     override fun createObjectGraph(parentGraph: ObjectGraph): ObjectGraph {

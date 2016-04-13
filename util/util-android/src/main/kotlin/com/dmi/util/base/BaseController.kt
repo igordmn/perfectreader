@@ -14,6 +14,9 @@ import dagger.ObjectGraph
 import java.io.Serializable
 
 abstract class BaseController : Controller {
+    private var savedArgumentIndex = 0
+    private var restoredArgumentIndex = 0
+
     private val layoutId: Int
     private val viewBinder = ViewBinder()
     private val viewStateSaver = StateSaver("__VIEW_STATES")
@@ -21,9 +24,7 @@ abstract class BaseController : Controller {
 
     protected open val presenter: BasePresenter? = null
 
-    constructor() : super()
-
-    constructor(bundle: Bundle) : super(bundle)
+    constructor() : super(Bundle.EMPTY)
 
     init {
         val hasLayout = javaClass.getAnnotation(HasLayout::class.java)
@@ -68,6 +69,15 @@ abstract class BaseController : Controller {
 
     open fun onViewCreated(view: View) = Unit
     open fun onViewDestroyed(view: View) = Unit
+
+    @Suppress("UNCHECKED_CAST")
+    protected fun <A : Serializable?> restoreArgument(bundle: Bundle) =
+            bundle.getSerializable("ARGUMENT${restoredArgumentIndex++}") as A
+
+    protected fun <A : Serializable?> saveArgument(value: A): A {
+        args.putSerializable("ARGUMENT${savedArgumentIndex++}", value)
+        return value
+    }
 
     protected fun <V : View> bindView(id: Int) = viewBinder.register<V> { view.findViewById(id) }
     protected fun <V : Serializable?> viewState(initial: V) = viewStateSaver.register(initial)
