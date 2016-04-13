@@ -2,7 +2,6 @@ package com.dmi.perfectreader.book
 
 import android.view.View
 import android.widget.Toast
-import butterknife.Bind
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.book.animation.SlidePageAnimation
 import com.dmi.perfectreader.book.pagebook.PageBookView
@@ -21,8 +20,7 @@ class BookController(private val bookFile: File) : BaseController() {
         private val TIME_FOR_ONE_SLIDE_IN_SECONDS = 0.4f
     }
 
-    @Bind(R.id.pageBookView)
-    protected var pageBookView: PageBookView? = null
+    private val pageBookView by bindView<PageBookView>(R.id.pageBookView)
 
     @Inject
     override lateinit var presenter: BookPresenter

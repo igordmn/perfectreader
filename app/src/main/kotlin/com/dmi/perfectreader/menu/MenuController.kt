@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
-import butterknife.Bind
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.book.BookPresenter
 import com.dmi.perfectreader.bookreader.BookReaderController
@@ -21,17 +20,11 @@ import javax.inject.Inject
 
 @HasLayout(R.layout.controller_menu)
 class MenuController : BaseController() { // implements KeyEvent.Callback {
-
-    @Bind(R.id.toolbar)
-    protected lateinit var toolbar: Toolbar
-    @Bind(R.id.currentChapterText)
-    protected lateinit var currentChapterText: TextView
-    @Bind(R.id.currentPageText)
-    protected lateinit var currentPageText: TextView
-    @Bind(R.id.locationSlider)
-    protected lateinit var locationSlider: DiscreteSeekBar
-    @Bind(R.id.middleSpace)
-    protected lateinit var middleSpace: FrameLayout
+    private val toolbar by bindView<Toolbar>(R.id.toolbar)
+    private val currentChapterText by bindView<TextView>(R.id.currentChapterText)
+    private val currentPageText by bindView<TextView>(R.id.currentPageText)
+    private val locationSlider by bindView<DiscreteSeekBar>(R.id.locationSlider)
+    private val middleSpace by bindView<FrameLayout>(R.id.middleSpace)
 
     @Inject
     lateinit override var presenter: MenuPresenter

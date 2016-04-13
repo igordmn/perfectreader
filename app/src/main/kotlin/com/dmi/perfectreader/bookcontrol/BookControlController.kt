@@ -4,7 +4,6 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import butterknife.Bind
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.book.BookPresenter
 import com.dmi.perfectreader.bookreader.BookReaderController
@@ -16,8 +15,7 @@ import javax.inject.Inject
 
 @HasLayout(R.layout.controller_bookcontrol)
 open class BookControlController : BaseController(), View.OnTouchListener {
-    @Bind(R.id.spaceView)
-    protected lateinit var spaceView: FrameLayout
+    private val spaceView by bindView<FrameLayout>(R.id.spaceView)
 
     @Inject
     lateinit override var presenter: BookControlPresenter

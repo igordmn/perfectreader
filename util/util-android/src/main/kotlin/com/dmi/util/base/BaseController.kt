@@ -4,16 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import butterknife.ButterKnife
 import com.bluelinelabs.conductor.ChildControllerTransaction
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.dmi.util.layout.HasLayout
+import com.dmi.util.view.ViewBinder
 import dagger.ObjectGraph
 import icepick.Icepick
 
 abstract class BaseController : Controller {
     private val layoutId: Int
+    private val viewBinder = ViewBinder()
 
     protected open val presenter: BasePresenter? = null
 
@@ -44,18 +45,20 @@ abstract class BaseController : Controller {
 
     override final fun onCreateView(layoutInflater: LayoutInflater, viewGroup: ViewGroup): View {
         val view = layoutInflater.inflate(layoutId, viewGroup, false)
-        ButterKnife.bind(this, view)
+        viewBinder.bind()
         onViewCreated(view)
         return view
     }
 
     override final fun onDestroyView(view: View): Unit {
         onViewDestroyed(view)
-        ButterKnife.unbind(this)
+        viewBinder.unbind()
     }
 
     open fun onViewCreated(view: View) = Unit
     open fun onViewDestroyed(view: View) = Unit
+
+    protected fun <V : View> bindView(id: Int) = viewBinder.register<V> { view.findViewById(id) }
 
     protected inline fun <reified T : BaseController> addChild(controller: T, containerId: Int, tag: String? = T::class.java.name): T {
         addChildController(ChildControllerTransaction
