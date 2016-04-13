@@ -8,13 +8,16 @@ import com.bluelinelabs.conductor.ChildControllerTransaction
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.dmi.util.layout.HasLayout
+import com.dmi.util.persist.StateSaver
 import com.dmi.util.view.ViewBinder
 import dagger.ObjectGraph
-import icepick.Icepick
+import java.io.Serializable
 
 abstract class BaseController : Controller {
     private val layoutId: Int
     private val viewBinder = ViewBinder()
+    private val viewStateSaver = StateSaver("__VIEW_STATES")
+    private val instanceStateSaver = StateSaver("__INSTANCE_STATES")
 
     protected open val presenter: BasePresenter? = null
 
@@ -29,14 +32,6 @@ abstract class BaseController : Controller {
 
     override fun onDestroy() {
         presenter?.onDestroy()
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        Icepick.restoreInstanceState(this, savedInstanceState)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
     }
 
     protected open fun createObjectGraph(parentGraph: ObjectGraph): ObjectGraph {
@@ -55,10 +50,28 @@ abstract class BaseController : Controller {
         viewBinder.unbind()
     }
 
+    override fun onRestoreViewState(view: View, savedViewState: Bundle) {
+        viewStateSaver.restore(savedViewState)
+    }
+
+    override fun onSaveViewState(view: View, outState: Bundle) {
+        viewStateSaver.save(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        instanceStateSaver.restore(savedInstanceState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        instanceStateSaver.save(outState)
+    }
+
     open fun onViewCreated(view: View) = Unit
     open fun onViewDestroyed(view: View) = Unit
 
     protected fun <V : View> bindView(id: Int) = viewBinder.register<V> { view.findViewById(id) }
+    protected fun <V : Serializable?> viewState(initial: V) = viewStateSaver.register(initial)
+    protected fun <V : Serializable?> instanceState(initial: V) = viewStateSaver.register(initial)
 
     protected inline fun <reified T : BaseController> addChild(controller: T, containerId: Int, tag: String? = T::class.java.name): T {
         addChildController(ChildControllerTransaction
