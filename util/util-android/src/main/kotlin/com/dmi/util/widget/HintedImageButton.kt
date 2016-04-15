@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.widget
+package com.dmi.util.widget
 
 import android.content.Context
 import android.graphics.Rect
@@ -30,7 +30,7 @@ class HintedImageButton : ImageButton {
         })
     }
 
-    override fun setOnLongClickListener(l: View.OnLongClickListener?) {
+    override fun setOnLongClickListener(l: OnLongClickListener?) {
         throw UnsupportedOperationException()
     }
 
