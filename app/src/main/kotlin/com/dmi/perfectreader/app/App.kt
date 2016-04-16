@@ -9,10 +9,10 @@ import com.dmi.perfectreader.setting.AppSettings
 import com.dmi.perfectreader.userdata.UserData
 import com.dmi.util.Units
 import com.dmi.util.base.BaseApplication
+import com.dmi.util.log.AndroidLog
 import com.dmi.util.log.DebugLog
 import com.dmi.util.log.Log
 import com.dmi.util.log.ReleaseLog
-import com.dmi.util.log.TimberLog
 import dagger.ObjectGraph
 import dagger.Provides
 import javax.inject.Inject
@@ -36,11 +36,11 @@ class App : BaseApplication() {
     private fun initLogging() {
         if (BuildConfig.DEBUG) {
             Log.init(
-                    DebugLog(TimberLog())
+                    DebugLog(AndroidLog())
             )
         } else {
             Log.init(
-                    ReleaseLog(TimberLog())
+                    ReleaseLog(AndroidLog())
             )
         }
     }
