@@ -1,17 +1,25 @@
 package com.dmi.util.cache
 
+import com.dmi.util.log.Log
 import com.google.common.base.Charsets.UTF_8
 import com.google.common.hash.Hashing.sha1
 import com.jakewharton.disklrucache.DiskLruCache
-import java.io.Closeable
 import java.io.File
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
-class DiskDataCache(directory: File, appVersion: Int, maxSize: Int) : DataCache, Closeable {
+class DiskDataCache(directory: File, appVersion: Int, maxSize: Int) : DataCache {
     private val diskLruCache = DiskLruCache.open(directory, appVersion, 1, maxSize.toLong())
 
-    override fun close() = diskLruCache.close()
+    @Suppress("unused")
+    protected fun finalize() {
+        try {
+            diskLruCache.close()
+        } catch (e: IOException) {
+            Log.e(e, "Disk data cache closing error")
+        }
+    }
 
     override fun openRead(key: String, writeData: (OutputStream) -> Unit): InputStream {
         val hash = hashKey(key)

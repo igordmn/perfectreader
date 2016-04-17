@@ -5,9 +5,7 @@ import com.dmi.perfectreader.BuildConfig.VERSION_CODE
 import com.dmi.util.availableCacheDir
 import com.dmi.util.cache.DataCache
 import com.dmi.util.cache.DiskDataCache
-import com.dmi.util.log.Log
 import java.io.File
-import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import javax.inject.Inject
@@ -23,18 +21,6 @@ class BookResourceCache : DataCache {
     @Inject
     @Named("applicationContext")
     protected lateinit  var context: Context
-
-    fun close() {
-        if (diskDataCache != null) {
-            try {
-                diskDataCache!!.close()
-                diskDataCache = null
-            } catch (e: IOException) {
-                Log.e(e, "Book resource cache closing error")
-            }
-
-        }
-    }
 
     override fun openRead(key: String, writeData: (OutputStream) -> Unit): InputStream {
         val cacheDir = cacheDir
