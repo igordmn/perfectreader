@@ -23,15 +23,15 @@ class DiskDataCache(directory: File, appVersion: Int, maxSize: Int) : DataCache 
 
     override fun openRead(key: String, writeData: (OutputStream) -> Unit): InputStream {
         val hash = hashKey(key)
-        val snapshot = diskLruCache.get(hash)
+        val snapshot = diskLruCache[hash]
         if (snapshot != null) {
             return snapshot.getInputStream(0)
         } else {
             val editor = diskLruCache.edit(hash)
-            editor.newOutputStream(0).use { writeData(it) }
+            editor.newOutputStream(0).buffered().use { writeData(it) }
             editor.commit()
             diskLruCache.flush()
-            return diskLruCache.get(hash).getInputStream(0)
+            return diskLruCache[hash].getInputStream(0)
         }
     }
 
