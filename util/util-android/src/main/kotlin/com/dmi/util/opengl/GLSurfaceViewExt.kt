@@ -13,7 +13,6 @@ open class GLSurfaceViewExt : GLSurfaceView {
     private var renderer: GLRenderer? = null
 
     private val renderRun = AtomicBoolean(false)
-    private var needFreeResources = false
 
     constructor(context: Context) : super(context) {
     }
@@ -24,7 +23,6 @@ open class GLSurfaceViewExt : GLSurfaceView {
     override fun onPause() {
         synchronized (renderRun) {
             if (renderRun.get()) {
-                queueEvent { this.freeResources() }
                 super.onPause()
             }
         }
@@ -36,11 +34,6 @@ open class GLSurfaceViewExt : GLSurfaceView {
                 super.onResume()
             }
         }
-    }
-
-    override fun onDetachedFromWindow() {
-        queueEvent { this.freeResources() }
-        super.onDetachedFromWindow()
     }
 
     override fun requestRender() {
@@ -56,7 +49,6 @@ open class GLSurfaceViewExt : GLSurfaceView {
         synchronized (renderRun) {
             super.setRenderer(object : GLSurfaceView.Renderer {
                 override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-                    needFreeResources = true
                     renderer.onSurfaceCreated()
                 }
 
@@ -69,13 +61,6 @@ open class GLSurfaceViewExt : GLSurfaceView {
                 }
             })
             renderRun.set(true)
-        }
-    }
-
-    private fun freeResources() {
-        if (needFreeResources) {
-            renderer!!.onFreeResources()
-            needFreeResources = false
         }
     }
 

@@ -32,9 +32,6 @@ abstract class DeltaTimeGLSurfaceView : GLSurfaceViewExt {
     protected open fun onSurfaceChanged(width: Int, height: Int) {
     }
 
-    protected open fun onFreeResources() {
-    }
-
     protected open fun onUpdate(dt: Float) {
     }
 
@@ -48,10 +45,6 @@ abstract class DeltaTimeGLSurfaceView : GLSurfaceViewExt {
 
         override fun onSurfaceChanged(width: Int, height: Int) {
             this@DeltaTimeGLSurfaceView.onSurfaceChanged(width, height)
-        }
-
-        override fun onFreeResources() {
-            this@DeltaTimeGLSurfaceView.onFreeResources()
         }
 
         override fun onDrawFrame() {

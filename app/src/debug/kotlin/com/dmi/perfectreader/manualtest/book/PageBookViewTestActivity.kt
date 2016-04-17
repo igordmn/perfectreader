@@ -166,9 +166,6 @@ class PageBookViewTestActivity : BaseActivity() {
         override fun onSurfaceChanged(width: Int, height: Int) {
         }
 
-        override fun onFreeResources() {
-        }
-
         override fun onDrawFrame() {
             when (currentPage % 3) {
                 0 -> {

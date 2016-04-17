@@ -57,10 +57,6 @@ open class BookPresenter : BasePresenter() {
                 throw UnsupportedOperationException()
             }
 
-            override fun onFreeResources() {
-                throw UnsupportedOperationException()
-            }
-
             override fun onDrawFrame() {
                 throw UnsupportedOperationException()
             }

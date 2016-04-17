@@ -137,10 +137,6 @@ class PageBookView : DeltaTimeGLSurfaceView {
         }
     }
 
-    override fun onFreeResources() {
-        renderer!!.onFreeResources()
-    }
-
     override fun onUpdate(dt: Float) {
         pageAnimation!!.update(dt)
         if (pageAnimation!!.isAnimate) {
