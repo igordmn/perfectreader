@@ -6,11 +6,12 @@ buildscript {
 
         projectVersions = [
                 kotlin        : '1.0.2-1',
-                supportLibrary: '23.3.0',
-                buildTools    : '23.0.3',
+                buildTools    : '24',
+                androidPlugin : '2.1.2',
                 minSdk        : 16,
                 targetSdk     : 23,
                 compileSdk    : 23,
+                supportLibrary: '23.3.0',
         ]
 
         projectRepositories = {
@@ -27,9 +28,8 @@ buildscript {
     repositories projectRepositories
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.2'
+        classpath "com.android.tools.build:gradle:$projectVersions.androidPlugin"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$projectVersions.kotlin"
-        classpath 'com.github.JakeWharton:sdk-manager-plugin:220bf7a88a7072df3ed16dc8466fb144f2817070'
     }
 }
 
