@@ -10,10 +10,10 @@ ext {
     }
 
     versionNameFromGit = { path ->
-        "git describe --tags --match \"v[0-9]*\" --abbrev=0".execute([], path).text.trim()
+        'git describe --tags --match \'v[0-9]*\' --abbrev=0'.execute([], path).text.trim()
     }
 
     versionCodeFromGit = { path ->
-        Integer.parseInt("git rev-list master --first-parent --count".execute([], path).text.trim())
+        Integer.parseInt('git rev-list master --first-parent --count'.execute([], path).text.trim())
     }
 }

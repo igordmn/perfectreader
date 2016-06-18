@@ -1,13 +1,13 @@
 buildscript {
-    apply from: "utils.gradle"
+    apply from: 'utils.gradle'
 
     ext {
-        config = loadProperties(".sign/sign.properties", "workspace.properties")
+        config = loadProperties('.sign/sign.properties', 'workspace.properties')
 
         projectVersions = [
-                kotlin        : "1.0.2-1",
-                supportLibrary: "23.3.0",
-                buildTools    : "23.0.3",
+                kotlin        : '1.0.2-1',
+                supportLibrary: '23.3.0',
+                buildTools    : '23.0.3',
                 minSdk        : 16,
                 targetSdk     : 23,
                 compileSdk    : 23,
@@ -15,26 +15,26 @@ buildscript {
 
         projectRepositories = {
             jcenter()
-            maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-            maven { url "https://dl.bintray.com/igordmn/maven" }
-            maven { url "https://dl.bintray.com/nhaarman/maven" }
-            maven { url "https://clojars.org/repo" }
-            maven { url "https://jitpack.io" }
-            flatDir { dirs new File(projectDir, "libs") }
+            maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+            maven { url 'https://dl.bintray.com/igordmn/maven' }
+            maven { url 'https://dl.bintray.com/nhaarman/maven' }
+            maven { url 'https://clojars.org/repo' }
+            maven { url 'https://jitpack.io' }
+            flatDir { dirs new File(projectDir, 'libs') }
         }
     }
 
     repositories projectRepositories
 
     dependencies {
-        classpath "com.android.tools.build:gradle:2.1.2"
+        classpath 'com.android.tools.build:gradle:2.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$projectVersions.kotlin"
-        classpath "com.github.JakeWharton:sdk-manager-plugin:220bf7a88a7072df3ed16dc8466fb144f2817070"
+        classpath 'com.github.JakeWharton:sdk-manager-plugin:220bf7a88a7072df3ed16dc8466fb144f2817070'
     }
 }
 
 plugins {
-    id "org.sonarqube" version "1.2"
+    id 'org.sonarqube' version '1.2'
 }
 
 subprojects {

@@ -1,28 +1,28 @@
-apply plugin: "android-sdk-manager"
-apply plugin: "com.android.application"
-apply plugin: "kotlin-android"
+apply plugin: 'android-sdk-manager'
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion projectVersions.compileSdk
     buildToolsVersion projectVersions.buildTools
 
     defaultConfig {
-        applicationId "com.dmi.perfectreader"
+        applicationId 'com.dmi.perfectreader'
         versionName versionNameFromGit(rootProject.projectDir)
         versionCode versionCodeFromGit(rootProject.projectDir)
-        setProperty("archivesBaseName", "$rootProject.name-$versionName-rev$versionCode")
+        setProperty('archivesBaseName', "$rootProject.name-$versionName-rev$versionCode")
 
         minSdkVersion projectVersions.minSdk
         targetSdkVersion projectVersions.targetSdk
     }
 
-    if (config["sign.enabled"]) {
+    if (config['sign.enabled']) {
         signingConfigs {
             main {
-                storeFile new File(rootProject.projectDir, ".sign/" + config["sign.store.file"])
-                storePassword config["sign.store.password"]
-                keyAlias config["sign.key.alias"]
-                keyPassword config["sign.key.password"]
+                storeFile new File(rootProject.projectDir, '.sign/' + config['sign.store.file'])
+                storePassword config['sign.store.password']
+                keyAlias config['sign.key.alias']
+                keyPassword config['sign.key.password']
             }
         }
     }
@@ -32,33 +32,33 @@ android {
             debuggable true
             jniDebuggable true
             minifyEnabled true
-            signingConfig config["sign.enabled"] ? signingConfigs.main : null
-            proguardFiles "proguard.pro", "proguard-debug.pro"
-            buildConfigField "boolean", "DEBUG_LEAKCANARY", config["debug.leakCanary"] ?: "false"
-            buildConfigField "boolean", "DEBUG_BLOCKCANARY", config["debug.blockCanary"] ?: "false"
-            buildConfigField "int", "DEBUG_BLOCKCANARY_LIMIT_MILLIS", config["debug.blockCanary.limitMillis"] ?: "500"
-            buildConfigField "boolean", "DEBUG_STRICTMODE", config["debug.strictMode"] ?: "false"
+            signingConfig config['sign.enabled'] ? signingConfigs.main : null
+            proguardFiles 'proguard.pro', 'proguard-debug.pro'
+            buildConfigField 'boolean', 'DEBUG_LEAKCANARY', config['debug.leakCanary'] ?: 'false'
+            buildConfigField 'boolean', 'DEBUG_BLOCKCANARY', config['debug.blockCanary'] ?: 'false'
+            buildConfigField 'int', 'DEBUG_BLOCKCANARY_LIMIT_MILLIS', config['debug.blockCanary.limitMillis'] ?: '500'
+            buildConfigField 'boolean', 'DEBUG_STRICTMODE', config['debug.strictMode'] ?: 'false'
         }
         release {
             minifyEnabled true
             shrinkResources true
-            signingConfig config["sign.enabled"] ? signingConfigs.main : null
-            proguardFiles "proguard.pro", "proguard-release.pro"
-            buildConfigField "boolean", "DEBUG_LEAKCANARY", "false"
-            buildConfigField "boolean", "DEBUG_BLOCKCANARY", "false"
-            buildConfigField "int", "DEBUG_BLOCKCANARY_LIMIT_MILLIS", "500"
-            buildConfigField "boolean", "DEBUG_STRICTMODE", "false"
+            signingConfig config['sign.enabled'] ? signingConfigs.main : null
+            proguardFiles 'proguard.pro', 'proguard-release.pro'
+            buildConfigField 'boolean', 'DEBUG_LEAKCANARY', 'false'
+            buildConfigField 'boolean', 'DEBUG_BLOCKCANARY', 'false'
+            buildConfigField 'int', 'DEBUG_BLOCKCANARY_LIMIT_MILLIS', '500'
+            buildConfigField 'boolean', 'DEBUG_STRICTMODE', 'false'
         }
     }
 
     sourceSets {
-        debug.java.srcDirs += "src/debug/kotlin"
-        main.java.srcDirs += "src/main/kotlin"
-        test.java.srcDirs += "src/test/kotlin"
+        debug.java.srcDirs += 'src/debug/kotlin'
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
     }
 
     aaptOptions {
-        ignoreAssetsPattern "!.readme"
+        ignoreAssetsPattern '!.readme'
     }
 
     lintOptions {
@@ -67,13 +67,13 @@ android {
 }
 
 dependencies {
-    compile project(":util:util-common")
-    compile project(":util:util-android")
-    debugCompile "com.github.moduth:blockcanary-android:1.2.1"
-    releaseCompile "com.github.moduth:blockcanary-no-op:1.2.1"
-    testCompile "com.github.moduth:blockcanary-no-op:1.2.1"
-    debugCompile "com.squareup.leakcanary:leakcanary-android:1.4-SNAPSHOT"
-    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:1.4-SNAPSHOT"
-    testCompile "com.squareup.leakcanary:leakcanary-android-no-op:1.4-SNAPSHOT"
-    testCompile project(":util:util-testCommon")
+    compile project(':util:util-common')
+    compile project(':util:util-android')
+    debugCompile 'com.github.moduth:blockcanary-android:1.2.1'
+    releaseCompile 'com.github.moduth:blockcanary-no-op:1.2.1'
+    testCompile 'com.github.moduth:blockcanary-no-op:1.2.1'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-SNAPSHOT'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-SNAPSHOT'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-SNAPSHOT'
+    testCompile project(':util:util-testCommon')
 }
