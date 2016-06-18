@@ -20,6 +20,9 @@
 -dontnote com.pnikosis.**
 -dontnote org.eclipse.**
 -dontnote org.aspectj.**
+-dontnote rx.internal.**
+-dontnote org.adw.library.**
+-dontnote com.github.moduth.**
 
 # Java
 -keepattributes *Annotation*

@@ -19,7 +19,7 @@ private fun stackTraceTag(element: StackTraceElement): String {
     val m = ANONYMOUS_CLASS.matcher(tag)
     if (m.find())
         tag = m.replaceAll("")
-    return tag.substring(tag.lastIndexOf('.') + 1)
+    return tag.substringAfterLast('.').substringBefore('$')
 }
 
 fun logFullMessage(t: Throwable?, message: String) =
