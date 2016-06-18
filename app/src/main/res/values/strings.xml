@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="appName">Perfect Reader</string>
-    <string name="bookNotLoaded">Пожалуйста, откройте книгу через файловый мененджер</string>
+    <string name="bookNeedOpenThroughFileManager">Пожалуйста, откройте книгу через файловый мененджер</string>
     <string name="bookOpenError">Ошибка при открытии книги</string>
     <string name="bookMenuBookmarks">Закладки</string>
     <string name="bookMenuGoto">Перейти</string>

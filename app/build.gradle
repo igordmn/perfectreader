@@ -34,13 +34,21 @@ android {
             jniDebuggable true
             minifyEnabled true
             signingConfig config["sign.enabled"] ? signingConfigs.main : null
-            proguardFiles "proguard-android.pro", "proguard-project.pro"
+            proguardFiles "proguard.pro", "proguard-debug.pro"
+            buildConfigField "boolean", "DEBUG_LEAKCANARY", config["debug.leakCanary"] ?: "false"
+            buildConfigField "boolean", "DEBUG_BLOCKCANARY", config["debug.blockCanary"] ?: "false"
+            buildConfigField "int", "DEBUG_BLOCKCANARY_LIMIT_MILLIS", config["debug.blockCanary.limitMillis"] ?: "500"
+            buildConfigField "boolean", "DEBUG_STRICTMODE", config["debug.strictMode"] ?: "false"
         }
         release {
             minifyEnabled true
             shrinkResources true
             signingConfig config["sign.enabled"] ? signingConfigs.main : null
-            proguardFiles "proguard-android-optimize.pro", "proguard-project.pro"
+            proguardFiles "proguard.pro", "proguard-release.pro"
+            buildConfigField "boolean", "DEBUG_LEAKCANARY", "false"
+            buildConfigField "boolean", "DEBUG_BLOCKCANARY", "false"
+            buildConfigField "int", "DEBUG_BLOCKCANARY_LIMIT_MILLIS", "500"
+            buildConfigField "boolean", "DEBUG_STRICTMODE", "false"
         }
     }
 
@@ -53,9 +61,20 @@ android {
     aaptOptions {
         ignoreAssetsPattern "!.readme"
     }
+
+    lintOptions {
+        disable 'ViewConstructor'
+    }
 }
 
 dependencies {
+    compile project(":util:util-common")
     compile project(":util:util-android")
+    debugCompile "com.github.moduth:blockcanary-android:1.2.1"
+    releaseCompile "com.github.moduth:blockcanary-no-op:1.2.1"
+    testCompile "com.github.moduth:blockcanary-no-op:1.2.1"
+    debugCompile "com.squareup.leakcanary:leakcanary-android:1.4-SNAPSHOT"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:1.4-SNAPSHOT"
+    testCompile "com.squareup.leakcanary:leakcanary-android-no-op:1.4-SNAPSHOT"
     testCompile project(":util:util-testCommon")
 }

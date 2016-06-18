@@ -3,10 +3,9 @@
           package="com.dmi.perfectreader">
 
     <application>
-        <activity android:exported="true" android:name=".manualtest.book.PageBookViewTestActivity"/>
-        <activity android:exported="true" android:name=".manualtest.book.BookTestActivity"/>
-        <activity android:exported="true" android:name=".manualtest.bookcontrol.BookControlTestActivity"/>
-        <activity android:exported="true" android:name=".manualtest.layout.LayoutTestActivity"/>
+        <activity
+            android:name=".manualtest.LayoutTestActivity"
+            android:exported="true"/>
     </application>
 
 </manifest> 

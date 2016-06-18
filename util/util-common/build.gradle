@@ -9,6 +9,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$projectVersions.kotlin"
     compile "com.google.guava:guava:19.0"
     compile "com.carrotsearch:hppc:0.7.1"
-    compile "com.jakewharton:disklrucache:2.0.2"
+    compile "io.reactivex:rxkotlin:0.60.0"
+    compile "com.github.kittinunf.result:result:1.0.2"
     testCompile project(":util:util-testCommon")
 }

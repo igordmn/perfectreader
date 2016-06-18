@@ -2,69 +2,64 @@ package com.dmi.util.opengl
 
 import android.content.Context
 import android.opengl.GLSurfaceView
-import android.util.AttributeSet
-
-import java.util.concurrent.atomic.AtomicBoolean
-
+import com.dmi.util.graphic.Size
+import com.dmi.util.log
+import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGLConfig
+import javax.microedition.khronos.egl.EGLContext
+import javax.microedition.khronos.egl.EGLDisplay
 import javax.microedition.khronos.opengles.GL10
 
-open class GLSurfaceViewExt : GLSurfaceView {
-    private var renderer: GLRenderer? = null
+class GLSurfaceViewExt(context: Context) : GLSurfaceView(context) {
+    private var rendererExt: RendererExt? = null
 
-    private val renderRun = AtomicBoolean(false)
+    private val eglContextClientVersion = 2
 
-    constructor(context: Context) : super(context) {
+    init {
+        super.setEGLContextClientVersion(eglContextClientVersion)
+        super.setEGLContextFactory(DefaultContextFactory())
     }
 
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+    fun setRenderer(renderer: RendererExt) {
+        require(rendererExt == null)
+        rendererExt = renderer
+        super.setRenderer(RendererExtWrapper(renderer))
     }
 
-    override fun onPause() {
-        synchronized (renderRun) {
-            if (renderRun.get()) {
-                super.onPause()
+    override fun setEGLContextFactory(factory: EGLContextFactory) = throw UnsupportedOperationException()
+    override fun setEGLContextClientVersion(version: Int) = throw UnsupportedOperationException()
+    override fun setRenderer(renderer: Renderer) = throw UnsupportedOperationException()
+
+    interface RendererExt {
+        fun onSurfaceCreated() = Unit
+        fun onSurfaceChanged(size: Size) = Unit
+        fun onSurfaceDestroyed() = Unit
+        fun onDrawFrame() = Unit
+    }
+
+    class RendererExtWrapper(private val rendererExt: RendererExt) : GLSurfaceView.Renderer {
+        override fun onSurfaceCreated(gl: GL10, config: EGLConfig) = rendererExt.onSurfaceCreated()
+        override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) = rendererExt.onSurfaceChanged(Size(width, height))
+        override fun onDrawFrame(gl: GL10) = rendererExt.onDrawFrame()
+    }
+
+    private inner class DefaultContextFactory : EGLContextFactory {
+        private val EGL_CONTEXT_CLIENT_VERSION = 0x3098
+
+        override fun createContext(egl: EGL10, display: EGLDisplay, config: EGLConfig): EGLContext {
+            val attributes = intArrayOf(EGL_CONTEXT_CLIENT_VERSION, eglContextClientVersion, EGL10.EGL_NONE)
+            return egl.eglCreateContext(display, config, EGL10.EGL_NO_CONTEXT, attributes)
+        }
+
+        override fun destroyContext(egl: EGL10, display: EGLDisplay,
+                                    context: EGLContext) {
+            rendererExt?.onSurfaceDestroyed()
+
+            if (!egl.eglDestroyContext(display, context)) {
+                log.e("DefaultContextFactory display:$display context: $context")
+                val errorString = Graphics.getErrorString(egl.eglGetError())
+                error("eglDestroyContext failed: $errorString")
             }
         }
-    }
-
-    override fun onResume() {
-        synchronized (renderRun) {
-            if (renderRun.get()) {
-                super.onResume()
-            }
-        }
-    }
-
-    override fun requestRender() {
-        synchronized (renderRun) {
-            if (renderRun.get()) {
-                super.requestRender()
-            }
-        }
-    }
-
-    fun setRenderer(renderer: GLRenderer) {
-        this.renderer = renderer
-        synchronized (renderRun) {
-            super.setRenderer(object : GLSurfaceView.Renderer {
-                override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-                    renderer.onSurfaceCreated()
-                }
-
-                override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
-                    renderer.onSurfaceChanged(width, height)
-                }
-
-                override fun onDrawFrame(gl: GL10) {
-                    renderer.onDrawFrame()
-                }
-            })
-            renderRun.set(true)
-        }
-    }
-
-    override fun setRenderer(renderer: GLSurfaceView.Renderer) {
-        throw RuntimeException("You should use setRenderer(GLRenderer)")
     }
 }

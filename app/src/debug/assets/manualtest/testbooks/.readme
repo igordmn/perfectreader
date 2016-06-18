@@ -1,0 +1,2 @@
+Для запуска приложения с открытием тестовой книги, добавьте в Launch Flags (в настройках Run Configuration) следующее:
+-d assets://manualtest/testbooks/txt/tolkienLordOfTheRings.txt

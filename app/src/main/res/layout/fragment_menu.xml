@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shadow_bottom"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
+            app:popupTheme="@style/Theme.AppCompat.Light"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/primary"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:id="@+id/currentChapterText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/currentPageText"
+                android:contentDescription="@string/bookMenuBookmarks"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/icons"
+                android:textStyle="italic"
+                tools:ignore="RtlHardcoded"
+                tools:text="X — Alice's evidence"/>
+
+            <TextView
+                android:id="@+id/currentPageText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/bookMenuGoto"
+                android:gravity="end"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/icons"
+                tools:ignore="RtlHardcoded"
+                tools:text="302 / 2031"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_below="@id/topBar"
+        android:background="@drawable/shadow_bottom"/>
+
+    <FrameLayout
+        android:id="@+id/middleSpace"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottomBar"
+        android:layout_below="@+id/topBar"
+        android:background="@android:color/transparent"
+        android:clickable="true"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_above="@id/bottomBar"
+        android:background="@drawable/shadow_top"/>
+
+    <LinearLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="4dp">
+
+            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+                android:id="@+id/locationSlider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                app:dsb_min="0"
+                app:dsb_max="50"
+                app:dsb_indicatorColor="@color/accent"
+                app:dsb_progressColor="@color/accent"
+                app:dsb_thumbSize="20dp"
+                app:dsb_indicatorFormatter="%d%%"/>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <com.dmi.util.widget.HintedImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/bookMenuSearch"
+                android:src="@drawable/ic_search_grey600_24dp"/>
+
+            <com.dmi.util.widget.HintedImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/bookMenuSwitchTheme"
+                android:src="@drawable/ic_filter_b_and_w_grey600_24dp"/>
+
+            <com.dmi.util.widget.HintedImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/bookMenuAutoscroll"
+                android:src="@drawable/ic_input_grey600_24dp"/>
+
+            <com.dmi.util.widget.HintedImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/bookMenuTextToSpeech"
+                android:src="@drawable/ic_volume_up_grey600_24dp"/>
+
+            <com.dmi.util.widget.HintedImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/bookMenuAddBookmark"
+                android:src="@drawable/ic_bookmark_outline_grey600_24dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

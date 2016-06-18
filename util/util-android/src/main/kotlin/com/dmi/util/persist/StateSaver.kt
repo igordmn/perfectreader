@@ -7,10 +7,10 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 class StateSaver(private val bundleKey: String) {
-    private val holders = ArrayList<ValueHolder<*>>()
+    private val holders = ArrayList<ValueHolder>()
 
     fun <V : Serializable?> register(initial: V): ReadWriteProperty<Any, V> =
-            ValueHolder(initial, valueKey()).apply { holders.add(this) }
+            SerializableHolder(initial, valueKey()).apply { holders.add(this) }
 
     private fun valueKey() = "VALUE" + holders.size
 
@@ -20,13 +20,19 @@ class StateSaver(private val bundleKey: String) {
             holders.forEach { it.restore(valuesBundle) }
         }
     }
+
     fun save(bundle: Bundle) {
-        val valuesBundle = Bundle.EMPTY
+        val valuesBundle = Bundle()
         holders.forEach { it.save(valuesBundle) }
         bundle.putBundle(bundleKey, valuesBundle)
     }
 
-    protected class ValueHolder<V : Serializable?>(initial: V, val key: String) : ReadWriteProperty<Any, V> {
+    private interface ValueHolder {
+        fun restore(state: Bundle)
+        fun save(state: Bundle)
+    }
+
+    private class SerializableHolder<V : Serializable?>(initial: V, val key: String) : ReadWriteProperty<Any, V>, ValueHolder {
         private @Volatile var value = initial
 
         override fun getValue(thisRef: Any, property: KProperty<*>) = value
@@ -36,12 +42,12 @@ class StateSaver(private val bundleKey: String) {
         }
 
         @Suppress("UNCHECKED_CAST")
-        fun restore(bundle: Bundle) {
-            value = bundle.getSerializable(key) as V
+        override fun restore(state: Bundle) {
+            value = state.getSerializable(key) as V
         }
 
-        fun save(bundle: Bundle) {
-            bundle.putSerializable(key, value)
+        override fun save(state: Bundle) {
+            state.putSerializable(key, value)
         }
     }
 }

@@ -8,6 +8,11 @@ sourceSets {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$projectVersions.kotlin"
     compile "junit:junit:4.12"
-    compile "org.amshove.kluent:kluent:1.4"
-    compile "com.nhaarman:mockito-kotlin:0.2.1"
+    compile("org.amshove.kluent:kluent:1.4") {
+        exclude group: "org.mockito", module: "mockito-all"
+    }
+    compile("org.robolectric:robolectric:3.1") {
+        exclude group: "com.google.guava", module: "guava"
+    }
+    compile "org.khronos:opengl-api:gl1.1-android-2.1_r1"
 }

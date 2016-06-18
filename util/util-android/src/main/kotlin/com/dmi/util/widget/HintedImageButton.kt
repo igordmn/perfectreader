@@ -8,23 +8,17 @@ import android.view.Gravity
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
-import com.dmi.util.Units.dipToPx
+import org.jetbrains.anko.dip
 
 class HintedImageButton : ImageButton {
-    constructor(context: Context) : super(context) {
-        init()
-    }
+    constructor(context: Context) : super(context)
 
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init()
-    }
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        init()
-    }
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    private fun init() {
-        super.setOnLongClickListener( View.OnLongClickListener { v ->
+    init {
+        super.setOnLongClickListener(View.OnLongClickListener { v ->
             showContentDescription()
             true
         })
@@ -37,7 +31,7 @@ class HintedImageButton : ImageButton {
     private fun showContentDescription() {
         val contentDesc = contentDescription.toString()
         if (!isEmpty(contentDesc)) {
-            val OFFSET = dipToPx(32f).toInt()
+            val OFFSET = dip(32f)
 
             val screenPos = IntArray(2)
             val displayFrame = Rect()

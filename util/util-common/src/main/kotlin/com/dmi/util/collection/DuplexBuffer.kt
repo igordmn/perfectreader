@@ -18,13 +18,23 @@ class DuplexBuffer<T>(val maxRelativeIndex: Int) {
         return items[arrayIndex(relativeIndex)]
     }
 
-    fun shiftLeft() = shift--
+    fun shiftLeft() {
+        shift--
+        this[maxRelativeIndex] = null
+    }
 
-    fun shiftRight() = shift++
+    fun shiftRight() {
+        shift++
+        this[-maxRelativeIndex] = null
+    }
 
     fun clear() = items.fill(null)
 
-    private fun arrayIndex(relativeIndex: Int): Int {
-        return (maxRelativeIndex + relativeIndex - shift) modPositive items.size
-    }
+    private fun arrayIndex(relativeIndex: Int) =
+            (maxRelativeIndex + relativeIndex - shift) modPositive items.size
+
+    override fun toString() =
+            (-maxRelativeIndex..maxRelativeIndex)
+                    .map { i -> "$i: ${get(i)}" }
+                    .joinToString(", ")
 }

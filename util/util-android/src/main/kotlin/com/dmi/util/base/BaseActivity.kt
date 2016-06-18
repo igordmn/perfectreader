@@ -2,41 +2,63 @@ package com.dmi.util.base
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.FrameLayout
-import com.bluelinelabs.conductor.Conductor
-import com.bluelinelabs.conductor.Router
+import com.dmi.util.system.ActivityLifeCycle
 
-abstract class BaseActivity protected constructor() : AppCompatActivity() {
-    private val ROOT_CONTROLLER_TAG = "____ROOT"
+abstract class BaseActivity<V : BaseView, VM : BaseViewModel> protected constructor() : AppCompatActivity() {
+    val lifeCycle = ActivityLifeCycle()
 
-    protected lateinit var router: Router
+    protected lateinit var viewModel: VM
+    protected lateinit var view: V
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val rootContainer = FrameLayout(this)
-        setContentView(rootContainer)
-        router = Conductor.attachRouter(this, rootContainer, savedInstanceState);
-    }
+    protected abstract fun createViewModel(): VM
+    protected abstract fun createView(viewModel: VM): V
 
-    protected fun inject(vararg modules: Any) {
-        //        val baseApplication = application as BaseApplication
-        //        baseApplication.objectGraph().plus(*modules).inject(this)
-    }
-
-    override fun onBackPressed() {
-        if (!router.handleBack()) {
-            super.onBackPressed();
-        }
+    protected fun recreateViewModel() {
+        viewModel.destroy()
+        viewModel = createViewModel()
+        view.destroy()
+        view = createView(viewModel)
+        setContentView(view.widget)
     }
 
     @Suppress("UNCHECKED_CAST")
-    protected fun <T> findRootController() = router.getControllerWithTag(ROOT_CONTROLLER_TAG) as T?
-
-    protected fun <T : BaseController> setRootController(controller: T): T {
-        router.setRoot(controller, ROOT_CONTROLLER_TAG)
-        return controller
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (lastCustomNonConfigurationInstance != null) {
+            viewModel = lastCustomNonConfigurationInstance as VM
+        } else {
+            viewModel = createViewModel()
+        }
+        view = createView(viewModel)
+        setContentView(view.widget)
     }
 
-    protected inline fun <T : BaseController> initRootController(init: () -> T) =
-            findRootController<T>() ?: setRootController(init())
+    override fun onDestroy() {
+        if (!isChangingConfigurations)
+            viewModel.destroy()
+        view.destroy()
+        super.onDestroy()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifeCycle.onResume()
+    }
+
+    override fun onPause() {
+        lifeCycle.onPause()
+        super.onPause()
+    }
+
+    override fun onRestoreInstanceState(state: Bundle) {
+        super.onRestoreInstanceState(state)
+        viewModel.restore(state)
+    }
+
+    override fun onSaveInstanceState(state: Bundle) {
+        viewModel.save(state)
+        super.onSaveInstanceState(state)
+    }
+
+    final override fun onRetainCustomNonConfigurationInstance() = viewModel
 }

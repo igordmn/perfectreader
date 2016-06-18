@@ -1,0 +1,3 @@
+-optimizations !code/simplification/cast,!field/*,!class/merging/*,!code/allocation/variable
+-optimizationpasses 5
+-allowaccessmodification

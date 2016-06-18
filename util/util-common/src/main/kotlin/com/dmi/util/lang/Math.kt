@@ -8,10 +8,13 @@ infix fun Int.modPositive(n: Int): Int {
     return result
 }
 
-fun clamp(value: Double, min: Double, max: Double): Double {
-    return Math.max(min, Math.min(max, value))
-}
-
 fun clamp(value: Float, min: Float, max: Float): Float {
     return Math.max(min, Math.min(max, value))
 }
+
+fun floor(value: Float) = Math.floor(value.toDouble()).toFloat()
+
+fun ceil(value: Float) = Math.ceil(value.toDouble()).toFloat()
+
+infix fun Float.sameSign(b: Float) = this >= 0 && b >= 0 || this < 0 && b < 0
+infix fun Float.notSameSign(b: Float) = !(this sameSign b)
