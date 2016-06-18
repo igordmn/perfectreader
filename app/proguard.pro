@@ -41,12 +41,12 @@
 -keep public class com.android.vending.licensing.ILicensingService
 
 -keepclassmembers public class * extends android.view.View {
-   void set*(***);
-   *** get*();
+     void set*(***);
+     *** get*();
 }
 
 -keepclassmembers class * implements android.os.Parcelable {
-  public static final android.os.Parcelable$Creator CREATOR;
+    public static final android.os.Parcelable$Creator CREATOR;
 }
 
 -keepclassmembers class **.R$* {
