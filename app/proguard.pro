@@ -18,6 +18,8 @@
 -dontnote com.mikepenz.**
 -dontnote com.rey.**
 -dontnote com.pnikosis.**
+-dontnote org.eclipse.**
+-dontnote org.aspectj.**
 
 # Java
 -keepattributes *Annotation*
@@ -77,3 +79,11 @@
 
 # BlockCanary
 -dontwarn com.github.moduth.**
+
+# AspectJ
+-dontwarn org.eclipse.**
+-dontwarn org.aspectj.**
+-keep class org.aspectj.lang.ProceedingJoinPoint
+-keep @org.aspectj.lang.annotation.Aspect class * {
+    *;
+}

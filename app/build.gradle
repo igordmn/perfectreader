@@ -1,6 +1,7 @@
 apply plugin: "android-sdk-manager"
 apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
+apply plugin: 'android-aspectjx'
 
 android {
     compileSdkVersion projectVersions.compileSdk
@@ -64,6 +65,13 @@ android {
     lintOptions {
         disable 'ViewConstructor'
     }
+}
+
+aspectjx {
+    includeJarFilter = [
+            project(":util:util-common").buildDir.absolutePath + "/libs/util-common.jar",
+            project(":util:util-android").buildDir.absolutePath + "/intermediates/exploded-aar/perfectreader.util/util-android/unspecified/jars/classes.jar"
+    ]
 }
 
 dependencies {

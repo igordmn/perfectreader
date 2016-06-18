@@ -30,6 +30,8 @@ buildscript {
         classpath 'com.android.tools.build:gradle:2.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$projectVersions.kotlin"
         classpath "com.github.JakeWharton:sdk-manager-plugin:220bf7a88a7072df3ed16dc8466fb144f2817070"
+        classpath "com.github.HujiangTechnology:gradle_plugin_android_aspectjx:2656109b9c7237344a7646136aeece72b613a389"
+        classpath "org.aspectj:aspectjtools:1.8.6"
     }
 }
 
