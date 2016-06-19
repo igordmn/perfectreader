@@ -7,3 +7,5 @@ import rx.Scheduler
 inline fun <R> LambdaObservable(noinline action: () -> R) = Observable.fromCallable<R>(action)
 
 fun async(scheduler: Scheduler, run: () -> Unit) = LambdaObservable(run).subscribeOn(scheduler).subscribe()
+
+infix fun <T> Observable<T>.merge(other: Observable<T>) = this.mergeWith(other)

@@ -32,7 +32,6 @@ import com.dmi.perfectreader.fragment.reader.Reader
 import com.dmi.perfectreader.fragment.reader.ReaderView
 import com.dmi.util.graphic.Size
 import com.dmi.util.graphic.SizeF
-import com.dmi.util.opengl.GLSurfaceViewExt
 
 class AppObjects(applicationContext: Context) {
     val databases = AppDatabases(applicationContext)
@@ -94,7 +93,7 @@ class AppObjects(applicationContext: Context) {
         val createReaderView = { model: Reader ->
             val createBookView = { model: Book ->
                 val bitmapDecoder = model.bitmapDecoder
-                val createRenderer = { size: Size, surface: GLSurfaceViewExt ->
+                val createRenderer = { size: Size ->
                     val renderModel = model.renderModel
 
                     val objectPainter = UniversalObjectPainter(bitmapDecoder)
@@ -105,7 +104,7 @@ class AppObjects(applicationContext: Context) {
                     val createRefresher = { renderer: PagesRenderer, size: Size -> PagesRefresher(pagePainter, renderer, refreshScheduler, size) }
                     val createPagesRenderer = { PagesRenderer(context, size, density, createRefresher) }
 
-                    BookRenderer(size, renderModel, surface, createPagesRenderer)
+                    BookRenderer(size, renderModel, createPagesRenderer)
                 }
 
                 BookView(context, model, createRenderer, lifeCycle)

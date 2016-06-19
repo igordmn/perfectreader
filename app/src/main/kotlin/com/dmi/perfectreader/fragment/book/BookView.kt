@@ -8,15 +8,15 @@ import android.widget.FrameLayout
 import com.dmi.util.base.BaseView
 import com.dmi.util.base.px2dip
 import com.dmi.util.graphic.Size
-import com.dmi.util.opengl.FixedRendererWrapper
 import com.dmi.util.opengl.GLSurfaceViewExt
+import com.dmi.util.opengl.setRenderer
 import com.dmi.util.system.ActivityLifeCycle
 import com.dmi.util.widget.onSizeChange
 
 class BookView(
         context: Context,
         private val model: Book,
-        private val createRenderer: ( Size, GLSurfaceViewExt) -> BookRenderer,
+        private val createRenderer: (Size) -> BookRenderer,
         private val activityLifeCycle: ActivityLifeCycle
 ) : BaseView(FrameLayout(context)) {
     private val glSurface = GLSurfaceViewExt(context)
@@ -32,7 +32,7 @@ class BookView(
 
         widget.addView(glSurface)
         widget.keepScreenOn = true
-        glSurface.setRenderer(FixedRendererWrapper { createRenderer(it, glSurface) })
+        glSurface.setRenderer { size -> createRenderer(size) }
         glSurface.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         glSurface.onSizeChange { size, oldSize ->
             model.resize(px2dip(size.toFloat()))
