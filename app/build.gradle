@@ -37,6 +37,7 @@ android {
             buildConfigField 'boolean', 'DEBUG_BLOCKCANARY', config['debug.blockCanary'] ?: 'false'
             buildConfigField 'int', 'DEBUG_BLOCKCANARY_LIMIT_MILLIS', config['debug.blockCanary.limitMillis'] ?: '500'
             buildConfigField 'boolean', 'DEBUG_STRICTMODE', config['debug.strictMode'] ?: 'false'
+            buildConfigField 'boolean', 'DEBUG_SHOWRENDERFREEZES', config['debug.showRenderFreezes'] ?: 'false'
         }
         release {
             minifyEnabled true
@@ -47,6 +48,7 @@ android {
             buildConfigField 'boolean', 'DEBUG_BLOCKCANARY', 'false'
             buildConfigField 'int', 'DEBUG_BLOCKCANARY_LIMIT_MILLIS', '500'
             buildConfigField 'boolean', 'DEBUG_STRICTMODE', 'false'
+            buildConfigField 'boolean', 'DEBUG_SHOWRENDERFREEZES', 'false'
         }
     }
 

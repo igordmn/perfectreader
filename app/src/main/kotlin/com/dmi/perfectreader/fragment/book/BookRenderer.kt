@@ -1,7 +1,9 @@
 package com.dmi.perfectreader.fragment.book
 
 import android.opengl.GLES20.*
+import com.dmi.perfectreader.BuildConfig.DEBUG_SHOWRENDERFREEZES
 import com.dmi.perfectreader.fragment.book.page.PagesRenderer
+import com.dmi.util.debug.RenderFreezeWatcher
 import com.dmi.util.graphic.Size
 import com.dmi.util.opengl.FixedRenderer
 import com.dmi.util.opengl.GLSurfaceViewExt
@@ -18,6 +20,7 @@ class BookRenderer(
         private val createPages: () -> PagesRenderer
 
 ) : FixedRenderer {
+    private val freezeWatcher = RenderFreezeWatcher(name = "BookRenderer", thresholdMillis = 40)
     private val subscriptions = CompositeSubscription()
     private val pages: PagesRenderer
 
@@ -32,7 +35,10 @@ class BookRenderer(
         pages = createPages()
 
         fun Observable<*>.subscribeRequestRender() = subscriptions.add(
-                subscribe { surface.requestRender() }
+                subscribe {
+                    if (DEBUG_SHOWRENDERFREEZES) freezeWatcher.onRenderRequest()
+                    surface.requestRender()
+                }
         )
 
         pages.onNeedDraw.subscribeRequestRender()
@@ -45,10 +51,14 @@ class BookRenderer(
     }
 
     override fun draw() {
+        if (DEBUG_SHOWRENDERFREEZES) freezeWatcher.onBeginRender()
+
         glClearColor(1F, 1F, 1F, 1F)
         glClear(GL_COLOR_BUFFER_BIT)
 
         model.update()
         pages.draw(model.pages)
+
+        if (DEBUG_SHOWRENDERFREEZES) freezeWatcher.onEndRender()
     }
 }
