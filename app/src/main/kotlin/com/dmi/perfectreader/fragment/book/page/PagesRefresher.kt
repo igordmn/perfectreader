@@ -84,7 +84,7 @@ class PagesRefresher(
     private fun unload(page: Page) {
         val texture = pagesRenderer.loadedPageToTexture.remove(page)
         texture?.let { loadedPagesTexturePool.release(it) }
-        loadedPageToSubscription[page]!!.unsubscribe()
+        loadedPageToSubscription.remove(page)!!.unsubscribe()
     }
 
     private class TexturePool(size: Size, count: Int) {
