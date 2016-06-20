@@ -15,7 +15,7 @@ import java.util.*
 class RefreshScheduler(private val bitmapBuffer: BitmapBuffer) {
     val onNeedRefresh = PublishSubject<Unit>()
 
-    private val bitmapPool = BitmapResource(bitmapBuffer)
+    private val bitmapResource = BitmapResource(bitmapBuffer)
     private val queue: Queue<Refreshable> = LinkedList()
     private var currentRefresh: Refresh? = null
 
@@ -47,11 +47,12 @@ class RefreshScheduler(private val bitmapBuffer: BitmapBuffer) {
 
     private fun startNext() {
         val refreshable = queue.poll()
-        if (refreshable != null)
+        if (refreshable != null) {
             currentRefresh = Refresh(refreshable) {
                 currentRefresh = null
                 startNext()
             }
+        }
     }
 
     fun refresh() {
@@ -67,7 +68,7 @@ class RefreshScheduler(private val bitmapBuffer: BitmapBuffer) {
 
         init {
             LambdaObservable {
-                bitmapPool.acquire { refreshable.paint(it) }
+                bitmapResource.acquire { refreshable.paint(it) }
             }.subscribeOn(pagePaintScheduler).subscribe {
                 bitmap = it
                 onNeedRefresh.onNext(Unit)
@@ -79,7 +80,7 @@ class RefreshScheduler(private val bitmapBuffer: BitmapBuffer) {
             if (bitmap != null) {
                 if (!cancelled)
                     refreshable.refreshBy(bitmap)
-                bitmapPool.release()
+                bitmapResource.release()
                 onComplete()
             }
         }
