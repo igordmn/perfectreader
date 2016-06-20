@@ -7,6 +7,7 @@ import com.dmi.perfectreader.fragment.book.page.PagesRenderModel.Slide
 import com.dmi.util.graphic.Size
 import com.dmi.util.opengl.Plane
 import com.dmi.util.opengl.Texture
+import com.dmi.util.refWatcher
 import java.util.*
 
 class PagesRenderer(
@@ -37,6 +38,7 @@ class PagesRenderer(
 
     fun destroy() {
         refresher.destroy()
+        refWatcher.watch(this)
     }
 
     fun draw(model: PagesRenderModel) {

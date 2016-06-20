@@ -7,6 +7,7 @@ import com.dmi.util.debug.RenderFreezeWatcher
 import com.dmi.util.ext.merge
 import com.dmi.util.graphic.Size
 import com.dmi.util.opengl.NotifiableRenderer
+import com.dmi.util.refWatcher
 import com.dmi.util.system.ThreadPriority
 import com.dmi.util.system.setPriority
 import rx.Observable
@@ -41,6 +42,7 @@ class BookRenderer(
 
     override fun destroy() {
         pages.destroy()
+        refWatcher.watch(this)
     }
 
     override fun draw() {

@@ -9,6 +9,7 @@ import com.dmi.perfectreader.fragment.book.page.PagesRenderModel.LoadingPage
 import com.dmi.util.collection.ImmediatelyCreatePool
 import com.dmi.util.graphic.Size
 import com.dmi.util.opengl.Texture
+import com.dmi.util.refWatcher
 import rx.Subscription
 import java.util.*
 
@@ -30,6 +31,7 @@ class PagesRefresher(
 
     fun destroy() {
         refreshScheduler.destroy()
+        refWatcher.watch(this)
     }
 
     fun refreshBy(pagesModel: PagesRenderModel) {
