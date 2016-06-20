@@ -15,7 +15,7 @@ class BookContent private constructor(
         private val objects: ContentObjects,
         private val percentRanges: PercentRanges,
         val openResource: (path: String) -> InputStream
-) : LocatedSequence<ContentObject> {
+) {
     init {
         require(objects.size > 0)
         require(objects.size == percentRanges.size)
@@ -39,7 +39,7 @@ class BookContent private constructor(
         }
     }
 
-    override fun get(location: Location): SequenceEntry<ContentObject> = objects.sequenceAt(location)
+    val sequence: LocatedSequence<ContentObject> = objects
 
     class Builder {
         private val objects = ContentObjects()
@@ -57,7 +57,7 @@ class BookContent private constructor(
         }
     }
 
-    private class ContentObjects {
+    private class ContentObjects : LocatedSequence<ContentObject> {
         private val list = ArrayList<ContentObject>(1024)
 
         val size: Int get() = list.size
@@ -72,7 +72,7 @@ class BookContent private constructor(
         fun indexOf(location: Location) = list.indexOfNearestRange({ range }, location)
         fun rangeOf(index: Int) = list[index].range
 
-        fun sequenceAt(location: Location): SequenceEntry<ContentObject> {
+        override fun get(location: Location): SequenceEntry<ContentObject> {
             require(size > 0)
             return ListSequenceEntry(list, indexOf(location))
         }
