@@ -9,7 +9,7 @@ android {
         applicationId 'com.dmi.perfectreader'
         versionName versionNameFromGit(rootProject.projectDir)
         versionCode versionCodeFromGit(rootProject.projectDir)
-        setProperty('archivesBaseName', "$rootProject.name-$versionName-rev$versionCode")
+        setProperty('archivesBaseName', "$rootProject.name-$versionName")
 
         minSdkVersion projectVersions.minSdk
         targetSdkVersion projectVersions.targetSdk
