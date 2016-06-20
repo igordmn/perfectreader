@@ -5,29 +5,25 @@ import com.dmi.perfectreader.fragment.book.location.LocationRange
 fun singlePartColumn(part: RenderPart) = RenderColumn(listOf(part), part.height, part.range)
 
 infix fun RenderColumn.merge(part: RenderPart): RenderColumn {
-    val parts = if (this.parts.size == 0) {
+    val last = this.parts.lastOrNull()
+    val parts = if (last == null) {
         listOf(part)
+    } else if (last.obj == part.obj) {
+        this.parts.dropLast(1) + listOf(last merge part)
     } else {
-        val last = this.parts.last()
-        if (last.obj == part.obj) {
-            this.parts.dropLast(1) + listOf(last merge part)
-        } else {
-            this.parts.dropLast(1) + listOf(last.extendToEnd(), part.extendToBegin())
-        }
+        this.parts.dropLast(1) + listOf(last.extendToEnd(), part.extendToBegin())
     }
     return RenderColumn(parts, heightSumOf(parts), LocationRange(range.begin, part.range.end))
 }
 
 infix fun RenderPart.merge(column: RenderColumn): RenderColumn {
-    val parts = if (column.parts.size == 0) {
+    val first = column.parts.firstOrNull()
+    val parts = if (first == null) {
         listOf(this)
+    } else if (first.obj == obj) {
+        listOf(this merge first) + column.parts.drop(1)
     } else {
-        val first = column.parts.first()
-        if (first.obj == obj) {
-            listOf(this merge first) + column.parts.drop(1)
-        } else {
-            listOf(this.extendToEnd(), first.extendToBegin()) + column.parts.drop(1)
-        }
+        listOf(this.extendToEnd(), first.extendToBegin()) + column.parts.drop(1)
     }
     return RenderColumn(parts, heightSumOf(parts), LocationRange(range.begin, column.range.end))
 }
