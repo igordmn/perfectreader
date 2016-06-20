@@ -17,7 +17,6 @@ import com.dmi.util.lang.ReusableArrayList
 import com.dmi.util.lang.ReusableFloatArrayList
 import com.dmi.util.lang.ReusableIntArrayList
 import com.dmi.util.lang.ReusableStringBuilder
-import org.jetbrains.anko.collections.forEachWithIndex
 import java.lang.Math.max
 import java.util.*
 
@@ -61,7 +60,7 @@ class ParagraphLayouter(
                     is Area.Fixed -> widthArea.value
                 }
                 return ParagraphBuilder(width, obj).run {
-                    lines.forEachWithIndex { i, line ->
+                    lines.forEachIndexed { i, line ->
                         val isLast = i == lines.size - 1
                         addLine(renderLine(text, line, width, isLast))
                     }
@@ -152,7 +151,7 @@ class ParagraphLayouter(
                 override val locale: Locale = locale
 
                 init {
-                    runs.forEachWithIndex { r, run ->
+                    runs.forEachIndexed { r, run ->
                         when (run) {
                             is Run.Text -> prerenderTextRun(r, run)
                             is Run.Object -> prerenderObject(r, run)
