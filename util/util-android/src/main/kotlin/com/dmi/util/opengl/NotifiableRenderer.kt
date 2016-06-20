@@ -16,8 +16,8 @@ class NotifiableRendererWrapper(
     }
 
     override fun destroy() {
-        renderer.destroy()
         subscription.unsubscribe()
+        renderer.destroy()
     }
 
     override fun draw() = renderer.draw()

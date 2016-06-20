@@ -5,9 +5,11 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.opengl.GLSurfaceView
 import android.widget.FrameLayout
+import com.dmi.perfectreader.BuildConfig.DEBUG_SHOWRENDERFREEZES
 import com.dmi.util.base.BaseView
 import com.dmi.util.base.px2dip
 import com.dmi.util.graphic.Size
+import com.dmi.util.opengl.DebuggableRenderer
 import com.dmi.util.opengl.GLSurfaceViewExt
 import com.dmi.util.opengl.setRenderer
 import com.dmi.util.system.ActivityLifeCycle
@@ -32,7 +34,13 @@ class BookView(
 
         widget.addView(glSurface)
         widget.keepScreenOn = true
-        glSurface.setRenderer { size -> createRenderer(size) }
+        glSurface.setRenderer { size ->
+            if (DEBUG_SHOWRENDERFREEZES) {
+                DebuggableRenderer(thresholdMillis = 40, renderer = createRenderer(size))
+            } else {
+                createRenderer(size)
+            }
+        }
         glSurface.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         glSurface.onSizeChange { size, oldSize ->
             model.resize(px2dip(size.toFloat()))
