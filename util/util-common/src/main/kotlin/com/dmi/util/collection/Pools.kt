@@ -13,7 +13,7 @@ class ImmediatelyCreatePool<T>(val size: Int, create: () -> T) : Pool<T> {
     private val free = Stack<T>()
 
     init {
-        for (i in 0..size - 1) {
+        repeat(size) {
             free.add(create())
         }
     }

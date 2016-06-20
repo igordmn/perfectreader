@@ -4,6 +4,7 @@ import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.obj.render.RenderChild
 import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
+import org.jetbrains.anko.collections.forEachWithIndex
 import java.util.*
 
 fun splitIntoParts(rootObj: RenderObject): List<RenderPart> {
@@ -12,8 +13,7 @@ fun splitIntoParts(rootObj: RenderObject): List<RenderPart> {
     fun addPartsFrom(obj: RenderObject, top: Bound, bottom: Bound, absoluteTop: Float, childIndices: List<Int>) {
         val children = obj.children
         if (obj.canBeSeparated() && children.size > 0) {
-            for (i in 0..children.size - 1) {
-                val child = children[i]
+            children.forEachWithIndex { i, child ->
                 addPartsFrom(
                         obj = child.obj,
                         top = if (i == 0) top else child.topBound(absoluteTop),
