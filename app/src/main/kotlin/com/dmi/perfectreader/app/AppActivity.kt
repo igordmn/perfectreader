@@ -11,6 +11,7 @@ class AppActivity : BaseActivity<MainView, Main>() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        setIntent(intent)
         recreateViewModel()
     }
 }
