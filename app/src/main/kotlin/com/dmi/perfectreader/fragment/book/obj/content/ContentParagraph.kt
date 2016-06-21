@@ -38,7 +38,7 @@ class ContentParagraph(
         abstract fun configure(config: LayoutConfig): LayoutParagraph.Run
 
         class Object(val obj: ContentObject) : Run() {
-            override val length = 1.0
+            override val length = obj.length
 
             override fun configure(config: LayoutConfig) = LayoutParagraph.Run.Object(
                     obj.configure(config)

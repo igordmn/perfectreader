@@ -10,7 +10,7 @@ class ContentImage(
         val src: String?,
         range: LocationRange
 ) : ContentObject(range) {
-    override val length = 1.0
+    override val length = 32.0
 
     override fun configure(config: LayoutConfig) = LayoutImage(
             size.configure(),
