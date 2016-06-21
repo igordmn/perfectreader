@@ -92,7 +92,12 @@ class DBSettings(
 
     private fun Boolean.toLong() = if (this) 1L else 0L
     private fun Long.toBoolean() = if (this == 1L) true else false
-    private fun <T : Enum<T>> String.enumValue(enumClass: Class<T>) = java.lang.Enum.valueOf(enumClass, this)
+
+    private fun <T : Enum<T>> String.enumValue(enumClass: Class<T>) = try {
+        java.lang.Enum.valueOf(enumClass, this)
+    } catch (e: Exception) {
+        null
+    }
 
     class Schema(val table: String, val columns: Columns)
     class Columns(val key: String, val intValue: String, val realValue: String, val textValue: String)
