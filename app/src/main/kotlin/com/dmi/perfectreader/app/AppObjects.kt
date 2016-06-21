@@ -59,9 +59,9 @@ class AppObjects(applicationContext: Context) {
                         val pageConfig = settingsPageConfig(size, userSettings)
                         val layoutSequence = LayoutSequence(bookData.content.sequence, layoutConfig)
                         val renderSequence = RenderSequence(layoutSequence, layouter, pageConfig.contentSize)
-                        val contentRowSequence = RenderPartSequence(renderSequence)
-                        val contentPageSequence = RenderColumnSequence(contentRowSequence, pageConfig.contentSize.height)
-                        val pageSequence = PageSequence(contentPageSequence, pageConfig)
+                        val renderPartSequence = RenderPartSequence(renderSequence)
+                        val renderColumnSequence = RenderColumnSequence(renderPartSequence, pageConfig.contentSize.height)
+                        val pageSequence = PageSequence(renderColumnSequence, pageConfig)
                         PagesLoader(pages, pageSequence)
                     }
                     val renderModel = BookRenderModel(size)
