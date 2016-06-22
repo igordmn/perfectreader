@@ -45,12 +45,13 @@ class AppObjects(applicationContext: Context) {
 
         val parseConfig = settingsParseConfig(userSettings)
         val bookContentParserFactory = BookContentParserFactory(parseConfig, applicationContext)
+        val patternsSource = TeXPatternsSource(applicationContext)
+        val hyphenatorResolver = CachedHyphenatorResolver(TeXHyphenatorResolver(patternsSource))
 
         val createReader = { bookData: BookData ->
             val createBook = {
                 val bitmapDecoder = CachedBitmapDecoder(AndroidBitmapDecoder(bookData.content.openResource))
-                val patternsSource = TeXPatternsSource(applicationContext)
-                val hyphenatorResolver = CachedHyphenatorResolver(TeXHyphenatorResolver(patternsSource))
+
                 val wordBreaker = WordBreaker(hyphenatorResolver)
                 val breaker = CompositeBreaker(LineBreaker(), ObjectBreaker(), wordBreaker)
                 val layouter = UniversalLayouter(PaintTextMetrics(), BreakLiner(breaker), bitmapDecoder)
