@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.fragment.book.parse
 
-import com.dmi.perfectreader.fragment.book.content.BookContent
+import com.dmi.perfectreader.fragment.book.content.Content
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.obj.content.ContentFrame
@@ -8,13 +8,12 @@ import com.dmi.perfectreader.fragment.book.obj.content.ContentParagraph
 import com.dmi.perfectreader.fragment.book.obj.content.param.ContentFontStyle
 import com.dmi.perfectreader.fragment.book.obj.content.param.StyleType
 import com.google.common.io.ByteSource
-import java.io.FileNotFoundException
 
 class TXTContentParser(private val source: ByteSource) : BookContentParser {
     private val charset = Charsets.UTF_8
 
-    override fun parse(): BookContent {
-        val contentBuilder = BookContent.Builder()
+    override fun parse(): Content {
+        val contentBuilder = Content.Builder()
         var begin = 0.0
         source.openBufferedStream().reader(charset).forEachLine() { text ->
             val end = begin + text.length
@@ -22,9 +21,7 @@ class TXTContentParser(private val source: ByteSource) : BookContentParser {
             contentBuilder.addObject(toContentObject(text, range))
             begin = end
         }
-        return contentBuilder.build(
-                openResource = { throw FileNotFoundException() }
-        )
+        return contentBuilder.build()
     }
 
     private fun toContentObject(text: String, range: LocationRange) = ContentFrame(

@@ -3,14 +3,14 @@ package com.dmi.perfectreader.fragment.book
 import android.net.Uri
 import com.dmi.perfectreader.app.dataAccessAsync
 import com.dmi.perfectreader.data.UserData
-import com.dmi.perfectreader.fragment.book.content.BookContent
+import com.dmi.perfectreader.fragment.book.content.Content
 import com.dmi.perfectreader.fragment.book.location.Location
 import rx.lang.kotlin.BehaviorSubject
 
 class BookData(
         private val userData: UserData,
         private val uri: Uri,
-        val content: BookContent
+        val content: Content
 ) {
     val locationObservable = BehaviorSubject<Location>()
 
