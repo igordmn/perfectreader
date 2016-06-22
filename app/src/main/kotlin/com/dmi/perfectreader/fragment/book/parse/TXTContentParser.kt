@@ -9,11 +9,15 @@ import com.dmi.perfectreader.fragment.book.obj.content.param.ContentFontStyle
 import com.dmi.perfectreader.fragment.book.obj.content.param.StyleType
 import com.google.common.io.ByteSource
 
-class TXTContentParser(private val source: ByteSource) : BookContentParser {
-    private val charset = Charsets.UTF_8
-
+class TXTContentParser(
+        private val charsetDetector: CharsetDetector,
+        private val source: ByteSource
+) : BookContentParser {
     override fun parse(): Content {
+        val charset = charsetDetector.detect(source)
+
         val contentBuilder = Content.Builder()
+
         var begin = 0.0
         source.openBufferedStream().reader(charset).forEachLine() { text ->
             val end = begin + text.length
@@ -21,6 +25,7 @@ class TXTContentParser(private val source: ByteSource) : BookContentParser {
             contentBuilder.addObject(toContentObject(text, range))
             begin = end
         }
+
         return contentBuilder.build()
     }
 

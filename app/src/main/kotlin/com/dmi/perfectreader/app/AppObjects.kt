@@ -22,6 +22,7 @@ import com.dmi.perfectreader.fragment.book.obj.common.settingsLayoutConfig
 import com.dmi.perfectreader.fragment.book.page.*
 import com.dmi.perfectreader.fragment.book.page.RefreshScheduler.BitmapBuffer
 import com.dmi.perfectreader.fragment.book.parse.BookContentParserFactory
+import com.dmi.perfectreader.fragment.book.parse.settingsParseConfig
 import com.dmi.perfectreader.fragment.bookcontrol.BookControl
 import com.dmi.perfectreader.fragment.bookcontrol.BookControlView
 import com.dmi.perfectreader.fragment.main.Main
@@ -37,11 +38,13 @@ class AppObjects(applicationContext: Context) {
     val databases = AppDatabases(applicationContext)
     val userData = UserData(databases.user)
     val userSettings = UserSettings(databases.user)
-    val bookContentParserFactory = BookContentParserFactory(applicationContext)
 
     val createMain = { activity: AppActivity ->
         val intent = activity.intent
         val closeApp = { activity.finish() }
+
+        val parseConfig = settingsParseConfig(userSettings)
+        val bookContentParserFactory = BookContentParserFactory(parseConfig, applicationContext)
 
         val createReader = { bookData: BookData ->
             val createBook = {

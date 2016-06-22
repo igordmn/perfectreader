@@ -6,12 +6,17 @@ import com.dmi.util.io.AssetsFileSource
 import com.google.common.io.Files
 import java.io.File
 
-class BookContentParserFactory(private val context: Context) {
+class BookContentParserFactory(
+        private val config: ParseConfig,
+        private val context: Context
+) {
+    private val charsetDetector = CharsetDetector(config.defaultCharset)
+
     fun parserFor(uri: Uri): BookContentParser {
         val extension = uri.path.substringAfterLast('.')
         val source = sourceFor(uri)
         return when (extension) {
-            "txt" -> TXTContentParser(source)
+            "txt" -> TXTContentParser(charsetDetector, source)
             else -> error("Unsupported format")
         }
     }

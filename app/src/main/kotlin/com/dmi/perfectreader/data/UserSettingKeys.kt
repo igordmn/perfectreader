@@ -6,6 +6,11 @@ import com.dmi.util.setting.Settings.EnumKey
 import com.dmi.util.setting.Settings.Keys
 
 object UserSettingKeys : Keys() {
+    object Analyze : Keys(this) {
+        val defaultCharset by key("auto")
+        val ignoreDeclaredCharset by key(false)
+    }
+
     object Format : Keys(this) {
         val firstLineIndent by key(20F)
         val textAlign by key(TextAlign.JUSTIFY)
