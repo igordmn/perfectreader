@@ -9,5 +9,5 @@ interface ObjectPainter<R : RenderObject> {
      *
      * Этот метод может длиться долго (к примеру, загружать картинки с карты памяти), так что его нужно вызывать не в render-потоке
      */
-    fun paintItself(obj: R, canvas: Canvas)
+    fun paintItself(obj: R, canvas: Canvas, context: PaintContext)
 }

@@ -22,6 +22,10 @@ class LayoutParagraph(
                     beginIndex.toDouble() / text.length,
                     endIndex.toDouble() / text.length
             )
+
+            fun sublocation(index: Int) = range.sublocation(
+                    index.toDouble() / text.length
+            )
         }
     }
 }

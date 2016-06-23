@@ -2,6 +2,7 @@ package com.dmi.perfectreader.data
 
 import com.dmi.perfectreader.fragment.book.obj.common.TextAlign
 import com.dmi.perfectreader.fragment.bookcontrol.entity.*
+import com.dmi.util.graphic.Color
 import com.dmi.util.setting.Settings.EnumKey
 import com.dmi.util.setting.Settings.Keys
 
@@ -188,5 +189,10 @@ object UserSettingKeys : Keys() {
                 }
             }
         }
+    }
+
+    object UI : Keys(this) {
+        val selectionBackgroundColor by key(Color(255, 174, 223, 240).value)
+        val selectionTextColor by key(Color.WHITE.value)
     }
 }

@@ -9,7 +9,8 @@ class RenderSpace(width: Float,
                   text: CharSequence,
                   locale: Locale,
                   baseline: Float,
+                  charOffsets: FloatArray,
                   style: LayoutFontStyle,
                   val scaleX: Float,
                   range: LocationRange
-) : RenderText(width, height, text, locale, baseline, style, range)
+) : RenderText(width, height, text, locale, baseline, charOffsets, style, range)

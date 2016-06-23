@@ -1,8 +1,8 @@
 package com.dmi.perfectreader.fragment.book.layout.painter
 
 import android.graphics.*
-import com.dmi.perfectreader.fragment.book.obj.render.RenderImage
 import com.dmi.perfectreader.fragment.book.bitmap.BitmapDecoder
+import com.dmi.perfectreader.fragment.book.obj.render.RenderImage
 
 class ImagePainter(
         private val bitmapDecoder: BitmapDecoder
@@ -13,7 +13,7 @@ class ImagePainter(
 
     private val paint = Paint()
 
-    override fun paintItself(obj: RenderImage, canvas: Canvas) {
+    override fun paintItself(obj: RenderImage, canvas: Canvas, context: PaintContext) {
         val bitmap = if (obj.src != null) bitmapDecoder.decode(obj.src, obj.width, obj.height) else EMPTY
         if (bitmap.width.toFloat() == obj.width && bitmap.height.toFloat() == obj.height) {
             canvas.drawBitmap(bitmap, 0F, 0F, paint)

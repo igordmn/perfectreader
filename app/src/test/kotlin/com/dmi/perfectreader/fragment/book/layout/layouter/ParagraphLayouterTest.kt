@@ -8,10 +8,7 @@ import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.liner.Liner
 import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.metrics.TextMetrics
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
-import com.dmi.perfectreader.fragment.book.obj.common.DefaultHangingConfig
-import com.dmi.perfectreader.fragment.book.obj.common.HangingConfig
-import com.dmi.perfectreader.fragment.book.obj.common.TextAlign
-import com.dmi.perfectreader.fragment.book.obj.common.TextRenderConfig
+import com.dmi.perfectreader.fragment.book.obj.common.*
 import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
 import com.dmi.perfectreader.fragment.book.obj.layout.LayoutParagraph
 import com.dmi.perfectreader.fragment.book.obj.layout.LayoutParagraph.Run
@@ -23,6 +20,7 @@ import com.dmi.perfectreader.fragment.book.obj.render.RenderText
 import com.dmi.util.graphic.Color
 import com.dmi.util.graphic.SizeF
 import org.amshove.kluent.shouldEqual
+import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 import java.util.*
 
@@ -278,6 +276,10 @@ class ParagraphLayouterTest {
                 childIsSpaces shouldEqual listOf(false, true)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
                 childStyles shouldEqual listOf(style1, style1)
+                childCharOffsets shouldEqualCharOffsets listOf(
+                        charOffsets(4, LETTER_WIDTH1),
+                        charOffsets(1, SPACE_WIDTH1)
+                )
 
                 childWidths shouldEqual listOf(4 * LETTER_WIDTH1, 1 * SPACE_WIDTH1)
                 childHeights shouldEqual listOf(HEIGHT1, HEIGHT1)
@@ -299,6 +301,12 @@ class ParagraphLayouterTest {
                 childIsSpaces shouldEqual listOf(false, false, true, false)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT2, -ASCENT2, -ASCENT2)
                 childStyles shouldEqual listOf(style1, style2, style2, style2)
+                childCharOffsets shouldEqualCharOffsets listOf(
+                        charOffsets(1, LETTER_WIDTH1),
+                        charOffsets(3, LETTER_WIDTH2),
+                        charOffsets(1, SPACE_WIDTH2),
+                        charOffsets(5, LETTER_WIDTH2)
+                )
 
                 childWidths shouldEqual listOf(1 * LETTER_WIDTH1, 3 * LETTER_WIDTH2, 1 * SPACE_WIDTH2, 5 * LETTER_WIDTH2)
                 childHeights shouldEqual listOf(HEIGHT1, HEIGHT2, HEIGHT2, HEIGHT2)
@@ -327,6 +335,11 @@ class ParagraphLayouterTest {
                 childIsSpaces shouldEqual listOf(true, true, false)
                 childBaselines shouldEqual listOf(-ASCENT2, -ASCENT1, -ASCENT1)
                 childStyles shouldEqual listOf(style2, style1, style1)
+                childCharOffsets shouldEqualCharOffsets listOf(
+                        charOffsets(1, SPACE_WIDTH2),
+                        charOffsets(1, SPACE_WIDTH1),
+                        charOffsets(5, LETTER_WIDTH1)
+                )
 
                 childWidths shouldEqual listOf(1 * SPACE_WIDTH2, 1 * SPACE_WIDTH1, 5 * LETTER_WIDTH1)
                 childHeights shouldEqual listOf(HEIGHT2, HEIGHT1, HEIGHT1)
@@ -349,6 +362,9 @@ class ParagraphLayouterTest {
                 childIsSpaces shouldEqual listOf(false)
                 childBaselines shouldEqual listOf(-ASCENT1)
                 childStyles shouldEqual listOf(style1)
+                childCharOffsets shouldEqualCharOffsets listOf(
+                        charOffsets(1, LETTER_WIDTH1)
+                )
 
                 childWidths shouldEqual listOf(1 * LETTER_WIDTH1)
                 childHeights shouldEqual listOf(HEIGHT1)
@@ -509,6 +525,10 @@ class ParagraphLayouterTest {
                 childTexts shouldEqual listOf("t", HYPHEN_STRING)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
                 childStyles shouldEqual listOf(style1, style1)
+                childCharOffsets shouldEqualCharOffsets listOf(
+                        charOffsets(1, CHAR_WIDTH1),
+                        charOffsets(1, HYPHEN_WIDTH1)
+                )
 
                 childWidths shouldEqual listOf(1 * CHAR_WIDTH1, 1 * HYPHEN_WIDTH1)
                 childHeights shouldEqual listOf(HEIGHT1, HEIGHT1)
@@ -529,6 +549,10 @@ class ParagraphLayouterTest {
                 childTexts shouldEqual listOf("ext", HYPHEN_STRING)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
                 childStyles shouldEqual listOf(style1, style1)
+                childCharOffsets shouldEqualCharOffsets listOf(
+                        charOffsets(3, CHAR_WIDTH1),
+                        charOffsets(1, HYPHEN_WIDTH1)
+                )
 
                 childWidths shouldEqual listOf(3 * CHAR_WIDTH1, 1 * HYPHEN_WIDTH1)
                 childHeights shouldEqual listOf(HEIGHT1, HEIGHT1)
@@ -558,6 +582,11 @@ class ParagraphLayouterTest {
                 childTexts shouldEqual listOf("t", "ext2", HYPHEN_STRING)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT2, -ASCENT2)
                 childStyles shouldEqual listOf(style1, style2, style2)
+                childCharOffsets shouldEqualCharOffsets listOf(
+                        charOffsets(1, CHAR_WIDTH1),
+                        charOffsets(4, CHAR_WIDTH2),
+                        charOffsets(1, HYPHEN_WIDTH2)
+                )
 
                 childWidths shouldEqual listOf(1 * CHAR_WIDTH1, 4 * CHAR_WIDTH2, 1 * HYPHEN_WIDTH2)
                 childHeights shouldEqual listOf(HEIGHT1, HEIGHT2, HEIGHT2)
@@ -617,6 +646,13 @@ class ParagraphLayouterTest {
         // then
         with (renderObj.children[0].obj as RenderLine) {
             val widths = listOf(1 * SPACE_WIDTH, 5 * LETTER_WIDTH, 3 * SPACE_WIDTH, 5 * LETTER_WIDTH, 1 * SPACE_WIDTH)
+            childCharOffsets shouldEqualCharOffsets listOf(
+                    charOffsets(1, SPACE_WIDTH),
+                    charOffsets(5, LETTER_WIDTH),
+                    charOffsets(3, SPACE_WIDTH),
+                    charOffsets(5, LETTER_WIDTH),
+                    charOffsets(1, SPACE_WIDTH)
+            )
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
                     200F - 180,
@@ -629,6 +665,11 @@ class ParagraphLayouterTest {
 
         with (renderObj.children[1].obj as RenderLine) {
             val widths = listOf(2 * SPACE_WIDTH, 1 * LETTER_WIDTH, 1 * LETTER_WIDTH)
+            childCharOffsets shouldEqualCharOffsets listOf(
+                    charOffsets(2, SPACE_WIDTH),
+                    charOffsets(1, LETTER_WIDTH),
+                    charOffsets(1, LETTER_WIDTH)
+            )
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
                     200F - 50,
@@ -639,6 +680,11 @@ class ParagraphLayouterTest {
 
         with (renderObj.children[2].obj as RenderLine) {
             val widths = listOf(4 * LETTER_WIDTH, 1 * SPACE_WIDTH, 5 * LETTER_WIDTH)
+            childCharOffsets shouldEqualCharOffsets listOf(
+                    charOffsets(4, LETTER_WIDTH),
+                    charOffsets(1, SPACE_WIDTH),
+                    charOffsets(5, LETTER_WIDTH)
+            )
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
                     200F - 300,
@@ -681,6 +727,13 @@ class ParagraphLayouterTest {
         // then
         with (renderObj.children[0].obj as RenderLine) {
             val widths = listOf(1 * SPACE_WIDTH, 5 * LETTER_WIDTH, 3 * SPACE_WIDTH, 5 * LETTER_WIDTH, 1 * SPACE_WIDTH)
+            childCharOffsets shouldEqualCharOffsets listOf(
+                    charOffsets(1, SPACE_WIDTH),
+                    charOffsets(5, LETTER_WIDTH),
+                    charOffsets(3, SPACE_WIDTH),
+                    charOffsets(5, LETTER_WIDTH),
+                    charOffsets(1, SPACE_WIDTH)
+            )
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
                     -10F + (200 + 10 - 180) / 2,
@@ -693,6 +746,11 @@ class ParagraphLayouterTest {
 
         with (renderObj.children[1].obj as RenderLine) {
             val widths = listOf(2 * SPACE_WIDTH, 1 * LETTER_WIDTH, 1 * LETTER_WIDTH)
+            childCharOffsets shouldEqualCharOffsets listOf(
+                    charOffsets(2, SPACE_WIDTH),
+                    charOffsets(1, LETTER_WIDTH),
+                    charOffsets(1, LETTER_WIDTH)
+            )
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
                     20F + (200 - 20 - 50) / 2,
@@ -703,6 +761,11 @@ class ParagraphLayouterTest {
 
         with (renderObj.children[2].obj as RenderLine) {
             val widths = listOf(4 * LETTER_WIDTH, 1 * SPACE_WIDTH, 5 * LETTER_WIDTH)
+            childCharOffsets shouldEqualCharOffsets listOf(
+                    charOffsets(4, LETTER_WIDTH),
+                    charOffsets(1, SPACE_WIDTH),
+                    charOffsets(5, LETTER_WIDTH)
+            )
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
                     0F + (200 - 300) / 2,
@@ -760,6 +823,15 @@ class ParagraphLayouterTest {
                     1 * SPACE_WIDTH
             )
             childScaleX shouldEqual listOf(1F, null, midSpaceScaleX, null, midSpaceScaleX, null, 1F)
+            childCharOffsetsOrNull shouldEqualCharOffsets listOf(
+                    charOffsets(1, SPACE_WIDTH),
+                    charOffsets(5, LETTER_WIDTH),
+                    charOffsets(3, SPACE_WIDTH * midSpaceScaleX),
+                    charOffsets(1, LETTER_WIDTH),
+                    charOffsets(1, SPACE_WIDTH * midSpaceScaleX),
+                    charOffsets(4, LETTER_WIDTH),
+                    charOffsets(1, SPACE_WIDTH)
+            )
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
                     -10F,
@@ -776,6 +848,11 @@ class ParagraphLayouterTest {
         {
             val widths = listOf(2 * SPACE_WIDTH, 1 * LETTER_WIDTH, 1 * LETTER_WIDTH)
             childScaleX shouldEqual listOf(1F, null, null)
+            childCharOffsetsOrNull shouldEqualCharOffsets listOf(
+                    charOffsets(2, SPACE_WIDTH),
+                    charOffsets(1, LETTER_WIDTH),
+                    charOffsets(1, LETTER_WIDTH)
+            )
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
                     20F,
@@ -788,6 +865,11 @@ class ParagraphLayouterTest {
         {
             val widths = listOf(4 * LETTER_WIDTH, 1 * SPACE_WIDTH, 1 * LETTER_WIDTH)
             childScaleX shouldEqual listOf(null, 1F, null)
+            childCharOffsetsOrNull shouldEqualCharOffsets listOf(
+                    charOffsets(4, LETTER_WIDTH),
+                    charOffsets(1, SPACE_WIDTH),
+                    charOffsets(1, LETTER_WIDTH)
+            )
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
                     0F,
@@ -800,6 +882,12 @@ class ParagraphLayouterTest {
         {
             val widths = listOf(4 * LETTER_WIDTH, 2 * SPACE_WIDTH, 5 * LETTER_WIDTH, 1 * SPACE_WIDTH)
             childScaleX shouldEqual listOf(null, 1F, null, 1F)
+            childCharOffsetsOrNull shouldEqualCharOffsets listOf(
+                    charOffsets(4, LETTER_WIDTH),
+                    charOffsets(2, SPACE_WIDTH),
+                    charOffsets(5, LETTER_WIDTH),
+                    charOffsets(1, SPACE_WIDTH)
+            )
             childWidths shouldEqual widths
             childXs shouldEqual listOf(
                     0F,
@@ -904,7 +992,12 @@ class ParagraphLayouterTest {
     fun renderObj(width: Float = 0F, height: Float = 0F) =
             object : RenderObject(width, height, emptyList(), rootRange()) {}
 
-    fun style() = LayoutFontStyle(0F, Color.TRANSPARENT, TextRenderConfig(false, false, false, false))
+    fun style() = LayoutFontStyle(
+            0F,
+            Color.TRANSPARENT,
+            TextRenderConfig(false, false, false, false),
+            SelectionConfig(Color.TRANSPARENT, Color.WHITE)
+    )
 
     fun textMetrics() =
             object : TextMetrics {
@@ -1007,6 +1100,14 @@ class ParagraphLayouterTest {
             with (it.obj as RenderText) { baseline }
         }
 
+    val RenderObject.childCharOffsets: List<FloatArray>
+        get() = childCharOffsetsOrNull.map { it!! }
+
+    val RenderObject.childCharOffsetsOrNull: List<FloatArray?>
+        get() = children.map {
+            with (it.obj as RenderText) { charOffsets }
+        }
+
     val RenderObject.childStyles: List<LayoutFontStyle>
         get() = children.map {
             with (it.obj as RenderText) { style }
@@ -1014,6 +1115,8 @@ class ParagraphLayouterTest {
 
     val RenderObject.childRanges: List<LocationRange>
         get() = children.map { it.obj.range }
+
+    fun charOffsets(textLength: Int, charWidth: Float) = (0..textLength - 1).map { charWidth * it }.toFloatArray()
 
     fun Run.Text.sublocation(index: Int) = range.sublocation(index.toDouble() / text.length)
 
@@ -1024,6 +1127,13 @@ class ParagraphLayouterTest {
     )
 
     fun rootSpace(width: Float, height: Float) = LayoutSpace.root(SizeF(width, height))
+
+    private infix fun List<FloatArray?>.shouldEqualCharOffsets(expected: List<FloatArray?>) {
+        size shouldEqual expected.size
+        for (i in 0..size-1) {
+            assertArrayEquals("actual[$i] == expected[$i]", expected[i], this[i], 0.00001F)
+        }
+    }
 
     data class TestMetrics(
             val letterWidth: Float = 0F,

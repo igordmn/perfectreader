@@ -18,3 +18,5 @@ fun ceil(value: Float) = Math.ceil(value.toDouble()).toFloat()
 
 infix fun Float.sameSign(b: Float) = this >= 0 && b >= 0 || this < 0 && b < 0
 infix fun Float.notSameSign(b: Float) = !(this sameSign b)
+
+fun intRound(value: Double) = Math.round(value).toInt()

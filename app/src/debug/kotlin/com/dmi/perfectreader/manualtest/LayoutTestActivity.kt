@@ -18,6 +18,7 @@ import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.hyphenator.
 import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.liner.BreakLiner
 import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.metrics.PaintTextMetrics
 import com.dmi.perfectreader.fragment.book.layout.pagination.*
+import com.dmi.perfectreader.fragment.book.layout.painter.PaintContext
 import com.dmi.perfectreader.fragment.book.layout.painter.UniversalObjectPainter
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
@@ -32,8 +33,6 @@ import com.dmi.util.graphic.SizeF
 import java.util.*
 
 class LayoutTestActivity : AppCompatActivity() {
-    val range = LocationRange(Location(0.0), Location(0.0))
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,7 +60,28 @@ class LayoutTestActivity : AppCompatActivity() {
 
 
         val textRenderConfig = TextRenderConfig(true, true, true, false)
+        val selectionConfig = SelectionConfig(Color(255, 180, 213, 254), Color.WHITE)
         val hangingConfig = DefaultHangingConfig
+
+        val testParagraph = LayoutParagraph(
+                Locale.US,
+                listOf(
+                        Run.Text("This is text. This is text. This is te", LayoutFontStyle(25F, Color.RED, textRenderConfig, selectionConfig), range(0, 1000)),
+                        Run.Text("xt. This is text.             This is text", LayoutFontStyle(15F, Color.BLUE, textRenderConfig, selectionConfig), range(1200, 1300)),
+                        Run.Text(" texttextextetetxetextxtextx", LayoutFontStyle(15F, Color.BLACK, textRenderConfig, selectionConfig), range(1300, 1400)),
+                        Run.Text("-text-text-text-exte-tet-xete-xtxt-extx,hhh,jj,,kk,llh,hh", LayoutFontStyle(15F, Color.BLACK, textRenderConfig, selectionConfig), range(1400, 1500))
+                ),
+                0F,
+                TextAlign.JUSTIFY,
+                true,
+                hangingConfig, range(0, 1500)
+        )
+
+        val image = testFrame(LayoutImage(
+                LayoutSize(Dimension.Auto(), Dimension.Auto()),
+                "manualtest/pagebook/image.png",
+                range(1500, 1600)
+        ))
 
         val bookText = "      Рассказ у нас пойдет в особенности о хоббитах, и любознательный читатель многое узнает об их нравах и кое-что из их истории. Самых любознательных отсылаем к повести под названием «Хоббит», где пересказаны начальные главы Алой Книги Западных Пределов, которые написал Бильбо Торбинс, впервые прославивший свой народец в большом мире. Главы эти носят общий подзаголовок «Туда и обратно», потому что повествуют о странствии Бильбо на восток и возвращении домой. Как раз по милости Бильбо хоббиты и угодили в самую лавину грозных событий, о которых нам предстоит поведать.\n" +
                        "      Многие, однако, и вообще про хоббитов ничего не знают, а хотели бы знать — но не у всех же есть под рукой книга «Хоббит». Вот и прочтите, если угодно, начальные сведения о хоббитах, а заодно и краткий пересказ приключений Бильбо.\n" +
@@ -77,58 +97,40 @@ class LayoutTestActivity : AppCompatActivity() {
                        "      Струсы давным-давно жили по берегам Великой Реки Андуин и там привыкли к людям. На запад они потянулись за лапитупами, однако же свернули к югу вдоль реки Бесноватой; многие из них расселились от переправы Тарбад до Сирых Равнин; потом они опять немного подались на север.\n" +
                        "      Беляки — порода северная и самая малочисленная. Они, не в пример прочим хоббитам, сблизились с эльфами: сказки и песни им были милее, нежели ремесла, а охота любезнее земледелия. Они пересекли горы севернее Раздела и спустились по левому берегу реки Буйной. В Эриадоре они вскоре смешались с новооседлыми хоббитами иных пород и, будучи по натуре смелее и предприимчивее прочих, то и дело волею судеб оказывались вожаками и старейшинами струсов и лапитупов. Даже во времена Бильбо беляцкая порода очень еще чувствовалась в главнейших семействах вроде Кролов и Правителей Забрендии.\n"
 
-        val testParagraph = LayoutParagraph(
-                Locale.US,
-                listOf(
-                        Run.Text("This is text. This is text. This is te", LayoutFontStyle(25F, Color.Companion.RED, textRenderConfig), range),
-                        Run.Text("xt. This is text.             This is text", LayoutFontStyle(15F, Color.Companion.BLUE, textRenderConfig), range),
-                        Run.Text(" texttextextetetxetextxtextx", LayoutFontStyle(15F, Color.Companion.BLACK, textRenderConfig), range),
-                        Run.Text("-text-text-text-exte-tet-xete-xtxt-extx,hhh,jj,,kk,llh,hh", LayoutFontStyle(15F, Color.Companion.BLACK, textRenderConfig), range)
-                ),
-                0F,
-                TextAlign.JUSTIFY,
-                true,
-                hangingConfig, range
-        )
-
-        val bookParagraphs = bookText.split("\n").map {
+        val paragraphs = bookText.split("\n").mapIndexed { i, it ->
+            val range = range(1600 + i * 100, 1600 + (i + 1) * 100)
             LayoutParagraph(
                     Locale("ru", "RU"),
-                    listOf(Run.Text(it, LayoutFontStyle(10F, Color.Companion.BLACK, textRenderConfig), range)),
+                    listOf(Run.Text(it, LayoutFontStyle(10F, Color.BLACK, textRenderConfig, selectionConfig), range)),
                     0F,
                     TextAlign.JUSTIFY,
                     true,
-                    hangingConfig, range
+                    hangingConfig,
+                    range
             )
         }
 
-        val boxedParagraphs = bookParagraphs.map {
+        val boxedParagraphs = paragraphs.map {
             testFrame(LayoutBox(
                     LayoutSize(Dimension.Auto(), Dimension.Auto()),
                     Align.LEFT,
                     listOf(it),
-                    range
+                    it.range
             ))
         }
-
-        val image = testFrame(LayoutImage(
-                LayoutSize(Dimension.Auto(), Dimension.Auto()),
-                "manualtest/pagebook/image.png",
-                range
-        ))
 
         val box1 = testFrame(LayoutBox(
                 LayoutSize(Dimension.Auto(), Dimension.Auto()),
                 Align.LEFT,
                 boxedParagraphs,
-                range
+                LocationRange(boxedParagraphs.first().range.begin, boxedParagraphs.last().range.end)
         ))
 
         val rootBox = LayoutBox(
                 LayoutSize(Dimension.Auto(), Dimension.Auto()),
                 Align.LEFT,
                 listOf(testParagraph, image) + box1,
-                range
+                LocationRange(testParagraph.range.begin, box1.range.end)
         )
 
         val renderRoot = layouter.layout(rootBox, LayoutSpace.root(SizeF(700F, 700F)))
@@ -142,13 +144,20 @@ class LayoutTestActivity : AppCompatActivity() {
             column = column merge part
         }
 
+        val selectionRange = run {
+            val run1 = testParagraph.runs[0] as LayoutParagraph.Run.Text
+            val run2 = paragraphs[1].runs[0] as LayoutParagraph.Run.Text
+            LocationRange(run1.sublocation(1), run2.sublocation(10))
+        }
+        val context = PaintContext(selectionRange)
+
         val view = object : View(this) {
             override fun onDraw(canvas: Canvas) {
                 val density = resources.displayMetrics.density
                 canvas.save()
                 canvas.scale(density, density)
                 canvas.drawColor(Color.WHITE.value)
-                painter.paint(column, canvas)
+                painter.paint(column, canvas, context)
                 canvas.restore()
             }
         }
@@ -170,13 +179,15 @@ class LayoutTestActivity : AppCompatActivity() {
                     Length.Absolute(10F)
             ),
             LayoutFrame.Borders(
-                    LayoutFrame.Border(4F, Color.Companion.RED),
-                    LayoutFrame.Border(4F, Color.Companion.GREEN),
-                    LayoutFrame.Border(4F, Color.Companion.BLUE),
-                    LayoutFrame.Border(4F, Color.Companion.MAGENTA)
+                    LayoutFrame.Border(4F, Color.RED),
+                    LayoutFrame.Border(4F, Color.GREEN),
+                    LayoutFrame.Border(4F, Color.BLUE),
+                    LayoutFrame.Border(4F, Color.MAGENTA)
             ),
-            LayoutFrame.Background(Color.Companion.GRAY),
+            LayoutFrame.Background(Color.GRAY),
             obj,
-            range
+            obj.range
     )
+
+    private fun range(begin: Int, end: Int) = LocationRange(Location(begin.toDouble()), Location(end.toDouble()))
 }

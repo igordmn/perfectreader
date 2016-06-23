@@ -129,7 +129,7 @@ class ParagraphLayouter(
                 private val plainTextBuilder = Reusables.plainTextBuilder()
                 private val plainIndexToRunIndex = Reusables.plainIndexToRunIndex()
                 private val plainIndexToWidth = Reusables.plainIndexToWidth()
-                private val plainIndexToTotalWidth = Reusables.plainIndexToTotalWidth()
+                private val plainIndexToRight = Reusables.plainIndexToTotalWidth()
                 private val runIndexToPlainBeginIndex = Reusables.runIndexToPlainBeginIndex()
                 private val runIndexToObject = Reusables.runIndexToObject()
                 private val runIndexToHeight = Reusables.runIndexToHeight()
@@ -198,17 +198,17 @@ class ParagraphLayouter(
                 }
 
                 private fun addWidth(width: Float) {
-                    val size = plainIndexToTotalWidth.size()
-                    val currentWidth = if (size > 0) plainIndexToTotalWidth[size - 1] else 0F
+                    val size = plainIndexToRight.size()
+                    val currentWidth = if (size > 0) plainIndexToRight[size - 1] else 0F
                     plainIndexToWidth.add(width)
-                    plainIndexToTotalWidth.add(currentWidth + width)
+                    plainIndexToRight.add(currentWidth + width)
                 }
 
                 override fun widthOf(index: Int) = plainIndexToWidth[index]
 
                 override fun widthOf(beginIndex: Int, endIndex: Int): Float {
-                    val widthToBegin = if (beginIndex > 0) plainIndexToTotalWidth[beginIndex - 1] else 0F
-                    val widthToEnd = if (endIndex > 0) plainIndexToTotalWidth[endIndex - 1] else 0F
+                    val widthToBegin = if (beginIndex > 0) plainIndexToRight[beginIndex - 1] else 0F
+                    val widthToEnd = if (endIndex > 0) plainIndexToRight[endIndex - 1] else 0F
                     return widthToEnd - widthToBegin
                 }
 
@@ -257,6 +257,7 @@ class ParagraphLayouter(
                                     text = run.text.subSequence(beginOfRunText, endOfRunText),
                                     locale = locale,
                                     baseline = baseline,
+                                    charOffsets = computeCharOffsets(beginIndex, endIndex, scaleX),
                                     style = run.style,
                                     scaleX = scaleX,
                                     range = run.subrange(beginOfRunText, endOfRunText)
@@ -286,6 +287,7 @@ class ParagraphLayouter(
                                     text = run.text.subSequence(beginOfRunText, endOfRunText),
                                     locale = locale,
                                     baseline = baseline,
+                                    charOffsets = computeCharOffsets(beginIndex, endIndex, 1F),
                                     style = run.style,
                                     range = run.subrange(beginOfRunText, endOfRunText)
                             ),
@@ -315,6 +317,7 @@ class ParagraphLayouter(
                                         text = HYPHEN_STRING,
                                         locale = locale,
                                         baseline = baseline,
+                                        charOffsets = floatArrayOf(0F),
                                         style = run.style,
                                         range = run.subrange(indexOfHyphen, indexOfHyphen)
                                 ),
@@ -322,6 +325,11 @@ class ParagraphLayouter(
                         )
                     }
                 }
+
+                private fun computeCharOffsets(begin: Int, end: Int, scaleX: Float) =
+                        FloatArray(end - begin) { i ->
+                            widthOf(begin, begin + i) * scaleX
+                        }
             }
         }.layout()
     }

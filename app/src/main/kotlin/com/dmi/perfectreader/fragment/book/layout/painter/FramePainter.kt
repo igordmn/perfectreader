@@ -15,7 +15,7 @@ class FramePainter : ObjectPainter<RenderFrame> {
     private val borderPaint = Paint()
     private val path = Path()
 
-    override fun paintItself(obj: RenderFrame, canvas: Canvas) {
+    override fun paintItself(obj: RenderFrame, canvas: Canvas, context: PaintContext) {
         with (obj) {
             canvas.translate(internalMargins.left, internalMargins.top)
             paintContents(obj, canvas,

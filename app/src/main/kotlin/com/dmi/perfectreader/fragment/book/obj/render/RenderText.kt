@@ -10,6 +10,11 @@ open class RenderText(width: Float,
                       val text: CharSequence,
                       val locale: Locale,
                       val baseline: Float,
+                      val charOffsets: FloatArray,
                       val style: LayoutFontStyle,
                       range: LocationRange
-) : RenderObject(width, height, emptyList<RenderChild>(), range)
+) : RenderObject(width, height, emptyList<RenderChild>(), range) {
+    init {
+        require(text.length == charOffsets.size)
+    }
+}
