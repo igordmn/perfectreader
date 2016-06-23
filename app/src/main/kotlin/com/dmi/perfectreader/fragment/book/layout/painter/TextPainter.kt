@@ -9,6 +9,7 @@ import android.text.TextPaint
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.obj.layout.param.LayoutFontStyle
+import com.dmi.perfectreader.fragment.book.obj.render.RenderSpace
 import com.dmi.perfectreader.fragment.book.obj.render.RenderText
 import com.dmi.util.lang.intRound
 
@@ -47,7 +48,7 @@ open class TextPainter : ObjectPainter<RenderText> {
     }
 
     private fun drawText(obj: RenderText, canvas: Canvas, range: IntRange, selected: Boolean) {
-        if (range.last > range.first) {
+        if (range.last > range.first && obj !is RenderSpace) {
             val textPaint = textPaintCache.forStyle(obj.style, selected)
             val offsetX = obj.charOffsets[range.start]
             canvas.drawText(obj.text, range.first, range.last, offsetX, obj.baseline, textPaint)
