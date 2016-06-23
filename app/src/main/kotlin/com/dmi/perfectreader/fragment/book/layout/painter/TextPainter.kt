@@ -24,10 +24,10 @@ open class TextPainter : ObjectPainter<RenderText> {
 
         fun forStyle(style: LayoutFontStyle): TextPaint {
             if (lastStyle !== style) {
-                paint.isAntiAlias = style.renderParams.antialias
-                paint.isSubpixelText = style.renderParams.subpixel
-                paint.hinting = if (style.renderParams.hinting) HINTING_ON else HINTING_OFF
-                paint.isLinearText = style.renderParams.linearScaling
+                paint.isAntiAlias = style.renderConfig.antialias
+                paint.isSubpixelText = style.renderConfig.subpixel
+                paint.hinting = if (style.renderConfig.hinting) HINTING_ON else HINTING_OFF
+                paint.isLinearText = style.renderConfig.linearScaling
                 paint.color = style.color.value
                 paint.textSize = style.size
                 lastStyle = style

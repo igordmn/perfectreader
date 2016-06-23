@@ -60,7 +60,7 @@ class LayoutTestActivity : AppCompatActivity() {
         )
 
 
-        val fontRenderParams = TextRenderParams(true, true, true, false)
+        val textRenderConfig = TextRenderConfig(true, true, true, false)
         val hangingConfig = DefaultHangingConfig
 
         val bookText = "      Рассказ у нас пойдет в особенности о хоббитах, и любознательный читатель многое узнает об их нравах и кое-что из их истории. Самых любознательных отсылаем к повести под названием «Хоббит», где пересказаны начальные главы Алой Книги Западных Пределов, которые написал Бильбо Торбинс, впервые прославивший свой народец в большом мире. Главы эти носят общий подзаголовок «Туда и обратно», потому что повествуют о странствии Бильбо на восток и возвращении домой. Как раз по милости Бильбо хоббиты и угодили в самую лавину грозных событий, о которых нам предстоит поведать.\n" +
@@ -80,10 +80,10 @@ class LayoutTestActivity : AppCompatActivity() {
         val testParagraph = LayoutParagraph(
                 Locale.US,
                 listOf(
-                        Run.Text("This is text. This is text. This is te", LayoutFontStyle(25F, Color.Companion.RED, fontRenderParams), range),
-                        Run.Text("xt. This is text.             This is text", LayoutFontStyle(15F, Color.Companion.BLUE, fontRenderParams), range),
-                        Run.Text(" texttextextetetxetextxtextx", LayoutFontStyle(15F, Color.Companion.BLACK, fontRenderParams), range),
-                        Run.Text("-text-text-text-exte-tet-xete-xtxt-extx,hhh,jj,,kk,llh,hh", LayoutFontStyle(15F, Color.Companion.BLACK, fontRenderParams), range)
+                        Run.Text("This is text. This is text. This is te", LayoutFontStyle(25F, Color.Companion.RED, textRenderConfig), range),
+                        Run.Text("xt. This is text.             This is text", LayoutFontStyle(15F, Color.Companion.BLUE, textRenderConfig), range),
+                        Run.Text(" texttextextetetxetextxtextx", LayoutFontStyle(15F, Color.Companion.BLACK, textRenderConfig), range),
+                        Run.Text("-text-text-text-exte-tet-xete-xtxt-extx,hhh,jj,,kk,llh,hh", LayoutFontStyle(15F, Color.Companion.BLACK, textRenderConfig), range)
                 ),
                 0F,
                 TextAlign.JUSTIFY,
@@ -94,7 +94,7 @@ class LayoutTestActivity : AppCompatActivity() {
         val bookParagraphs = bookText.split("\n").map {
             LayoutParagraph(
                     Locale("ru", "RU"),
-                    listOf(Run.Text(it, LayoutFontStyle(10F, Color.Companion.BLACK, fontRenderParams), range)),
+                    listOf(Run.Text(it, LayoutFontStyle(10F, Color.Companion.BLACK, textRenderConfig), range)),
                     0F,
                     TextAlign.JUSTIFY,
                     true,

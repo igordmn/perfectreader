@@ -13,10 +13,10 @@ class PaintTextMetrics : TextMetrics {
         val charWidths = Reusables.charWidths(text.length)
 
         with (textPaint) {
-            isAntiAlias = style.renderParams.antialias
-            isSubpixelText = style.renderParams.subpixel
-            hinting = if (style.renderParams.hinting) Paint.HINTING_ON else Paint.HINTING_OFF
-            isLinearText = style.renderParams.linearScaling
+            isAntiAlias = style.renderConfig.antialias
+            isSubpixelText = style.renderConfig.subpixel
+            hinting = if (style.renderConfig.hinting) Paint.HINTING_ON else Paint.HINTING_OFF
+            isLinearText = style.renderConfig.linearScaling
             textSize = style.size
             getTextWidths(text, 0, text.length, charWidths)
         }

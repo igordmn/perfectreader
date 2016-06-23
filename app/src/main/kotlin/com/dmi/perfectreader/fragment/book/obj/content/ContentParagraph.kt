@@ -58,5 +58,5 @@ class ContentParagraph(
 private fun ContentFontStyle.configure(config: LayoutConfig) = LayoutFontStyle(
         (size ?: ContentParagraph.DEFAULT_FONT_SIZE) * config.fontSizeMultiplier,
         color ?: Color.BLACK,
-        config.textRenderParams
+        config.textRenderConfig
 )

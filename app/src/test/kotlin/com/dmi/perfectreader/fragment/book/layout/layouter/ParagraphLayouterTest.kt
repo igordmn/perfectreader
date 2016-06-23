@@ -11,7 +11,7 @@ import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.obj.common.DefaultHangingConfig
 import com.dmi.perfectreader.fragment.book.obj.common.HangingConfig
 import com.dmi.perfectreader.fragment.book.obj.common.TextAlign
-import com.dmi.perfectreader.fragment.book.obj.common.TextRenderParams
+import com.dmi.perfectreader.fragment.book.obj.common.TextRenderConfig
 import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
 import com.dmi.perfectreader.fragment.book.obj.layout.LayoutParagraph
 import com.dmi.perfectreader.fragment.book.obj.layout.LayoutParagraph.Run
@@ -904,7 +904,7 @@ class ParagraphLayouterTest {
     fun renderObj(width: Float = 0F, height: Float = 0F) =
             object : RenderObject(width, height, emptyList(), rootRange()) {}
 
-    fun style() = LayoutFontStyle(0F, Color.TRANSPARENT, TextRenderParams(false, false, false, false))
+    fun style() = LayoutFontStyle(0F, Color.TRANSPARENT, TextRenderConfig(false, false, false, false))
 
     fun textMetrics() =
             object : TextMetrics {

@@ -16,7 +16,7 @@ class LayoutConfig(
         val paragraphVerticalMarginMultiplier: Float,
         val hangingConfig: HangingConfig,
         val hyphenation: Boolean,
-        val textRenderParams: TextRenderParams
+        val textRenderConfig: TextRenderConfig
 )
 
 fun settingsLayoutConfig(context: Context, settings: UserSettings) = LayoutConfig(
@@ -29,7 +29,7 @@ fun settingsLayoutConfig(context: Context, settings: UserSettings) = LayoutConfi
         paragraphVerticalMarginMultiplier = settings[FormatKeys.paragraphVerticalMarginMultiplier],
         hangingConfig = if (settings[FormatKeys.hangingPunctuation]) DefaultHangingConfig else NoneHangingConfig,
         hyphenation = settings[FormatKeys.hyphenation],
-        textRenderParams = TextRenderParams(antialias = true, hinting = true, linearScaling = true, subpixel = true)
+        textRenderConfig = TextRenderConfig(antialias = true, hinting = true, linearScaling = true, subpixel = true)
 )
 
 private fun parseLanguage(context: Context, str: String) = when (str) {
