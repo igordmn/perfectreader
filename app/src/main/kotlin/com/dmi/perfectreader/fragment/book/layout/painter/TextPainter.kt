@@ -18,28 +18,19 @@ open class TextPainter : ObjectPainter<RenderText> {
     private val selectionBackgroundPaint = Paint()
 
     override fun paintItself(obj: RenderText, canvas: Canvas, context: PaintContext) {
-        val selectedIndexRange = selectedIndexRange(obj, context)
-        if (selectedIndexRange != null) {
-            drawSelectionRect(obj, canvas, selectedIndexRange)
-            drawText(obj, canvas, 0..selectedIndexRange.first, false)
-            drawText(obj, canvas, selectedIndexRange, true)
-            drawText(obj, canvas, selectedIndexRange.last..obj.text.length, false)
+        if (context.selectionRange != null) {
+            val selectionBegin = obj.indexOf(context.selectionRange.begin)
+            val selectionEnd = obj.indexOf(context.selectionRange.end)
+            drawSelectionRect(obj, canvas, selectionBegin, selectionEnd)
+            drawText(obj, canvas, 0, selectionBegin, false)
+            drawText(obj, canvas, selectionBegin, selectionEnd, true)
+            drawText(obj, canvas, selectionEnd, obj.text.length, false)
         } else {
-            drawText(obj, canvas, 0..obj.text.length, false)
+            drawText(obj, canvas, 0, obj.text.length, false)
         }
     }
 
-    private fun selectedIndexRange(obj: RenderText, context: PaintContext): IntRange? {
-        if (context.selectionRange != null) {
-            val beginPercent = obj.range.clampPercentOf(context.selectionRange.begin)
-            val endPercent = obj.range.clampPercentOf(context.selectionRange.end)
-            val beginIndex = intRound(beginPercent * obj.text.length)
-            val endIndex = intRound(endPercent * obj.text.length)
-            return IntRange(beginIndex, endIndex)
-        } else {
-            return null
-        }
-    }
+    private fun RenderText.indexOf(location: Location) = intRound(range.clampPercentOf(location) * text.length)
 
     private fun LocationRange.clampPercentOf(location: Location) = when {
         location >= begin && location <= end -> percentOf(location)
@@ -47,17 +38,17 @@ open class TextPainter : ObjectPainter<RenderText> {
         else -> 0.0
     }
 
-    private fun drawText(obj: RenderText, canvas: Canvas, range: IntRange, selected: Boolean) {
-        if (range.last > range.first && obj !is RenderSpace) {
+    private fun drawText(obj: RenderText, canvas: Canvas, begin: Int, end: Int, selected: Boolean) {
+        if (end > begin && obj !is RenderSpace) {
             val textPaint = textPaintCache.forStyle(obj.style, selected)
-            val offsetX = obj.charOffsets[range.start]
-            canvas.drawText(obj.text, range.first, range.last, offsetX, obj.baseline, textPaint)
+            val offsetX = obj.charOffsets[begin]
+            canvas.drawText(obj.text, begin, end, offsetX, obj.baseline, textPaint)
         }
     }
 
-    private fun drawSelectionRect(obj: RenderText, canvas: Canvas, range: IntRange) {
-        val left = obj.charOffsets[range.first]
-        val right = if (range.last < obj.text.length) obj.charOffsets[range.last] else obj.width
+    private fun drawSelectionRect(obj: RenderText, canvas: Canvas, begin: Int, end: Int) {
+        val left = obj.charOffsets[begin]
+        val right = if (end < obj.text.length) obj.charOffsets[end] else obj.width
         selectionBackgroundPaint.color = obj.style.selectionConfig.backgroundColor.value
         canvas.drawRect(
                 RectF(left, 0F, right, obj.height),
