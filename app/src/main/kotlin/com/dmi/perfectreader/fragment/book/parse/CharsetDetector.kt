@@ -25,6 +25,9 @@ class CharsetDetector(private val charsetConfig: ParseConfig.Charset) {
             }
             val detectedCharset = mozillaDetector.detectedCharset
             return if (detectedCharset != null) parseCharset(detectedCharset) else Charsets.UTF_8
+        } catch (e: Exception) {
+            log.e(e, "Error detecting charset")
+            return Charsets.UTF_8
         } finally {
             mozillaDetector.reset()
         }
