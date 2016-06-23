@@ -9,6 +9,8 @@ object UserSettingKeys : Keys() {
     object Analyze : Keys(this) {
         val defaultCharset by key("auto")
         val ignoreDeclaredCharset by key(false)
+        val defaultLanguage by key("system")
+        val ignoreDeclaredLanguage by key(false)
     }
 
     object Format : Keys(this) {

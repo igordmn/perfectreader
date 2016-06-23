@@ -25,7 +25,7 @@ class ContentParagraph(
     }
 
     override fun configure(config: LayoutConfig) = LayoutParagraph(
-            locale ?: config.locale,
+            if (config.ignoreDeclaredLocale) config.defaultLocale else locale ?: config.defaultLocale,
             runs.map { it.configure(config) },
             firstLineIndent ?: config.firstLineIndent,
             textAlign ?: config.textAlign,
