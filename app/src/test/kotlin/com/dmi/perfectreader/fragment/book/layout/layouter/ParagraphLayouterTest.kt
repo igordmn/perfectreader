@@ -393,8 +393,6 @@ class ParagraphLayouterTest {
             (it as RenderLine).children.map { it.obj }.forEach {
                 it as RenderText
                 it.locale shouldEqual Locale.US
-                if (it is RenderSpace)
-                    it.scaleX shouldEqual 1F
             }
         }
     }
@@ -822,7 +820,6 @@ class ParagraphLayouterTest {
                     4 * LETTER_WIDTH,
                     1 * SPACE_WIDTH
             )
-            childScaleX shouldEqual listOf(1F, null, midSpaceScaleX, null, midSpaceScaleX, null, 1F)
             childCharOffsetsOrNull shouldEqualCharOffsets listOf(
                     charOffsets(1, SPACE_WIDTH),
                     charOffsets(5, LETTER_WIDTH),
@@ -847,7 +844,6 @@ class ParagraphLayouterTest {
         with (renderObj.children[1].obj as RenderLine)
         {
             val widths = listOf(2 * SPACE_WIDTH, 1 * LETTER_WIDTH, 1 * LETTER_WIDTH)
-            childScaleX shouldEqual listOf(1F, null, null)
             childCharOffsetsOrNull shouldEqualCharOffsets listOf(
                     charOffsets(2, SPACE_WIDTH),
                     charOffsets(1, LETTER_WIDTH),
@@ -864,7 +860,6 @@ class ParagraphLayouterTest {
         with (renderObj.children[2].obj as RenderLine)
         {
             val widths = listOf(4 * LETTER_WIDTH, 1 * SPACE_WIDTH, 1 * LETTER_WIDTH)
-            childScaleX shouldEqual listOf(null, 1F, null)
             childCharOffsetsOrNull shouldEqualCharOffsets listOf(
                     charOffsets(4, LETTER_WIDTH),
                     charOffsets(1, SPACE_WIDTH),
@@ -881,7 +876,6 @@ class ParagraphLayouterTest {
         with (renderObj.children[3].obj as RenderLine)
         {
             val widths = listOf(4 * LETTER_WIDTH, 2 * SPACE_WIDTH, 5 * LETTER_WIDTH, 1 * SPACE_WIDTH)
-            childScaleX shouldEqual listOf(null, 1F, null, 1F)
             childCharOffsetsOrNull shouldEqualCharOffsets listOf(
                     charOffsets(4, LETTER_WIDTH),
                     charOffsets(2, SPACE_WIDTH),
@@ -1090,11 +1084,6 @@ class ParagraphLayouterTest {
     val RenderObject.childIsSpaces: List<Boolean>
         get() = children.map { it.obj is RenderSpace }
 
-    val RenderObject.childScaleX: List<Float?>
-        get() = children.map {
-            if (it.obj is RenderSpace) (it.obj as RenderSpace).scaleX else null
-        }
-
     val RenderObject.childBaselines: List<Float>
         get() = children.map {
             with (it.obj as RenderText) { baseline }
@@ -1117,8 +1106,6 @@ class ParagraphLayouterTest {
         get() = children.map { it.obj.range }
 
     fun charOffsets(textLength: Int, charWidth: Float) = (0..textLength - 1).map { charWidth * it }.toFloatArray()
-
-    fun Run.Text.sublocation(index: Int) = range.sublocation(index.toDouble() / text.length)
 
     fun rootRange() = LocationRange(Location(0.0), Location(100.0))
     fun runRange(index: Int) = rootRange().subrange(

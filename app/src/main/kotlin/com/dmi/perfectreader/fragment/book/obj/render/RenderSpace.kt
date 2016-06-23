@@ -11,6 +11,5 @@ class RenderSpace(width: Float,
                   baseline: Float,
                   charOffsets: FloatArray,
                   style: LayoutFontStyle,
-                  val scaleX: Float,
                   range: LocationRange
 ) : RenderText(width, height, text, locale, baseline, charOffsets, style, range)

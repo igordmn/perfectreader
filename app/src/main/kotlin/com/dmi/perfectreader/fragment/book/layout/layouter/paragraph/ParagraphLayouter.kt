@@ -259,7 +259,6 @@ class ParagraphLayouter(
                                     baseline = baseline,
                                     charOffsets = computeCharOffsets(beginIndex, endIndex, scaleX),
                                     style = run.style,
-                                    scaleX = scaleX,
                                     range = run.subrange(beginOfRunText, endOfRunText)
                             ),
                             baseline

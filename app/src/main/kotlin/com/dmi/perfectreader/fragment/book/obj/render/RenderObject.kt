@@ -20,7 +20,7 @@ abstract class RenderObject(
      * Ненулевые margins означают, что, если элемент находит сверху или снизу страницы, то можно обрезать margins этого элемента.
      * К примеру, если у элемента верхняя граница 16, то можно расположить элемент с позицией y = -16
      */
-    open fun internalMargins() = Margins.Companion.ZERO
+    open fun internalMargins() = Margins.ZERO
 
     class Margins(val left: Float, val right: Float, val top: Float, val bottom: Float) {
         companion object {
