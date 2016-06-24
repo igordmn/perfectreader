@@ -1,0 +1,96 @@
+package com.dmi.perfectreader.fragment.book.layout
+
+import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace
+import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace.Area
+import com.dmi.perfectreader.fragment.book.content.obj.param.Align
+import com.dmi.perfectreader.fragment.book.content.obj.ComputedBox
+import com.dmi.perfectreader.fragment.book.content.obj.ComputedObject
+import com.dmi.perfectreader.fragment.book.content.obj.param.ComputedSize
+import com.dmi.perfectreader.fragment.book.layout.obj.LayoutBox
+import com.dmi.perfectreader.fragment.book.layout.obj.LayoutChild
+import com.dmi.perfectreader.fragment.book.layout.obj.LayoutObject
+import java.util.*
+
+class BoxLayouter(
+        private val childLayouter: ObjectLayouter<ComputedObject, LayoutObject>
+) : ObjectLayouter<ComputedBox, LayoutBox> {
+    override fun layout(obj: ComputedBox, space: LayoutSpace): LayoutBox {
+        val size = obj.size
+        return object {
+            fun layout(): LayoutBox {
+                val width = computeWidth()
+
+                val renderChildren = ArrayList<LayoutChild>()
+
+                var y = 0F
+                for (child in obj.children) {
+                    val childSpace = childFixedSpace(width)
+
+                    val layoutObj = childLayouter.layout(child, childSpace)
+
+                    val x = childX(layoutObj.width, width)
+                    renderChildren.add(LayoutChild(x, y, layoutObj))
+                    y += layoutObj.height
+                }
+
+                return LayoutBox(width, computeHeight(y), renderChildren, obj.range)
+            }
+
+            fun computeWidth() = size.width.compute(space.width.percentBase, { computeAutoWidth() })
+            fun computeHeight(wrapHeight: Float) = size.height.compute(space.height.percentBase, { wrapHeight })
+
+            fun ComputedSize.Dimension.compute(percentBase: Float, getAutoValue: () -> Float) = when (this) {
+                is ComputedSize.Dimension.Fixed -> compute(percentBase)
+                is ComputedSize.Dimension.Auto -> compute(getAutoValue(), percentBase)
+            }
+
+            fun computeAutoWidth() = when (space.width.area) {
+                is Area.Fixed -> space.width.area.value
+                is Area.WrapContent -> computeWrapWidth(space.width.area.max)
+            }
+
+            fun computeWrapWidth(maxWidth: Float): Float {
+                var width = 0F
+                for (child in obj.children) {
+                    val childSpace = childWrapSpace(maxWidth)
+                    val layoutObj = childLayouter.layout(child, childSpace)
+                    if (layoutObj.width > width)
+                        width = layoutObj.width
+                }
+                return width
+            }
+
+            fun childFixedSpace(width: Float) = LayoutSpace(
+                    childFixedDimension(width),
+                    childHeightDimension()
+            )
+
+            fun childWrapSpace(maxWidth: Float) = LayoutSpace(
+                    childWrapDimension(maxWidth),
+                    childHeightDimension()
+            )
+
+            fun childHeightDimension() = when (size.height) {
+                is ComputedSize.Dimension.Fixed -> childFixedDimension(
+                        size.height.compute(space.height.percentBase)
+                )
+                is ComputedSize.Dimension.Auto -> childWrapDimension(
+                        when (space.height.area) {
+                            is Area.Fixed -> space.height.area.value
+                            is Area.WrapContent -> space.height.area.max
+                        }
+                )
+            }
+
+            fun childFixedDimension(size: Float) = LayoutSpace.Dimension(size, Area.Fixed(size))
+            fun childWrapDimension(maxSize: Float) = LayoutSpace.Dimension(0F, Area.WrapContent(maxSize))
+
+            fun childX(objWidth: Float, boxWidth: Float) =
+                when (obj.contentAlign) {
+                    Align.LEFT -> 0F
+                    Align.CENTER -> (boxWidth - objWidth) / 2
+                    Align.RIGHT -> boxWidth - objWidth
+                }
+        }.layout()
+    }
+}

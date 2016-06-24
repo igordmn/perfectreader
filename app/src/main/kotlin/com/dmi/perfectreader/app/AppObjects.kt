@@ -6,21 +6,29 @@ import com.dmi.perfectreader.data.UserSettings
 import com.dmi.perfectreader.fragment.book.*
 import com.dmi.perfectreader.fragment.book.bitmap.AndroidBitmapDecoder
 import com.dmi.perfectreader.fragment.book.bitmap.CachedBitmapDecoder
-import com.dmi.perfectreader.fragment.book.layout.layouter.UniversalLayouter
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.breaker.CompositeBreaker
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.breaker.LineBreaker
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.breaker.ObjectBreaker
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.breaker.WordBreaker
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.hyphenator.CachedHyphenatorResolver
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.hyphenator.TeXHyphenatorResolver
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.hyphenator.TeXPatternsSource
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.liner.BreakLiner
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.metrics.PaintTextMetrics
-import com.dmi.perfectreader.fragment.book.layout.pagination.*
-import com.dmi.perfectreader.fragment.book.layout.painter.UniversalObjectPainter
-import com.dmi.perfectreader.fragment.book.obj.common.settingsLayoutConfig
+import com.dmi.perfectreader.fragment.book.content.obj.param.settingsLayoutConfig
+import com.dmi.perfectreader.fragment.book.content.ComputedSequence
+import com.dmi.perfectreader.fragment.book.layout.LayoutSequence
+import com.dmi.perfectreader.fragment.book.layout.UniversalObjectLayouter
+import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.CompositeBreaker
+import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.LineBreaker
+import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.ObjectBreaker
+import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.WordBreaker
+import com.dmi.perfectreader.fragment.book.layout.paragraph.hyphenator.CachedHyphenatorResolver
+import com.dmi.perfectreader.fragment.book.layout.paragraph.hyphenator.TeXHyphenatorResolver
+import com.dmi.perfectreader.fragment.book.layout.paragraph.hyphenator.TeXPatternsSource
+import com.dmi.perfectreader.fragment.book.layout.paragraph.liner.BreakLiner
+import com.dmi.perfectreader.fragment.book.layout.paragraph.metrics.PaintTextMetrics
 import com.dmi.perfectreader.fragment.book.page.*
 import com.dmi.perfectreader.fragment.book.page.RefreshScheduler.BitmapBuffer
+import com.dmi.perfectreader.fragment.book.pagination.column.LayoutColumnSequence
+import com.dmi.perfectreader.fragment.book.pagination.page.PageSequence
+import com.dmi.perfectreader.fragment.book.pagination.page.settingsPageConfig
+import com.dmi.perfectreader.fragment.book.pagination.part.LayoutPartSequence
+import com.dmi.perfectreader.fragment.book.paint.ColumnPainter
+import com.dmi.perfectreader.fragment.book.paint.PagePainter
+import com.dmi.perfectreader.fragment.book.paint.PartPainter
+import com.dmi.perfectreader.fragment.book.paint.UniversalObjectPainter
 import com.dmi.perfectreader.fragment.book.parse.BookContentParserFactory
 import com.dmi.perfectreader.fragment.book.parse.settingsParseConfig
 import com.dmi.perfectreader.fragment.bookcontrol.BookControl
@@ -54,7 +62,7 @@ class AppObjects(applicationContext: Context) {
 
                 val wordBreaker = WordBreaker(hyphenatorResolver)
                 val breaker = CompositeBreaker(LineBreaker(), ObjectBreaker(), wordBreaker)
-                val layouter = UniversalLayouter(PaintTextMetrics(), BreakLiner(breaker), bitmapDecoder)
+                val layouter = UniversalObjectLayouter(PaintTextMetrics(), BreakLiner(breaker), bitmapDecoder)
 
                 val createSized = { size: SizeF ->
                     val createPages = { Pages(bookData.location) }
@@ -101,8 +109,8 @@ class AppObjects(applicationContext: Context) {
                     val renderModel = model.renderModel
 
                     val objectPainter = UniversalObjectPainter(bitmapDecoder)
-                    val layoutPartPainter = LayoutPartPainter(objectPainter)
-                    val layoutColumnPainter = LayoutColumnPainter(layoutPartPainter)
+                    val layoutPartPainter = PartPainter(objectPainter)
+                    val layoutColumnPainter = ColumnPainter(layoutPartPainter)
                     val pagePainter = PagePainter(layoutColumnPainter)
                     val refreshScheduler = RefreshScheduler(BitmapBuffer(size, density))
                     val createRefresher = { renderer: PagesRenderer, size: Size -> PagesRefresher(pagePainter, renderer, refreshScheduler, size) }

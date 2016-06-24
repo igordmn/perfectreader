@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.fragment.book
 
-import com.dmi.perfectreader.fragment.book.layout.pagination.Page
+import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.page.Pages
 import com.dmi.perfectreader.fragment.book.page.PagesRenderModel
 import com.dmi.perfectreader.fragment.book.page.SlidePagesAnimation

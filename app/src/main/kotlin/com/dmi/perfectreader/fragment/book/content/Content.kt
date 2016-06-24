@@ -1,8 +1,8 @@
 package com.dmi.perfectreader.fragment.book.content
 
-import com.dmi.perfectreader.fragment.book.layout.pagination.LocatedSequence
+import com.dmi.perfectreader.fragment.book.location.LocatedSequence
 import com.dmi.perfectreader.fragment.book.location.LocationConverter
-import com.dmi.perfectreader.fragment.book.obj.content.ContentObject
+import com.dmi.perfectreader.fragment.book.content.obj.ContentObject
 import java.io.FileNotFoundException
 import java.util.*
 

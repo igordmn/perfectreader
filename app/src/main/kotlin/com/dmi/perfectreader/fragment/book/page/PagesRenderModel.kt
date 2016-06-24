@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.fragment.book.page
 
-import com.dmi.perfectreader.fragment.book.layout.pagination.Page
+import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.util.collection.DuplexBuffer
 import java.lang.Math.abs
 import java.util.*

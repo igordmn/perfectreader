@@ -6,28 +6,30 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.dmi.perfectreader.fragment.book.bitmap.AndroidBitmapDecoder
 import com.dmi.perfectreader.fragment.book.bitmap.CachedBitmapDecoder
-import com.dmi.perfectreader.fragment.book.layout.layouter.UniversalLayouter
-import com.dmi.perfectreader.fragment.book.layout.layouter.common.LayoutSpace
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.breaker.CompositeBreaker
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.breaker.LineBreaker
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.breaker.ObjectBreaker
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.breaker.WordBreaker
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.hyphenator.CachedHyphenatorResolver
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.hyphenator.TeXHyphenatorResolver
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.hyphenator.TeXPatternsSource
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.liner.BreakLiner
-import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.metrics.PaintTextMetrics
-import com.dmi.perfectreader.fragment.book.layout.pagination.*
-import com.dmi.perfectreader.fragment.book.layout.painter.PaintContext
-import com.dmi.perfectreader.fragment.book.layout.painter.UniversalObjectPainter
+import com.dmi.perfectreader.fragment.book.content.obj.*
+import com.dmi.perfectreader.fragment.book.content.obj.ComputedParagraph.Run
+import com.dmi.perfectreader.fragment.book.content.obj.param.*
+import com.dmi.perfectreader.fragment.book.content.obj.param.ComputedSize.Dimension
+import com.dmi.perfectreader.fragment.book.layout.UniversalObjectLayouter
+import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace
+import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.CompositeBreaker
+import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.LineBreaker
+import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.ObjectBreaker
+import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.WordBreaker
+import com.dmi.perfectreader.fragment.book.layout.paragraph.hyphenator.CachedHyphenatorResolver
+import com.dmi.perfectreader.fragment.book.layout.paragraph.hyphenator.TeXHyphenatorResolver
+import com.dmi.perfectreader.fragment.book.layout.paragraph.hyphenator.TeXPatternsSource
+import com.dmi.perfectreader.fragment.book.layout.paragraph.liner.BreakLiner
+import com.dmi.perfectreader.fragment.book.layout.paragraph.metrics.PaintTextMetrics
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
-import com.dmi.perfectreader.fragment.book.obj.common.*
-import com.dmi.perfectreader.fragment.book.obj.content.*
-import com.dmi.perfectreader.fragment.book.obj.content.ComputedParagraph.Run
-import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedFontStyle
-import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedSize
-import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedSize.Dimension
+import com.dmi.perfectreader.fragment.book.pagination.column.LayoutColumn
+import com.dmi.perfectreader.fragment.book.pagination.column.merge
+import com.dmi.perfectreader.fragment.book.pagination.part.splitIntoParts
+import com.dmi.perfectreader.fragment.book.paint.ColumnPainter
+import com.dmi.perfectreader.fragment.book.paint.PaintContext
+import com.dmi.perfectreader.fragment.book.paint.PartPainter
+import com.dmi.perfectreader.fragment.book.paint.UniversalObjectPainter
 import com.dmi.util.graphic.Color
 import com.dmi.util.graphic.SizeF
 import java.util.*
@@ -38,7 +40,7 @@ class LayoutTestActivity : AppCompatActivity() {
 
         val openResource = { path: String -> assets.open(path) }
         val bitmapDecoder = CachedBitmapDecoder(AndroidBitmapDecoder(openResource))
-        val layouter = UniversalLayouter(
+        val layouter = UniversalObjectLayouter(
                 PaintTextMetrics(),
                 BreakLiner(
                         CompositeBreaker(
@@ -136,7 +138,7 @@ class LayoutTestActivity : AppCompatActivity() {
         val layoutRoot = layouter.layout(rootBox, LayoutSpace.root(SizeF(700F, 700F)))
         val layoutParts = splitIntoParts(layoutRoot)
 
-        val painter = LayoutColumnPainter(LayoutPartPainter(UniversalObjectPainter(bitmapDecoder)))
+        val painter = ColumnPainter(PartPainter(UniversalObjectPainter(bitmapDecoder)))
 
         val begin = layoutParts.first().range.begin
         var column = LayoutColumn(emptyList(), 0F, LocationRange(begin, begin))

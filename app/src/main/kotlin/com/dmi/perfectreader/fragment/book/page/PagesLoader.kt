@@ -1,8 +1,8 @@
 package com.dmi.perfectreader.fragment.book.page
 
 import com.dmi.perfectreader.app.pageLoadScheduler
-import com.dmi.perfectreader.fragment.book.layout.pagination.LocatedSequence
-import com.dmi.perfectreader.fragment.book.layout.pagination.Page
+import com.dmi.perfectreader.fragment.book.location.LocatedSequence
+import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.util.collection.SequenceEntry
 import com.dmi.util.ext.LambdaObservable
 import com.dmi.util.mainScheduler

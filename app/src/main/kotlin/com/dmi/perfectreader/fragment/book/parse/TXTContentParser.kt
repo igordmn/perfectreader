@@ -3,10 +3,10 @@ package com.dmi.perfectreader.fragment.book.parse
 import com.dmi.perfectreader.fragment.book.content.Content
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
-import com.dmi.perfectreader.fragment.book.obj.content.ContentFrame
-import com.dmi.perfectreader.fragment.book.obj.content.ContentParagraph
-import com.dmi.perfectreader.fragment.book.obj.content.param.ContentFontStyle
-import com.dmi.perfectreader.fragment.book.obj.content.param.StyleType
+import com.dmi.perfectreader.fragment.book.content.obj.ContentFrame
+import com.dmi.perfectreader.fragment.book.content.obj.ContentParagraph
+import com.dmi.perfectreader.fragment.book.content.obj.param.ContentFontStyle
+import com.dmi.perfectreader.fragment.book.content.obj.param.StyleType
 import com.google.common.io.ByteSource
 
 class TXTContentParser(

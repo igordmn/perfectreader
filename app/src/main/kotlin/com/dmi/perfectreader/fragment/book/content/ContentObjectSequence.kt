@@ -1,8 +1,8 @@
 package com.dmi.perfectreader.fragment.book.content
 
-import com.dmi.perfectreader.fragment.book.layout.pagination.LocatedSequence
+import com.dmi.perfectreader.fragment.book.location.LocatedSequence
 import com.dmi.perfectreader.fragment.book.location.Location
-import com.dmi.perfectreader.fragment.book.obj.content.ContentObject
+import com.dmi.perfectreader.fragment.book.content.obj.ContentObject
 import com.dmi.util.collection.ListSequenceEntry
 import com.dmi.util.collection.SequenceEntry
 import com.dmi.util.range.indexOfNearestRange

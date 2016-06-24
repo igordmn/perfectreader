@@ -2,7 +2,7 @@ package com.dmi.perfectreader.fragment.book.content
 
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationConverter
-import com.dmi.perfectreader.fragment.book.obj.content.ContentObject
+import com.dmi.perfectreader.fragment.book.content.obj.ContentObject
 import com.dmi.util.range.PercentRanges
 import com.dmi.util.range.indexOfNearestRange
 

@@ -2,7 +2,7 @@ package com.dmi.perfectreader.fragment.book.page
 
 import android.content.Context
 import android.opengl.Matrix.*
-import com.dmi.perfectreader.fragment.book.layout.pagination.Page
+import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.page.PagesRenderModel.Slide
 import com.dmi.util.graphic.Size
 import com.dmi.util.opengl.Plane

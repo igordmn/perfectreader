@@ -3,8 +3,8 @@ package com.dmi.perfectreader.fragment.book.page
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import com.dmi.perfectreader.fragment.book.layout.pagination.Page
-import com.dmi.perfectreader.fragment.book.layout.pagination.PagePainter
+import com.dmi.perfectreader.fragment.book.pagination.page.Page
+import com.dmi.perfectreader.fragment.book.paint.PagePainter
 import com.dmi.perfectreader.fragment.book.page.PagesRenderModel.LoadingPage
 import com.dmi.util.collection.ImmediatelyCreatePool
 import com.dmi.util.graphic.Size
