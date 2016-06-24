@@ -51,13 +51,13 @@ class ContentParagraph(
             override fun configure(config: LayoutConfig) = LayoutParagraph.Run.Text(
                     text, style.configure(config), range
             )
+
+            private fun ContentFontStyle.configure(config: LayoutConfig) = LayoutFontStyle(
+                    (size ?: ContentParagraph.DEFAULT_FONT_SIZE) * config.fontSizeMultiplier,
+                    color ?: Color.BLACK,
+                    config.textRenderConfig,
+                    config.selectionConfig
+            )
         }
     }
 }
-
-private fun ContentFontStyle.configure(config: LayoutConfig) = LayoutFontStyle(
-        (size ?: ContentParagraph.DEFAULT_FONT_SIZE) * config.fontSizeMultiplier,
-        color ?: Color.BLACK,
-        config.textRenderConfig,
-        config.selectionConfig
-)
