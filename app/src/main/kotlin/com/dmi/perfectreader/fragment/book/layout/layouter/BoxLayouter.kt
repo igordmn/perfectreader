@@ -1,10 +1,10 @@
 package com.dmi.perfectreader.fragment.book.layout.layouter
 
-import com.dmi.perfectreader.fragment.book.obj.layout.param.LayoutSize
+import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedSize
 import com.dmi.perfectreader.fragment.book.layout.layouter.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.layouter.common.LayoutSpace.Area
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutBox
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
+import com.dmi.perfectreader.fragment.book.obj.content.ComputedBox
+import com.dmi.perfectreader.fragment.book.obj.content.ComputedObject
 import com.dmi.perfectreader.fragment.book.obj.render.RenderBox
 import com.dmi.perfectreader.fragment.book.obj.render.RenderChild
 import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
@@ -12,9 +12,9 @@ import com.dmi.perfectreader.fragment.book.obj.common.Align
 import java.util.*
 
 class BoxLayouter(
-        private val childLayouter: Layouter<LayoutObject, RenderObject>
-) : Layouter<LayoutBox, RenderBox> {
-    override fun layout(obj: LayoutBox, space: LayoutSpace): RenderBox {
+        private val childLayouter: Layouter<ComputedObject, RenderObject>
+) : Layouter<ComputedBox, RenderBox> {
+    override fun layout(obj: ComputedBox, space: LayoutSpace): RenderBox {
         val size = obj.size
         return object {
             fun layout(): RenderBox {
@@ -39,9 +39,9 @@ class BoxLayouter(
             fun computeWidth() = size.width.compute(space.width.percentBase, { computeAutoWidth() })
             fun computeHeight(wrapHeight: Float) = size.height.compute(space.height.percentBase, { wrapHeight })
 
-            fun LayoutSize.Dimension.compute(percentBase: Float, getAutoValue: () -> Float) = when (this) {
-                is LayoutSize.Dimension.Fixed -> compute(percentBase)
-                is LayoutSize.Dimension.Auto -> compute(getAutoValue(), percentBase)
+            fun ComputedSize.Dimension.compute(percentBase: Float, getAutoValue: () -> Float) = when (this) {
+                is ComputedSize.Dimension.Fixed -> compute(percentBase)
+                is ComputedSize.Dimension.Auto -> compute(getAutoValue(), percentBase)
             }
 
             fun computeAutoWidth() = when (space.width.area) {
@@ -71,10 +71,10 @@ class BoxLayouter(
             )
 
             fun childHeightDimension() = when (size.height) {
-                is LayoutSize.Dimension.Fixed -> childFixedDimension(
+                is ComputedSize.Dimension.Fixed -> childFixedDimension(
                         size.height.compute(space.height.percentBase)
                 )
-                is LayoutSize.Dimension.Auto -> childWrapDimension(
+                is ComputedSize.Dimension.Auto -> childWrapDimension(
                         when (space.height.area) {
                             is Area.Fixed -> space.height.area.value
                             is Area.WrapContent -> space.height.area.max

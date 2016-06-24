@@ -5,9 +5,9 @@ import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.obj.common.Align
 import com.dmi.perfectreader.fragment.book.obj.common.Length.Absolute
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutBox
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
-import com.dmi.perfectreader.fragment.book.obj.layout.param.LayoutSize
+import com.dmi.perfectreader.fragment.book.obj.content.ComputedBox
+import com.dmi.perfectreader.fragment.book.obj.content.ComputedObject
+import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedSize
 import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
@@ -18,7 +18,7 @@ class BoxLayouterTest {
     fun `render object with fixed size in fixed space`() {
         // given
         val layouter = BoxLayouter(childLayouter())
-        val box = LayoutBox(
+        val box = ComputedBox(
                 fixedSize(200F, 100F),
                 Align.LEFT,
                 listOf(
@@ -49,7 +49,7 @@ class BoxLayouterTest {
     fun `render object with fixed size in wrap space`() {
         // given
         val layouter = BoxLayouter(childLayouter())
-        val box = LayoutBox(
+        val box = ComputedBox(
                 fixedSize(200F, 100F),
                 Align.LEFT,
                 listOf(
@@ -77,7 +77,7 @@ class BoxLayouterTest {
     fun `render object with auto size in fixed space`() {
         // given
         val layouter = BoxLayouter(childLayouter())
-        val box = LayoutBox(
+        val box = ComputedBox(
                 autoSize(),
                 Align.LEFT,
                 listOf(
@@ -105,7 +105,7 @@ class BoxLayouterTest {
     fun `render object with auto size in wrap space`() {
         // given
         val layouter = BoxLayouter(childLayouter())
-        val box = LayoutBox(
+        val box = ComputedBox(
                 autoSize(),
                 Align.LEFT,
                 listOf(
@@ -133,7 +133,7 @@ class BoxLayouterTest {
     fun `render object with auto limited size in wrap space`() {
         // given
         val layouter = BoxLayouter(childLayouter())
-        val box = LayoutBox(
+        val box = ComputedBox(
                 autoSize(limits(0F, 100F)),
                 Align.LEFT,
                 listOf(
@@ -161,7 +161,7 @@ class BoxLayouterTest {
     fun `render object with auto size in big wrap space`() {
         // given
         val layouter = BoxLayouter(childLayouter())
-        val box = LayoutBox(
+        val box = ComputedBox(
                 autoSize(),
                 Align.LEFT,
                 listOf(
@@ -189,7 +189,7 @@ class BoxLayouterTest {
     fun `render object with align right`() {
         // given
         val layouter = BoxLayouter(childLayouter())
-        val box = LayoutBox(
+        val box = ComputedBox(
                 autoSize(),
                 Align.RIGHT,
                 listOf(
@@ -221,7 +221,7 @@ class BoxLayouterTest {
     fun `render object with align center`() {
         // given
         val layouter = BoxLayouter(childLayouter())
-        val box = LayoutBox(
+        val box = ComputedBox(
                 autoSize(),
                 Align.CENTER,
                 listOf(
@@ -253,7 +253,7 @@ class BoxLayouterTest {
     fun `render object with no children`() {
         // given
         val layouter = BoxLayouter(childLayouter())
-        val box = LayoutBox(
+        val box = ComputedBox(
                 autoSize(),
                 Align.LEFT,
                 listOf(),
@@ -271,8 +271,8 @@ class BoxLayouterTest {
         }
     }
 
-    fun childLayouter() = object : Layouter<LayoutObject, RenderObject> {
-        override fun layout(obj: LayoutObject, space: LayoutSpace) = when (obj) {
+    fun childLayouter() = object : Layouter<ComputedObject, RenderObject> {
+        override fun layout(obj: ComputedObject, space: LayoutSpace) = when (obj) {
             is FixedObject -> renderObject(
                     obj.width,
                     obj.height
@@ -294,17 +294,17 @@ class BoxLayouterTest {
         }
     }
 
-    fun fixedSize(width: Float, height: Float) = LayoutSize(
-            LayoutSize.Dimension.Fixed(Absolute(width)),
-            LayoutSize.Dimension.Fixed(Absolute(height))
+    fun fixedSize(width: Float, height: Float) = ComputedSize(
+            ComputedSize.Dimension.Fixed(Absolute(width)),
+            ComputedSize.Dimension.Fixed(Absolute(height))
     )
 
-    fun autoSize(limits: LayoutSize.Limits = LayoutSize.Limits.NONE) = LayoutSize(
-            LayoutSize.Dimension.Auto(limits),
-            LayoutSize.Dimension.Auto(limits)
+    fun autoSize(limits: ComputedSize.Limits = ComputedSize.Limits.NONE) = ComputedSize(
+            ComputedSize.Dimension.Auto(limits),
+            ComputedSize.Dimension.Auto(limits)
     )
 
-    fun limits(min: Float, max: Float) = LayoutSize.Limits(Absolute(min), Absolute(max))
+    fun limits(min: Float, max: Float) = ComputedSize.Limits(Absolute(min), Absolute(max))
 
     fun fixedSpace(width: Float, height: Float) = LayoutSpace(
             LayoutSpace.Dimension(width, LayoutSpace.Area.Fixed(width)),
@@ -332,7 +332,7 @@ class BoxLayouterTest {
 
     fun range() = LocationRange(Location(0.0), Location(0.0))
 
-    inner class FixedObject(val width: Float, val height: Float) : LayoutObject(range())
-    inner class FillObject() : LayoutObject(range())
-    inner class PercentObject(val percent: Float) : LayoutObject(range())
+    inner class FixedObject(val width: Float, val height: Float) : ComputedObject(range())
+    inner class FillObject() : ComputedObject(range())
+    inner class PercentObject(val percent: Float) : ComputedObject(range())
 }

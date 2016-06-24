@@ -9,10 +9,10 @@ import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.metrics.Tex
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.obj.common.*
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutParagraph
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutParagraph.Run
-import com.dmi.perfectreader.fragment.book.obj.layout.param.LayoutFontStyle
+import com.dmi.perfectreader.fragment.book.obj.content.ComputedObject
+import com.dmi.perfectreader.fragment.book.obj.content.ComputedParagraph
+import com.dmi.perfectreader.fragment.book.obj.content.ComputedParagraph.Run
+import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedFontStyle
 import com.dmi.perfectreader.fragment.book.obj.render.RenderLine
 import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
 import com.dmi.perfectreader.fragment.book.obj.render.RenderSpace
@@ -51,7 +51,7 @@ class ParagraphLayouterTest {
 
         // when
         layouter.layout(
-                LayoutParagraph(
+                ComputedParagraph(
                         Locale.US,
                         listOf(
                                 Run.Text("text", style(), runRange(0))
@@ -103,7 +103,7 @@ class ParagraphLayouterTest {
 
         // when
         layouter.layout(
-                LayoutParagraph(
+                ComputedParagraph(
                         Locale.US,
                         listOf(
                                 Run.Text("some ", style1, runRange(0)),
@@ -133,8 +133,8 @@ class ParagraphLayouterTest {
     @Test
     fun `measure object runs`() {
         // given
-        val object1 = layoutObj()
-        val object2 = layoutObj()
+        val object1 = computedtObj()
+        val object2 = computedtObj()
 
         val liner = object : Liner {
             lateinit var measuredText: Liner.MeasuredText
@@ -155,7 +155,7 @@ class ParagraphLayouterTest {
 
         // when
         layouter.layout(
-                LayoutParagraph(
+                ComputedParagraph(
                         Locale.US,
                         listOf(
                                 Run.Object(object1),
@@ -182,15 +182,15 @@ class ParagraphLayouterTest {
     @Test
     fun `layout space for object runs`() {
         // given
-        val childLayouter = object : Layouter<LayoutObject, RenderObject> {
+        val childLayouter = object : Layouter<ComputedObject, RenderObject> {
             lateinit var space: LayoutSpace
 
-            override fun layout(obj: LayoutObject, space: LayoutSpace): RenderObject {
+            override fun layout(obj: ComputedObject, space: LayoutSpace): RenderObject {
                 this.space = space
                 return renderObj()
             }
         }
-        val obj = layoutObj()
+        val obj = computedtObj()
         val layouter = ParagraphLayouter(
                 childLayouter,
                 textMetrics(),
@@ -199,7 +199,7 @@ class ParagraphLayouterTest {
 
         // when
         layouter.layout(
-                LayoutParagraph(
+                ComputedParagraph(
                         Locale.US,
                         listOf(Run.Object(obj)),
                         20F, TextAlign.LEFT, true,
@@ -245,7 +245,7 @@ class ParagraphLayouterTest {
                 Run.Text("ext words ", style2, runRange(1)),
                 Run.Text(" qwerty", style1, runRange(2))
         )
-        val obj = LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange())
+        val obj = ComputedParagraph(Locale.US, runs, 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange())
 
         val lines = listOf(
                 TestLine(left = 20F, width = 100F, text = "some "),
@@ -405,8 +405,8 @@ class ParagraphLayouterTest {
         val DESCENT = 6F
         val style = style()
 
-        val object1 = layoutObj()
-        val object2 = layoutObj()
+        val object1 = computedtObj()
+        val object2 = computedtObj()
         val renderObj1 = renderObj(50F, 10F)
         val renderObj2 = renderObj(70F, 70F)
 
@@ -432,7 +432,7 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange()),
+                ComputedParagraph(Locale.US, runs, 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange()),
                 rootSpace(200F, 200F)
         )
 
@@ -478,7 +478,7 @@ class ParagraphLayouterTest {
         val DESCENT2 = 10F
         val style2 = style()
 
-        val object1 = layoutObj()
+        val object1 = computedtObj()
         val renderObj1 = renderObj(50F, 10F)
 
         val runs = listOf(
@@ -491,7 +491,7 @@ class ParagraphLayouterTest {
         val run2 = runs[2] as Run.Text
         val run3 = runs[3] as Run.Text
 
-        val obj = LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange())
+        val obj = ComputedParagraph(Locale.US, runs, 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange())
 
         val lines = listOf(
                 TestLine(left = 0F, width = 100F, text = "t", hasHyphenAfter = true),
@@ -637,7 +637,7 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.RIGHT, true, DefaultHangingConfig, rootRange()),
+                ComputedParagraph(Locale.US, runs, 20F, TextAlign.RIGHT, true, DefaultHangingConfig, rootRange()),
                 rootSpace(200F, 200F)
         )
 
@@ -718,7 +718,7 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.CENTER, true, DefaultHangingConfig, rootRange()),
+                ComputedParagraph(Locale.US, runs, 20F, TextAlign.CENTER, true, DefaultHangingConfig, rootRange()),
                 rootSpace(200F, 200F)
         )
 
@@ -800,7 +800,7 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.JUSTIFY, true, DefaultHangingConfig, rootRange()),
+                ComputedParagraph(Locale.US, runs, 20F, TextAlign.JUSTIFY, true, DefaultHangingConfig, rootRange()),
                 rootSpace(200F, 200F)
         )
 
@@ -903,7 +903,7 @@ class ParagraphLayouterTest {
 
         // when
         val renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, listOf(), 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange()),
+                ComputedParagraph(Locale.US, listOf(), 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange()),
                 rootSpace(200F, 200F)
         )
 
@@ -941,7 +941,7 @@ class ParagraphLayouterTest {
 
         // when
         var renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange()),
+                ComputedParagraph(Locale.US, runs, 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange()),
                 layoutSpace
         )
 
@@ -951,7 +951,7 @@ class ParagraphLayouterTest {
 
         // when
         renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.RIGHT, true, DefaultHangingConfig, rootRange()),
+                ComputedParagraph(Locale.US, runs, 20F, TextAlign.RIGHT, true, DefaultHangingConfig, rootRange()),
                 layoutSpace
         )
 
@@ -964,7 +964,7 @@ class ParagraphLayouterTest {
 
         // when
         renderObj = layouter.layout(
-                LayoutParagraph(Locale.US, runs, 20F, TextAlign.CENTER, true, DefaultHangingConfig, rootRange()),
+                ComputedParagraph(Locale.US, runs, 20F, TextAlign.CENTER, true, DefaultHangingConfig, rootRange()),
                 layoutSpace
         )
 
@@ -976,17 +976,17 @@ class ParagraphLayouterTest {
         renderObj.children[2].obj.childXs shouldEqual listOf(0F + (170 + 0 - 50) / 2)
     }
 
-    fun childLayouter(layoutToRenderObject: Map<LayoutObject, RenderObject> = emptyMap()) =
-            object : Layouter<LayoutObject, RenderObject> {
-                override fun layout(obj: LayoutObject, space: LayoutSpace) = layoutToRenderObject[obj]!!
+    fun childLayouter(computedToRenderObject: Map<ComputedObject, RenderObject> = emptyMap()) =
+            object : Layouter<ComputedObject, RenderObject> {
+                override fun layout(obj: ComputedObject, space: LayoutSpace) = computedToRenderObject[obj]!!
             }
 
-    fun layoutObj() = object : LayoutObject(rootRange()) {}
+    fun computedtObj() = object : ComputedObject(rootRange()) {}
 
     fun renderObj(width: Float = 0F, height: Float = 0F) =
             object : RenderObject(width, height, emptyList(), rootRange()) {}
 
-    fun style() = LayoutFontStyle(
+    fun style() = ComputedFontStyle(
             0F,
             Color.TRANSPARENT,
             TextRenderConfig(false, false, false, false),
@@ -995,13 +995,13 @@ class ParagraphLayouterTest {
 
     fun textMetrics() =
             object : TextMetrics {
-                override fun charWidths(text: CharSequence, style: LayoutFontStyle) = FloatArray(text.length)
-                override fun verticalMetrics(style: LayoutFontStyle) = TextMetrics.VerticalMetrics()
+                override fun charWidths(text: CharSequence, style: ComputedFontStyle) = FloatArray(text.length)
+                override fun verticalMetrics(style: ComputedFontStyle) = TextMetrics.VerticalMetrics()
             }
 
-    fun textMetrics(styleToParams: Map<LayoutFontStyle, TestMetrics>) =
+    fun textMetrics(styleToParams: Map<ComputedFontStyle, TestMetrics>) =
             object : TextMetrics {
-                override fun charWidths(text: CharSequence, style: LayoutFontStyle): FloatArray {
+                override fun charWidths(text: CharSequence, style: ComputedFontStyle): FloatArray {
                     val params = styleToParams[style] as TestMetrics
 
                     if (text == HYPHEN_STRING) {
@@ -1014,7 +1014,7 @@ class ParagraphLayouterTest {
                 }
 
                 @Override
-                override fun verticalMetrics(style: LayoutFontStyle): TextMetrics.VerticalMetrics {
+                override fun verticalMetrics(style: ComputedFontStyle): TextMetrics.VerticalMetrics {
                     val params = styleToParams[style] as TestMetrics
                     return TextMetrics.VerticalMetrics().apply {
                         ascent = params.ascent
@@ -1097,7 +1097,7 @@ class ParagraphLayouterTest {
             with (it.obj as RenderText) { charOffsets }
         }
 
-    val RenderObject.childStyles: List<LayoutFontStyle>
+    val RenderObject.childStyles: List<ComputedFontStyle>
         get() = children.map {
             with (it.obj as RenderText) { style }
         }

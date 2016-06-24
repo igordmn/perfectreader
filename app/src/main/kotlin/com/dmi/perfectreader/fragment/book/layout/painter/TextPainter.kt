@@ -8,7 +8,7 @@ import android.graphics.RectF
 import android.text.TextPaint
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
-import com.dmi.perfectreader.fragment.book.obj.layout.param.LayoutFontStyle
+import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedFontStyle
 import com.dmi.perfectreader.fragment.book.obj.render.RenderSpace
 import com.dmi.perfectreader.fragment.book.obj.render.RenderText
 import com.dmi.util.lang.intRound
@@ -59,10 +59,10 @@ open class TextPainter : ObjectPainter<RenderText> {
     private class PaintCache {
         private val paint = TextPaint()
 
-        private var lastStyle: LayoutFontStyle? = null
+        private var lastStyle: ComputedFontStyle? = null
         private var lastSelected: Boolean? = null
 
-        fun forStyle(style: LayoutFontStyle, selected: Boolean): TextPaint {
+        fun forStyle(style: ComputedFontStyle, selected: Boolean): TextPaint {
             if (lastStyle !== style || lastSelected !== selected) {
                 paint.isAntiAlias = style.renderConfig.antialias
                 paint.isSubpixelText = style.renderConfig.subpixel

@@ -4,7 +4,7 @@ import com.dmi.perfectreader.fragment.book.obj.common.LayoutConfig
 import com.dmi.perfectreader.fragment.book.obj.content.ContentObject
 import com.dmi.util.collection.SequenceEntry as Entry
 
-fun LayoutSequence(
+fun ComputedSequence(
         contentSequence: LocatedSequence<ContentObject>,
         layoutConfig: LayoutConfig
 ) = contentSequence.map {

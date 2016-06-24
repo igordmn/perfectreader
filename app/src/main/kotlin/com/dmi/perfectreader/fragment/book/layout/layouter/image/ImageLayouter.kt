@@ -2,17 +2,17 @@ package com.dmi.perfectreader.fragment.book.layout.layouter.image
 
 import com.dmi.perfectreader.fragment.book.layout.layouter.Layouter
 import com.dmi.perfectreader.fragment.book.layout.layouter.common.LayoutSpace
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutImage
-import com.dmi.perfectreader.fragment.book.obj.layout.param.LayoutSize.Dimension.Auto
-import com.dmi.perfectreader.fragment.book.obj.layout.param.LayoutSize.Dimension.Fixed
+import com.dmi.perfectreader.fragment.book.obj.content.ComputedImage
+import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedSize.Dimension.Auto
+import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedSize.Dimension.Fixed
 import com.dmi.perfectreader.fragment.book.obj.render.RenderImage
 import com.dmi.perfectreader.fragment.book.bitmap.BitmapDecoder
 import com.dmi.util.graphic.SizeF
 
 class ImageLayouter(
         private val bitmapDecoder: BitmapDecoder
-) : Layouter<LayoutImage, RenderImage> {
-    override fun layout(obj: LayoutImage, space: LayoutSpace): RenderImage {
+) : Layouter<ComputedImage, RenderImage> {
+    override fun layout(obj: ComputedImage, space: LayoutSpace): RenderImage {
         return object {
             fun layout(): RenderImage {
                 val (imageWidth, imageHeight) = if (obj.src != null) bitmapDecoder.loadDimensions(obj.src) else SizeF(0F, 0F)

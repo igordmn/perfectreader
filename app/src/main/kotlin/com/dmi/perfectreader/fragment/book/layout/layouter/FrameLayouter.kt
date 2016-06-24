@@ -2,17 +2,17 @@ package com.dmi.perfectreader.fragment.book.layout.layouter
 
 import com.dmi.perfectreader.fragment.book.layout.layouter.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.layouter.common.LayoutSpace.Area
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutFrame
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
+import com.dmi.perfectreader.fragment.book.obj.content.ComputedFrame
+import com.dmi.perfectreader.fragment.book.obj.content.ComputedObject
 import com.dmi.perfectreader.fragment.book.obj.render.RenderChild
 import com.dmi.perfectreader.fragment.book.obj.render.RenderFrame
 import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
 import java.lang.Math.max
 
 class FrameLayouter(
-        private val childLayouter: Layouter<LayoutObject, RenderObject>
-) : Layouter<LayoutFrame, RenderFrame> {
-    override fun layout(obj: LayoutFrame, space: LayoutSpace): RenderFrame {
+        private val childLayouter: Layouter<ComputedObject, RenderObject>
+) : Layouter<ComputedFrame, RenderFrame> {
+    override fun layout(obj: ComputedFrame, space: LayoutSpace): RenderFrame {
         return object {
             fun layout(): RenderFrame {
                 val marginLeft = obj.margins.left.compute(space.width.percentBase)
@@ -66,15 +66,15 @@ class FrameLayouter(
                         )
                     }
 
-            private fun toRenderBorders(borders: LayoutFrame.Borders) = RenderFrame.Borders(
+            private fun toRenderBorders(borders: ComputedFrame.Borders) = RenderFrame.Borders(
                     toRenderBorder(borders.left),
                     toRenderBorder(borders.right),
                     toRenderBorder(borders.top),
                     toRenderBorder(borders.bottom)
             )
 
-            private fun toRenderBorder(border: LayoutFrame.Border) = RenderFrame.Border(border.width, border.color)
-            private fun toRenderBackground(background: LayoutFrame.Background) = RenderFrame.Background(background.color)
+            private fun toRenderBorder(border: ComputedFrame.Border) = RenderFrame.Border(border.width, border.color)
+            private fun toRenderBackground(background: ComputedFrame.Background) = RenderFrame.Background(background.color)
         }.layout()
     }
 }

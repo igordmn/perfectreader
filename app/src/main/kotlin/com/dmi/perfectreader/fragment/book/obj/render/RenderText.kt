@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.fragment.book.obj.render
 
 import com.dmi.perfectreader.fragment.book.location.LocationRange
-import com.dmi.perfectreader.fragment.book.obj.layout.param.LayoutFontStyle
+import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedFontStyle
 import java.util.*
 import java.util.Collections.emptyList
 
@@ -11,7 +11,7 @@ open class RenderText(width: Float,
                       val locale: Locale,
                       val baseline: Float,
                       val charOffsets: FloatArray,
-                      val style: LayoutFontStyle,
+                      val style: ComputedFontStyle,
                       range: LocationRange
 ) : RenderObject(width, height, emptyList<RenderChild>(), range) {
     init {

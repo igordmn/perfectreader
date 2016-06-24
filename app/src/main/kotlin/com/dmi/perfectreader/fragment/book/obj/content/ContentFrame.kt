@@ -4,7 +4,6 @@ import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.obj.common.LayoutConfig
 import com.dmi.perfectreader.fragment.book.obj.common.Length
 import com.dmi.perfectreader.fragment.book.obj.content.param.StyleType
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutFrame
 import com.dmi.util.graphic.Color
 
 class ContentFrame(
@@ -22,7 +21,7 @@ class ContentFrame(
 
     override val length = child.length
 
-    override fun configure(config: LayoutConfig) = LayoutFrame(
+    override fun configure(config: LayoutConfig) = ComputedFrame(
             margins.configure(config, styleType),
             paddings.configure(),
             borders.configure(),
@@ -32,22 +31,22 @@ class ContentFrame(
     )
 
     class Background(val color: Color?) {
-        fun configure() = LayoutFrame.Background(color ?: Color.TRANSPARENT)
+        fun configure() = ComputedFrame.Background(color ?: Color.TRANSPARENT)
     }
 
     class Margins(val left: Length?, val right: Length?, val top: Length?, val bottom: Length?) {
-        fun configure(config: LayoutConfig, styleType: StyleType): LayoutFrame.Margins {
+        fun configure(config: LayoutConfig, styleType: StyleType): ComputedFrame.Margins {
             return if (styleType == StyleType.PARAGRAPH) {
                 val top = top ?: Length.Absolute(DEFAULT_PARAGRAPH_VERTICAL_MARGIN)
                 val bottom = bottom ?: Length.Absolute(DEFAULT_PARAGRAPH_VERTICAL_MARGIN)
-                LayoutFrame.Margins(
+                ComputedFrame.Margins(
                         left ?: Length.Absolute(0F),
                         right ?: Length.Absolute(0F),
                         Length.Multiplier(top, config.paragraphVerticalMarginMultiplier),
                         Length.Multiplier(bottom, config.paragraphVerticalMarginMultiplier)
                 )
             } else {
-                LayoutFrame.Margins(
+                ComputedFrame.Margins(
                         left ?: Length.Absolute(0F),
                         right ?: Length.Absolute(0F),
                         top ?: Length.Absolute(0F),
@@ -58,7 +57,7 @@ class ContentFrame(
     }
 
     class Paddings(val left: Length?, val right: Length?, val top: Length?, val bottom: Length?) {
-        fun configure() = LayoutFrame.Paddings(
+        fun configure() = ComputedFrame.Paddings(
                 left ?: Length.Absolute(0F),
                 right ?: Length.Absolute(0F),
                 top ?: Length.Absolute(0F),
@@ -67,18 +66,33 @@ class ContentFrame(
     }
 
     class Border(val width: Float?, val color: Color?) {
-        fun configure() = LayoutFrame.Border(
+        fun configure() = ComputedFrame.Border(
                 width ?: 0F,
                 color ?: Color.BLACK
         )
     }
 
     class Borders(val left: Border, val right: Border, val top: Border, val bottom: Border) {
-        fun configure() = LayoutFrame.Borders(
+        fun configure() = ComputedFrame.Borders(
                 left.configure(),
                 right.configure(),
                 top.configure(),
                 bottom.configure()
         )
     }
+}
+
+class ComputedFrame(
+        val margins: Margins,
+        val paddings: Paddings,
+        val borders: Borders,
+        val background: Background,
+        val child: ComputedObject,
+        range: LocationRange
+) : ComputedObject(range) {
+    class Background(val color: Color)
+    class Margins(val left: Length, val right: Length, val top: Length, val bottom: Length)
+    class Paddings(val left: Length, val right: Length, val top: Length, val bottom: Length)
+    class Border(val width: Float, val color: Color)
+    class Borders(val left: Border, val right: Border, val top: Border, val bottom: Border)
 }

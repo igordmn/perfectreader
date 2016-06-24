@@ -9,9 +9,9 @@ import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.liner.Liner
 import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.metrics.TextMetrics
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.obj.common.TextAlign
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutParagraph
-import com.dmi.perfectreader.fragment.book.obj.layout.LayoutParagraph.Run
+import com.dmi.perfectreader.fragment.book.obj.content.ComputedObject
+import com.dmi.perfectreader.fragment.book.obj.content.ComputedParagraph
+import com.dmi.perfectreader.fragment.book.obj.content.ComputedParagraph.Run
 import com.dmi.perfectreader.fragment.book.obj.render.*
 import com.dmi.util.lang.ReusableArrayList
 import com.dmi.util.lang.ReusableFloatArrayList
@@ -21,15 +21,15 @@ import java.lang.Math.max
 import java.util.*
 
 class ParagraphLayouter(
-        private val childrenLayouter: Layouter<LayoutObject, RenderObject>,
+        private val childrenLayouter: Layouter<ComputedObject, RenderObject>,
         private val textMetrics: TextMetrics,
         private val liner: Liner
-) : Layouter<LayoutParagraph, RenderParagraph> {
+) : Layouter<ComputedParagraph, RenderParagraph> {
     companion object {
         private val HYPHEN_STRING = LayoutChars.HYPHEN.toString()
     }
 
-    override fun layout(obj: LayoutParagraph, space: LayoutSpace): RenderParagraph {
+    override fun layout(obj: ComputedParagraph, space: LayoutSpace): RenderParagraph {
         val runs = obj.runs
         val locale = obj.locale
         val widthArea = space.width.area
@@ -392,7 +392,7 @@ class ParagraphLayouter(
 
     private class ParagraphBuilder(
             private val width: Float,
-            private val layoutObject: LayoutParagraph
+            private val obj: ComputedParagraph
     ) {
         private val children = ArrayList<RenderChild>()
         private var height = 0F
@@ -402,7 +402,7 @@ class ParagraphLayouter(
             height += line.height
         }
 
-        fun build() = RenderParagraph(width, height, children, layoutObject.range)
+        fun build() = RenderParagraph(width, height, children, obj.range)
     }
 
     private object Reusables {

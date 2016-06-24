@@ -8,12 +8,13 @@ import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.metrics.Tex
 import com.dmi.perfectreader.fragment.book.obj.layout.*
 import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
 import com.dmi.perfectreader.fragment.book.bitmap.BitmapDecoder
+import com.dmi.perfectreader.fragment.book.obj.content.*
 
 class UniversalLayouter(
         textMetrics: TextMetrics,
         liner: Liner,
         bitmapDecoder: BitmapDecoder
-) : Layouter<LayoutObject, RenderObject> {
+) : Layouter<ComputedObject, RenderObject> {
     private val childLayouter = CachedLayouter(this)
 
     private val paragraphLayouter = ParagraphLayouter(childLayouter, textMetrics, liner)
@@ -21,11 +22,11 @@ class UniversalLayouter(
     private val frameLayouter = FrameLayouter(childLayouter)
     private val boxLayouter = BoxLayouter(childLayouter)
 
-    override fun layout(obj: LayoutObject, space: LayoutSpace) = when (obj) {
-        is LayoutParagraph -> paragraphLayouter.layout(obj, space)
-        is LayoutImage -> imageLayouter.layout(obj, space)
-        is LayoutFrame -> frameLayouter.layout(obj, space)
-        is LayoutBox -> boxLayouter.layout(obj, space)
+    override fun layout(obj: ComputedObject, space: LayoutSpace) = when (obj) {
+        is ComputedParagraph -> paragraphLayouter.layout(obj, space)
+        is ComputedImage -> imageLayouter.layout(obj, space)
+        is ComputedFrame -> frameLayouter.layout(obj, space)
+        is ComputedBox -> boxLayouter.layout(obj, space)
         else -> throw UnsupportedOperationException()
     }
 }
