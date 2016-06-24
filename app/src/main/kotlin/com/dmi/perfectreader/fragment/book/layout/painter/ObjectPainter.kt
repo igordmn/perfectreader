@@ -1,9 +1,9 @@
 package com.dmi.perfectreader.fragment.book.layout.painter
 
 import android.graphics.Canvas
-import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
 
-interface ObjectPainter<R : RenderObject> {
+interface ObjectPainter<R : LayoutObject> {
     /**
      * Нарисовать только содержимое данного объекта, без рисования дочерних объектов
      *

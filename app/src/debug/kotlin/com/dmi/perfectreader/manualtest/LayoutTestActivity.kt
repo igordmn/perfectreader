@@ -133,14 +133,14 @@ class LayoutTestActivity : AppCompatActivity() {
                 LocationRange(testParagraph.range.begin, box1.range.end)
         )
 
-        val renderRoot = layouter.layout(rootBox, LayoutSpace.root(SizeF(700F, 700F)))
-        val renderParts = splitIntoParts(renderRoot)
+        val layoutRoot = layouter.layout(rootBox, LayoutSpace.root(SizeF(700F, 700F)))
+        val layoutParts = splitIntoParts(layoutRoot)
 
-        val painter = RenderColumnPainter(RenderPartPainter(UniversalObjectPainter(bitmapDecoder)))
+        val painter = LayoutColumnPainter(LayoutPartPainter(UniversalObjectPainter(bitmapDecoder)))
 
-        val begin = renderParts.first().range.begin
-        var column = RenderColumn(emptyList(), 0F, LocationRange(begin, begin))
-        for (part in renderParts) {
+        val begin = layoutParts.first().range.begin
+        var column = LayoutColumn(emptyList(), 0F, LocationRange(begin, begin))
+        for (part in layoutParts) {
             column = column merge part
         }
 

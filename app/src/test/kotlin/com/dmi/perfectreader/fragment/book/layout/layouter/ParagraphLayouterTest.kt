@@ -13,10 +13,10 @@ import com.dmi.perfectreader.fragment.book.obj.content.ComputedObject
 import com.dmi.perfectreader.fragment.book.obj.content.ComputedParagraph
 import com.dmi.perfectreader.fragment.book.obj.content.ComputedParagraph.Run
 import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedFontStyle
-import com.dmi.perfectreader.fragment.book.obj.render.RenderLine
-import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
-import com.dmi.perfectreader.fragment.book.obj.render.RenderSpace
-import com.dmi.perfectreader.fragment.book.obj.render.RenderText
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutLine
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutSpaceText
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutText
 import com.dmi.util.graphic.Color
 import com.dmi.util.graphic.SizeF
 import org.amshove.kluent.shouldEqual
@@ -146,8 +146,8 @@ class ParagraphLayouterTest {
         }
         val layouter = ParagraphLayouter(
                 childLayouter(mapOf(
-                        object1 to renderObj(30F, 0F),
-                        object2 to renderObj(100F, 0F)
+                        object1 to layoutObj(30F, 0F),
+                        object2 to layoutObj(100F, 0F)
                 )),
                 textMetrics(),
                 liner
@@ -182,12 +182,12 @@ class ParagraphLayouterTest {
     @Test
     fun `layout space for object runs`() {
         // given
-        val childLayouter = object : Layouter<ComputedObject, RenderObject> {
+        val childLayouter = object : Layouter<ComputedObject, LayoutObject> {
             lateinit var space: LayoutSpace
 
-            override fun layout(obj: ComputedObject, space: LayoutSpace): RenderObject {
+            override fun layout(obj: ComputedObject, space: LayoutSpace): LayoutObject {
                 this.space = space
-                return renderObj()
+                return layoutObj()
             }
         }
         val obj = computedtObj()
@@ -222,7 +222,7 @@ class ParagraphLayouterTest {
     }
 
     @Test
-    fun `render text runs`() {
+    fun `layout text runs`() {
         // given
         val LETTER_WIDTH1 = 10F
         val SPACE_WIDTH1 = 5F
@@ -264,14 +264,14 @@ class ParagraphLayouterTest {
         )
 
         // when
-        val renderObj = layouter.layout(obj, rootSpace(200F, 200F))
+        val layoutObj = layouter.layout(obj, rootSpace(200F, 200F))
 
         // then
-        with (renderObj) {
+        with (layoutObj) {
             val HEIGHT1 = -ASCENT1 + DESCENT1 + LEADING1
             val HEIGHT2 = -ASCENT2 + DESCENT2 + LEADING2
 
-            with (children[0].obj as RenderLine) {
+            with (children[0].obj as LayoutLine) {
                 childTexts shouldEqual listOf("some", " ")
                 childIsSpaces shouldEqual listOf(false, true)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
@@ -296,7 +296,7 @@ class ParagraphLayouterTest {
                 )
             }
 
-            with (children[1].obj as RenderLine) {
+            with (children[1].obj as LayoutLine) {
                 childTexts shouldEqual listOf("t", "ext", " ", "words")
                 childIsSpaces shouldEqual listOf(false, false, true, false)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT2, -ASCENT2, -ASCENT2)
@@ -330,7 +330,7 @@ class ParagraphLayouterTest {
                 )
             }
 
-            with (children[2].obj as RenderLine) {
+            with (children[2].obj as LayoutLine) {
                 childTexts shouldEqual listOf(" ", " ", "qwert")
                 childIsSpaces shouldEqual listOf(true, true, false)
                 childBaselines shouldEqual listOf(-ASCENT2, -ASCENT1, -ASCENT1)
@@ -357,7 +357,7 @@ class ParagraphLayouterTest {
                 )
             }
 
-            with (children[3].obj as RenderLine) {
+            with (children[3].obj as LayoutLine) {
                 childTexts shouldEqual listOf("y")
                 childIsSpaces shouldEqual listOf(false)
                 childBaselines shouldEqual listOf(-ASCENT1)
@@ -389,16 +389,16 @@ class ParagraphLayouterTest {
             range shouldEqual obj.range
         }
 
-        renderObj.children.map { it.obj }.forEach {
-            (it as RenderLine).children.map { it.obj }.forEach {
-                it as RenderText
+        layoutObj.children.map { it.obj }.forEach {
+            (it as LayoutLine).children.map { it.obj }.forEach {
+                it as LayoutText
                 it.locale shouldEqual Locale.US
             }
         }
     }
 
     @Test
-    fun `render object runs`() {
+    fun `layout object runs`() {
         // given
         val CHAR_WIDTH = 10F
         val ASCENT = -20F
@@ -407,8 +407,8 @@ class ParagraphLayouterTest {
 
         val object1 = computedtObj()
         val object2 = computedtObj()
-        val renderObj1 = renderObj(50F, 10F)
-        val renderObj2 = renderObj(70F, 70F)
+        val layoutObj1 = layoutObj(50F, 10F)
+        val layoutObj2 = layoutObj(70F, 70F)
 
         val runs = listOf(
                 Run.Object(object1),
@@ -421,8 +421,8 @@ class ParagraphLayouterTest {
 
         val layouter = ParagraphLayouter(
                 childLayouter(mapOf(
-                        object1 to renderObj1,
-                        object2 to renderObj2
+                        object1 to layoutObj1,
+                        object2 to layoutObj2
                 )),
                 textMetrics(mapOf(
                         style to TestMetrics(CHAR_WIDTH, CHAR_WIDTH, CHAR_WIDTH, ASCENT, DESCENT)
@@ -431,18 +431,18 @@ class ParagraphLayouterTest {
         )
 
         // when
-        val renderObj = layouter.layout(
+        val layoutObj = layouter.layout(
                 ComputedParagraph(Locale.US, runs, 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange()),
                 rootSpace(200F, 200F)
         )
 
         // then
-        with (renderObj) {
-            with (children[0].obj as RenderLine) {
-                children[0].obj shouldEqual renderObj1
-                children[2].obj shouldEqual renderObj2
+        with (layoutObj) {
+            with (children[0].obj as LayoutLine) {
+                children[0].obj shouldEqual layoutObj1
+                children[2].obj shouldEqual layoutObj2
 
-                with (children[1].obj as RenderText) {
+                with (children[1].obj as LayoutText) {
                     text.toString() shouldEqual "text"
                     baseline shouldEqual 20F
                     style shouldEqual style
@@ -464,7 +464,7 @@ class ParagraphLayouterTest {
     }
 
     @Test
-    fun `render hyphen`() {
+    fun `layout hyphen`() {
         // given
         val CHAR_WIDTH1 = 10F
         val HYPHEN_WIDTH1 = 5F
@@ -479,7 +479,7 @@ class ParagraphLayouterTest {
         val style2 = style()
 
         val object1 = computedtObj()
-        val renderObj1 = renderObj(50F, 10F)
+        val layoutObj1 = layoutObj(50F, 10F)
 
         val runs = listOf(
                 Run.Text("text", style1, runRange(0)),
@@ -502,7 +502,7 @@ class ParagraphLayouterTest {
 
         val layouter = ParagraphLayouter(
                 childLayouter(mapOf(
-                        object1 to renderObj1
+                        object1 to layoutObj1
                 )),
                 textMetrics(mapOf(
                         style1 to TestMetrics(CHAR_WIDTH1, CHAR_WIDTH1, HYPHEN_WIDTH1, ASCENT1, DESCENT1),
@@ -512,14 +512,14 @@ class ParagraphLayouterTest {
         )
 
         // when
-        val renderObj = layouter.layout(obj, rootSpace(200F, 200F))
+        val layoutObj = layouter.layout(obj, rootSpace(200F, 200F))
 
         // then
-        with (renderObj) {
+        with (layoutObj) {
             val HEIGHT1 = -ASCENT1 + DESCENT1
             val HEIGHT2 = -ASCENT2 + DESCENT2
 
-            with (children[0].obj as RenderLine) {
+            with (children[0].obj as LayoutLine) {
                 childTexts shouldEqual listOf("t", HYPHEN_STRING)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
                 childStyles shouldEqual listOf(style1, style1)
@@ -543,7 +543,7 @@ class ParagraphLayouterTest {
                 )
             }
 
-            with (children[1].obj as RenderLine) {
+            with (children[1].obj as LayoutLine) {
                 childTexts shouldEqual listOf("ext", HYPHEN_STRING)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
                 childStyles shouldEqual listOf(style1, style1)
@@ -567,8 +567,8 @@ class ParagraphLayouterTest {
                 )
             }
 
-            with (children[2].obj as RenderLine) {
-                children[0].obj shouldEqual renderObj1
+            with (children[2].obj as LayoutLine) {
+                children[0].obj shouldEqual layoutObj1
 
                 childWidths shouldEqual listOf(50F)
                 childHeights shouldEqual listOf(10F)
@@ -576,7 +576,7 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(0F)
             }
 
-            with (children[3].obj as RenderLine) {
+            with (children[3].obj as LayoutLine) {
                 childTexts shouldEqual listOf("t", "ext2", HYPHEN_STRING)
                 childBaselines shouldEqual listOf(-ASCENT1, -ASCENT2, -ASCENT2)
                 childStyles shouldEqual listOf(style1, style2, style2)
@@ -636,13 +636,13 @@ class ParagraphLayouterTest {
         )
 
         // when
-        val renderObj = layouter.layout(
+        val layoutObj = layouter.layout(
                 ComputedParagraph(Locale.US, runs, 20F, TextAlign.RIGHT, true, DefaultHangingConfig, rootRange()),
                 rootSpace(200F, 200F)
         )
 
         // then
-        with (renderObj.children[0].obj as RenderLine) {
+        with (layoutObj.children[0].obj as LayoutLine) {
             val widths = listOf(1 * SPACE_WIDTH, 5 * LETTER_WIDTH, 3 * SPACE_WIDTH, 5 * LETTER_WIDTH, 1 * SPACE_WIDTH)
             childCharOffsets shouldEqualCharOffsets listOf(
                     charOffsets(1, SPACE_WIDTH),
@@ -661,7 +661,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.children[1].obj as RenderLine) {
+        with (layoutObj.children[1].obj as LayoutLine) {
             val widths = listOf(2 * SPACE_WIDTH, 1 * LETTER_WIDTH, 1 * LETTER_WIDTH)
             childCharOffsets shouldEqualCharOffsets listOf(
                     charOffsets(2, SPACE_WIDTH),
@@ -676,7 +676,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.children[2].obj as RenderLine) {
+        with (layoutObj.children[2].obj as LayoutLine) {
             val widths = listOf(4 * LETTER_WIDTH, 1 * SPACE_WIDTH, 5 * LETTER_WIDTH)
             childCharOffsets shouldEqualCharOffsets listOf(
                     charOffsets(4, LETTER_WIDTH),
@@ -717,13 +717,13 @@ class ParagraphLayouterTest {
         )
 
         // when
-        val renderObj = layouter.layout(
+        val layoutObj = layouter.layout(
                 ComputedParagraph(Locale.US, runs, 20F, TextAlign.CENTER, true, DefaultHangingConfig, rootRange()),
                 rootSpace(200F, 200F)
         )
 
         // then
-        with (renderObj.children[0].obj as RenderLine) {
+        with (layoutObj.children[0].obj as LayoutLine) {
             val widths = listOf(1 * SPACE_WIDTH, 5 * LETTER_WIDTH, 3 * SPACE_WIDTH, 5 * LETTER_WIDTH, 1 * SPACE_WIDTH)
             childCharOffsets shouldEqualCharOffsets listOf(
                     charOffsets(1, SPACE_WIDTH),
@@ -742,7 +742,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.children[1].obj as RenderLine) {
+        with (layoutObj.children[1].obj as LayoutLine) {
             val widths = listOf(2 * SPACE_WIDTH, 1 * LETTER_WIDTH, 1 * LETTER_WIDTH)
             childCharOffsets shouldEqualCharOffsets listOf(
                     charOffsets(2, SPACE_WIDTH),
@@ -757,7 +757,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.children[2].obj as RenderLine) {
+        with (layoutObj.children[2].obj as LayoutLine) {
             val widths = listOf(4 * LETTER_WIDTH, 1 * SPACE_WIDTH, 5 * LETTER_WIDTH)
             childCharOffsets shouldEqualCharOffsets listOf(
                     charOffsets(4, LETTER_WIDTH),
@@ -799,13 +799,13 @@ class ParagraphLayouterTest {
         )
 
         // when
-        val renderObj = layouter.layout(
+        val layoutObj = layouter.layout(
                 ComputedParagraph(Locale.US, runs, 20F, TextAlign.JUSTIFY, true, DefaultHangingConfig, rootRange()),
                 rootSpace(200F, 200F)
         )
 
         // then
-        with (renderObj.children[0].obj as RenderLine)
+        with (layoutObj.children[0].obj as LayoutLine)
         {
             val freeSpace = 200F - 180F + 10F
             val midSpaceWidths = (3 + 1) * SPACE_WIDTH
@@ -841,7 +841,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.children[1].obj as RenderLine)
+        with (layoutObj.children[1].obj as LayoutLine)
         {
             val widths = listOf(2 * SPACE_WIDTH, 1 * LETTER_WIDTH, 1 * LETTER_WIDTH)
             childCharOffsetsOrNull shouldEqualCharOffsets listOf(
@@ -857,7 +857,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.children[2].obj as RenderLine)
+        with (layoutObj.children[2].obj as LayoutLine)
         {
             val widths = listOf(4 * LETTER_WIDTH, 1 * SPACE_WIDTH, 1 * LETTER_WIDTH)
             childCharOffsetsOrNull shouldEqualCharOffsets listOf(
@@ -873,7 +873,7 @@ class ParagraphLayouterTest {
             )
         }
 
-        with (renderObj.children[3].obj as RenderLine)
+        with (layoutObj.children[3].obj as LayoutLine)
         {
             val widths = listOf(4 * LETTER_WIDTH, 2 * SPACE_WIDTH, 5 * LETTER_WIDTH, 1 * SPACE_WIDTH)
             childCharOffsetsOrNull shouldEqualCharOffsets listOf(
@@ -893,7 +893,7 @@ class ParagraphLayouterTest {
     }
 
     @Test
-    fun `render empty paragraph`() {
+    fun `layout empty paragraph`() {
         // given
         val layouter = ParagraphLayouter(
                 childLayouter(),
@@ -902,13 +902,13 @@ class ParagraphLayouterTest {
         )
 
         // when
-        val renderObj = layouter.layout(
+        val layoutObj = layouter.layout(
                 ComputedParagraph(Locale.US, listOf(), 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange()),
                 rootSpace(200F, 200F)
         )
 
         // then
-        with (renderObj) {
+        with (layoutObj) {
             width shouldEqual 200F
             height shouldEqual 0F
             children.size shouldEqual 0
@@ -940,51 +940,51 @@ class ParagraphLayouterTest {
         )
 
         // when
-        var renderObj = layouter.layout(
+        var layoutObj = layouter.layout(
                 ComputedParagraph(Locale.US, runs, 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange()),
                 layoutSpace
         )
 
         // then
-        renderObj.width shouldEqual 170F
-        renderObj.childWidths shouldEqual listOf(170F, 170F, 170F)
+        layoutObj.width shouldEqual 170F
+        layoutObj.childWidths shouldEqual listOf(170F, 170F, 170F)
 
         // when
-        renderObj = layouter.layout(
+        layoutObj = layouter.layout(
                 ComputedParagraph(Locale.US, runs, 20F, TextAlign.RIGHT, true, DefaultHangingConfig, rootRange()),
                 layoutSpace
         )
 
         // then
-        renderObj.width shouldEqual 170F
-        renderObj.childWidths shouldEqual listOf(170F, 170F, 170F)
-        renderObj.children[0].obj.childXs shouldEqual listOf(170F - 100)
-        renderObj.children[1].obj.childXs shouldEqual listOf(170F - 180)
-        renderObj.children[2].obj.childXs shouldEqual listOf(170F - 50)
+        layoutObj.width shouldEqual 170F
+        layoutObj.childWidths shouldEqual listOf(170F, 170F, 170F)
+        layoutObj.children[0].obj.childXs shouldEqual listOf(170F - 100)
+        layoutObj.children[1].obj.childXs shouldEqual listOf(170F - 180)
+        layoutObj.children[2].obj.childXs shouldEqual listOf(170F - 50)
 
         // when
-        renderObj = layouter.layout(
+        layoutObj = layouter.layout(
                 ComputedParagraph(Locale.US, runs, 20F, TextAlign.CENTER, true, DefaultHangingConfig, rootRange()),
                 layoutSpace
         )
 
         // then
-        renderObj.width shouldEqual 170F
-        renderObj.childWidths shouldEqual listOf(170F, 170F, 170F)
-        renderObj.children[0].obj.childXs shouldEqual listOf(30F + (170 - 30 - 100) / 2)
-        renderObj.children[1].obj.childXs shouldEqual listOf(-10F + (170 + 10 - 180) / 2)
-        renderObj.children[2].obj.childXs shouldEqual listOf(0F + (170 + 0 - 50) / 2)
+        layoutObj.width shouldEqual 170F
+        layoutObj.childWidths shouldEqual listOf(170F, 170F, 170F)
+        layoutObj.children[0].obj.childXs shouldEqual listOf(30F + (170 - 30 - 100) / 2)
+        layoutObj.children[1].obj.childXs shouldEqual listOf(-10F + (170 + 10 - 180) / 2)
+        layoutObj.children[2].obj.childXs shouldEqual listOf(0F + (170 + 0 - 50) / 2)
     }
 
-    fun childLayouter(computedToRenderObject: Map<ComputedObject, RenderObject> = emptyMap()) =
-            object : Layouter<ComputedObject, RenderObject> {
-                override fun layout(obj: ComputedObject, space: LayoutSpace) = computedToRenderObject[obj]!!
+    fun childLayouter(computedToLayoutObject: Map<ComputedObject, LayoutObject> = emptyMap()) =
+            object : Layouter<ComputedObject, LayoutObject> {
+                override fun layout(obj: ComputedObject, space: LayoutSpace) = computedToLayoutObject[obj]!!
             }
 
     fun computedtObj() = object : ComputedObject(rootRange()) {}
 
-    fun renderObj(width: Float = 0F, height: Float = 0F) =
-            object : RenderObject(width, height, emptyList(), rootRange()) {}
+    fun layoutObj(width: Float = 0F, height: Float = 0F) =
+            object : LayoutObject(width, height, emptyList(), rootRange()) {}
 
     fun style() = ComputedFontStyle(
             0F,
@@ -1064,45 +1064,45 @@ class ParagraphLayouterTest {
         return tokens
     }
 
-    val RenderObject.childWidths: List<Float>
+    val LayoutObject.childWidths: List<Float>
         get() = children.map { it.obj.width }
 
-    val RenderObject.childHeights: List<Float>
+    val LayoutObject.childHeights: List<Float>
         get() = children.map { it.obj.height }
 
-    val RenderObject.childXs: List<Float>
+    val LayoutObject.childXs: List<Float>
         get() = children.map { it.x }
 
-    val RenderObject.childYs: List<Float>
+    val LayoutObject.childYs: List<Float>
         get() = children.map { it.y }
 
-    val RenderObject.childTexts: List<String>
+    val LayoutObject.childTexts: List<String>
         get() = children.map {
-            with (it.obj as RenderText) { text.toString() }
+            with (it.obj as LayoutText) { text.toString() }
         }
 
-    val RenderObject.childIsSpaces: List<Boolean>
-        get() = children.map { it.obj is RenderSpace }
+    val LayoutObject.childIsSpaces: List<Boolean>
+        get() = children.map { it.obj is LayoutSpaceText }
 
-    val RenderObject.childBaselines: List<Float>
+    val LayoutObject.childBaselines: List<Float>
         get() = children.map {
-            with (it.obj as RenderText) { baseline }
+            with (it.obj as LayoutText) { baseline }
         }
 
-    val RenderObject.childCharOffsets: List<FloatArray>
+    val LayoutObject.childCharOffsets: List<FloatArray>
         get() = childCharOffsetsOrNull.map { it!! }
 
-    val RenderObject.childCharOffsetsOrNull: List<FloatArray?>
+    val LayoutObject.childCharOffsetsOrNull: List<FloatArray?>
         get() = children.map {
-            with (it.obj as RenderText) { charOffsets }
+            with (it.obj as LayoutText) { charOffsets }
         }
 
-    val RenderObject.childStyles: List<ComputedFontStyle>
+    val LayoutObject.childStyles: List<ComputedFontStyle>
         get() = children.map {
-            with (it.obj as RenderText) { style }
+            with (it.obj as LayoutText) { style }
         }
 
-    val RenderObject.childRanges: List<LocationRange>
+    val LayoutObject.childRanges: List<LocationRange>
         get() = children.map { it.obj.range }
 
     fun charOffsets(textLength: Int, charWidth: Float) = (0..textLength - 1).map { charWidth * it }.toFloatArray()

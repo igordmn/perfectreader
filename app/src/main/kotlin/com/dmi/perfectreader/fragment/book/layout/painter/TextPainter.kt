@@ -9,15 +9,15 @@ import android.text.TextPaint
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedFontStyle
-import com.dmi.perfectreader.fragment.book.obj.render.RenderSpace
-import com.dmi.perfectreader.fragment.book.obj.render.RenderText
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutSpaceText
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutText
 import com.dmi.util.lang.intRound
 
-open class TextPainter : ObjectPainter<RenderText> {
+open class TextPainter : ObjectPainter<LayoutText> {
     private val textPaintCache = PaintCache()
     private val selectionBackgroundPaint = Paint()
 
-    override fun paintItself(obj: RenderText, canvas: Canvas, context: PaintContext) {
+    override fun paintItself(obj: LayoutText, canvas: Canvas, context: PaintContext) {
         if (context.selectionRange != null) {
             val selectionBegin = obj.indexOf(context.selectionRange.begin)
             val selectionEnd = obj.indexOf(context.selectionRange.end)
@@ -30,7 +30,7 @@ open class TextPainter : ObjectPainter<RenderText> {
         }
     }
 
-    private fun RenderText.indexOf(location: Location) = intRound(range.clampPercentOf(location) * text.length)
+    private fun LayoutText.indexOf(location: Location) = intRound(range.clampPercentOf(location) * text.length)
 
     private fun LocationRange.clampPercentOf(location: Location) = when {
         location >= begin && location <= end -> percentOf(location)
@@ -38,15 +38,15 @@ open class TextPainter : ObjectPainter<RenderText> {
         else -> 0.0
     }
 
-    private fun drawText(obj: RenderText, canvas: Canvas, begin: Int, end: Int, selected: Boolean) {
-        if (end > begin && obj !is RenderSpace) {
+    private fun drawText(obj: LayoutText, canvas: Canvas, begin: Int, end: Int, selected: Boolean) {
+        if (end > begin && obj !is LayoutSpaceText) {
             val textPaint = textPaintCache.forStyle(obj.style, selected)
             val offsetX = obj.charOffsets[begin]
             canvas.drawText(obj.text, begin, end, offsetX, obj.baseline, textPaint)
         }
     }
 
-    private fun drawSelectionRect(obj: RenderText, canvas: Canvas, begin: Int, end: Int) {
+    private fun drawSelectionRect(obj: LayoutText, canvas: Canvas, begin: Int, end: Int) {
         val left = obj.charOffsets[begin]
         val right = if (end < obj.text.length) obj.charOffsets[end] else obj.width
         selectionBackgroundPaint.color = obj.style.selectionConfig.backgroundColor.value

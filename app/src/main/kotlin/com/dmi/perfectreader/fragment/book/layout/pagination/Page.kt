@@ -4,7 +4,7 @@ import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.util.graphic.SizeF
 
 class Page(
-        val column: RenderColumn,
+        val column: LayoutColumn,
         val contentSize: SizeF,
         val margins: Margins
 ) {

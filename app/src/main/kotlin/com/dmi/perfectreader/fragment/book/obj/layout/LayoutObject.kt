@@ -1,11 +1,11 @@
-package com.dmi.perfectreader.fragment.book.obj.render
+package com.dmi.perfectreader.fragment.book.obj.layout
 
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 
-abstract class RenderObject(
+abstract class LayoutObject(
         val width: Float,
         val height: Float,
-        val children: List<RenderChild>,
+        val children: List<LayoutChild>,
         val range: LocationRange
 ) {
     /**

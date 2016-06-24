@@ -6,7 +6,7 @@ import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.ParagraphLa
 import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.liner.Liner
 import com.dmi.perfectreader.fragment.book.layout.layouter.paragraph.metrics.TextMetrics
 import com.dmi.perfectreader.fragment.book.obj.layout.*
-import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
 import com.dmi.perfectreader.fragment.book.bitmap.BitmapDecoder
 import com.dmi.perfectreader.fragment.book.obj.content.*
 
@@ -14,7 +14,7 @@ class UniversalLayouter(
         textMetrics: TextMetrics,
         liner: Liner,
         bitmapDecoder: BitmapDecoder
-) : Layouter<ComputedObject, RenderObject> {
+) : Layouter<ComputedObject, LayoutObject> {
     private val childLayouter = CachedLayouter(this)
 
     private val paragraphLayouter = ParagraphLayouter(childLayouter, textMetrics, liner)

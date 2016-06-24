@@ -2,9 +2,9 @@ package com.dmi.perfectreader.fragment.book.layout.pagination
 
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 
-fun singlePartColumn(part: RenderPart) = RenderColumn(listOf(part), part.height, part.range)
+fun singlePartColumn(part: LayoutPart) = LayoutColumn(listOf(part), part.height, part.range)
 
-infix fun RenderColumn.merge(part: RenderPart): RenderColumn {
+infix fun LayoutColumn.merge(part: LayoutPart): LayoutColumn {
     val last = this.parts.lastOrNull()
     val parts = if (last == null) {
         listOf(part)
@@ -13,10 +13,10 @@ infix fun RenderColumn.merge(part: RenderPart): RenderColumn {
     } else {
         this.parts.dropLast(1) + listOf(last.extendToEnd(), part.extendToBegin())
     }
-    return RenderColumn(parts, heightSumOf(parts), LocationRange(range.begin, part.range.end))
+    return LayoutColumn(parts, heightSumOf(parts), LocationRange(range.begin, part.range.end))
 }
 
-infix fun RenderPart.merge(column: RenderColumn): RenderColumn {
+infix fun LayoutPart.merge(column: LayoutColumn): LayoutColumn {
     val first = column.parts.firstOrNull()
     val parts = if (first == null) {
         listOf(this)
@@ -25,31 +25,31 @@ infix fun RenderPart.merge(column: RenderColumn): RenderColumn {
     } else {
         listOf(this.extendToEnd(), first.extendToBegin()) + column.parts.drop(1)
     }
-    return RenderColumn(parts, heightSumOf(parts), LocationRange(range.begin, column.range.end))
+    return LayoutColumn(parts, heightSumOf(parts), LocationRange(range.begin, column.range.end))
 }
 
-private infix fun RenderPart.merge(other: RenderPart) = RenderPart(
+private infix fun LayoutPart.merge(other: LayoutPart) = LayoutPart(
         obj,
         top,
         other.bottom,
         LocationRange(range.begin, other.range.end)
 )
 
-private fun RenderPart.extendToEnd() = RenderPart(
+private fun LayoutPart.extendToEnd() = LayoutPart(
         obj,
         top,
-        RenderPart.Edge(bottom.childIndices, obj.height),
+        LayoutPart.Edge(bottom.childIndices, obj.height),
         LocationRange(range.begin, obj.range.end)
 )
 
-private fun RenderPart.extendToBegin() = RenderPart(
+private fun LayoutPart.extendToBegin() = LayoutPart(
         obj,
-        RenderPart.Edge(top.childIndices, 0F),
+        LayoutPart.Edge(top.childIndices, 0F),
         bottom,
         LocationRange(obj.range.begin, range.end)
 )
 
-private fun heightSumOf(parts: List<RenderPart>): Float {
+private fun heightSumOf(parts: List<LayoutPart>): Float {
     var sum = 0F
     for (part in parts) {
         sum += part.height

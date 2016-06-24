@@ -8,7 +8,7 @@ import com.dmi.perfectreader.fragment.book.obj.common.Length.Absolute
 import com.dmi.perfectreader.fragment.book.obj.content.ComputedBox
 import com.dmi.perfectreader.fragment.book.obj.content.ComputedObject
 import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedSize
-import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
 
@@ -271,17 +271,17 @@ class BoxLayouterTest {
         }
     }
 
-    fun childLayouter() = object : Layouter<ComputedObject, RenderObject> {
+    fun childLayouter() = object : Layouter<ComputedObject, LayoutObject> {
         override fun layout(obj: ComputedObject, space: LayoutSpace) = when (obj) {
-            is FixedObject -> renderObject(
+            is FixedObject -> layoutObj(
                     obj.width,
                     obj.height
             )
-            is FillObject -> renderObject(
+            is FillObject -> layoutObj(
                     compute(space.width.area),
                     compute(space.height.area)
             )
-            is PercentObject -> renderObject(
+            is PercentObject -> layoutObj(
                     space.width.percentBase * obj.percent,
                     space.height.percentBase * obj.percent
             )
@@ -316,18 +316,18 @@ class BoxLayouterTest {
             LayoutSpace.Dimension(0F, LayoutSpace.Area.WrapContent(maxHeight))
     )
 
-    fun renderObject(width: Float, height: Float) = object : RenderObject(width, height, emptyList(), range()) {}
+    fun layoutObj(width: Float, height: Float) = object : LayoutObject(width, height, emptyList(), range()) {}
 
-    val RenderObject.childWidths: List<Float>
+    val LayoutObject.childWidths: List<Float>
         get() = children.map { it.obj.width }
 
-    val RenderObject.childHeights: List<Float>
+    val LayoutObject.childHeights: List<Float>
         get() = children.map { it.obj.height }
 
-    val RenderObject.childXs: List<Float>
+    val LayoutObject.childXs: List<Float>
         get() = children.map { it.x }
 
-    val RenderObject.childYs: List<Float>
+    val LayoutObject.childYs: List<Float>
         get() = children.map { it.y }
 
     fun range() = LocationRange(Location(0.0), Location(0.0))

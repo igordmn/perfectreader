@@ -1,17 +1,17 @@
-package com.dmi.perfectreader.fragment.book.obj.render
+package com.dmi.perfectreader.fragment.book.obj.layout
 
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.util.graphic.Color
 
-class RenderFrame(
+class LayoutFrame(
         width: Float,
         height: Float,
         val internalMargins: Margins,
         val borders: Borders,
         val background: Background,
-        val child: RenderChild,
+        val child: LayoutChild,
         range: LocationRange
-) : RenderObject(width, height, listOf(child), range) {
+) : LayoutObject(width, height, listOf(child), range) {
     override fun canBeSeparated() = true
     override fun internalMargins() = internalMargins
 

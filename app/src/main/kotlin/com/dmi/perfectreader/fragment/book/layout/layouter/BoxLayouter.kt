@@ -1,39 +1,39 @@
 package com.dmi.perfectreader.fragment.book.layout.layouter
 
-import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedSize
 import com.dmi.perfectreader.fragment.book.layout.layouter.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.layouter.common.LayoutSpace.Area
+import com.dmi.perfectreader.fragment.book.obj.common.Align
 import com.dmi.perfectreader.fragment.book.obj.content.ComputedBox
 import com.dmi.perfectreader.fragment.book.obj.content.ComputedObject
-import com.dmi.perfectreader.fragment.book.obj.render.RenderBox
-import com.dmi.perfectreader.fragment.book.obj.render.RenderChild
-import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
-import com.dmi.perfectreader.fragment.book.obj.common.Align
+import com.dmi.perfectreader.fragment.book.obj.content.param.ComputedSize
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutBox
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutChild
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
 import java.util.*
 
 class BoxLayouter(
-        private val childLayouter: Layouter<ComputedObject, RenderObject>
-) : Layouter<ComputedBox, RenderBox> {
-    override fun layout(obj: ComputedBox, space: LayoutSpace): RenderBox {
+        private val childLayouter: Layouter<ComputedObject, LayoutObject>
+) : Layouter<ComputedBox, LayoutBox> {
+    override fun layout(obj: ComputedBox, space: LayoutSpace): LayoutBox {
         val size = obj.size
         return object {
-            fun layout(): RenderBox {
+            fun layout(): LayoutBox {
                 val width = computeWidth()
 
-                val renderChildren = ArrayList<RenderChild>()
+                val renderChildren = ArrayList<LayoutChild>()
 
                 var y = 0F
                 for (child in obj.children) {
                     val childSpace = childFixedSpace(width)
 
-                    val renderObj = childLayouter.layout(child, childSpace)
+                    val layoutObj = childLayouter.layout(child, childSpace)
 
-                    val x = childX(renderObj.width, width)
-                    renderChildren.add(RenderChild(x, y, renderObj))
-                    y += renderObj.height
+                    val x = childX(layoutObj.width, width)
+                    renderChildren.add(LayoutChild(x, y, layoutObj))
+                    y += layoutObj.height
                 }
 
-                return RenderBox(width, computeHeight(y), renderChildren, obj.range)
+                return LayoutBox(width, computeHeight(y), renderChildren, obj.range)
             }
 
             fun computeWidth() = size.width.compute(space.width.percentBase, { computeAutoWidth() })
@@ -53,9 +53,9 @@ class BoxLayouter(
                 var width = 0F
                 for (child in obj.children) {
                     val childSpace = childWrapSpace(maxWidth)
-                    val renderObj = childLayouter.layout(child, childSpace)
-                    if (renderObj.width > width)
-                        width = renderObj.width
+                    val layoutObj = childLayouter.layout(child, childSpace)
+                    if (layoutObj.width > width)
+                        width = layoutObj.width
                 }
                 return width
             }

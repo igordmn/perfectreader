@@ -62,10 +62,10 @@ class AppObjects(applicationContext: Context) {
                         val layoutConfig = settingsLayoutConfig(applicationContext, userSettings)
                         val pageConfig = settingsPageConfig(size, userSettings)
                         val computedSequence = ComputedSequence(bookData.content.sequence, layoutConfig)
-                        val renderSequence = RenderSequence(computedSequence, layouter, pageConfig.contentSize)
-                        val renderPartSequence = RenderPartSequence(renderSequence)
-                        val renderColumnSequence = RenderColumnSequence(renderPartSequence, pageConfig.contentSize.height)
-                        val pageSequence = PageSequence(renderColumnSequence, pageConfig)
+                        val layoutSequence = LayoutSequence(computedSequence, layouter, pageConfig.contentSize)
+                        val layoutPartSequence = LayoutPartSequence(layoutSequence)
+                        val layoutColumnSequence = LayoutColumnSequence(layoutPartSequence, pageConfig.contentSize.height)
+                        val pageSequence = PageSequence(layoutColumnSequence, pageConfig)
                         PagesLoader(pages, pageSequence)
                     }
                     val renderModel = BookRenderModel(size)
@@ -101,9 +101,9 @@ class AppObjects(applicationContext: Context) {
                     val renderModel = model.renderModel
 
                     val objectPainter = UniversalObjectPainter(bitmapDecoder)
-                    val contentRowPainter = RenderPartPainter(objectPainter)
-                    val contentPagePainter = RenderColumnPainter(contentRowPainter)
-                    val pagePainter = PagePainter(contentPagePainter)
+                    val layoutPartPainter = LayoutPartPainter(objectPainter)
+                    val layoutColumnPainter = LayoutColumnPainter(layoutPartPainter)
+                    val pagePainter = PagePainter(layoutColumnPainter)
                     val refreshScheduler = RefreshScheduler(BitmapBuffer(size, density))
                     val createRefresher = { renderer: PagesRenderer, size: Size -> PagesRefresher(pagePainter, renderer, refreshScheduler, size) }
                     val createPagesRenderer = { PagesRenderer(context, size, density, createRefresher) }

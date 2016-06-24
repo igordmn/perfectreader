@@ -5,17 +5,17 @@ import android.graphics.Paint
 import android.graphics.Paint.Style
 import android.graphics.Path
 import android.graphics.RectF
-import com.dmi.perfectreader.fragment.book.obj.render.RenderFrame
-import com.dmi.perfectreader.fragment.book.obj.render.RenderFrame.Background
-import com.dmi.perfectreader.fragment.book.obj.render.RenderFrame.Border
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutFrame
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutFrame.Background
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutFrame.Border
 import com.dmi.util.graphic.Color
 
-class FramePainter : ObjectPainter<RenderFrame> {
+class FramePainter : ObjectPainter<LayoutFrame> {
     private val backgroundPaint = Paint()
     private val borderPaint = Paint()
     private val path = Path()
 
-    override fun paintItself(obj: RenderFrame, canvas: Canvas, context: PaintContext) {
+    override fun paintItself(obj: LayoutFrame, canvas: Canvas, context: PaintContext) {
         with (obj) {
             canvas.translate(internalMargins.left, internalMargins.top)
             paintContents(obj, canvas,
@@ -26,7 +26,7 @@ class FramePainter : ObjectPainter<RenderFrame> {
         }
     }
 
-    private fun paintContents(obj: RenderFrame, canvas: Canvas, width: Float, height: Float) {
+    private fun paintContents(obj: LayoutFrame, canvas: Canvas, width: Float, height: Float) {
         with (obj) {
             paintBackground(canvas, background, width, height)
             paintBorder(canvas, borders.left, { borderWidth ->

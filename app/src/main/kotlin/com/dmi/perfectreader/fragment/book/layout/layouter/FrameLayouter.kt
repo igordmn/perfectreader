@@ -4,17 +4,17 @@ import com.dmi.perfectreader.fragment.book.layout.layouter.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.layouter.common.LayoutSpace.Area
 import com.dmi.perfectreader.fragment.book.obj.content.ComputedFrame
 import com.dmi.perfectreader.fragment.book.obj.content.ComputedObject
-import com.dmi.perfectreader.fragment.book.obj.render.RenderChild
-import com.dmi.perfectreader.fragment.book.obj.render.RenderFrame
-import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutChild
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutFrame
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
 import java.lang.Math.max
 
 class FrameLayouter(
-        private val childLayouter: Layouter<ComputedObject, RenderObject>
-) : Layouter<ComputedFrame, RenderFrame> {
-    override fun layout(obj: ComputedFrame, space: LayoutSpace): RenderFrame {
+        private val childLayouter: Layouter<ComputedObject, LayoutObject>
+) : Layouter<ComputedFrame, LayoutFrame> {
+    override fun layout(obj: ComputedFrame, space: LayoutSpace): LayoutFrame {
         return object {
-            fun layout(): RenderFrame {
+            fun layout(): LayoutFrame {
                 val marginLeft = obj.margins.left.compute(space.width.percentBase)
                 val marginRight = obj.margins.right.compute(space.width.percentBase)
                 val marginTop = obj.margins.top.compute(space.height.percentBase)
@@ -37,15 +37,15 @@ class FrameLayouter(
                         childDimension(space.width, additionalWidth),
                         childDimension(space.height, additionalHeight)
                 )
-                val renderObj = childLayouter.layout(obj.child, childSpace)
+                val layoutObj = childLayouter.layout(obj.child, childSpace)
 
-                return RenderFrame(
-                        renderObj.width + additionalWidth,
-                        renderObj.height + additionalHeight,
-                        RenderObject.Margins(marginLeft, marginRight, marginTop, marginBottom),
-                        toRenderBorders(obj.borders),
-                        toRenderBackground(obj.background),
-                        RenderChild(marginLeft + borderLeft + paddingLeft, marginTop + borderTop + paddingTop, renderObj),
+                return LayoutFrame(
+                        layoutObj.width + additionalWidth,
+                        layoutObj.height + additionalHeight,
+                        LayoutObject.Margins(marginLeft, marginRight, marginTop, marginBottom),
+                        toLayoutBorders(obj.borders),
+                        toLayoutBackground(obj.background),
+                        LayoutChild(marginLeft + borderLeft + paddingLeft, marginTop + borderTop + paddingTop, layoutObj),
                         obj.range
                 )
             }
@@ -66,15 +66,15 @@ class FrameLayouter(
                         )
                     }
 
-            private fun toRenderBorders(borders: ComputedFrame.Borders) = RenderFrame.Borders(
-                    toRenderBorder(borders.left),
-                    toRenderBorder(borders.right),
-                    toRenderBorder(borders.top),
-                    toRenderBorder(borders.bottom)
+            private fun toLayoutBorders(borders: ComputedFrame.Borders) = LayoutFrame.Borders(
+                    toLayoutBorder(borders.left),
+                    toLayoutBorder(borders.right),
+                    toLayoutBorder(borders.top),
+                    toLayoutBorder(borders.bottom)
             )
 
-            private fun toRenderBorder(border: ComputedFrame.Border) = RenderFrame.Border(border.width, border.color)
-            private fun toRenderBackground(background: ComputedFrame.Background) = RenderFrame.Background(background.color)
+            private fun toLayoutBorder(border: ComputedFrame.Border) = LayoutFrame.Border(border.width, border.color)
+            private fun toLayoutBackground(background: ComputedFrame.Background) = LayoutFrame.Background(background.color)
         }.layout()
     }
 }

@@ -12,7 +12,7 @@ import com.dmi.perfectreader.fragment.book.obj.common.TextAlign
 import com.dmi.perfectreader.fragment.book.obj.content.ComputedObject
 import com.dmi.perfectreader.fragment.book.obj.content.ComputedParagraph
 import com.dmi.perfectreader.fragment.book.obj.content.ComputedParagraph.Run
-import com.dmi.perfectreader.fragment.book.obj.render.*
+import com.dmi.perfectreader.fragment.book.obj.layout.*
 import com.dmi.util.lang.ReusableArrayList
 import com.dmi.util.lang.ReusableFloatArrayList
 import com.dmi.util.lang.ReusableIntArrayList
@@ -21,15 +21,15 @@ import java.lang.Math.max
 import java.util.*
 
 class ParagraphLayouter(
-        private val childrenLayouter: Layouter<ComputedObject, RenderObject>,
+        private val childrenLayouter: Layouter<ComputedObject, LayoutObject>,
         private val textMetrics: TextMetrics,
         private val liner: Liner
-) : Layouter<ComputedParagraph, RenderParagraph> {
+) : Layouter<ComputedParagraph, LayoutParagraph> {
     companion object {
         private val HYPHEN_STRING = LayoutChars.HYPHEN.toString()
     }
 
-    override fun layout(obj: ComputedParagraph, space: LayoutSpace): RenderParagraph {
+    override fun layout(obj: ComputedParagraph, space: LayoutSpace): LayoutParagraph {
         val runs = obj.runs
         val locale = obj.locale
         val widthArea = space.width.area
@@ -52,8 +52,8 @@ class ParagraphLayouter(
         }
 
         return object {
-            fun layout(): RenderParagraph {
-                val text = PrerenderedText()
+            fun layout(): LayoutParagraph {
+                val text = PrelayoutedText()
                 val lines = liner.makeLines(text, lineConfig)
                 val width = when (widthArea) {
                     is Area.WrapContent -> maxLineWidth(lines)
@@ -62,7 +62,7 @@ class ParagraphLayouter(
                 return ParagraphBuilder(width, obj).run {
                     lines.forEachIndexed { i, line ->
                         val isLast = i == lines.size - 1
-                        addLine(renderLine(text, line, width, isLast))
+                        addLine(layoutLine(text, line, width, isLast))
                     }
                     build()
                 }
@@ -78,40 +78,40 @@ class ParagraphLayouter(
                 return width
             }
 
-            fun renderLine(text: PrerenderedText, line: Liner.Line, width: Float, isLast: Boolean): RenderLine {
-                val renderLine = LineBuilder()
-                renderLine.reset(width)
-                renderLine.addOffset(line.left)
+            fun layoutLine(text: PrelayoutedText, line: Liner.Line, width: Float, isLast: Boolean): LayoutLine {
+                val layoutLine = LineBuilder()
+                layoutLine.reset(width)
+                layoutLine.addOffset(line.left)
 
                 val freeSpace = width - line.right
                 val canJustify = !isLast && obj.textAlign == TextAlign.JUSTIFY
                 val midspaceScale = if (canJustify) computeMidspaceScale(text, line, freeSpace) else 1F
 
                 if (obj.textAlign == TextAlign.RIGHT)
-                    renderLine.addOffset(freeSpace)
+                    layoutLine.addOffset(freeSpace)
                 else if (obj.textAlign == TextAlign.CENTER)
-                    renderLine.addOffset(freeSpace / 2)
+                    layoutLine.addOffset(freeSpace / 2)
 
                 with (line.tokens) {
                     require(size > 0)
 
                     for (i in 0..size - 1) {
                         val spaceScaleX = if (i > 0 && i < size - 1) midspaceScale else 1F
-                        text.render(this[i], spaceScaleX, renderLine)
+                        text.layout(this[i], spaceScaleX, layoutLine)
                     }
 
                     if (line.hasHyphenAfter)
-                        text.renderHyphenAfter(last().endIndex - 1, renderLine)
+                        text.layoutHyphenAfter(last().endIndex - 1, layoutLine)
                 }
 
-                return renderLine.build()
+                return layoutLine.build()
             }
 
             /**
              * midspace - пробелы между словами (но не в конце или в начале строки).
              * возвращает множитель, на который нужно умножить их ширину, чтобы строка стала выровненной по ширине параграфа
              */
-            fun computeMidspaceScale(text: PrerenderedText, line: Liner.Line, freeSpace: Float): Float {
+            fun computeMidspaceScale(text: PrelayoutedText, line: Liner.Line, freeSpace: Float): Float {
                 val totalExpansion = max(0F, freeSpace)
 
                 var totalMidspace = 0F
@@ -125,7 +125,7 @@ class ParagraphLayouter(
                 return if (totalMidspace > 0) (totalMidspace + totalExpansion) / totalMidspace else 1F
             }
 
-            inner class PrerenderedText : Liner.MeasuredText {
+            inner class PrelayoutedText : Liner.MeasuredText {
                 private val plainTextBuilder = Reusables.plainTextBuilder()
                 private val plainIndexToRunIndex = Reusables.plainIndexToRunIndex()
                 private val plainIndexToWidth = Reusables.plainIndexToWidth()
@@ -153,14 +153,14 @@ class ParagraphLayouter(
                 init {
                     runs.forEachIndexed { r, run ->
                         when (run) {
-                            is Run.Text -> prerenderTextRun(r, run)
-                            is Run.Object -> prerenderObject(r, run)
+                            is Run.Text -> prelayoutTextRun(r, run)
+                            is Run.Object -> prelayoutObject(r, run)
                         }
                     }
                     plainText = plainTextBuilder.toString()
                 }
 
-                private fun prerenderTextRun(runIndex: Int, run: Run.Text) {
+                private fun prelayoutTextRun(runIndex: Int, run: Run.Text) {
                     val text = run.text
                     val verticalMetrics = textMetrics.verticalMetrics(run.style)
 
@@ -183,17 +183,17 @@ class ParagraphLayouter(
                     return textMetrics.charWidths(HYPHEN_STRING, run.style)[0]
                 }
 
-                private fun prerenderObject(runIndex: Int, run: Run.Object) {
-                    val renderObj = childrenLayouter.layout(run.obj, childrenSpace)
+                private fun prelayoutObject(runIndex: Int, run: Run.Object) {
+                    val layoutObj = childrenLayouter.layout(run.obj, childrenSpace)
 
                     plainTextBuilder.append(LayoutChars.OBJECT_REPLACEMENT_CHARACTER)
                     plainIndexToRunIndex.add(runIndex)
-                    addWidth(renderObj.width)
+                    addWidth(layoutObj.width)
 
                     runIndexToPlainBeginIndex.add(plainTextBuilder.length - 1)
-                    runIndexToObject.add(renderObj)
-                    runIndexToHeight.add(renderObj.height)
-                    runIndexToBaseline.add(renderObj.height)
+                    runIndexToObject.add(layoutObj)
+                    runIndexToHeight.add(layoutObj.height)
+                    runIndexToBaseline.add(layoutObj.height)
                     runIndexToHyphenWidth.add(0F)
                 }
 
@@ -217,12 +217,12 @@ class ParagraphLayouter(
                     return runIndexToHyphenWidth[runIndex]
                 }
 
-                fun render(token: Liner.Token, spaceScaleX: Float, line: LineBuilder) {
+                fun layout(token: Liner.Token, spaceScaleX: Float, line: LineBuilder) {
                     forEachRun(token.beginIndex, token.endIndex) { begin, end, runIndex ->
                         if (token.isSpace) {
-                            renderSpace(begin, end, runIndex, spaceScaleX, line)
+                            layoutSpace(begin, end, runIndex, spaceScaleX, line)
                         } else {
-                            renderRun(begin, end, runIndex, line)
+                            layoutRun(begin, end, runIndex, line)
                         }
                     }
                 }
@@ -242,7 +242,7 @@ class ParagraphLayouter(
                     }
                 }
 
-                private fun renderSpace(beginIndex: Int, endIndex: Int, runIndex: Int, scaleX: Float, line: LineBuilder) {
+                private fun layoutSpace(beginIndex: Int, endIndex: Int, runIndex: Int, scaleX: Float, line: LineBuilder) {
                     val run = runs[runIndex] as Run.Text
 
                     val plainBeginOfRun = runIndexToPlainBeginIndex[runIndex]
@@ -251,7 +251,7 @@ class ParagraphLayouter(
                     val endOfRunText = endIndex - plainBeginOfRun
 
                     line.addObject(
-                            RenderSpace(
+                            LayoutSpaceText(
                                     width = widthOf(beginIndex, endIndex) * scaleX,
                                     height = runIndexToHeight[runIndex],
                                     text = run.text.subSequence(beginOfRunText, endOfRunText),
@@ -265,22 +265,22 @@ class ParagraphLayouter(
                     )
                 }
 
-                private fun renderRun(beginIndex: Int, endIndex: Int, runIndex: Int, line: LineBuilder) {
+                private fun layoutRun(beginIndex: Int, endIndex: Int, runIndex: Int, line: LineBuilder) {
                     val run = runs[runIndex]
                     when (run) {
-                        is Run.Text -> renderTextRun(beginIndex, endIndex, runIndex, run, line)
-                        is Run.Object -> renderObjectRun(runIndex, line)
+                        is Run.Text -> layoutTextRun(beginIndex, endIndex, runIndex, run, line)
+                        is Run.Object -> layoutObjectRun(runIndex, line)
                     }
                 }
 
-                private fun renderTextRun(beginIndex: Int, endIndex: Int, runIndex: Int, run: Run.Text, line: LineBuilder) {
+                private fun layoutTextRun(beginIndex: Int, endIndex: Int, runIndex: Int, run: Run.Text, line: LineBuilder) {
                     val plainBeginOfRun = runIndexToPlainBeginIndex[runIndex]
                     val baseline = runIndexToBaseline[runIndex]
                     val beginOfRunText = beginIndex - plainBeginOfRun
                     val endOfRunText = endIndex - plainBeginOfRun
 
                     line.addObject(
-                            RenderText(
+                            LayoutText(
                                     width = widthOf(beginIndex, endIndex),
                                     height = runIndexToHeight[runIndex],
                                     text = run.text.subSequence(beginOfRunText, endOfRunText),
@@ -294,14 +294,14 @@ class ParagraphLayouter(
                     )
                 }
 
-                private fun renderObjectRun(runIndex: Int, line: LineBuilder) {
+                private fun layoutObjectRun(runIndex: Int, line: LineBuilder) {
                     line.addObject(
                             runIndexToObject[runIndex]!!,
                             runIndexToBaseline[runIndex]
                     )
                 }
 
-                fun renderHyphenAfter(plainIndex: Int, line: LineBuilder) {
+                fun layoutHyphenAfter(plainIndex: Int, line: LineBuilder) {
                     val runIndex = plainIndexToRunIndex[plainIndex]
                     val run = runs[runIndex]
                     val plainBeginOfRun = runIndexToPlainBeginIndex[runIndex]
@@ -310,7 +310,7 @@ class ParagraphLayouter(
                         val baseline = runIndexToBaseline[runIndex]
 
                         line.addObject(
-                                RenderText(
+                                LayoutText(
                                         width = runIndexToHyphenWidth[runIndex],
                                         height = runIndexToHeight[runIndex],
                                         text = HYPHEN_STRING,
@@ -335,7 +335,7 @@ class ParagraphLayouter(
 
     private class LineBuilder {
         private var width = 0F
-        private val objects = ArrayList<RenderObject>(32)
+        private val objects = ArrayList<LayoutObject>(32)
         private val baselines = FloatArrayList(32)
         private val lefts = FloatArrayList(32)
         private var offset = 0F
@@ -352,15 +352,15 @@ class ParagraphLayouter(
             this.offset += offset
         }
 
-        fun addObject(obj: RenderObject, baseline: Float) {
+        fun addObject(obj: LayoutObject, baseline: Float) {
             objects.add(obj)
             baselines.add(baseline)
             lefts.add(offset)
             offset += obj.width
         }
 
-        fun build(): RenderLine {
-            val children = ArrayList<RenderChild>()
+        fun build(): LayoutLine {
+            val children = ArrayList<LayoutChild>()
 
             var lineBaseline = 0F
             for (i in 0..objects.size - 1) {
@@ -378,7 +378,7 @@ class ParagraphLayouter(
                 if (y + obj.height > lineHeight) {
                     lineHeight = y + obj.height
                 }
-                children.add(RenderChild(x, y, obj))
+                children.add(LayoutChild(x, y, obj))
             }
 
             val range = LocationRange(
@@ -386,7 +386,7 @@ class ParagraphLayouter(
                     objects.last().range.end
             )
 
-            return RenderLine(width, lineHeight, children, range)
+            return LayoutLine(width, lineHeight, children, range)
         }
     }
 
@@ -394,15 +394,15 @@ class ParagraphLayouter(
             private val width: Float,
             private val obj: ComputedParagraph
     ) {
-        private val children = ArrayList<RenderChild>()
+        private val children = ArrayList<LayoutChild>()
         private var height = 0F
 
-        fun addLine(line: RenderLine) {
-            children.add(RenderChild(0F, height, line))
+        fun addLine(line: LayoutLine) {
+            children.add(LayoutChild(0F, height, line))
             height += line.height
         }
 
-        fun build() = RenderParagraph(width, height, children, obj.range)
+        fun build() = LayoutParagraph(width, height, children, obj.range)
     }
 
     private object Reusables {
@@ -414,7 +414,7 @@ class ParagraphLayouter(
         val plainIndexToWidth = ReusableFloatArrayList(INITIAL_CHARS_CAPACITY)
         val plainIndexToTotalWidth = ReusableFloatArrayList(INITIAL_CHARS_CAPACITY)
         val runIndexToPlainBeginIndex = ReusableIntArrayList(INITIAL_RUNS_CAPACITY)
-        val runIndexToObject = ReusableArrayList<RenderObject?>(INITIAL_RUNS_CAPACITY)
+        val runIndexToObject = ReusableArrayList<LayoutObject?>(INITIAL_RUNS_CAPACITY)
         val runIndexToHeight = ReusableFloatArrayList(INITIAL_RUNS_CAPACITY)
         val runIndexToBaseline = ReusableFloatArrayList(INITIAL_RUNS_CAPACITY)
         val runIndexToHyphenWidth = ReusableFloatArrayList(INITIAL_RUNS_CAPACITY)

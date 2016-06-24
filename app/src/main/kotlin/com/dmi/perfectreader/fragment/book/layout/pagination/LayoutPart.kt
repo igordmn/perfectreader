@@ -1,10 +1,10 @@
 package com.dmi.perfectreader.fragment.book.layout.pagination
 
 import com.dmi.perfectreader.fragment.book.location.LocationRange
-import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
 
-class RenderPart(
-        val obj: RenderObject,
+class LayoutPart(
+        val obj: LayoutObject,
         val top: Edge,
         val bottom: Edge,
         val range: LocationRange

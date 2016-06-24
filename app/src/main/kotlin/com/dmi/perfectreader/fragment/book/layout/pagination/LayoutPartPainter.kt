@@ -3,10 +3,10 @@ package com.dmi.perfectreader.fragment.book.layout.pagination
 import android.graphics.Canvas
 import com.dmi.perfectreader.fragment.book.layout.painter.ObjectPainter
 import com.dmi.perfectreader.fragment.book.layout.painter.PaintContext
-import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
 
-class RenderPartPainter(private val objectPainter: ObjectPainter<RenderObject>) {
-    fun paint(part: RenderPart, canvas: Canvas, context: PaintContext) {
+class LayoutPartPainter(private val objectPainter: ObjectPainter<LayoutObject>) {
+    fun paint(part: LayoutPart, canvas: Canvas, context: PaintContext) {
         with (part) {
             canvas.save()
 
@@ -18,10 +18,10 @@ class RenderPartPainter(private val objectPainter: ObjectPainter<RenderObject>) 
     }
 
     private fun paintRecursive(
-            part: RenderPart,
+            part: LayoutPart,
             canvas: Canvas,
             context: PaintContext,
-            obj: RenderObject,
+            obj: LayoutObject,
             level: Int,
             isFirstBranch: Boolean,
             isLastBranch: Boolean
@@ -50,7 +50,7 @@ class RenderPartPainter(private val objectPainter: ObjectPainter<RenderObject>) 
         }
     }
 
-    private fun RenderPart.Edge.childIndex(level: Int, isEdge: Boolean, defaultIndex: Int) =
+    private fun LayoutPart.Edge.childIndex(level: Int, isEdge: Boolean, defaultIndex: Int) =
             if (isEdge) {
                 if (level < childIndices.size) childIndices[level] else defaultIndex
             } else {

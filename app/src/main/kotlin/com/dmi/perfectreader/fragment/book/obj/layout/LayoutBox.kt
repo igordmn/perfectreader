@@ -1,12 +1,12 @@
-package com.dmi.perfectreader.fragment.book.obj.render
+package com.dmi.perfectreader.fragment.book.obj.layout
 
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 
-class RenderBox(
+class LayoutBox(
         width: Float,
         height: Float,
-        children: List<RenderChild>,
+        children: List<LayoutChild>,
         range: LocationRange
-) : RenderObject(width, height, children, range) {
+) : LayoutObject(width, height, children, range) {
     override fun canBeSeparated() = true
 }

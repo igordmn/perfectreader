@@ -2,8 +2,8 @@ package com.dmi.perfectreader.fragment.book.layout.pagination
 
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
-import com.dmi.perfectreader.fragment.book.obj.render.RenderChild
-import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutChild
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.util.*
@@ -154,8 +154,8 @@ class ContentPartsTest {
             private val marginTop: Float,
             private val marginBottom: Float,
             private val intRange: IntRange,
-            private val childObjects: List<RenderObject> = emptyList()
-    ) : RenderObject(0F, height, toChildren(marginTop, childObjects), range(intRange)) {
+            private val childObjects: List<LayoutObject> = emptyList()
+    ) : LayoutObject(0F, height, toChildren(marginTop, childObjects), range(intRange)) {
         override fun canBeSeparated() = canBeSeparated
         override fun internalMargins() = Margins(0F, 0F, marginTop, marginBottom)
 
@@ -164,10 +164,10 @@ class ContentPartsTest {
         override fun toString() = id
     }
 
-    fun toChildren(initialY: Float, childObjects: List<RenderObject>) = ArrayList<RenderChild>().apply {
+    fun toChildren(initialY: Float, childObjects: List<LayoutObject>) = ArrayList<LayoutChild>().apply {
         var y = initialY
         for (childObj in childObjects) {
-            add(RenderChild(
+            add(LayoutChild(
                     0F, y, childObj
             ))
             y += childObj.height
@@ -178,20 +178,20 @@ class ContentPartsTest {
             Location(intRange.start.toDouble()), Location(intRange.last.toDouble())
     )
 
-    fun objectsOf(parts: List<RenderPart>) = parts.map { it.obj }
-    fun rangesOf(parts: List<RenderPart>) = parts.map { it.range }
-    fun topChildIndicesOf(parts: List<RenderPart>) = parts.map { it.top.childIndices }
-    fun bottomChildIndicesOf(parts: List<RenderPart>) = parts.map { it.top.childIndices }
+    fun objectsOf(parts: List<LayoutPart>) = parts.map { it.obj }
+    fun rangesOf(parts: List<LayoutPart>) = parts.map { it.range }
+    fun topChildIndicesOf(parts: List<LayoutPart>) = parts.map { it.top.childIndices }
+    fun bottomChildIndicesOf(parts: List<LayoutPart>) = parts.map { it.top.childIndices }
 
-    fun topsOf(parts: List<RenderPart>) = parts.map { it.top.offset }
-    fun bottomsOf(parts: List<RenderPart>) = parts.map { it.bottom.offset }
+    fun topsOf(parts: List<LayoutPart>) = parts.map { it.top.offset }
+    fun bottomsOf(parts: List<LayoutPart>) = parts.map { it.bottom.offset }
 
-    fun absoluteTopOf(root: RenderObject, id: String) = absoluteOffsetOf(root, id, false)
-    fun absoluteBottomOf(root: RenderObject, id: String) = absoluteOffsetOf(root, id, true)
+    fun absoluteTopOf(root: LayoutObject, id: String) = absoluteOffsetOf(root, id, false)
+    fun absoluteBottomOf(root: LayoutObject, id: String) = absoluteOffsetOf(root, id, true)
 
-    fun absoluteOffsetOf(root: RenderObject, id: String, isBottom: Boolean): Float {
+    fun absoluteOffsetOf(root: LayoutObject, id: String, isBottom: Boolean): Float {
         var result = -1F
-        fun process(obj: RenderObject, absoluteTop: Float) {
+        fun process(obj: LayoutObject, absoluteTop: Float) {
             if (id == (obj as TestObject).id)
                 result = absoluteTop + if (isBottom) obj.height else 0F
 

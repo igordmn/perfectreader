@@ -3,19 +3,19 @@ package com.dmi.perfectreader.fragment.book.layout.pagination
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.util.collection.SequenceEntry as Entry
 
-class RenderColumnSequence(
-        val partSequence: LocatedSequence<RenderPart>,
+class LayoutColumnSequence(
+        val partSequence: LocatedSequence<LayoutPart>,
         val columnHeight: Float
-) : LocatedSequence<RenderColumn> {
+) : LocatedSequence<LayoutColumn> {
     val LAST_COLUMN_MIN_HEIGHT = columnHeight / 2
 
-    override fun get(location: Location): Entry<RenderColumn> = makeCurrent(partSequence[location])
+    override fun get(location: Location): Entry<LayoutColumn> = makeCurrent(partSequence[location])
 
-    private fun makeCurrent(initialPart: Entry<RenderPart>) = initialColumn(initialPart).addBottomParts().addTopPartsForLastColumn()
-    private fun makePrevious(initialPart: Entry<RenderPart>) = initialColumn(initialPart).addTopParts().addBottomParts()
-    private fun makeNext(initialPart: Entry<RenderPart>) = initialColumn(initialPart).addBottomParts()
+    private fun makeCurrent(initialPart: Entry<LayoutPart>) = initialColumn(initialPart).addBottomParts().addTopPartsForLastColumn()
+    private fun makePrevious(initialPart: Entry<LayoutPart>) = initialColumn(initialPart).addTopParts().addBottomParts()
+    private fun makeNext(initialPart: Entry<LayoutPart>) = initialColumn(initialPart).addBottomParts()
 
-    private fun initialColumn(part: Entry<RenderPart>) = ColumnEntry(singlePartColumn(part.item), part, part)
+    private fun initialColumn(part: Entry<LayoutPart>) = ColumnEntry(singlePartColumn(part.item), part, part)
 
     private fun ColumnEntry.addTopParts() = addTopParts(columnHeight)
 
@@ -63,29 +63,29 @@ class RenderColumnSequence(
         return column
     }
 
-    private infix fun ColumnEntry.mergePart(part: Entry<RenderPart>) = ColumnEntry(
+    private infix fun ColumnEntry.mergePart(part: Entry<LayoutPart>) = ColumnEntry(
             item merge part.item,
             firstPart,
             part
     )
 
-    private infix fun Entry<RenderPart>.mergeColumn(column: ColumnEntry) = ColumnEntry(
+    private infix fun Entry<LayoutPart>.mergeColumn(column: ColumnEntry) = ColumnEntry(
             item merge column.item,
             this,
             column.lastPart
     )
 
     private inner class ColumnEntry(
-            val column: RenderColumn,
-            val firstPart: Entry<RenderPart>,
-            val lastPart: Entry<RenderPart>
-    ) : Entry<RenderColumn> {
+            val column: LayoutColumn,
+            val firstPart: Entry<LayoutPart>,
+            val lastPart: Entry<LayoutPart>
+    ) : Entry<LayoutColumn> {
         override val item = column
         override val hasPrevious = firstPart.hasPrevious
         override val hasNext = lastPart.hasNext
 
-        override val previous: Entry<RenderColumn> get() = makePrevious(firstPart.previous)
-        override val next: Entry<RenderColumn> get() = makeNext(lastPart.next)
+        override val previous: Entry<LayoutColumn> get() = makePrevious(firstPart.previous)
+        override val next: Entry<LayoutColumn> get() = makeNext(lastPart.next)
 
         val height = column.height
     }

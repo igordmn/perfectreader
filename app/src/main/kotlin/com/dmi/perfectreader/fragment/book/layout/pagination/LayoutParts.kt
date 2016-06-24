@@ -2,14 +2,14 @@ package com.dmi.perfectreader.fragment.book.layout.pagination
 
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
-import com.dmi.perfectreader.fragment.book.obj.render.RenderChild
-import com.dmi.perfectreader.fragment.book.obj.render.RenderObject
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutChild
+import com.dmi.perfectreader.fragment.book.obj.layout.LayoutObject
 import java.util.*
 
-fun splitIntoParts(rootObj: RenderObject): List<RenderPart> {
-    val parts = ArrayList<RenderPart>()
+fun splitIntoParts(rootObj: LayoutObject): List<LayoutPart> {
+    val parts = ArrayList<LayoutPart>()
 
-    fun addPartsFrom(obj: RenderObject, top: Bound, bottom: Bound, absoluteTop: Float, childIndices: List<Int>) {
+    fun addPartsFrom(obj: LayoutObject, top: Bound, bottom: Bound, absoluteTop: Float, childIndices: List<Int>) {
         val children = obj.children
         if (obj.canBeSeparated() && children.size > 0) {
             children.forEachIndexed { i, child ->
@@ -22,10 +22,10 @@ fun splitIntoParts(rootObj: RenderObject): List<RenderPart> {
                 )
             }
         } else {
-            parts.add(RenderPart(
+            parts.add(LayoutPart(
                     rootObj,
-                    RenderPart.Edge(childIndices, top.offset),
-                    RenderPart.Edge(childIndices, bottom.offset),
+                    LayoutPart.Edge(childIndices, top.offset),
+                    LayoutPart.Edge(childIndices, bottom.offset),
                     LocationRange(top.location, bottom.location)
             ))
         }
@@ -42,10 +42,10 @@ fun splitIntoParts(rootObj: RenderObject): List<RenderPart> {
     return parts
 }
 
-private fun RenderChild.topBound(absoluteTop: Float) = obj.topBound(absoluteTop + y)
-private fun RenderChild.bottomBound(absoluteTop: Float) = obj.bottomBound(absoluteTop + y)
+private fun LayoutChild.topBound(absoluteTop: Float) = obj.topBound(absoluteTop + y)
+private fun LayoutChild.bottomBound(absoluteTop: Float) = obj.bottomBound(absoluteTop + y)
 
-private fun RenderObject.topBound(absoluteTop: Float) = Bound(absoluteTop + internalMargins().top, range.begin)
-private fun RenderObject.bottomBound(absoluteTop: Float) = Bound(absoluteTop + height - internalMargins().bottom, range.end)
+private fun LayoutObject.topBound(absoluteTop: Float) = Bound(absoluteTop + internalMargins().top, range.begin)
+private fun LayoutObject.bottomBound(absoluteTop: Float) = Bound(absoluteTop + height - internalMargins().bottom, range.end)
 
 private class Bound(val offset: Float, val location: Location)
