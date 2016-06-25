@@ -30,7 +30,7 @@ class BookRenderer(
 
         pages = createPages()
 
-        onNeedDraw = pages.onNeedDraw merge model.onNeedUpdate
+        onNeedDraw = pages.onNeedDraw merge model.onChanged
     }
 
     override fun destroy() {

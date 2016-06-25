@@ -1,9 +1,9 @@
 package com.dmi.perfectreader.fragment.book
 
-import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.page.Pages
 import com.dmi.perfectreader.fragment.book.page.PagesRenderModel
 import com.dmi.perfectreader.fragment.book.page.SlidePagesAnimation
+import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.util.collection.DuplexBuffer
 import com.dmi.util.graphic.SizeF
 import rx.lang.kotlin.PublishSubject
@@ -18,7 +18,7 @@ class BookRenderModel(size: SizeF) {
     private val animation = SlidePagesAnimation(size.width, SINGLE_SLIDE_SECONDS)
     val pages = PagesRenderModel()
 
-    val onNeedUpdate = PublishSubject<Unit>()
+    val onChanged = PublishSubject<Unit>()
     val onStopAnimate = PublishSubject<Unit>()
 
     private val renderMutex = Any()
@@ -28,7 +28,7 @@ class BookRenderModel(size: SizeF) {
     fun goPage() = synchronized (renderMutex) {
         pagesModel.clear()
         animation.goPage()
-        onNeedUpdate()
+        onChanged()
         if (!animation.isAnimating)
             onStopAnimate()
     }
@@ -44,7 +44,7 @@ class BookRenderModel(size: SizeF) {
     fun goNextPage() = synchronized (renderMutex) {
         pagesModel.shiftLeft()
         animation.goNextPage()
-        onNeedUpdate()
+        onChanged()
         if (!animation.isAnimating)
             onStopAnimate()
     }
@@ -52,14 +52,14 @@ class BookRenderModel(size: SizeF) {
     fun goPreviousPage() = synchronized (renderMutex) {
         pagesModel.shiftRight()
         animation.goPreviousPage()
-        onNeedUpdate()
+        onChanged()
         if (!animation.isAnimating)
             onStopAnimate()
     }
 
     fun setPages(pages: Pages) = synchronized (renderMutex) {
         pages.forEachIndexed { i, page -> pagesModel[i] = page }
-        onNeedUpdate()
+        onChanged()
     }
 
     /**
@@ -72,13 +72,13 @@ class BookRenderModel(size: SizeF) {
         pages.apply(animation, pagesModel)
 
         if (animation.isAnimating)
-            onNeedUpdate()
+            onChanged()
 
         if (wasAnimating && !animation.isAnimating) {
             onStopAnimate()
         }
     }
 
-    private fun onNeedUpdate() = onNeedUpdate.onNext(Unit)
+    private fun onChanged() = onChanged.onNext(Unit)
     private fun onStopAnimate() = onStopAnimate.onNext(Unit)
 }
