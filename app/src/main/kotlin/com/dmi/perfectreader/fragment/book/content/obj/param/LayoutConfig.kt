@@ -32,7 +32,7 @@ fun settingsLayoutConfig(context: Context, settings: UserSettings) = LayoutConfi
         paragraphVerticalMarginMultiplier = settings[FormatKeys.paragraphVerticalMarginMultiplier],
         hangingConfig = if (settings[FormatKeys.hangingPunctuation]) DefaultHangingConfig else NoneHangingConfig,
         hyphenation = settings[FormatKeys.hyphenation],
-        textRenderConfig = TextRenderConfig(antialias = true, hinting = true, linearScaling = true, subpixel = true),
+        textRenderConfig = TextRenderConfig(antialias = true, hinting = true, linearScaling = false, subpixel = true),
         selectionConfig = SelectionConfig(
                 Color(settings[UIKeys.selectionBackgroundColor]),
                 Color(settings[UIKeys.selectionTextColor])
