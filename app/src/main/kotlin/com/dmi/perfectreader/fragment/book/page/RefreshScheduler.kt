@@ -102,17 +102,15 @@ class RefreshScheduler(private val bitmapBuffer: BitmapBuffer) {
 
     class BitmapBuffer(size: Size, private val density: Float) {
         private val bitmap = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888)
-        private val canvas = Canvas()
+        private val canvas = Canvas(bitmap)
 
         fun acquire(paint: (Canvas) -> Unit) = bitmap.apply {
             val density = this@BitmapBuffer.density
-            canvas.setBitmap(this)
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
             canvas.save()
             canvas.scale(density, density)
             paint(canvas)
             canvas.restore()
-            canvas.setBitmap(null)
         }
     }
 

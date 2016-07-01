@@ -19,7 +19,6 @@ class Color {
         val YELLOW = Color(255, 255, 255, 0)
     }
 
-
     val value: Int
     val alpha: Int
     val red: Int
@@ -41,7 +40,6 @@ class Color {
         green = value shr 8 and 0xFF
         blue = value and 0xFF
     }
-
 
     override fun equals(other: Any?) = safeEquals(other) { value == it.value }
     override fun hashCode() = value
