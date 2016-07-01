@@ -117,7 +117,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp">
 
-            <com.dmi.util.widget.HintedImageButton
+            <com.dmi.util.android.widget.HintedImageButton
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -125,7 +125,7 @@
                 android:contentDescription="@string/bookMenuSearch"
                 android:src="@drawable/ic_search_grey600_24dp"/>
 
-            <com.dmi.util.widget.HintedImageButton
+            <com.dmi.util.android.widget.HintedImageButton
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -133,7 +133,7 @@
                 android:contentDescription="@string/bookMenuSwitchTheme"
                 android:src="@drawable/ic_filter_b_and_w_grey600_24dp"/>
 
-            <com.dmi.util.widget.HintedImageButton
+            <com.dmi.util.android.widget.HintedImageButton
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -141,7 +141,7 @@
                 android:contentDescription="@string/bookMenuAutoscroll"
                 android:src="@drawable/ic_input_grey600_24dp"/>
 
-            <com.dmi.util.widget.HintedImageButton
+            <com.dmi.util.android.widget.HintedImageButton
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -149,7 +149,7 @@
                 android:contentDescription="@string/bookMenuTextToSpeech"
                 android:src="@drawable/ic_volume_up_grey600_24dp"/>
 
-            <com.dmi.util.widget.HintedImageButton
+            <com.dmi.util.android.widget.HintedImageButton
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

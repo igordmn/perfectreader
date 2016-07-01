@@ -5,11 +5,11 @@ import com.dmi.perfectreader.BuildConfig
 import com.dmi.util.debug.DisabledRefWatcher
 import com.dmi.util.ext.async
 import com.dmi.util.initPlatform
-import com.dmi.util.log.AndroidLog
+import com.dmi.util.android.log.AndroidLog
 import com.dmi.util.log.DebugLog
 import com.dmi.util.log.ReleaseLog
-import com.dmi.util.system.ThreadPriority
-import com.dmi.util.system.setPriority
+import com.dmi.util.android.system.ThreadPriority
+import com.dmi.util.android.system.setPriority
 import com.github.moduth.blockcanary.BlockCanary
 import com.github.moduth.blockcanary.BlockCanaryContext
 import com.squareup.leakcanary.LeakCanary

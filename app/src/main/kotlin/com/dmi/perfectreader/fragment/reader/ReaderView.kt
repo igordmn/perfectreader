@@ -11,8 +11,8 @@ import com.dmi.perfectreader.fragment.bookcontrol.BookControl
 import com.dmi.perfectreader.fragment.bookcontrol.BookControlView
 import com.dmi.perfectreader.fragment.menu.Menu
 import com.dmi.perfectreader.fragment.menu.MenuView
-import com.dmi.util.base.BaseView
-import com.dmi.util.base.find
+import com.dmi.util.android.base.BaseView
+import com.dmi.util.android.base.find
 
 class ReaderView(
         private val context: Context,

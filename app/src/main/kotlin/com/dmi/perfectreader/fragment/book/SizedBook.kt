@@ -3,7 +3,7 @@ package com.dmi.perfectreader.fragment.book
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.page.Pages
 import com.dmi.perfectreader.fragment.book.page.PagesLoader
-import com.dmi.util.base.BaseViewModel
+import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.mainScheduler
 
 class SizedBook(

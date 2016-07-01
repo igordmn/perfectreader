@@ -2,7 +2,7 @@ package com.dmi.perfectreader.fragment.book.parse
 
 import android.content.Context
 import android.net.Uri
-import com.dmi.util.io.AssetsFileSource
+import com.dmi.util.android.io.AssetsFileSource
 import com.google.common.io.Files
 import java.io.File
 

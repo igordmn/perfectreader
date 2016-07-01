@@ -2,7 +2,7 @@ package com.dmi.perfectreader.fragment.menu
 
 import com.dmi.perfectreader.fragment.book.Book
 import com.dmi.perfectreader.fragment.book.location.Location
-import com.dmi.util.base.BaseViewModel
+import com.dmi.util.android.base.BaseViewModel
 
 class Menu(
         private val book: Book,

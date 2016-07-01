@@ -3,7 +3,7 @@ package com.dmi.perfectreader.fragment.book
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationConverter
 import com.dmi.perfectreader.fragment.book.bitmap.BitmapDecoder
-import com.dmi.util.base.BaseViewModel
+import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.lang.returnUnit
 

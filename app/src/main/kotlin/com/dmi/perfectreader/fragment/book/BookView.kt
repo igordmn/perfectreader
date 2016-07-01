@@ -6,14 +6,14 @@ import android.graphics.drawable.ColorDrawable
 import android.opengl.GLSurfaceView
 import android.widget.FrameLayout
 import com.dmi.perfectreader.BuildConfig.DEBUG_SHOWRENDERFREEZES
-import com.dmi.util.base.BaseView
-import com.dmi.util.base.px2dip
+import com.dmi.util.android.base.BaseView
+import com.dmi.util.android.base.px2dip
 import com.dmi.util.graphic.Size
-import com.dmi.util.opengl.DebuggableRenderer
-import com.dmi.util.opengl.GLSurfaceViewExt
-import com.dmi.util.opengl.setRenderer
-import com.dmi.util.system.ActivityLifeCycle
-import com.dmi.util.widget.onSizeChange
+import com.dmi.util.android.opengl.DebuggableRenderer
+import com.dmi.util.android.opengl.GLSurfaceViewExt
+import com.dmi.util.android.opengl.setRenderer
+import com.dmi.util.android.system.ActivityLifeCycle
+import com.dmi.util.android.widget.onSizeChange
 
 class BookView(
         context: Context,

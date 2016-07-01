@@ -8,7 +8,7 @@ import com.dmi.perfectreader.fragment.book.paint.PagePainter
 import com.dmi.perfectreader.fragment.book.page.PagesRenderModel.LoadingPage
 import com.dmi.util.collection.ImmediatelyCreatePool
 import com.dmi.util.graphic.Size
-import com.dmi.util.opengl.Texture
+import com.dmi.util.android.opengl.Texture
 import com.dmi.util.refWatcher
 import rx.Subscription
 import java.util.*

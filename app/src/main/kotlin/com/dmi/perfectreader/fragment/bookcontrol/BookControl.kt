@@ -5,7 +5,7 @@ import com.dmi.perfectreader.fragment.bookcontrol.entity.Action
 import com.dmi.perfectreader.fragment.bookcontrol.entity.HardKey
 import com.dmi.perfectreader.fragment.bookcontrol.entity.TouchInfo
 import com.dmi.perfectreader.fragment.reader.Reader
-import com.dmi.util.base.BaseViewModel
+import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.log
 import com.dmi.util.setting.Settings

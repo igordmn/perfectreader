@@ -2,8 +2,8 @@ package com.dmi.perfectreader.app
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
-import com.dmi.util.db.DatabaseDowngradeException
-import com.dmi.util.db.upgradeDatabase
+import com.dmi.util.android.db.DatabaseDowngradeException
+import com.dmi.util.android.db.upgradeDatabase
 import com.dmi.util.log
 
 class AppDatabases(

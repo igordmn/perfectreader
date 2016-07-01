@@ -10,9 +10,9 @@ import com.dmi.perfectreader.R
 import com.dmi.perfectreader.fragment.main.Main.LoadError
 import com.dmi.perfectreader.fragment.reader.Reader
 import com.dmi.perfectreader.fragment.reader.ReaderView
-import com.dmi.util.base.BaseView
-import com.dmi.util.base.find
-import com.dmi.util.widget.onKeyDown
+import com.dmi.util.android.base.BaseView
+import com.dmi.util.android.base.find
+import com.dmi.util.android.widget.onKeyDown
 
 class MainView(
         private val context: Context,

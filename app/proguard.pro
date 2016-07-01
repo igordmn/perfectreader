@@ -76,7 +76,7 @@
 -dontwarn org.junit.**
 
 # PerfectReader
--keep class com.dmi.util.opengl.GLSurfaceViewExt$RendererExt
+-keep class com.dmi.util.android.opengl.GLSurfaceViewExt$RendererExt
 
 # BlockCanary
 -dontwarn com.github.moduth.**

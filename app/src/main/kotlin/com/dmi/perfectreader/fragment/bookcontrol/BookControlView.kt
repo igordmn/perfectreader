@@ -7,10 +7,10 @@ import android.view.View
 import android.widget.FrameLayout
 import com.dmi.perfectreader.fragment.bookcontrol.entity.HardKey
 import com.dmi.perfectreader.fragment.bookcontrol.entity.TouchInfo
-import com.dmi.util.base.BaseView
-import com.dmi.util.base.px2dip
-import com.dmi.util.widget.onKey
-import com.dmi.util.widget.onSizeChange
+import com.dmi.util.android.base.BaseView
+import com.dmi.util.android.base.px2dip
+import com.dmi.util.android.widget.onKey
+import com.dmi.util.android.widget.onSizeChange
 
 open class BookControlView(
         context: Context,

@@ -7,7 +7,7 @@ import com.dmi.perfectreader.data.UserData
 import com.dmi.perfectreader.fragment.book.BookData
 import com.dmi.perfectreader.fragment.book.parse.BookContentParserFactory
 import com.dmi.perfectreader.fragment.reader.Reader
-import com.dmi.util.base.BaseViewModel
+import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.ext.LambdaObservable
 import com.dmi.util.log
 import com.dmi.util.mainScheduler

@@ -7,10 +7,10 @@ import android.view.MenuItem
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.dmi.perfectreader.R
-import com.dmi.util.base.BaseView
-import com.dmi.util.base.find
-import com.dmi.util.ext.onClick
-import com.dmi.util.widget.onKeyDown
+import com.dmi.util.android.base.BaseView
+import com.dmi.util.android.base.find
+import com.dmi.util.android.ext.onClick
+import com.dmi.util.android.widget.onKeyDown
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 import org.jetbrains.anko.onClick
 import java.lang.Math.round

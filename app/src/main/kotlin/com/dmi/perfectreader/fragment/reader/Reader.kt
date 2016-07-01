@@ -4,7 +4,7 @@ import android.os.Bundle
 import com.dmi.perfectreader.fragment.book.Book
 import com.dmi.perfectreader.fragment.bookcontrol.BookControl
 import com.dmi.perfectreader.fragment.menu.Menu
-import com.dmi.util.base.BaseViewModel
+import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.rx.rxObservable
 import rx.lang.kotlin.BehaviorSubject
 
