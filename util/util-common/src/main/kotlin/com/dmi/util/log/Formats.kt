@@ -9,9 +9,11 @@ private val ANONYMOUS_CLASS = Pattern.compile("(\\$\\d+)+$")
 
 fun logTag(): String {
     val stackTrace = java.lang.Throwable().stackTrace
-    if (stackTrace.size <= STACK_TRACE_INDEX)
-        throw IllegalStateException("Synthetic stacktrace don't have enough elements. Maybe it is because of proguard")
-    return stackTraceTag(stackTrace[STACK_TRACE_INDEX])
+    return if (STACK_TRACE_INDEX < stackTrace.size) {
+        stackTraceTag(stackTrace[STACK_TRACE_INDEX])
+    } else {
+        "unknown"
+    }
 }
 
 private fun stackTraceTag(element: StackTraceElement): String {
