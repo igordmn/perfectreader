@@ -1,14 +1,11 @@
 package com.dmi.perfectreader.fragment.book.content.obj
 
+import com.dmi.perfectreader.fragment.book.content.obj.param.*
 import com.dmi.perfectreader.fragment.book.location.LocationRange
-import com.dmi.perfectreader.fragment.book.content.obj.param.HangingConfig
-import com.dmi.perfectreader.fragment.book.content.obj.param.LayoutConfig
-import com.dmi.perfectreader.fragment.book.content.obj.param.TextAlign
-import com.dmi.perfectreader.fragment.book.content.obj.param.ComputedFontStyle
-import com.dmi.perfectreader.fragment.book.content.obj.param.ContentFontStyle
-import com.dmi.perfectreader.fragment.book.content.obj.param.StyleType
 import com.dmi.util.graphic.Color
 import java.util.*
+
+private val fontStyleCache = FontStyleCache()
 
 class ContentParagraph(
         val styleType: StyleType,
@@ -49,14 +46,7 @@ class ContentParagraph(
             override val length = text.length.toDouble()
 
             override fun configure(config: LayoutConfig) = ComputedParagraph.Run.Text(
-                    text, style.configure(config), range
-            )
-
-            private fun ContentFontStyle.configure(config: LayoutConfig) = ComputedFontStyle(
-                    (size ?: DEFAULT_FONT_SIZE) * config.fontSizeMultiplier,
-                    color ?: Color.BLACK,
-                    config.textRenderConfig,
-                    config.selectionConfig
+                    text, fontStyleCache.configure(style, config), range
             )
         }
     }
@@ -85,3 +75,28 @@ class ComputedParagraph(
         }
     }
 }
+
+private class FontStyleCache {
+    private val lastComputed = WeakHashMap<ContentFontStyle, ComputedFontStyle>()
+    private val lastConfigs = WeakHashMap<ContentFontStyle, LayoutConfig>()
+
+    fun configure(style: ContentFontStyle, config: LayoutConfig): ComputedFontStyle {
+        val lastComputed = lastComputed[style]
+        val lastConfig = lastConfigs[style]
+        if (lastComputed != null && lastConfig === config) {
+            return lastComputed
+        } else {
+            val computed = style.configure(config)
+            this.lastComputed[style] = computed
+            this.lastConfigs[style] = config
+            return computed
+        }
+    }
+}
+
+private fun ContentFontStyle.configure(config: LayoutConfig) = ComputedFontStyle(
+        (size ?: ContentParagraph.DEFAULT_FONT_SIZE) * config.fontSizeMultiplier,
+        color ?: Color.BLACK,
+        config.textRenderConfig,
+        config.selectionConfig
+)
