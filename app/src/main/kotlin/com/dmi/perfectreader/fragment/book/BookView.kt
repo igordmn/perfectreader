@@ -8,12 +8,12 @@ import android.widget.FrameLayout
 import com.dmi.perfectreader.BuildConfig.DEBUG_SHOWRENDERFREEZES
 import com.dmi.util.android.base.BaseView
 import com.dmi.util.android.base.px2dip
-import com.dmi.util.graphic.Size
 import com.dmi.util.android.opengl.DebuggableRenderer
 import com.dmi.util.android.opengl.GLSurfaceViewExt
-import com.dmi.util.android.opengl.setRenderer
+import com.dmi.util.android.opengl.setNotifiableRenderer
 import com.dmi.util.android.system.ActivityLifeCycle
 import com.dmi.util.android.widget.onSizeChange
+import com.dmi.util.graphic.Size
 
 class BookView(
         context: Context,
@@ -34,7 +34,7 @@ class BookView(
 
         widget.addView(glSurface)
         widget.keepScreenOn = true
-        glSurface.setRenderer { size ->
+        glSurface.setNotifiableRenderer { size ->
             if (DEBUG_SHOWRENDERFREEZES) {
                 DebuggableRenderer(thresholdMillis = 40, renderer = createRenderer(size))
             } else {

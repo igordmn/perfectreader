@@ -23,8 +23,7 @@ class NotifiableRendererWrapper(
     override fun draw() = renderer.draw()
 }
 
-fun GLSurfaceViewExt.setRenderer(create: (Size) -> NotifiableRenderer) = setRenderer(
-        FixedRendererWrapper { size ->
-            NotifiableRendererWrapper(this@setRenderer, create(size))
+fun GLSurfaceViewExt.setNotifiableRenderer(create: (Size) -> NotifiableRenderer) =
+        setFixedRenderer { size ->
+            NotifiableRendererWrapper(this@setNotifiableRenderer, create(size))
         }
-)

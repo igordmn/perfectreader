@@ -27,3 +27,7 @@ class FixedRendererWrapper(private val create: (Size) -> FixedRenderer) : GLSurf
         renderer?.draw()
     }
 }
+
+fun GLSurfaceViewExt.setFixedRenderer(create: (Size) -> FixedRenderer) = setRenderer(
+        FixedRendererWrapper { size -> create(size)}
+)
