@@ -1,0 +1,6 @@
+[submodule "lib/lib-freetype/src/main/jni"]
+	path = lib/lib-freetype/src/main/jni
+	url = https://bitbucket.org/IgorDemin/freetype
+[submodule "lib/lib-harfbuzz/src/main/jni"]
+	path = lib/lib-harfbuzz/src/main/jni
+	url = https://bitbucket.org/IgorDemin/harfbuzz

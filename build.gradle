@@ -7,7 +7,8 @@ buildscript {
         projectVersions = [
                 kotlin        : '1.0.3',
                 buildTools    : '24',
-                androidPlugin : '2.1.2',
+                androidPlugin : '2.2.0-alpha4',
+                androidExperimentalPlugin : '0.8.0-alpha4',
                 minSdk        : 16,
                 targetSdk     : 23,
                 compileSdk    : 23,
@@ -23,12 +24,18 @@ buildscript {
             maven { url 'https://jitpack.io' }
             flatDir { dirs new File(projectDir, 'libs') }
         }
+
+        projectAbi = [
+                'armeabi-v7a',
+                'x86',
+        ]
     }
 
     repositories projectRepositories
 
     dependencies {
         classpath "com.android.tools.build:gradle:$projectVersions.androidPlugin"
+        classpath "com.android.tools.build:gradle-experimental:0.8.0-alpha4"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$projectVersions.kotlin"
     }
 }

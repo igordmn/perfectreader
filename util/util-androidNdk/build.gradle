@@ -1,0 +1,41 @@
+apply plugin: 'com.android.model.library'
+
+model {
+    android {
+        compileSdkVersion projectVersions.compileSdk
+        buildToolsVersion projectVersions.buildTools
+
+        defaultConfig {
+            minSdkVersion.apiLevel projectVersions.minSdk
+            targetSdkVersion.apiLevel projectVersions.targetSdk
+        }
+
+        ndk {
+            moduleName = 'utilAndroid'
+            platformVersion = projectVersions.minSdk
+            toolchain 'clang'
+            cppFlags.addAll('-std=c++14', '-fexceptions', '-Wall')
+            cppFlags.addAll('-ffunction-sections', '-fdata-sections', '-fvisibility=hidden', '-O2')
+            ldFlags.addAll('-Wl,--gc-sections')
+            ldLibs.addAll('log', 'GLESv2')
+            stl = 'stlport_static'
+            abiFilters.addAll(projectAbi)
+        }
+
+        sources {
+            main {
+                jni {
+                    dependencies {
+                        project ':lib:lib-freetype' linkage 'static'
+                        project ':lib:lib-harfbuzz' linkage 'static'
+                    }
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    compile project(':util:util-common')
+    testCompile project(':util:util-testCommon')
+}
