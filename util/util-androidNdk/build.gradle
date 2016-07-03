@@ -15,11 +15,18 @@ model {
             platformVersion = projectVersions.minSdk
             toolchain 'clang'
             cppFlags.addAll('-std=c++14', '-fexceptions', '-Wall')
-            cppFlags.addAll('-ffunction-sections', '-fdata-sections', '-fvisibility=hidden', '-O2')
-            ldFlags.addAll('-Wl,--gc-sections')
             ldLibs.addAll('log', 'GLESv2')
             stl = 'stlport_static'
             abiFilters.addAll(projectAbi)
+        }
+
+        buildTypes {
+            release {
+                ndk {
+                    cppFlags.addAll('-ffunction-sections', '-fdata-sections', '-fvisibility=hidden', '-O2')
+                    ldFlags.addAll('-Wl,--gc-sections')
+                }
+            }
         }
 
         sources {
@@ -32,7 +39,14 @@ model {
                 }
             }
         }
+
+        publishNonDefault true
     }
+}
+
+configurations {
+    debug
+    release
 }
 
 dependencies {

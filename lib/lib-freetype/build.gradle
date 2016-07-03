@@ -8,8 +8,15 @@ model {
             moduleName = "libFreetype"
             platformVersion = projectVersions.minSdk
             CFlags.addAll('-Wall', '-fPIC', '-DPIC', '-DDARWIN_NO_CARBON', '-DFT2_BUILD_LIBRARY')
-            CFlags.addAll('-ffunction-sections', '-fdata-sections', '-fvisibility=hidden', '-O2')
             abiFilters.addAll(projectAbi)
+        }
+
+        buildTypes {
+            release {
+                ndk {
+                    CFlags.addAll('-ffunction-sections', '-fdata-sections', '-fvisibility=hidden', '-O2')
+                }
+            }
         }
 
         sources {
