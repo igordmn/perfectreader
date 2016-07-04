@@ -28,6 +28,7 @@ buildscript {
         projectAbi = [
                 'armeabi-v7a',
                 'x86',
+                'mips'
         ]
     }
 
