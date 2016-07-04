@@ -48,8 +48,3 @@ configurations {
     debug
     release
 }
-
-dependencies {
-    compile project(':util:util-common')
-    testCompile project(':util:util-testCommon')
-}
