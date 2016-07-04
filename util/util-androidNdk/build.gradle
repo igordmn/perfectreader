@@ -12,7 +12,6 @@ model {
 
         ndk {
             moduleName = 'utilAndroid'
-            platformVersion = projectVersions.minSdk
             toolchain 'clang'
             cppFlags.addAll('-std=c++14', '-fexceptions', '-Wall')
             ldLibs.addAll('log', 'GLESv2')
