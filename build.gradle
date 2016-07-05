@@ -25,7 +25,7 @@ buildscript {
             flatDir { dirs new File(projectDir, 'libs') }
         }
 
-        projectAbi = [
+        projectAbi = config['abis']?.split(',') ?: [
                 'armeabi-v7a',
                 'x86',
                 'mips',
