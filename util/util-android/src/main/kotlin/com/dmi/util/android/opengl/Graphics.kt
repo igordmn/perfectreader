@@ -5,13 +5,14 @@ import android.opengl.GLES20.*
 import com.google.common.io.CharStreams.toString
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.nio.FloatBuffer
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGL11
 
 object Graphics {
     val BYTES_PER_FLOAT = 4
 
-    fun floatBuffer(vararg items: Float) = ByteBuffer
+    fun floatBuffer(vararg items: Float): FloatBuffer = ByteBuffer
             .allocateDirect(items.size * BYTES_PER_FLOAT)
             .order(ByteOrder.nativeOrder())
             .asFloatBuffer()
