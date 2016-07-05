@@ -18,7 +18,7 @@ inline fun benchmark(name: String = "", iterations: Int = 10, run: () -> Unit) {
     }
 }
 
-inline fun <T> measureTime(name: String = "", run: () -> T): T {
+fun <T> measureTime(name: String = "", run: () -> T): T {
     val t1 = nanoTime()
     val result = run()
     val t2 = nanoTime()
