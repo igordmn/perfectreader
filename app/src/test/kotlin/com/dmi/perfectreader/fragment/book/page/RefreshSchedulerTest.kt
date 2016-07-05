@@ -6,6 +6,7 @@ import com.dmi.perfectreader.BuildConfig
 import com.dmi.perfectreader.fragment.book.page.RefreshScheduler.BitmapBuffer
 import com.dmi.util.graphic.Size
 import org.amshove.kluent.shouldEqual
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricGradleTestRunner
@@ -18,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger
 @RunWith(RobolectricGradleTestRunner::class)
 @Config(constants = BuildConfig::class)
 @Suppress("IllegalIdentifier")
+@Ignore
 class RefreshSchedulerTest {
     @Test(timeout = 3000)
     fun `single refresh`() {
