@@ -26,21 +26,8 @@ namespace dmi {
 
     class JniUtils {
     public:
-        static std::string toUTF8String(JNIEnv *env, jstring jstr) {
-            const char *chars = env->GetStringUTFChars(jstr, nullptr);
-            std::string result(chars);
-            env->ReleaseStringUTFChars(jstr, chars);
-            return result;
-        }
-
-        static jstring toJavaString(JNIEnv *env, std::string utf8str) {
-            return toJavaString(env, utf8str.c_str());
-        }
-
-        static jstring toJavaString(JNIEnv *env, const char *cstr) {
-            return env->NewStringUTF(cstr);
-        }
+        static std::string toUTF8String(JNIEnv *env, jstring jstr);
+        static jstring toJavaString(JNIEnv *env, std::string utf8str);
+        static jstring toJavaString(JNIEnv *env, const char *cstr);
     };
-
-    JavaVM *JNIScope::javaVM = 0;
 }

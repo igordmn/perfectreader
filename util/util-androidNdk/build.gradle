@@ -13,8 +13,8 @@ model {
         ndk {
             moduleName = 'utilAndroid'
             toolchain 'clang'
-            cppFlags.addAll('-std=c++14', '-fexceptions', '-Wall')
             ldLibs.addAll('log', 'GLESv2')
+            cppFlags.addAll('-std=c++14', '-fexceptions', '-Wall', '-Wno-unknown-pragmas')
             stl = 'stlport_static'
             abiFilters.addAll(projectAbi)
         }
