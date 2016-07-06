@@ -5,7 +5,7 @@ import android.opengl.GLES20.*
 import com.dmi.util.android.R
 import com.dmi.util.graphic.SizeF
 
-class Plane(context: Context, private val size: SizeF) {
+class Plane(context: Context, size: SizeF) {
     private val VERTEX_COUNT = 4
 
     private val programId = Graphics.createProgram(context.resources, R.raw.shader_plane_vertex, R.raw.shader_plane_fragment)
