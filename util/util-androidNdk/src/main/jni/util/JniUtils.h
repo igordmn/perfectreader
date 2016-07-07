@@ -3,31 +3,24 @@
 #include <string>
 #include <jni.h>
 
-#include "Debug.h"
-
 namespace dmi {
+    void registerJniUtils(JavaVM* vm);
+
     class JNIScope {
     private:
-        static JavaVM *javaVM;
         JNIEnv *_env;
 
     public:
-        JNIScope() {
-            CHECK(javaVM->GetEnv((void **) &_env, JNI_VERSION_1_6) == JNI_OK);
-            CHECK(_env->PushLocalFrame(16) == 0);
-        }
-
-        ~JNIScope() {
-            CHECK(_env->PopLocalFrame(nullptr) == 0);
-        }
+        JNIScope();
+        ~JNIScope();
 
         JNIEnv *env() { return _env; }
     };
 
-    class JniUtils {
-    public:
-        static std::string toUTF8String(JNIEnv *env, jstring jstr);
-        static jstring toJavaString(JNIEnv *env, std::string utf8str);
-        static jstring toJavaString(JNIEnv *env, const char *cstr);
+    namespace jniUtils {
+        std::string toUTF8String(JNIEnv *env, jstring jstr);
+        jstring toJavaString(JNIEnv *env, std::string utf8str);
+        jstring toJavaString(JNIEnv *env, const char *cstr);
+        std::string getJavaStackTrace(JNIEnv *env);
     };
 }

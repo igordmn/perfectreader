@@ -1,6 +1,7 @@
 #include "SurfaceBuffer.h"
 
 #include "../util/JniUtils.h"
+#include "../util/Debug.h"
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
