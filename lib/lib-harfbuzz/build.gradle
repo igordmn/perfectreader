@@ -6,6 +6,7 @@ model {
 
         ndk {
             moduleName = 'harfbuzz'
+            platformVersion = projectVersions.minSdk
             cppFlags.addAll('-DHB_NO_MT', '-DHAVE_OT', '-DHAVE_UCDN', '-Wno-unused-parameter', '-Wno-missing-field-initializers')
             abiFilters.addAll(projectAbi)
         }

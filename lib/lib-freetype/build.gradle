@@ -6,6 +6,7 @@ model {
 
         ndk {
             moduleName = 'freetype'
+            platformVersion = projectVersions.minSdk
             CFlags.addAll('-Wall', '-fPIC', '-DPIC', '-DDARWIN_NO_CARBON', '-DFT2_BUILD_LIBRARY')
             abiFilters.addAll(projectAbi)
         }
