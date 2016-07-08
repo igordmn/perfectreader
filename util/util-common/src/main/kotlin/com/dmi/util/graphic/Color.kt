@@ -35,7 +35,7 @@ class Color {
 
     constructor(value: Int) {
         this.value = value
-        alpha = value shr 24
+        alpha = value ushr 24
         red = value shr 16 and 0xFF
         green = value shr 8 and 0xFF
         blue = value and 0xFF
