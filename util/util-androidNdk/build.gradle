@@ -29,17 +29,6 @@ model {
             }
         }
 
-        sources {
-            main {
-                jni {
-                    dependencies {
-                        project ':lib:lib-freetype' linkage 'static'
-                        project ':lib:lib-harfbuzz' linkage 'static'
-                    }
-                }
-            }
-        }
-
         publishNonDefault true
     }
 }
