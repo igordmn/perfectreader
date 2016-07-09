@@ -1,4 +1,4 @@
-#include "SurfaceBuffer.h"
+#include "../paint/PaintBuffer.h"
 
 #include "../util/JniUtils.h"
 #include "../util/Debug.h"
@@ -24,7 +24,7 @@ Java_com_dmi_util_android_surface_SurfaceUtils_nativeLockBuffer(JNIEnv *env, jcl
     CHECK(buffer.format == WINDOW_FORMAT_RGBA_8888);
     ANativeWindow_release(window);
 
-    SurfaceBuffer *surfaceBuffer = new SurfaceBuffer();
+    PaintBuffer *surfaceBuffer = new PaintBuffer();
     surfaceBuffer->width = (uint16_t) buffer.width;
     surfaceBuffer->height = (uint16_t) buffer.height;
     surfaceBuffer->stride = (uint16_t) buffer.stride;
@@ -35,7 +35,7 @@ Java_com_dmi_util_android_surface_SurfaceUtils_nativeLockBuffer(JNIEnv *env, jcl
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_dmi_util_android_surface_SurfaceUtils_nativeUnlockBufferAndPost(JNIEnv *env, jclass, jobject surface, jlong surfaceBufferPtr) {
-    delete (SurfaceBuffer *) surfaceBufferPtr;
+    delete (PaintBuffer *) surfaceBufferPtr;
 
     ANativeWindow *window = ANativeWindow_fromSurface(env, surface);
     ANativeWindow_unlockAndPost(window);

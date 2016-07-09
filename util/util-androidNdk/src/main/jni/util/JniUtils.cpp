@@ -16,7 +16,7 @@ namespace dmi {
         JNIScope scope;
         JNIEnv *env = scope.env();
 
-        jniUtilsCls = env->FindClass("com/dmi/util/android/jni/JniUtils");
+        jniUtilsCls = (jclass) env->NewGlobalRef(env->FindClass("com/dmi/util/android/jni/JniUtils"));
         getCurrentStackTraceMethod = env->GetStaticMethodID(jniUtilsCls, "getCurrentStackTrace", "()Ljava/lang/String;");
     }
 
