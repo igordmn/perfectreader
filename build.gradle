@@ -7,8 +7,8 @@ buildscript {
         projectVersions = [
                 kotlin        : '1.0.3',
                 buildTools    : '24',
-                androidPlugin : '2.2.0-alpha4',
-                androidExperimentalPlugin : '0.8.0-alpha4',
+                androidPlugin : '2.2.0-alpha5',
+                androidExperimentalPlugin : '0.8.0-alpha5',
                 minSdk        : 16,
                 targetSdk     : 23,
                 compileSdk    : 23,
@@ -36,7 +36,7 @@ buildscript {
 
     dependencies {
         classpath "com.android.tools.build:gradle:$projectVersions.androidPlugin"
-        classpath "com.android.tools.build:gradle-experimental:0.8.0-alpha4"
+        classpath "com.android.tools.build:gradle-experimental:$projectVersions.androidExperimentalPlugin"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$projectVersions.kotlin"
     }
 }
