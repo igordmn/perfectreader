@@ -28,8 +28,8 @@ class PagesRenderModel {
         }
     }
 
-    fun canGoNextPage(animation: SlidePagesAnimation) = animation.firstSlideIndex >= -Pages.MAX_RELATIVE_INDEX
-    fun canGoPreviousPage(animation: SlidePagesAnimation) = animation.lastSlideIndex <= Pages.MAX_RELATIVE_INDEX
+    fun canGoNextPage(animation: SlidePagesAnimation) = animation.hasSlides && animation.firstSlideIndex >= -Pages.MAX_RELATIVE_INDEX
+    fun canGoPreviousPage(animation: SlidePagesAnimation) = animation.hasSlides && animation.lastSlideIndex <= Pages.MAX_RELATIVE_INDEX
 
     private val SlidePagesAnimation.hasSlides: Boolean get() = visibleSlides.size > 0
     private val SlidePagesAnimation.firstSlideIndex: Int get() = visibleSlides.first().relativeIndex
