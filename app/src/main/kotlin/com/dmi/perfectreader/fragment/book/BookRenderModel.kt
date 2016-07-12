@@ -69,7 +69,7 @@ class BookRenderModel(size: SizeF) {
         val wasAnimating = animation.isAnimating
 
         animation.update()
-        pages.apply(animation, pagesModel)
+        pages.set(animation, pagesModel)
 
         if (animation.isAnimating)
             onChanged()

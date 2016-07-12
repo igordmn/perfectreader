@@ -33,11 +33,11 @@ class GLPages(
     private val pagesTexturePool = ImmediatelyCreatePool(MAX_LOADED_PAGES) { GLTexture(size) }
 
     private val pageBackground = GLPageBackground(pageBackgroundTexture, plane, refreshScheduler)
-    private val pages = GLPageSet {
+    private val pageSet = GLPageSet {
         GLPage(it, pagesTexturePool, plane, pageBackground, pagePainter, refreshScheduler)
     }
 
-    val onNeedDraw = refreshScheduler.onNeedRefresh merge pageBackground.onChanged merge pages.onChanged
+    val onNeedDraw = refreshScheduler.onNeedRefresh merge pageBackground.onChanged merge pageSet.onChanged
 
     init {
         orthoM(projectionMatrix, 0, 0F, sizeF.width / density, sizeF.height / density, 0F, -1F, 1F)
@@ -45,14 +45,14 @@ class GLPages(
     }
 
     fun destroy() {
-        pages.destroy()
+        pageSet.destroy()
         pageBackground.destroy()
         refreshScheduler.destroy()
         refWatcher.watch(this)
     }
 
     fun draw(model: PagesRenderModel) {
-        pages.setModel(model.loadedPages)
+        pageSet.setModel(model.pageSet)
 
         model.visibleSlides.forEach { drawSlide(it) }
     }
@@ -61,7 +61,7 @@ class GLPages(
         translateM(viewMatrix, 0, slide.offsetX, 0F, 0F)
         multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
         if (slide.page != null) {
-            pages[slide.page].draw(viewProjectionMatrix)
+            pageSet[slide.page].draw(viewProjectionMatrix)
         } else {
             pageBackground.draw(viewProjectionMatrix)
         }
