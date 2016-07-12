@@ -23,8 +23,8 @@ class PagesRenderModel {
         }
 
         if (animation.hasSlides) {
-            addPage(pages, animation.firstSlideIndex - 1)
             addPage(pages, animation.lastSlideIndex + 1)
+            addPage(pages, animation.firstSlideIndex - 1)
         }
     }
 
