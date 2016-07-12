@@ -3,7 +3,7 @@ package com.dmi.perfectreader.fragment.book.page
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import com.dmi.perfectreader.BuildConfig
-import com.dmi.perfectreader.fragment.book.page.RefreshScheduler.BitmapBuffer
+import com.dmi.perfectreader.fragment.book.page.GLRefreshScheduler.BitmapBuffer
 import com.dmi.util.graphic.Size
 import org.amshove.kluent.shouldEqual
 import org.junit.Ignore
@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger
 @Config(constants = BuildConfig::class)
 @Suppress("IllegalIdentifier")
 @Ignore
-class RefreshSchedulerTest {
+class GLRefreshSchedulerTest {
     @Test(timeout = 3000)
     fun `single refresh`() {
         // given
@@ -179,13 +179,13 @@ class RefreshSchedulerTest {
         refreshable2.refreshed shouldEqual true
     }
 
-    fun scheduler() = RefreshScheduler(BitmapBuffer(Size(100, 100), 2F))
+    fun scheduler() = GLRefreshScheduler(BitmapBuffer(Size(100, 100), 2F))
 
     class TestStatistics {
         @Volatile var refreshCount = 0
     }
 
-    class TestRefreshable(val statistics: TestStatistics) : RefreshScheduler.Refreshable {
+    class TestRefreshable(val statistics: TestStatistics) : GLRefreshScheduler.Refreshable {
         @Volatile var refreshed = false
             private set
         @Volatile var painted = false

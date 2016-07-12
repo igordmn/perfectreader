@@ -2,6 +2,7 @@ package com.dmi.perfectreader.fragment.book.paint
 
 import android.graphics.Canvas
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
+import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 
 class PagePainter(private val columnPainter: ColumnPainter) {
     fun paint(page: Page, canvas: Canvas) {
@@ -16,7 +17,7 @@ class PagePainter(private val columnPainter: ColumnPainter) {
 
         canvas.clipRect(0F, margins.top, pageWidth, margins.top + contentHeight)
         canvas.translate(margins.left, margins.top)
-        columnPainter.paint(column, canvas, PaintContext(null))
+        columnPainter.paint(column, PageContext(null), canvas)
 
         canvas.restore()
     }

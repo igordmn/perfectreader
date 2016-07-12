@@ -6,18 +6,19 @@ import android.graphics.Paint.HINTING_OFF
 import android.graphics.Paint.HINTING_ON
 import android.graphics.RectF
 import android.text.TextPaint
-import com.dmi.perfectreader.fragment.book.location.Location
-import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.content.obj.param.ComputedFontStyle
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutSpaceText
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutText
+import com.dmi.perfectreader.fragment.book.location.Location
+import com.dmi.perfectreader.fragment.book.location.LocationRange
+import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.util.lang.intRound
 
 open class TextPainter : ObjectPainter<LayoutText> {
     private val textPaintCache = PaintCache()
     private val selectionBackgroundPaint = Paint()
 
-    override fun paintItself(obj: LayoutText, canvas: Canvas, context: PaintContext) {
+    override fun paintItself(obj: LayoutText, context: PageContext, canvas: Canvas) {
         if (context.selectionRange != null) {
             val selectionBegin = obj.indexOf(context.selectionRange.begin)
             val selectionEnd = obj.indexOf(context.selectionRange.end)

@@ -3,7 +3,7 @@ package com.dmi.util.android.opengl
 import android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES
 import android.opengl.GLES20.*
 
-class TextureExternal {
+class GLTextureExternal {
     val id = Graphics.glGenTexture()
 
     init {

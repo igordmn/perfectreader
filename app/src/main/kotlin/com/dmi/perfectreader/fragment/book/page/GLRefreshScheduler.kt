@@ -12,7 +12,7 @@ import rx.Subscription
 import rx.lang.kotlin.PublishSubject
 import java.util.*
 
-class RefreshScheduler(private val bitmapBuffer: BitmapBuffer) {
+class GLRefreshScheduler(private val bitmapBuffer: BitmapBuffer) {
     val onNeedRefresh = PublishSubject<Unit>()
 
     private val bitmapResource = BitmapResource(bitmapBuffer)

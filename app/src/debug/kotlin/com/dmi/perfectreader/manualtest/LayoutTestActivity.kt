@@ -27,7 +27,7 @@ import com.dmi.perfectreader.fragment.book.pagination.column.LayoutColumn
 import com.dmi.perfectreader.fragment.book.pagination.column.merge
 import com.dmi.perfectreader.fragment.book.pagination.part.splitIntoParts
 import com.dmi.perfectreader.fragment.book.paint.ColumnPainter
-import com.dmi.perfectreader.fragment.book.paint.PaintContext
+import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.perfectreader.fragment.book.paint.PartPainter
 import com.dmi.perfectreader.fragment.book.paint.UniversalObjectPainter
 import com.dmi.util.graphic.Color
@@ -151,7 +151,7 @@ class LayoutTestActivity : AppCompatActivity() {
             val run2 = paragraphs[1].runs[0] as ComputedParagraph.Run.Text
             LocationRange(run1.sublocation(1), run2.sublocation(10))
         }
-        val context = PaintContext(selectionRange)
+        val context = PageContext(selectionRange)
 
         val view = object : View(this) {
             override fun onDraw(canvas: Canvas) {
@@ -159,7 +159,7 @@ class LayoutTestActivity : AppCompatActivity() {
                 canvas.save()
                 canvas.scale(density, density)
                 canvas.drawColor(Color.WHITE.value)
-                painter.paint(column, canvas, context)
+                painter.paint(column, context, canvas)
                 canvas.restore()
             }
         }

@@ -3,20 +3,20 @@ package com.dmi.perfectreader.fragment.book.page
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import com.dmi.perfectreader.fragment.book.page.PagesRenderModel.LoadingPage
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.paint.PagePainter
-import com.dmi.perfectreader.fragment.book.page.PagesRenderModel.LoadingPage
+import com.dmi.util.android.opengl.GLTexture
 import com.dmi.util.collection.ImmediatelyCreatePool
 import com.dmi.util.graphic.Size
-import com.dmi.util.android.opengl.Texture
 import com.dmi.util.refWatcher
 import rx.Subscription
 import java.util.*
 
-class PagesRefresher(
+class GLPagesRefresher(
         private val pagePainter: PagePainter,
-        private val pagesRenderer: PagesRenderer,
-        private val refreshScheduler: RefreshScheduler,
+        private val pages: GLPages,
+        private val refreshScheduler: GLRefreshScheduler,
         size: Size
 ) {
     val onNeedRefresh = refreshScheduler.onNeedRefresh
@@ -50,11 +50,11 @@ class PagesRefresher(
     }
 
     private fun scheduleRefreshLoadingPage() {
-        refreshScheduler.schedule(object : RefreshScheduler.Refreshable {
+        refreshScheduler.schedule(object : GLRefreshScheduler.Refreshable {
             override fun paint(canvas: Canvas) = canvas.drawColor(Color.TRANSPARENT)
 
             override fun refreshBy(bitmap: Bitmap) {
-                pagesRenderer.loadingPageTexture = loadingPageTexturePool.acquire(bitmap)
+                pages.loadingPageTexture = loadingPageTexturePool.acquire(bitmap)
             }
         })
     }
@@ -72,30 +72,30 @@ class PagesRefresher(
     }
 
     private fun scheduleRefreshLoadedPage(page: Page) {
-        loadedPageToSubscription[page] = refreshScheduler.schedule(object : RefreshScheduler.Refreshable {
+        loadedPageToSubscription[page] = refreshScheduler.schedule(object : GLRefreshScheduler.Refreshable {
             override fun paint(canvas: Canvas){
                 pagePainter.paint(page, canvas)
             }
 
             override fun refreshBy(bitmap: Bitmap) {
-                pagesRenderer.loadedPageToTexture[page] = loadedPagesTexturePool.acquire(bitmap)
+                pages.loadedPageToTexture[page] = loadedPagesTexturePool.acquire(bitmap)
             }
         })
     }
 
     private fun unload(page: Page) {
-        val texture = pagesRenderer.loadedPageToTexture.remove(page)
+        val texture = pages.loadedPageToTexture.remove(page)
         texture?.let { loadedPagesTexturePool.release(it) }
         loadedPageToSubscription.remove(page)!!.unsubscribe()
     }
 
     private class TexturePool(size: Size, count: Int) {
-        private val pool = ImmediatelyCreatePool(count) { Texture(size) }
+        private val pool = ImmediatelyCreatePool(count) { GLTexture(size) }
 
-        fun acquire(bitmap: Bitmap): Texture = pool.acquire().apply {
+        fun acquire(bitmap: Bitmap): GLTexture = pool.acquire().apply {
             refreshBy(bitmap)
         }
 
-        fun release(texture: Texture) = pool.release(texture)
+        fun release(texture: GLTexture) = pool.release(texture)
     }
 }

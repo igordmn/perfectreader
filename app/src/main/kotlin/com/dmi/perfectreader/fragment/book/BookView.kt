@@ -18,8 +18,8 @@ import com.dmi.util.graphic.Size
 class BookView(
         context: Context,
         private val model: Book,
-        private val createRenderer: (Size) -> BookRenderer,
-        private val activityLifeCycle: ActivityLifeCycle
+        private val createGLBook: (Size) -> GLBook,
+        activityLifeCycle: ActivityLifeCycle
 ) : BaseView(FrameLayout(context)) {
     private val glSurface = GLSurfaceViewExt(context)
 
@@ -36,9 +36,9 @@ class BookView(
         widget.keepScreenOn = true
         glSurface.setNotifiableRenderer { size ->
             if (DEBUG_SHOWRENDERFREEZES) {
-                DebuggableRenderer(thresholdMillis = 40, renderer = createRenderer(size))
+                DebuggableRenderer(thresholdMillis = 40, renderer = createGLBook(size))
             } else {
-                createRenderer(size)
+                createGLBook(size)
             }
         }
         glSurface.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY

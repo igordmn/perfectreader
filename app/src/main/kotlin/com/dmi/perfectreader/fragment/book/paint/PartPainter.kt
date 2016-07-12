@@ -1,11 +1,12 @@
 package com.dmi.perfectreader.fragment.book.paint
 
 import android.graphics.Canvas
-import com.dmi.perfectreader.fragment.book.pagination.part.LayoutPart
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutObject
+import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
+import com.dmi.perfectreader.fragment.book.pagination.part.LayoutPart
 
 class PartPainter(private val objectPainter: ObjectPainter<LayoutObject>) {
-    fun paint(part: LayoutPart, canvas: Canvas, context: PaintContext) {
+    fun paint(part: LayoutPart, context: PageContext, canvas: Canvas) {
         with (part) {
             canvas.save()
 
@@ -19,13 +20,13 @@ class PartPainter(private val objectPainter: ObjectPainter<LayoutObject>) {
     private fun paintRecursive(
             part: LayoutPart,
             canvas: Canvas,
-            context: PaintContext,
+            context: PageContext,
             obj: LayoutObject,
             level: Int,
             isFirstBranch: Boolean,
             isLastBranch: Boolean
     ) {
-        objectPainter.paintItself(obj, canvas, context)
+        objectPainter.paintItself(obj, context, canvas)
 
         val children = obj.children
         if (children.size > 0) {

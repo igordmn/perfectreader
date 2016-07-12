@@ -6,8 +6,8 @@ import com.dmi.perfectreader.data.UserSettings
 import com.dmi.perfectreader.fragment.book.*
 import com.dmi.perfectreader.fragment.book.bitmap.AndroidBitmapDecoder
 import com.dmi.perfectreader.fragment.book.bitmap.CachedBitmapDecoder
-import com.dmi.perfectreader.fragment.book.content.obj.param.settingsLayoutConfig
 import com.dmi.perfectreader.fragment.book.content.ComputedSequence
+import com.dmi.perfectreader.fragment.book.content.obj.param.settingsLayoutConfig
 import com.dmi.perfectreader.fragment.book.layout.LayoutSequence
 import com.dmi.perfectreader.fragment.book.layout.UniversalObjectLayouter
 import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.CompositeBreaker
@@ -20,7 +20,7 @@ import com.dmi.perfectreader.fragment.book.layout.paragraph.hyphenator.TeXPatter
 import com.dmi.perfectreader.fragment.book.layout.paragraph.liner.BreakLiner
 import com.dmi.perfectreader.fragment.book.layout.paragraph.metrics.PaintTextMetrics
 import com.dmi.perfectreader.fragment.book.page.*
-import com.dmi.perfectreader.fragment.book.page.RefreshScheduler.BitmapBuffer
+import com.dmi.perfectreader.fragment.book.page.GLRefreshScheduler.BitmapBuffer
 import com.dmi.perfectreader.fragment.book.pagination.column.LayoutColumnSequence
 import com.dmi.perfectreader.fragment.book.pagination.page.PageSequence
 import com.dmi.perfectreader.fragment.book.pagination.page.settingsPageConfig
@@ -105,21 +105,21 @@ class AppObjects(applicationContext: Context) {
         val createReaderView = { model: Reader ->
             val createBookView = { model: Book ->
                 val bitmapDecoder = model.bitmapDecoder
-                val createRenderer = { size: Size ->
+                val createGLBook = { size: Size ->
                     val renderModel = model.renderModel
 
                     val objectPainter = UniversalObjectPainter(bitmapDecoder)
                     val layoutPartPainter = PartPainter(objectPainter)
                     val layoutColumnPainter = ColumnPainter(layoutPartPainter)
                     val pagePainter = PagePainter(layoutColumnPainter)
-                    val refreshScheduler = RefreshScheduler(BitmapBuffer(size, density))
-                    val createRefresher = { renderer: PagesRenderer, size: Size -> PagesRefresher(pagePainter, renderer, refreshScheduler, size) }
-                    val createPagesRenderer = { PagesRenderer(context, size, density, createRefresher) }
+                    val refreshScheduler = GLRefreshScheduler(BitmapBuffer(size, density))
+                    val createRefresher = { pages: GLPages, size: Size -> GLPagesRefresher(pagePainter, pages, refreshScheduler, size) }
+                    val createGLPages = { GLPages(context, size, density, createRefresher) }
 
-                    BookRenderer(size, renderModel, createPagesRenderer)
+                    GLBook(size, renderModel, createGLPages)
                 }
 
-                BookView(context, model, createRenderer, lifeCycle)
+                BookView(context, model, createGLBook, lifeCycle)
             }
 
 

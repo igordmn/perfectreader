@@ -5,7 +5,7 @@ import android.opengl.GLES20.*
 import android.opengl.GLUtils.texSubImage2D
 import com.dmi.util.graphic.Size
 
-class Texture(size: Size) {
+class GLTexture(size: Size) {
     val id = Graphics.glGenTexture()
 
     init {

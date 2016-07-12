@@ -2,19 +2,19 @@ package com.dmi.perfectreader.fragment.book.page
 
 import android.content.Context
 import android.opengl.Matrix.*
-import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.page.PagesRenderModel.Slide
+import com.dmi.perfectreader.fragment.book.pagination.page.Page
+import com.dmi.util.android.opengl.GLPlane
+import com.dmi.util.android.opengl.GLTexture
 import com.dmi.util.graphic.Size
-import com.dmi.util.android.opengl.Plane
-import com.dmi.util.android.opengl.Texture
 import com.dmi.util.refWatcher
 import java.util.*
 
-class PagesRenderer(
+class GLPages(
         context: Context,
         size: Size,
-        private val density: Float,
-        private val createRefresher: (PagesRenderer, Size) -> PagesRefresher
+        density: Float,
+        createRefresher: (GLPages, Size) -> GLPagesRefresher
 ) {
     private val sizeF = size.toFloat()
 
@@ -24,12 +24,12 @@ class PagesRenderer(
     private val viewMatrix = FloatArray(16)
     private val viewProjectionMatrix = FloatArray(16)
 
-    private val plane = Plane(context, sizeF / density)
+    private val plane = GLPlane(context, sizeF / density)
 
     val onNeedDraw = refresher.onNeedRefresh
 
-    var loadingPageTexture: Texture? = null
-    val loadedPageToTexture = HashMap<Page, Texture>()
+    var loadingPageTexture: GLTexture? = null
+    val loadedPageToTexture = HashMap<Page, GLTexture>()
 
     init {
         orthoM(projectionMatrix, 0, 0F, sizeF.width / density, sizeF.height / density, 0F, -1F, 1F)
@@ -53,9 +53,9 @@ class PagesRenderer(
         translateM(viewMatrix, 0, -slide.offsetX, 0F, 0F)
     }
 
-    private fun Texture.draw(matrix: FloatArray) = plane.draw(matrix, this)
+    private fun GLTexture.draw(matrix: FloatArray) = plane.draw(matrix, this)
 
-    private fun textureFor(page: Page?): Texture? = if (page != null) {
+    private fun textureFor(page: Page?): GLTexture? = if (page != null) {
         loadedPageToTexture[page] ?: loadingPageTexture
     } else {
         loadingPageTexture

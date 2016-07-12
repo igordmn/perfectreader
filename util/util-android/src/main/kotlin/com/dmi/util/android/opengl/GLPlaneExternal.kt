@@ -5,10 +5,10 @@ import android.opengl.GLES20.*
 import com.dmi.util.android.R
 import com.dmi.util.graphic.SizeF
 
-class Plane(context: Context, size: SizeF) {
+class GLPlaneExternal(context: Context, private val size: SizeF) {
     private val VERTEX_COUNT = 4
 
-    private val programId = Graphics.createProgram(context.resources, R.raw.shader_plane_vertex, R.raw.shader_plane_fragment)
+    private val programId = Graphics.createProgram(context.resources, R.raw.shader_plane_vertex, R.raw.shader_plane_fragment_external)
     private val coordinateHandle = glGetAttribLocation(programId, "coordinate")
     private val mvpMatrixHandle = glGetUniformLocation(programId, "mvpMatrix")
     private val textureHandle = glGetUniformLocation(programId, "texture")
@@ -20,7 +20,7 @@ class Plane(context: Context, size: SizeF) {
             size.width, size.height, 1F, 1F
     )
 
-    fun draw(matrix: FloatArray, texture: Texture) {
+    fun draw(matrix: FloatArray, texture: GLTextureExternal) {
         texture.use {
             glUseProgram(programId)
             glEnableVertexAttribArray(coordinateHandle)

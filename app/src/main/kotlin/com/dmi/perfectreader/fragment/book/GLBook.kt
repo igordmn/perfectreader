@@ -1,22 +1,22 @@
 package com.dmi.perfectreader.fragment.book
 
 import android.opengl.GLES20.*
-import com.dmi.perfectreader.fragment.book.page.PagesRenderer
-import com.dmi.util.ext.merge
-import com.dmi.util.graphic.Size
+import com.dmi.perfectreader.fragment.book.page.GLPages
 import com.dmi.util.android.opengl.NotifiableRenderer
-import com.dmi.util.refWatcher
 import com.dmi.util.android.system.ThreadPriority
 import com.dmi.util.android.system.setPriority
+import com.dmi.util.ext.merge
+import com.dmi.util.graphic.Size
+import com.dmi.util.refWatcher
 import rx.Observable
 import java.lang.Thread.currentThread
 
-class BookRenderer(
+class GLBook(
         size: Size,
         private val model: BookRenderModel,
-        private val createPages: () -> PagesRenderer
+        createPages: () -> GLPages
 ) : NotifiableRenderer {
-    private val pages: PagesRenderer
+    private val pages: GLPages
 
     override val onNeedDraw: Observable<Unit>
 
