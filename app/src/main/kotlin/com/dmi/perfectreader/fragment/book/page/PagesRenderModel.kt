@@ -10,7 +10,6 @@ class PagesRenderModel {
         val MAX_LOADED_PAGES = 3
     }
 
-    val loadingPage = LoadingPage()
     val loadedPages = LinkedHashSet<Page>()
     val visibleSlides = ArrayList<Slide>()
 
@@ -48,6 +47,4 @@ class PagesRenderModel {
     }
 
     class Slide(val page: Page?, val offsetX: Float)
-
-    class LoadingPage
 }

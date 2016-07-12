@@ -2,6 +2,7 @@ package com.dmi.perfectreader.fragment.book
 
 import android.opengl.GLES20.*
 import com.dmi.perfectreader.fragment.book.page.GLPages
+import com.dmi.perfectreader.fragment.book.page.GLRefreshScheduler
 import com.dmi.util.android.opengl.NotifiableRenderer
 import com.dmi.util.android.system.ThreadPriority
 import com.dmi.util.android.system.setPriority
@@ -14,7 +15,8 @@ import java.lang.Thread.currentThread
 class GLBook(
         size: Size,
         private val model: BookRenderModel,
-        createPages: () -> GLPages
+        createPages: () -> GLPages,
+        private val refreshScheduler: GLRefreshScheduler
 ) : NotifiableRenderer {
     private val pages: GLPages
 
@@ -44,5 +46,6 @@ class GLBook(
 
         model.update()
         pages.draw(model.pages)
+        refreshScheduler.refresh()
     }
 }

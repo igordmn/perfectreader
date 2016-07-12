@@ -19,8 +19,11 @@ import com.dmi.perfectreader.fragment.book.layout.paragraph.hyphenator.TeXHyphen
 import com.dmi.perfectreader.fragment.book.layout.paragraph.hyphenator.TeXPatternsSource
 import com.dmi.perfectreader.fragment.book.layout.paragraph.liner.BreakLiner
 import com.dmi.perfectreader.fragment.book.layout.paragraph.metrics.PaintTextMetrics
-import com.dmi.perfectreader.fragment.book.page.*
+import com.dmi.perfectreader.fragment.book.page.GLPages
+import com.dmi.perfectreader.fragment.book.page.GLRefreshScheduler
 import com.dmi.perfectreader.fragment.book.page.GLRefreshScheduler.BitmapBuffer
+import com.dmi.perfectreader.fragment.book.page.Pages
+import com.dmi.perfectreader.fragment.book.page.PagesLoader
 import com.dmi.perfectreader.fragment.book.pagination.column.LayoutColumnSequence
 import com.dmi.perfectreader.fragment.book.pagination.page.PageSequence
 import com.dmi.perfectreader.fragment.book.pagination.page.settingsPageConfig
@@ -113,10 +116,9 @@ class AppObjects(applicationContext: Context) {
                     val layoutColumnPainter = ColumnPainter(layoutPartPainter)
                     val pagePainter = PagePainter(layoutColumnPainter)
                     val refreshScheduler = GLRefreshScheduler(BitmapBuffer(size, density))
-                    val createRefresher = { pages: GLPages, size: Size -> GLPagesRefresher(pagePainter, pages, refreshScheduler, size) }
-                    val createGLPages = { GLPages(context, size, density, createRefresher) }
+                    val createGLPages = { GLPages(context, size, density, refreshScheduler, pagePainter) }
 
-                    GLBook(size, renderModel, createGLPages)
+                    GLBook(size, renderModel, createGLPages, refreshScheduler)
                 }
 
                 BookView(context, model, createGLBook, lifeCycle)
