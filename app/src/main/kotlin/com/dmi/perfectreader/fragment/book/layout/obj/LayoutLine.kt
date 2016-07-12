@@ -7,4 +7,10 @@ class LayoutLine(
         height: Float,
         children: List<LayoutChild>,
         range: LocationRange
-) : LayoutObject(width, height, children, range)
+) : LayoutObject(width, height, children, range) {
+    override fun toString(): String = children
+            .map { it.obj }
+            .filter { it is LayoutText }
+            .map { it.toString() }
+            .joinToString("")
+}

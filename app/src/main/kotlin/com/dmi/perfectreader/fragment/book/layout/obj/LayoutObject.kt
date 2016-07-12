@@ -27,4 +27,19 @@ abstract class LayoutObject(
             val ZERO = Margins(0F, 0F, 0F, 0F)
         }
     }
+
+    override fun toString() = childLineOrNull(this)?.toString() ?: "[obj]"
+
+    private fun childLineOrNull(obj: LayoutObject): LayoutLine? {
+        return if (obj.children.size > 0) {
+            val child = obj.children[0].obj
+            return if (child is LayoutLine) {
+                child
+            } else {
+                childLineOrNull(child)
+            }
+        } else {
+            null
+        }
+    }
 }
