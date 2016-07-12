@@ -13,6 +13,7 @@ class SlidePagesAnimation(private val pageWidth: Float, private val singleSlideS
     private val deltaTimer = DeltaTimer()
 
     val isAnimating: Boolean get() = distance != 0F
+    val isGoingNext: Boolean get() = distance > 0F
     val visibleSlides = ArrayList<Slide>()
 
     init {
