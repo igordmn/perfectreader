@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.fragment.book.page
 
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.paint.PagePainter
@@ -16,7 +15,7 @@ class GLPage(
         private val plane: GLPlane,
         private val background: GLPageBackground,
         private val pagePainter: PagePainter,
-        refreshScheduler: GLRefreshScheduler
+        textureRefresher: GLTextureRefresher
 ) {
     private var texture = texturePool.acquire()
     private var refreshed = false
@@ -25,17 +24,11 @@ class GLPage(
     val onChanged = PublishSubject<Unit>()
 
     init {
-        refreshSubscription = refreshScheduler.schedule(object : GLRefreshScheduler.Refreshable {
-            override fun paint(canvas: Canvas) {
-                pagePainter.paint(page, canvas)
-            }
-
-            override fun refreshBy(bitmap: Bitmap) {
-                texture.refreshBy(bitmap)
-                refreshed = true
-                onChanged.onNext(Unit)
-            }
-        })
+        val paint = { canvas: Canvas -> pagePainter.paint(page, canvas) }
+        refreshSubscription = textureRefresher.scheduleRefresh(texture, paint) {
+            refreshed = true
+            onChanged.onNext(Unit)
+        }
     }
 
     fun destroy() {
