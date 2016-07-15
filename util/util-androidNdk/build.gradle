@@ -1,0 +1,39 @@
+apply plugin: 'com.android.model.library'
+
+model {
+    android {
+        compileSdkVersion projectVersions.compileSdk
+        buildToolsVersion projectVersions.buildTools
+
+        defaultConfig {
+            minSdkVersion.apiLevel projectVersions.minSdk
+            targetSdkVersion.apiLevel projectVersions.targetSdk
+        }
+
+        ndk {
+            moduleName = 'utilAndroid'
+            platformVersion = projectVersions.minSdk
+            toolchain 'clang'
+            cppFlags.addAll('-std=c++14', '-fexceptions', '-Wall', '-Wno-unknown-pragmas')
+            ldLibs.addAll('android', 'log', 'GLESv2')
+            stl = 'stlport_static'
+            abiFilters.addAll(projectAbi)
+        }
+
+        buildTypes {
+            release {
+                ndk {
+                    cppFlags.addAll('-ffunction-sections', '-fdata-sections', '-fvisibility=hidden', '-O2')
+                    ldFlags.addAll('-Wl,--gc-sections')
+                }
+            }
+        }
+
+        publishNonDefault true
+    }
+}
+
+configurations {
+    debug
+    release
+}

@@ -77,6 +77,10 @@
 
 # PerfectReader
 -keep class com.dmi.util.android.opengl.GLSurfaceViewExt$RendererExt
+-keep @com.dmi.util.android.jni.UsedByNative class *
+-keepclassmembers class ** {
+    @com.dmi.util.android.jni.UsedByNative *;
+}
 
 # BlockCanary
 -dontwarn com.github.moduth.**

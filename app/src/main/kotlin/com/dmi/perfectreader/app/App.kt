@@ -9,6 +9,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        System.loadLibrary("utilAndroid")
         initAndroidPlatform(this)
         objects = AppObjects(this)
     }
