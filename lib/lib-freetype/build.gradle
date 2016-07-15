@@ -1,0 +1,59 @@
+apply plugin: 'com.android.model.native'
+
+model {
+    android {
+        compileSdkVersion projectVersions.compileSdk
+
+        ndk {
+            moduleName = 'freetype'
+            platformVersion = projectVersions.minSdk
+            CFlags.addAll('-Wall', '-fPIC', '-DPIC', '-DDARWIN_NO_CARBON', '-DFT2_BUILD_LIBRARY')
+            abiFilters.addAll(projectAbi)
+        }
+
+        buildTypes {
+            release {
+                ndk {
+                    CFlags.addAll('-ffunction-sections', '-fdata-sections', '-fvisibility=hidden', '-O2')
+                }
+            }
+        }
+
+        sources {
+            main {
+                jni {
+                    source {
+                        include 'src/base/ftbase.c',
+                                'src/base/ftsystem.c',
+                                'src/base/ftinit.c',
+                                'src/base/ftbitmap.c',
+                                'src/base/ftglyph.c',
+                                'src/autofit/autofit.c',
+                                'src/smooth/smooth.c',
+                                'src/raster/raster.c',
+                                'src/truetype/truetype.c',
+                                'src/type1/type1.c',
+                                'src/type42/type42.c',
+                                'src/pfr/pfr.c',
+                                'src/cid/type1cid.c',
+                                'src/cff/cff.c',
+                                'src/pcf/pcf.c',
+                                'src/bdf/bdf.c',
+                                'src/sfnt/sfnt.c',
+                                'src/winfonts/winfnt.c',
+                                'src/gzip/ftgzip.c',
+                                'src/lzw/ftlzw.c',
+                                'src/psnames/psnames.c',
+                                'src/pshinter/pshinter.c',
+                                'src/pfr/pfrload.c',
+                                'src/psaux/psaux.c',
+                                'src/cache/ftcache.c'
+                    }
+                    exportedHeaders {
+                        srcDir 'src/main/jni/include'
+                    }
+                }
+            }
+        }
+    }
+}
