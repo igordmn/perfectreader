@@ -1,17 +1,15 @@
 package com.dmi.perfectreader.manualtest
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.SurfaceTexture
 import android.opengl.GLES20.*
 import android.opengl.Matrix
 import android.os.Bundle
 import android.os.Environment.getExternalStorageDirectory
 import android.support.v7.app.AppCompatActivity
-import android.view.Surface
+import com.dmi.util.android.bitmap.BitmapUtils
 import com.dmi.util.android.opengl.*
-import com.dmi.util.android.paint.PaintUtils
-import com.dmi.util.android.surface.SurfaceUtils
-import com.dmi.util.android.surface.SurfaceUtils.setBuffersGeometry
 import com.dmi.util.android.textlib.FontFacePath
 import com.dmi.util.android.textlib.TextConfig
 import com.dmi.util.android.textlib.TextLibrary
@@ -44,15 +42,15 @@ class CanvasTestActivity : AppCompatActivity() {
     private inner class RendererImpl(val size: Size) : FixedRenderer {
         private val sizeF = size.toFloat()
 
-        private val planeExt = PlaneExternal(this@CanvasTestActivity, sizeF)
+        private val plane = GLPlane(this@CanvasTestActivity, sizeF)
 
         private val projectionMatrix = FloatArray(16)
         private val viewMatrix = FloatArray(16)
         private val viewProjectionMatrix = FloatArray(16)
 
-        private val texture: TextureExternal
-        private val surfaceTexture: SurfaceTexture
-        private val surface: Surface
+        private val texture: GLTexture
+        private val bitmap = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888)
+        private val canvas = Canvas(bitmap)
 
         val textLibrary = TextLibrary()
         val facePath = FontFacePath(File(getExternalStorageDirectory(), "perfectreader/fonts/ARIAL.TTF"), 0)
@@ -87,16 +85,10 @@ class CanvasTestActivity : AppCompatActivity() {
             glClearColor(1F, 1F, 1F, 1F)
             glClear(GL_COLOR_BUFFER_BIT)
 
-            texture = TextureExternal()
-            surfaceTexture = SurfaceTexture(texture.id)
-            surfaceTexture.setDefaultBufferSize(size.width, size.height)
-            surface = Surface(surfaceTexture)
-            setBuffersGeometry(surface, size.width, size.height)
+            texture = GLTexture(size)
         }
 
         override fun destroy() {
-            surface.release()
-            surfaceTexture.release()
             textLibrary.destroy()
         }
 
@@ -104,13 +96,14 @@ class CanvasTestActivity : AppCompatActivity() {
             glClearColor(1F, 1F, 1F, 1F)
             glClear(GL_COLOR_BUFFER_BIT)
 
-            val surfaceBuffer = SurfaceUtils.lockBuffer(surface)
-            PaintUtils.fillColor(surfaceBuffer, Color.argb(255, 0, 255, 255))
-            textLibrary.renderGlyphs(facePath, glyphIndices, coordinates, textConfig, surfaceBuffer)
-            SurfaceUtils.unlockBufferAndPost(surface, surfaceBuffer)
+            canvas.drawColor(Color.WHITE)
 
-            surfaceTexture.updateTexImage()
-            planeExt.draw(viewProjectionMatrix, this.texture)
+            val paintBuffer = BitmapUtils.lockBuffer(bitmap)
+            textLibrary.renderGlyphs(facePath, glyphIndices, coordinates, textConfig, paintBuffer)
+            BitmapUtils.unlockBufferAndPost(bitmap, paintBuffer)
+
+            texture.refreshBy(bitmap)
+            plane.draw(viewProjectionMatrix, texture)
         }
     }
 }

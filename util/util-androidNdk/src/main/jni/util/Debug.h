@@ -22,4 +22,9 @@ namespace dmi {
     if (errCode != 0) {   \
         dmi::abortWithLog(__FILE__, __LINE__, 0, errCode); \
     } \
-};
+}
+
+#define CHECKM(condition, message)  \
+    if (!(condition)) {   \
+        dmi::abortWithLog(__FILE__, __LINE__, message); \
+    }

@@ -15,7 +15,7 @@ model {
             platformVersion = projectVersions.minSdk
             toolchain 'clang'
             cppFlags.addAll('-std=c++14', '-fexceptions', '-Wall', '-Wno-unknown-pragmas')
-            ldLibs.addAll('android', 'log', 'GLESv2')
+            ldLibs.addAll('android', 'jnigraphics', 'log', 'GLESv2')
             stl = 'stlport_static'
             abiFilters.addAll(projectAbi)
         }

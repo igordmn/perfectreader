@@ -17,10 +17,9 @@ uint32_t paintUtils::argb2abgr(uint32_t argb) {
 uint32_t paintUtils::abgrBlendAlpha(uint32_t dst, uint32_t src) {
     uint32_t sA = (uint32_t) (src >> 24);
     // todo alpha blending неправильный. см. https://en.wikipedia.org/wiki/Alpha_compositing, раздел Alpha blending
-    return (uint32_t) (dst * (sA / 255) + src * (1 - sA / 255));
+    return src;//(uint32_t) (dst * (sA / 255) + src * (1 - sA / 255));
 }
 
-// todo применить antialiasing при вещественных x и y
 void paintUtils::copyPixels(
         PaintBuffer &dst, uint8_t *src, uint16_t srcWidth, uint16_t srcHeight, uint16_t srcStride,
         int16_t x, int16_t y, uint32_t color
@@ -52,23 +51,4 @@ void paintUtils::copyPixels(
         d += dst.stride;
         s += srcStride;
     }
-}
-
-void paintUtils::fillColor(PaintBuffer &dst, uint32_t color) {
-    uint32_t abgrColor = argb2abgr(color);
-
-    uint32_t rowPixels[dst.width];
-    fill(rowPixels, rowPixels + dst.width, abgrColor);
-
-    uint32_t *p = dst.data;
-    for (uint16_t r = 0; r < dst.height; ++r) {
-        copy(rowPixels, rowPixels + dst.width, p);
-        p += dst.stride;
-    }
-}
-
-extern "C" JNIEXPORT void JNICALL
-Java_com_dmi_util_android_paint_PaintUtils_fillColor(JNIEnv *, jclass, jlong paintBufferPtr, jint color) {
-    PaintBuffer &buffer = *((PaintBuffer *) paintBufferPtr);
-    fillColor(buffer, (uint32_t) color);
 }
