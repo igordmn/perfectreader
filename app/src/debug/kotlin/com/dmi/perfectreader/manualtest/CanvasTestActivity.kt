@@ -3,6 +3,7 @@ package com.dmi.perfectreader.manualtest
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.opengl.GLES20.*
 import android.opengl.Matrix
 import android.os.Bundle
@@ -13,6 +14,7 @@ import com.dmi.util.android.opengl.*
 import com.dmi.util.android.textlib.FontFacePath
 import com.dmi.util.android.textlib.TextConfig
 import com.dmi.util.android.textlib.TextLibrary
+import com.dmi.util.debug.measureTime
 import com.dmi.util.graphic.Size
 import java.io.File
 
@@ -96,10 +98,12 @@ class CanvasTestActivity : AppCompatActivity() {
             glClearColor(1F, 1F, 1F, 1F)
             glClear(GL_COLOR_BUFFER_BIT)
 
-            canvas.drawColor(Color.WHITE)
+            canvas.drawColor(Color.WHITE, PorterDuff.Mode.CLEAR)
 
             val paintBuffer = BitmapUtils.lockBuffer(bitmap)
-            textLibrary.renderGlyphs(facePath, glyphIndices, coordinates, textConfig, paintBuffer)
+            measureTime {
+                textLibrary.renderGlyphs(facePath, glyphIndices, coordinates, textConfig, paintBuffer)
+            }
             BitmapUtils.unlockBufferAndPost(bitmap, paintBuffer)
 
             texture.refreshBy(bitmap)
