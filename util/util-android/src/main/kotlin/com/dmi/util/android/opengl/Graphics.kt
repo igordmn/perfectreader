@@ -68,7 +68,7 @@ object Graphics {
         return ids[0]
     }
 
-    fun getErrorString(error: Int) = when (error) {
+    fun getEGLErrorString(error: Int) = when (error) {
         EGL10.EGL_SUCCESS -> "EGL_SUCCESS"
         EGL10.EGL_NOT_INITIALIZED -> "EGL_NOT_INITIALIZED"
         EGL10.EGL_BAD_ACCESS -> "EGL_BAD_ACCESS"
