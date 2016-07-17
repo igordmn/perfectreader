@@ -77,6 +77,7 @@
 
 # PerfectReader
 -keep class com.dmi.util.android.opengl.GLSurfaceViewExt$RendererExt
+-keep @interface com.dmi.util.android.jni.UsedByNative
 -keep @com.dmi.util.android.jni.UsedByNative class *
 -keepclassmembers class ** {
     @com.dmi.util.android.jni.UsedByNative *;
