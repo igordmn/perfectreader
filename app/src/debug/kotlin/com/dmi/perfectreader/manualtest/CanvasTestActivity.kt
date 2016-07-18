@@ -77,7 +77,7 @@ class CanvasTestActivity : AppCompatActivity() {
         init {
             glDisable(GL_DEPTH_TEST)
             glEnable(GL_BLEND)
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
             glViewport(0, 0, size.width, size.height)
 
             Matrix.orthoM(projectionMatrix, 0, 0F, sizeF.width, sizeF.height, 0F, -1F, 1F)
