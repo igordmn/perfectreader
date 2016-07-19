@@ -43,20 +43,20 @@ namespace {
 }
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_com_dmi_util_android_textlib_TextLibrary_nativeNewTextLibrary(
+Java_com_dmi_util_android_graphics_TextLibrary_nativeNewTextLibrary(
         JNIEnv *, jobject, jint cacheMaxFaces, jint cacheMaxSizes, jint cacheMaxBytes
 ) {
     return (jlong) new TextLibrary((uint16_t) cacheMaxFaces, (uint16_t) cacheMaxSizes, (uint16_t) cacheMaxBytes);
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_dmi_util_android_textlib_TextLibrary_nativeDestroyTextLibrary(JNIEnv *env, jobject instance, jlong libraryPtr) {
+Java_com_dmi_util_android_graphics_TextLibrary_nativeDestroyTextLibrary(JNIEnv *env, jobject instance, jlong libraryPtr) {
     delete (TextLibrary *) libraryPtr;
 }
 
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_dmi_util_android_textlib_TextLibrary_nativeGetGlyphIndices(
+Java_com_dmi_util_android_graphics_TextLibrary_nativeGetGlyphIndices(
         JNIEnv *env, jobject, jlong libraryPtr, jlong facePathPtr, jcharArray jChars, jintArray jIndices
 ) {
     TextLibrary &library = *((TextLibrary *) libraryPtr);
@@ -81,14 +81,14 @@ Java_com_dmi_util_android_textlib_TextLibrary_nativeGetGlyphIndices(
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_dmi_util_android_textlib_TextLibrary_nativeRenderGlyphs(
+Java_com_dmi_util_android_graphics_TextLibrary_nativeRenderGlyphs(
         JNIEnv *env, jobject,
         jlong libraryPtr, jintArray jGlyphIndices, jfloatArray jCoordinates,
-        jlong facePathPtr, jfloat sizeInPixels, jint color, jlong surfaceBufferPtr
+        jlong facePathPtr, jfloat sizeInPixels, jint color, jlong paintBufferPtr
 ) {
     TextLibrary &library = *((TextLibrary *) libraryPtr);
     FontFacePath *facePath = (FontFacePath *) facePathPtr;
-    PaintBuffer &buffer = *((PaintBuffer *) surfaceBufferPtr);
+    PaintBuffer &buffer = *((PaintBuffer *) paintBufferPtr);
 
     FTC_SBitCache sBitCache = library.sBitCache;
 

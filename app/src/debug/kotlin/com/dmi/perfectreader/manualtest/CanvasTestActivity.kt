@@ -1,20 +1,18 @@
 package com.dmi.perfectreader.manualtest
 
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.PorterDuff
 import android.opengl.GLES20.*
 import android.opengl.Matrix
 import android.os.Bundle
 import android.os.Environment.getExternalStorageDirectory
 import android.support.v7.app.AppCompatActivity
-import com.dmi.util.android.bitmap.BitmapUtils
+import com.dmi.util.android.graphics.FontFacePath
+import com.dmi.util.android.graphics.TextConfig
+import com.dmi.util.android.graphics.TextLibrary
 import com.dmi.util.android.opengl.*
-import com.dmi.util.android.textlib.FontFacePath
-import com.dmi.util.android.textlib.TextConfig
-import com.dmi.util.android.textlib.TextLibrary
+import com.dmi.util.android.paint.Canvas
 import com.dmi.util.debug.measureTime
+import com.dmi.util.graphic.Color
 import com.dmi.util.graphic.Size
 import java.io.File
 
@@ -44,19 +42,9 @@ class CanvasTestActivity : AppCompatActivity() {
     private inner class RendererImpl(val size: Size) : FixedRenderer {
         private val sizeF = size.toFloat()
 
-        private val plane = GLPlane(this@CanvasTestActivity, sizeF)
-
-        private val projectionMatrix = FloatArray(16)
-        private val viewMatrix = FloatArray(16)
-        private val viewProjectionMatrix = FloatArray(16)
-
-        private val texture: GLTexture
-        private val bitmap = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888)
-        private val canvas = Canvas(bitmap)
-
         val textLibrary = TextLibrary()
         val facePath = FontFacePath(File(getExternalStorageDirectory(), "perfectreader/fonts/ARIAL.TTF"), 0)
-        val textConfig = TextConfig(facePath, Color.BLUE, 14)
+        val textConfig = TextConfig(facePath, 14F, Color.BLUE.value)
         val glyphIndices = IntArray(bookChars.size).apply {
             textLibrary.getGlyphIndices(facePath, bookChars, this)
         }
@@ -73,6 +61,16 @@ class CanvasTestActivity : AppCompatActivity() {
                 }
             }
         }
+
+        private val plane = GLPlane(this@CanvasTestActivity, sizeF)
+
+        private val projectionMatrix = FloatArray(16)
+        private val viewMatrix = FloatArray(16)
+        private val viewProjectionMatrix = FloatArray(16)
+
+        private val texture: GLTexture
+        private val bitmap = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888)
+        private val canvas = Canvas(textLibrary, bitmap, 1F)
 
         init {
             glDisable(GL_DEPTH_TEST)
@@ -98,13 +96,11 @@ class CanvasTestActivity : AppCompatActivity() {
             glClearColor(1F, 1F, 1F, 1F)
             glClear(GL_COLOR_BUFFER_BIT)
 
-            canvas.drawColor(Color.WHITE, PorterDuff.Mode.CLEAR)
+            canvas.clear()
 
-            val paintBuffer = BitmapUtils.lockBuffer(bitmap)
             measureTime {
-                textLibrary.renderGlyphs(facePath, glyphIndices, coordinates, textConfig, paintBuffer)
+                canvas.drawText(textConfig, glyphIndices, coordinates)
             }
-            BitmapUtils.unlockBufferAndPost(bitmap, paintBuffer)
 
             texture.refreshBy(bitmap)
             plane.draw(viewProjectionMatrix, texture)

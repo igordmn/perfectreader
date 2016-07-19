@@ -1,4 +1,4 @@
-package com.dmi.util.android.textlib;
+package com.dmi.util.android.graphics;
 
 import java.io.File;
 

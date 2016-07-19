@@ -7,7 +7,7 @@
 using namespace dmi;
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_com_dmi_util_android_bitmap_BitmapUtils_nativeLockBuffer(JNIEnv *env, jclass, jobject jBitmap) {
+Java_com_dmi_util_android_graphics_BitmapPaint_nativeLockBuffer(JNIEnv *env, jclass, jobject jBitmap) {
     AndroidBitmapInfo info;
     void *pixels;
 
@@ -25,7 +25,7 @@ Java_com_dmi_util_android_bitmap_BitmapUtils_nativeLockBuffer(JNIEnv *env, jclas
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_dmi_util_android_bitmap_BitmapUtils_nativeUnlockBufferAndPost(JNIEnv *env, jclass, jobject jBitmap, jlong paintBufferPtr) {
+Java_com_dmi_util_android_graphics_BitmapPaint_nativeUnlockBufferAndPost(JNIEnv *env, jclass, jobject jBitmap, jlong paintBufferPtr) {
     delete (PaintBuffer *) paintBufferPtr;
     CHECKE(AndroidBitmap_unlockPixels(env, jBitmap));
 }

@@ -1,6 +1,4 @@
-package com.dmi.util.android.textlib;
-
-import com.dmi.util.android.paint.PaintBuffer;
+package com.dmi.util.android.graphics;
 
 public class TextLibrary {
     private static int CACHE_MAX_FACES = 4;
@@ -17,10 +15,10 @@ public class TextLibrary {
         nativeGetGlyphIndices(nativePtr, facePath.nativePtr, chars, indices);
     }
 
-    public void renderGlyphs(FontFacePath facePath, int[] glyphIndices, float[] coordinates, TextConfig config, PaintBuffer paintBuffer) {
+    public void renderGlyphs(TextConfig config, int[] glyphIndices, float[] coordinates, PaintBuffer paintBuffer) {
         nativeRenderGlyphs(
                 nativePtr, glyphIndices, coordinates,
-                facePath.nativePtr, config.sizeInPixels, config.color,
+                config.facePath.nativePtr, config.sizeInPixels, config.color,
                 paintBuffer.nativePtr
         );
     }

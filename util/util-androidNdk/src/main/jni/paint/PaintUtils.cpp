@@ -1,6 +1,5 @@
 #include "PaintUtils.h"
 
-#include <cmath>
 #include "../util/JniUtils.h"
 
 using namespace std;
@@ -15,33 +14,21 @@ namespace {
         return axgx | xbxx | xxxr;
     }
 
-    inline uint32_t abgrBlendAlpha(uint32_t src, uint32_t dst, uint8_t srcA) {
-        if (srcA == 255) {
-            return src;
-        } else if (srcA == 0) {
-            return dst;
-        } else {
-            uint32_t srcB = (src >> 16) & 0xFF;
-            uint32_t srcG = (src >> 8) & 0xFF;
-            uint32_t srcR = src & 0xFF;
+    inline uint32_t alphaMultiply(uint32_t color, uint32_t alpha) {
+        /*
+         * диапазон 0..255 преобразовывается в 1..256.
+         * в результате можно поделить на 256 быстрым методом (>> 8)
+         * точность меньше, но зато быстро.
+         */
+        alpha += 1;
 
-            uint32_t dstA = dst >> 24;
-            uint32_t dstB = (dst >> 16) & 0xFF;
-            uint32_t dstG = (dst >> 8) & 0xFF;
-            uint32_t dstR = dst & 0xFF;
+        uint32_t xrxb = ((color & 0x00FF00FF) * alpha) >> 8;
+        uint32_t axgx = ((color >> 8) & 0x00FF00FF) * alpha;
+        return xrxb & 0x00FF00FF | axgx & 0xFF00FF00;
+    }
 
-            uint32_t q = dstA * (255 - srcA) / 255;
-            uint32_t outA = srcA + q;
-
-            if (outA > 0) {
-                uint32_t outB = (srcB * srcA + dstB * q) / outA;
-                uint32_t outG = (srcG * srcA + dstG * q) / outA;
-                uint32_t outR = (srcR * srcA + dstR * q) / outA;
-                return outA << 24 | outB << 16 | outG << 8 | outR;
-            } else {
-                return 0;
-            }
-        }
+    inline uint32_t abgrBlendAlpha(uint32_t src, uint32_t preMultipliedDst, uint32_t srcA) {
+        return alphaMultiply(src, srcA) + alphaMultiply(preMultipliedDst, (uint32_t) (255 - srcA));
     }
 }
 

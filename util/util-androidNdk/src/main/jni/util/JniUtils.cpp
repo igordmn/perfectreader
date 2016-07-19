@@ -8,7 +8,6 @@ namespace {
     jmethodID getCurrentStackTraceMethod;
 }
 
-
 namespace dmi {
     void registerJniUtils(JavaVM* vm) {
         javaVM = vm;
