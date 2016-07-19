@@ -12,8 +12,8 @@ import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.util.graphic.Color
 
 class FramePainter : ObjectPainter<LayoutFrame> {
-    private val backgroundPaint = Paint()
-    private val borderPaint = Paint()
+    private val backgroundPaint = Paint().apply { isAntiAlias = true }
+    private val borderPaint = Paint().apply { isAntiAlias = true }
     private val path = Path()
 
     override fun paintItself(obj: LayoutFrame, context: PageContext, canvas: Canvas) {
@@ -33,26 +33,26 @@ class FramePainter : ObjectPainter<LayoutFrame> {
             paintBorder(canvas, borders.left, { borderWidth ->
                 moveTo(0F, 0F)
                 lineTo(0F, height)
-                lineTo(borderWidth, height - borderWidth)
-                lineTo(borderWidth, borderWidth)
+                lineTo(borderWidth, height - borders.bottom.width)
+                lineTo(borderWidth, borders.top.width)
             })
             paintBorder(canvas, borders.right, { borderWidth ->
                 moveTo(width, 0F)
                 lineTo(width, height)
-                lineTo(width - borderWidth, height - borderWidth)
-                lineTo(width - borderWidth, borderWidth)
+                lineTo(width - borderWidth, height - borders.bottom.width)
+                lineTo(width - borderWidth, borders.top.width)
             })
             paintBorder(canvas, borders.top, { borderWidth ->
                 moveTo(0F, 0F)
                 lineTo(width, 0F)
-                lineTo(width - borderWidth, borderWidth)
-                lineTo(borderWidth, borderWidth)
+                lineTo(width - borders.right.width, borderWidth)
+                lineTo(borders.left.width, borderWidth)
             })
             paintBorder(canvas, borders.bottom, { borderWidth ->
                 moveTo(0F, height)
                 lineTo(width, height)
-                lineTo(width - borderWidth, height - borderWidth)
-                lineTo(borderWidth, height - borderWidth)
+                lineTo(width - borders.right.width, height - borderWidth)
+                lineTo(borders.left.width, height - borderWidth)
             })
         }
     }

@@ -181,8 +181,8 @@ class LayoutTestActivity : AppCompatActivity() {
                     Length.Absolute(10F)
             ),
             ComputedFrame.Borders(
-                    ComputedFrame.Border(4F, Color.RED),
-                    ComputedFrame.Border(4F, Color.GREEN),
+                    ComputedFrame.Border(8F, Color.RED),
+                    ComputedFrame.Border(8F, Color.GREEN),
                     ComputedFrame.Border(4F, Color.BLUE),
                     ComputedFrame.Border(4F, Color.MAGENTA)
             ),
