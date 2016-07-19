@@ -6,7 +6,7 @@ import com.dmi.perfectreader.data.UserSettings
 import com.dmi.perfectreader.fragment.book.*
 import com.dmi.perfectreader.fragment.book.bitmap.AndroidBitmapDecoder
 import com.dmi.perfectreader.fragment.book.bitmap.CachedBitmapDecoder
-import com.dmi.perfectreader.fragment.book.content.ComputedSequence
+import com.dmi.perfectreader.fragment.book.content.ConfiguredSequence
 import com.dmi.perfectreader.fragment.book.content.obj.param.settingsLayoutConfig
 import com.dmi.perfectreader.fragment.book.layout.LayoutSequence
 import com.dmi.perfectreader.fragment.book.layout.UniversalObjectLayouter
@@ -71,8 +71,8 @@ class AppObjects(applicationContext: Context) {
                     val createPagesLoader = { pages: Pages ->
                         val layoutConfig = settingsLayoutConfig(applicationContext, userSettings)
                         val pageConfig = settingsPageConfig(size, userSettings)
-                        val computedSequence = ComputedSequence(bookData.content.sequence, layoutConfig)
-                        val layoutSequence = LayoutSequence(computedSequence, layouter, pageConfig.contentSize)
+                        val configuredSequence = ConfiguredSequence(bookData.content.sequence, layoutConfig)
+                        val layoutSequence = LayoutSequence(configuredSequence, layouter, pageConfig.contentSize)
                         val layoutPartSequence = LayoutPartSequence(layoutSequence)
                         val layoutColumnSequence = LayoutColumnSequence(layoutPartSequence, pageConfig.contentSize.height)
                         val pageSequence = PageSequence(layoutColumnSequence, pageConfig)

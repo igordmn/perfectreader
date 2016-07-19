@@ -12,7 +12,7 @@ class UniversalObjectLayouter(
         textMetrics: TextMetrics,
         liner: Liner,
         bitmapDecoder: BitmapDecoder
-) : ObjectLayouter<ComputedObject, LayoutObject> {
+) : ObjectLayouter<ConfiguredObject, LayoutObject> {
     private val childLayouter = CachedLayouter(this)
 
     private val paragraphLayouter = ParagraphLayouter(childLayouter, textMetrics, liner)
@@ -20,11 +20,11 @@ class UniversalObjectLayouter(
     private val frameLayouter = FrameLayouter(childLayouter)
     private val boxLayouter = BoxLayouter(childLayouter)
 
-    override fun layout(obj: ComputedObject, space: LayoutSpace) = when (obj) {
-        is ComputedParagraph -> paragraphLayouter.layout(obj, space)
-        is ComputedImage -> imageLayouter.layout(obj, space)
-        is ComputedFrame -> frameLayouter.layout(obj, space)
-        is ComputedBox -> boxLayouter.layout(obj, space)
+    override fun layout(obj: ConfiguredObject, space: LayoutSpace) = when (obj) {
+        is ConfiguredParagraph -> paragraphLayouter.layout(obj, space)
+        is ConfiguredImage -> imageLayouter.layout(obj, space)
+        is ConfiguredFrame -> frameLayouter.layout(obj, space)
+        is ConfiguredBox -> boxLayouter.layout(obj, space)
         else -> throw UnsupportedOperationException()
     }
 }

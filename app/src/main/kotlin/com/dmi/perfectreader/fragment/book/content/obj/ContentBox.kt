@@ -3,7 +3,7 @@ package com.dmi.perfectreader.fragment.book.content.obj
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.content.obj.param.Align
 import com.dmi.perfectreader.fragment.book.content.obj.param.LayoutConfig
-import com.dmi.perfectreader.fragment.book.content.obj.param.ComputedSize
+import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredSize
 import com.dmi.perfectreader.fragment.book.content.obj.param.ContentSize
 import com.dmi.perfectreader.fragment.book.content.obj.param.StyleType
 
@@ -16,7 +16,7 @@ class ContentBox(
 ) : ContentObject(range) {
     override val length = children.sumByDouble { it.length }
 
-    override fun configure(config: LayoutConfig) = ComputedBox(
+    override fun configure(config: LayoutConfig) = ConfiguredBox(
             size.configure(),
             contentAlign ?: Align.LEFT,
             children.map { it.configure(config) },
@@ -24,9 +24,9 @@ class ContentBox(
     )
 }
 
-class ComputedBox(
-        val size: ComputedSize,
+class ConfiguredBox(
+        val size: ConfiguredSize,
         val contentAlign: Align,
-        val children: List<ComputedObject>,
+        val children: List<ConfiguredObject>,
         range: LocationRange
-) : ComputedObject(range)
+) : ConfiguredObject(range)

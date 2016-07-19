@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.fragment.book.content.obj
 
-import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.content.obj.param.LayoutConfig
+import com.dmi.perfectreader.fragment.book.location.LocationRange
 import java.io.Serializable
 
 abstract class ContentObject(val range: LocationRange) : Serializable {
@@ -14,7 +14,7 @@ abstract class ContentObject(val range: LocationRange) : Serializable {
      */
     abstract val length: Double
 
-    abstract fun configure(config: LayoutConfig): ComputedObject
+    abstract fun configure(config: LayoutConfig): ConfiguredObject
 }
 
-abstract class ComputedObject(val range: LocationRange)
+abstract class ConfiguredObject(val range: LocationRange)

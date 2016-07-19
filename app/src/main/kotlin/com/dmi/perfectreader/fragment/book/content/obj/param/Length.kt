@@ -3,14 +3,14 @@ package com.dmi.perfectreader.fragment.book.content.obj.param
 import java.io.Serializable
 
 interface Length : Serializable {
-    fun compute(percentBase: Float): Float
+    fun configure(percentBase: Float): Float
 
     data class Absolute(val value: Float) : Length {
         init {
             require(value >= 0F)
         }
 
-        override fun compute(percentBase: Float) = value
+        override fun configure(percentBase: Float) = value
     }
 
     data class Percent(val percent: Float) : Length {
@@ -18,7 +18,7 @@ interface Length : Serializable {
             require(percent >= 0F)
         }
 
-        override fun compute(percentBase: Float) = percent * percentBase
+        override fun configure(percentBase: Float) = percent * percentBase
     }
 
     data class Multiplier(val other: Length, val value: Float) : Length {
@@ -26,6 +26,6 @@ interface Length : Serializable {
             require(value >= 0F)
         }
 
-        override fun compute(percentBase: Float) = other.compute(percentBase) * value
+        override fun configure(percentBase: Float) = other.configure(percentBase) * value
     }
 }

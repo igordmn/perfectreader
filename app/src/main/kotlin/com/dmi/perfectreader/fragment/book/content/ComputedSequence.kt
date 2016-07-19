@@ -6,7 +6,7 @@ import com.dmi.perfectreader.fragment.book.location.LocatedSequence
 import com.dmi.perfectreader.fragment.book.location.map
 import com.dmi.util.collection.SequenceEntry as Entry
 
-fun ComputedSequence(
+fun ConfiguredSequence(
         contentSequence: LocatedSequence<ContentObject>,
         layoutConfig: LayoutConfig
 ) = contentSequence.map {

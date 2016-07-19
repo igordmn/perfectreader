@@ -6,7 +6,7 @@ import android.graphics.Paint.HINTING_OFF
 import android.graphics.Paint.HINTING_ON
 import android.graphics.RectF
 import android.text.TextPaint
-import com.dmi.perfectreader.fragment.book.content.obj.param.ComputedFontStyle
+import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredFontStyle
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutSpaceText
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutText
 import com.dmi.perfectreader.fragment.book.location.Location
@@ -60,10 +60,10 @@ open class TextPainter : ObjectPainter<LayoutText> {
     private class PaintCache {
         private val paint = TextPaint()
 
-        private var lastStyle: ComputedFontStyle? = null
+        private var lastStyle: ConfiguredFontStyle? = null
         private var lastSelected: Boolean? = null
 
-        fun forStyle(style: ComputedFontStyle, selected: Boolean): TextPaint {
+        fun forStyle(style: ConfiguredFontStyle, selected: Boolean): TextPaint {
             if (lastStyle !== style || lastSelected !== selected) {
                 paint.isAntiAlias = style.renderConfig.antialias
                 paint.isSubpixelText = style.renderConfig.subpixel

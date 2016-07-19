@@ -8,7 +8,7 @@ class ContentFontStyle(
         val color: Color?
 ) : Serializable
 
-class ComputedFontStyle(
+class ConfiguredFontStyle(
         val size: Float,
         val color: Color,
         val renderConfig: TextRenderConfig,

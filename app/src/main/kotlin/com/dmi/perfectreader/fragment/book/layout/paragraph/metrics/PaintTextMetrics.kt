@@ -2,13 +2,13 @@ package com.dmi.perfectreader.fragment.book.layout.paragraph.metrics
 
 import android.graphics.Paint
 import android.text.TextPaint
-import com.dmi.perfectreader.fragment.book.content.obj.param.ComputedFontStyle
+import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredFontStyle
 import com.dmi.util.lang.Reusable
 import com.dmi.util.lang.ReusableFloatArray
 
 class PaintTextMetrics : TextMetrics {
     @Reusable
-    override fun charWidths(text: CharSequence, style: ComputedFontStyle): FloatArray {
+    override fun charWidths(text: CharSequence, style: ConfiguredFontStyle): FloatArray {
         val textPaint = Reusables.textPaint
         val charWidths = Reusables.charWidths(text.length)
 
@@ -25,7 +25,7 @@ class PaintTextMetrics : TextMetrics {
     }
 
     @Reusable
-    override fun verticalMetrics(style: ComputedFontStyle): TextMetrics.VerticalMetrics {
+    override fun verticalMetrics(style: ConfiguredFontStyle): TextMetrics.VerticalMetrics {
         val textPaint = Reusables.textPaint
         val verticalMetrics = Reusables.verticalMetrics
         val paintFontMetrics = Reusables.paintFontMetrics

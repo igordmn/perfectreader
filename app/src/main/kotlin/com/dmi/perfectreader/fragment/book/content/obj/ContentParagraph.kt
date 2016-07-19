@@ -21,7 +21,7 @@ class ContentParagraph(
         val DEFAULT_FONT_SIZE = 20F
     }
 
-    override fun configure(config: LayoutConfig) = ComputedParagraph(
+    override fun configure(config: LayoutConfig) = ConfiguredParagraph(
             if (config.ignoreDeclaredLocale) config.defaultLocale else locale ?: config.defaultLocale,
             runs.map { it.configure(config) },
             firstLineIndent ?: config.firstLineIndent,
@@ -32,12 +32,12 @@ class ContentParagraph(
 
     sealed class Run {
         abstract val length: Double
-        abstract fun configure(config: LayoutConfig): ComputedParagraph.Run
+        abstract fun configure(config: LayoutConfig): ConfiguredParagraph.Run
 
         class Object(val obj: ContentObject) : Run() {
             override val length = obj.length
 
-            override fun configure(config: LayoutConfig) = ComputedParagraph.Run.Object(
+            override fun configure(config: LayoutConfig) = ConfiguredParagraph.Run.Object(
                     obj.configure(config)
             )
         }
@@ -45,14 +45,14 @@ class ContentParagraph(
         class Text(val text: String, val style: ContentFontStyle, val range: LocationRange) : Run() {
             override val length = text.length.toDouble()
 
-            override fun configure(config: LayoutConfig) = ComputedParagraph.Run.Text(
+            override fun configure(config: LayoutConfig) = ConfiguredParagraph.Run.Text(
                     text, fontStyleCache.configure(style, config), range
             )
         }
     }
 }
 
-class ComputedParagraph(
+class ConfiguredParagraph(
         val locale: Locale,
         val runs: List<Run>,
         val firstLineIndent: Float,
@@ -60,10 +60,10 @@ class ComputedParagraph(
         val hyphenation: Boolean,
         val hangingConfig: HangingConfig,
         range: LocationRange
-) : ComputedObject(range) {
+) : ConfiguredObject(range) {
     sealed class Run {
-        class Object(val obj: ComputedObject) : Run()
-        class Text(val text: String, val style: ComputedFontStyle, val range: LocationRange) : Run() {
+        class Object(val obj: ConfiguredObject) : Run()
+        class Text(val text: String, val style: ConfiguredFontStyle, val range: LocationRange) : Run() {
             fun subrange(beginIndex: Int, endIndex: Int) = range.subrange(
                     beginIndex.toDouble() / text.length,
                     endIndex.toDouble() / text.length
@@ -77,24 +77,24 @@ class ComputedParagraph(
 }
 
 private class FontStyleCache {
-    private val lastComputed = WeakHashMap<ContentFontStyle, ComputedFontStyle>()
+    private val lastConfigured = WeakHashMap<ContentFontStyle, ConfiguredFontStyle>()
     private val lastConfigs = WeakHashMap<ContentFontStyle, LayoutConfig>()
 
-    fun configure(style: ContentFontStyle, config: LayoutConfig): ComputedFontStyle {
-        val lastComputed = lastComputed[style]
+    fun configure(style: ContentFontStyle, config: LayoutConfig): ConfiguredFontStyle {
+        val lastConfigured = lastConfigured[style]
         val lastConfig = lastConfigs[style]
-        if (lastComputed != null && lastConfig === config) {
-            return lastComputed
+        if (lastConfigured != null && lastConfig === config) {
+            return lastConfigured
         } else {
-            val computed = style.configure(config)
-            this.lastComputed[style] = computed
+            val configured = style.configure(config)
+            this.lastConfigured[style] = configured
             this.lastConfigs[style] = config
-            return computed
+            return configured
         }
     }
 }
 
-private fun ContentFontStyle.configure(config: LayoutConfig) = ComputedFontStyle(
+private fun ContentFontStyle.configure(config: LayoutConfig) = ConfiguredFontStyle(
         (size ?: ContentParagraph.DEFAULT_FONT_SIZE) * config.fontSizeMultiplier,
         color ?: Color.BLACK,
         config.textRenderConfig,

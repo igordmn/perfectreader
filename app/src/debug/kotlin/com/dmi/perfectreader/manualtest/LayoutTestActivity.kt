@@ -7,9 +7,9 @@ import android.view.View
 import com.dmi.perfectreader.fragment.book.bitmap.AndroidBitmapDecoder
 import com.dmi.perfectreader.fragment.book.bitmap.CachedBitmapDecoder
 import com.dmi.perfectreader.fragment.book.content.obj.*
-import com.dmi.perfectreader.fragment.book.content.obj.ComputedParagraph.Run
+import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredParagraph.Run
 import com.dmi.perfectreader.fragment.book.content.obj.param.*
-import com.dmi.perfectreader.fragment.book.content.obj.param.ComputedSize.Dimension
+import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredSize.Dimension
 import com.dmi.perfectreader.fragment.book.layout.UniversalObjectLayouter
 import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.CompositeBreaker
@@ -65,13 +65,13 @@ class LayoutTestActivity : AppCompatActivity() {
         val selectionConfig = SelectionConfig(Color(255, 180, 213, 254), Color.WHITE)
         val hangingConfig = DefaultHangingConfig
 
-        val testParagraph = ComputedParagraph(
+        val testParagraph = ConfiguredParagraph(
                 Locale.US,
                 listOf(
-                        Run.Text("This is text. This is text. This is te", ComputedFontStyle(25F, Color.RED, textRenderConfig, selectionConfig), range(0, 1000)),
-                        Run.Text("xt. This is text.             This is text", ComputedFontStyle(15F, Color.BLUE, textRenderConfig, selectionConfig), range(1200, 1300)),
-                        Run.Text(" texttextextetetxetextxtextx", ComputedFontStyle(15F, Color.BLACK, textRenderConfig, selectionConfig), range(1300, 1400)),
-                        Run.Text("-text-text-text-exte-tet-xete-xtxt-extx,hhh,jj,,kk,llh,hh", ComputedFontStyle(15F, Color.BLACK, textRenderConfig, selectionConfig), range(1400, 1500))
+                        Run.Text("This is text. This is text. This is te", ConfiguredFontStyle(25F, Color.RED, textRenderConfig, selectionConfig), range(0, 1000)),
+                        Run.Text("xt. This is text.             This is text", ConfiguredFontStyle(15F, Color.BLUE, textRenderConfig, selectionConfig), range(1200, 1300)),
+                        Run.Text(" texttextextetetxetextxtextx", ConfiguredFontStyle(15F, Color.BLACK, textRenderConfig, selectionConfig), range(1300, 1400)),
+                        Run.Text("-text-text-text-exte-tet-xete-xtxt-extx,hhh,jj,,kk,llh,hh", ConfiguredFontStyle(15F, Color.BLACK, textRenderConfig, selectionConfig), range(1400, 1500))
                 ),
                 0F,
                 TextAlign.JUSTIFY,
@@ -79,8 +79,8 @@ class LayoutTestActivity : AppCompatActivity() {
                 hangingConfig, range(0, 1500)
         )
 
-        val image = testFrame(ComputedImage(
-                ComputedSize(Dimension.Auto(), Dimension.Auto()),
+        val image = testFrame(ConfiguredImage(
+                ConfiguredSize(Dimension.Auto(), Dimension.Auto()),
                 "manualtest/pagebook/image.png",
                 range(1500, 1600)
         ))
@@ -101,9 +101,9 @@ class LayoutTestActivity : AppCompatActivity() {
 
         val paragraphs = bookText.split("\n").mapIndexed { i, it ->
             val range = range(1600 + i * 100, 1600 + (i + 1) * 100)
-            ComputedParagraph(
+            ConfiguredParagraph(
                     Locale("ru", "RU"),
-                    listOf(Run.Text(it, ComputedFontStyle(10F, Color.BLACK, textRenderConfig, selectionConfig), range)),
+                    listOf(Run.Text(it, ConfiguredFontStyle(10F, Color.BLACK, textRenderConfig, selectionConfig), range)),
                     0F,
                     TextAlign.JUSTIFY,
                     true,
@@ -113,23 +113,23 @@ class LayoutTestActivity : AppCompatActivity() {
         }
 
         val boxedParagraphs = paragraphs.map {
-            testFrame(ComputedBox(
-                    ComputedSize(Dimension.Auto(), Dimension.Auto()),
+            testFrame(ConfiguredBox(
+                    ConfiguredSize(Dimension.Auto(), Dimension.Auto()),
                     Align.LEFT,
                     listOf(it),
                     it.range
             ))
         }
 
-        val box1 = testFrame(ComputedBox(
-                ComputedSize(Dimension.Auto(), Dimension.Auto()),
+        val box1 = testFrame(ConfiguredBox(
+                ConfiguredSize(Dimension.Auto(), Dimension.Auto()),
                 Align.LEFT,
                 boxedParagraphs,
                 LocationRange(boxedParagraphs.first().range.begin, boxedParagraphs.last().range.end)
         ))
 
-        val rootBox = ComputedBox(
-                ComputedSize(Dimension.Auto(), Dimension.Auto()),
+        val rootBox = ConfiguredBox(
+                ConfiguredSize(Dimension.Auto(), Dimension.Auto()),
                 Align.LEFT,
                 listOf(testParagraph, image) + box1,
                 LocationRange(testParagraph.range.begin, box1.range.end)
@@ -147,8 +147,8 @@ class LayoutTestActivity : AppCompatActivity() {
         }
 
         val selectionRange = run {
-            val run1 = testParagraph.runs[0] as ComputedParagraph.Run.Text
-            val run2 = paragraphs[1].runs[0] as ComputedParagraph.Run.Text
+            val run1 = testParagraph.runs[0] as ConfiguredParagraph.Run.Text
+            val run2 = paragraphs[1].runs[0] as ConfiguredParagraph.Run.Text
             LocationRange(run1.sublocation(1), run2.sublocation(10))
         }
         val context = PageContext(selectionRange)
@@ -167,26 +167,26 @@ class LayoutTestActivity : AppCompatActivity() {
         setContentView(view)
     }
 
-    fun testFrame(obj: ComputedObject) = ComputedFrame(
-            ComputedFrame.Margins(
+    fun testFrame(obj: ConfiguredObject) = ConfiguredFrame(
+            ConfiguredFrame.Margins(
                     Length.Absolute(10F),
                     Length.Absolute(10F),
                     Length.Absolute(10F),
                     Length.Absolute(10F)
             ),
-            ComputedFrame.Paddings(
+            ConfiguredFrame.Paddings(
                     Length.Absolute(10F),
                     Length.Absolute(10F),
                     Length.Absolute(10F),
                     Length.Absolute(10F)
             ),
-            ComputedFrame.Borders(
-                    ComputedFrame.Border(8F, Color.RED),
-                    ComputedFrame.Border(8F, Color.GREEN),
-                    ComputedFrame.Border(4F, Color.BLUE),
-                    ComputedFrame.Border(4F, Color.MAGENTA)
+            ConfiguredFrame.Borders(
+                    ConfiguredFrame.Border(8F, Color.RED),
+                    ConfiguredFrame.Border(8F, Color.GREEN),
+                    ConfiguredFrame.Border(4F, Color.BLUE),
+                    ConfiguredFrame.Border(4F, Color.MAGENTA)
             ),
-            ComputedFrame.Background(Color.GRAY),
+            ConfiguredFrame.Background(Color.GRAY),
             obj,
             obj.range
     )

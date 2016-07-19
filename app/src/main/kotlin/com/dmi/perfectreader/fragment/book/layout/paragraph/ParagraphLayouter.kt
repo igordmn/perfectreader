@@ -1,9 +1,9 @@
 package com.dmi.perfectreader.fragment.book.layout.paragraph
 
 import com.carrotsearch.hppc.FloatArrayList
-import com.dmi.perfectreader.fragment.book.content.obj.ComputedObject
-import com.dmi.perfectreader.fragment.book.content.obj.ComputedParagraph
-import com.dmi.perfectreader.fragment.book.content.obj.ComputedParagraph.Run
+import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredObject
+import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredParagraph
+import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredParagraph.Run
 import com.dmi.perfectreader.fragment.book.content.obj.param.TextAlign
 import com.dmi.perfectreader.fragment.book.layout.ObjectLayouter
 import com.dmi.perfectreader.fragment.book.layout.common.LayoutChars
@@ -21,15 +21,15 @@ import java.lang.Math.max
 import java.util.*
 
 class ParagraphLayouter(
-        private val childrenLayouter: ObjectLayouter<ComputedObject, LayoutObject>,
+        private val childrenLayouter: ObjectLayouter<ConfiguredObject, LayoutObject>,
         private val textMetrics: TextMetrics,
         private val liner: Liner
-) : ObjectLayouter<ComputedParagraph, LayoutParagraph> {
+) : ObjectLayouter<ConfiguredParagraph, LayoutParagraph> {
     companion object {
         private val HYPHEN_STRING = LayoutChars.HYPHEN.toString()
     }
 
-    override fun layout(obj: ComputedParagraph, space: LayoutSpace): LayoutParagraph {
+    override fun layout(obj: ConfiguredParagraph, space: LayoutSpace): LayoutParagraph {
         val runs = obj.runs
         val locale = obj.locale
         val widthArea = space.width.area
@@ -392,7 +392,7 @@ class ParagraphLayouter(
 
     private class ParagraphBuilder(
             private val width: Float,
-            private val obj: ComputedParagraph
+            private val obj: ConfiguredParagraph
     ) {
         private val children = ArrayList<LayoutChild>()
         private var height = 0F

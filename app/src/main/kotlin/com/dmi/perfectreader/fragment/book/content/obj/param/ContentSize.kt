@@ -5,37 +5,37 @@ import com.dmi.util.lang.safeEquals
 import java.io.Serializable
 
 class ContentSize(val width: Dimension, val height: Dimension) : Serializable {
-    fun configure() = ComputedSize(
+    fun configure() = ConfiguredSize(
             width.configure(),
             height.configure()
     )
 
     class Dimension(val value: Length?, val min: Length?, val max: Length?) {
-        fun configure(): ComputedSize.Dimension {
-            val limits = ComputedSize.Limits(
+        fun configure(): ConfiguredSize.Dimension {
+            val limits = ConfiguredSize.Limits(
                     min ?: Length.Absolute(0F),
                     max ?: Length.Absolute(Float.MAX_VALUE)
             )
             return if (value == null) {
-                ComputedSize.Dimension.Auto(limits)
+                ConfiguredSize.Dimension.Auto(limits)
             } else {
-                ComputedSize.Dimension.Fixed(value, limits)
+                ConfiguredSize.Dimension.Fixed(value, limits)
             }
         }
     }
 }
 
-data class ComputedSize(val width: Dimension, val height: Dimension) {
+data class ConfiguredSize(val width: Dimension, val height: Dimension) {
     sealed class Dimension {
         class Auto(val limits: Limits = Limits.NONE) : Dimension() {
-            fun compute(autoValue: Float, percentBase: Float) = limits.clampCompute(autoValue, percentBase)
+            fun configure(autoValue: Float, percentBase: Float) = limits.clampCompute(autoValue, percentBase)
 
             override fun equals(other: Any?) = safeEquals(other) { limits == it.limits }
             override fun hashCode() = limits.hashCode()
         }
 
         class Fixed(val value: Length, val limits: Limits = Limits.NONE) : Dimension() {
-            fun compute(percentBase: Float) = limits.clampCompute(value.compute(percentBase), percentBase)
+            fun configure(percentBase: Float) = limits.clampCompute(value.configure(percentBase), percentBase)
 
             override fun equals(other: Any?) = safeEquals(other) { value == it.value && limits == it.limits }
             override fun hashCode() = com.dmi.util.lang.hashCode(value.hashCode(), limits.hashCode())
@@ -49,8 +49,8 @@ data class ComputedSize(val width: Dimension, val height: Dimension) {
 
         fun clampCompute(value: Float, percentBase: Float) = clamp(
                 value,
-                min.compute(percentBase),
-                max.compute(percentBase)
+                min.configure(percentBase),
+                max.configure(percentBase)
         )
     }
 }

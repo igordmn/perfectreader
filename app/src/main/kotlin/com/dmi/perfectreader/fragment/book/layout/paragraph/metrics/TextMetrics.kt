@@ -1,13 +1,13 @@
 package com.dmi.perfectreader.fragment.book.layout.paragraph.metrics
 
-import com.dmi.perfectreader.fragment.book.content.obj.param.ComputedFontStyle
+import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredFontStyle
 import com.dmi.util.lang.Reusable
 
 interface TextMetrics {
     @Reusable
-    fun charWidths(text: CharSequence, style: ComputedFontStyle): FloatArray
+    fun charWidths(text: CharSequence, style: ConfiguredFontStyle): FloatArray
 
-    fun verticalMetrics(style: ComputedFontStyle): VerticalMetrics
+    fun verticalMetrics(style: ConfiguredFontStyle): VerticalMetrics
 
     @Reusable
     class VerticalMetrics {
