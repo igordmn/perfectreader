@@ -11,14 +11,14 @@ public class TextLibrary {
         nativeDestroyTextLibrary(nativePtr);
     }
 
-    public void getGlyphIndices(FontFacePath facePath, char[] chars, int[] indices) {
+    public void getGlyphIndices(FontFaceID facePath, char[] chars, int[] indices) {
         nativeGetGlyphIndices(nativePtr, facePath.nativePtr, chars, indices);
     }
 
     public void renderGlyphs(TextConfig config, int[] glyphIndices, float[] coordinates, PaintBuffer paintBuffer) {
         nativeRenderGlyphs(
                 nativePtr, glyphIndices, coordinates,
-                config.facePath.nativePtr, config.sizeInPixels, config.color,
+                config.faceID.nativePtr, config.sizeInPixels, config.color,
                 paintBuffer.nativePtr
         );
     }
@@ -26,7 +26,7 @@ public class TextLibrary {
     private native long nativeNewTextLibrary(int cacheMaxFaces, int cacheMaxSizes, int cacheMaxBytes);
     private native void nativeDestroyTextLibrary(long libraryPtr);
 
-    private native void nativeGetGlyphIndices(long libraryPtr, long facePathPtr, char[] chars, int[] indices);
+    private native void nativeGetGlyphIndices(long libraryPtr, long faceIDPtr, char[] chars, int[] indices);
     private native void nativeRenderGlyphs(long libraryPtr,
             int[] glyphIndices, float[] coordinates,
             long facePathPtr, float sizeInPixels, int color,

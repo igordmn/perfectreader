@@ -8,7 +8,7 @@
 #include "../paint/PaintBuffer.h"
 #include "../paint/PaintUtils.h"
 #include "FTErrors.h"
-#include "FontFacePath.h"
+#include "FontFaceID.h"
 
 using namespace std;
 using namespace dmi;
@@ -22,9 +22,9 @@ namespace {
         FTC_ImageCache imageCache;
         FTC_SBitCache sBitCache;
 
-        static FT_Error FaceRequester(FTC_FaceID faceID, FT_Library library, void *reqData, FT_Face *face) {
-            FontFacePath *facePath = (FontFacePath *) faceID;
-            FT_CHECK(FT_New_Face(library, facePath->filePath.c_str(), 0, face));
+        static FT_Error FaceRequester(FTC_FaceID ftFaceID, FT_Library library, void *reqData, FT_Face *face) {
+            FontFaceID *faceID = (FontFaceID *) ftFaceID;
+            FT_CHECK(FT_New_Face(library, faceID->filePath.c_str(), 0, face));
             return 0;
         }
 
@@ -60,7 +60,7 @@ Java_com_dmi_util_android_graphics_TextLibrary_nativeGetGlyphIndices(
         JNIEnv *env, jobject, jlong libraryPtr, jlong facePathPtr, jcharArray jChars, jintArray jIndices
 ) {
     TextLibrary &library = *((TextLibrary *) libraryPtr);
-    FontFacePath *facePath = (FontFacePath *) facePathPtr;
+    FontFaceID *facePath = (FontFaceID *) facePathPtr;
 
     FTC_Manager manager = library.manager;
     FT_Face face;
@@ -84,10 +84,10 @@ extern "C" JNIEXPORT void JNICALL
 Java_com_dmi_util_android_graphics_TextLibrary_nativeRenderGlyphs(
         JNIEnv *env, jobject,
         jlong libraryPtr, jintArray jGlyphIndices, jfloatArray jCoordinates,
-        jlong facePathPtr, jfloat sizeInPixels, jint color, jlong paintBufferPtr
+        jlong faceIDPtr, jfloat sizeInPixels, jint color, jlong paintBufferPtr
 ) {
     TextLibrary &library = *((TextLibrary *) libraryPtr);
-    FontFacePath *facePath = (FontFacePath *) facePathPtr;
+    FontFaceID *faceID = (FontFaceID *) faceIDPtr;
     PaintBuffer &buffer = *((PaintBuffer *) paintBufferPtr);
 
     FTC_SBitCache sBitCache = library.sBitCache;
@@ -97,7 +97,7 @@ Java_com_dmi_util_android_graphics_TextLibrary_nativeRenderGlyphs(
     jfloat *coordinates = env->GetFloatArrayElements(jCoordinates, nullptr);
 
     FTC_ScalerRec scaler;
-    scaler.face_id = facePath;
+    scaler.face_id = faceID;
     scaler.pixel = 0;
     scaler.width = (uint32_t) (sizeInPixels * 64);
     scaler.height = (uint32_t) (sizeInPixels * 64);

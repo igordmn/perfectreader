@@ -42,7 +42,7 @@ class Canvas(private val textLibrary: TextLibrary, private val bitmap: Bitmap, p
     fun drawText(textConfig: TextConfig, glyphIndices: IntArray, coordinates: FloatArray) {
         BitmapPaint.lockBuffer(paintBuffer, bitmap)
         scaledTextConfig.apply {
-            facePath = textConfig.facePath
+            faceID = textConfig.faceID
             sizeInPixels = textConfig.sizeInPixels * scale
             color = textConfig.color
         }

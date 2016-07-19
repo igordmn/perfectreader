@@ -2,12 +2,12 @@ package com.dmi.util.android.graphics;
 
 import java.io.File;
 
-public class FontFacePath {
+public class FontFaceID {
     final long nativePtr;
     public final File file;
     public final int index;
 
-    public FontFacePath(File file, int index) {
+    public FontFaceID(File file, int index) {
         this.nativePtr = nativeNewFontFace(file.getAbsolutePath(), index);
         this.file = file;
         this.index = index;
