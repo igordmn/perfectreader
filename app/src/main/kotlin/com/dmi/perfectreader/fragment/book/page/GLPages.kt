@@ -6,8 +6,9 @@ import com.dmi.perfectreader.fragment.book.page.PagesRenderModel.Companion.MAX_L
 import com.dmi.perfectreader.fragment.book.page.PagesRenderModel.Slide
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.paint.PagePainter
-import com.dmi.util.android.opengl.GLPlane
+import com.dmi.util.android.opengl.GLColorPlane
 import com.dmi.util.android.opengl.GLTexture
+import com.dmi.util.android.opengl.GLTexturePlane
 import com.dmi.util.collection.ImmediatelyCreatePool
 import com.dmi.util.ext.merge
 import com.dmi.util.graphic.Size
@@ -28,13 +29,13 @@ class GLPages(
     private val viewMatrix = FloatArray(16)
     private val viewProjectionMatrix = FloatArray(16)
 
-    private val plane = GLPlane(context, sizeF / density)
-    private val pageBackgroundTexture = GLTexture(size)
+    private val pageColorPlane = GLColorPlane(context, sizeF / density)
+    private val pageTexturePlane = GLTexturePlane(context, sizeF / density)
     private val pagesTexturePool = ImmediatelyCreatePool(MAX_LOADED_PAGES) { GLTexture(size) }
 
-    private val pageBackground = GLPageBackground(pageBackgroundTexture, plane, pageRefresher)
+    private val pageBackground = GLPageBackground(pageColorPlane)
     private val pageSet = GLPageSet {
-        GLPage(it, pagesTexturePool, plane, pageBackground, pagePainter, pageRefresher)
+        GLPage(it, pagesTexturePool, pageTexturePlane, pageBackground, pagePainter, pageRefresher)
     }
 
     val onNeedDraw = pageRefresher.onNeedRefresh merge pageBackground.onChanged merge pageSet.onChanged
@@ -46,7 +47,6 @@ class GLPages(
 
     fun destroy() {
         pageSet.destroy()
-        pageBackground.destroy()
         pageRefresher.destroy()
         refWatcher.watch(this)
     }

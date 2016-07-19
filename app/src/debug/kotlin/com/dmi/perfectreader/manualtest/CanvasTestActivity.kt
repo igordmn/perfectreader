@@ -62,7 +62,7 @@ class CanvasTestActivity : AppCompatActivity() {
             }
         }
 
-        private val plane = GLPlane(this@CanvasTestActivity, sizeF)
+        private val plane = GLTexturePlane(this@CanvasTestActivity, sizeF)
 
         private val projectionMatrix = FloatArray(16)
         private val viewMatrix = FloatArray(16)

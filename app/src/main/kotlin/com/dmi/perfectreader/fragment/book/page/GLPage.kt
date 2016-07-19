@@ -3,8 +3,8 @@ package com.dmi.perfectreader.fragment.book.page
 import android.graphics.Canvas
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.paint.PagePainter
-import com.dmi.util.android.opengl.GLPlane
 import com.dmi.util.android.opengl.GLTexture
+import com.dmi.util.android.opengl.GLTexturePlane
 import com.dmi.util.collection.Pool
 import rx.Subscription
 import rx.lang.kotlin.PublishSubject
@@ -12,7 +12,7 @@ import rx.lang.kotlin.PublishSubject
 class GLPage(
         val page: Page,
         private val texturePool: Pool<GLTexture>,
-        private val plane: GLPlane,
+        private val texturePlane: GLTexturePlane,
         private val background: GLPageBackground,
         private val pagePainter: PagePainter,
         textureRefresher: GLTextureRefresher
@@ -39,6 +39,6 @@ class GLPage(
     fun draw(matrix: FloatArray) {
         background.draw(matrix)
         if (refreshed)
-            plane.draw(matrix, texture)
+            texturePlane.draw(matrix, texture)
     }
 }

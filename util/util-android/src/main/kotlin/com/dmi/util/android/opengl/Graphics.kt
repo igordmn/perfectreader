@@ -11,8 +11,9 @@ import javax.microedition.khronos.egl.EGL11
 
 object Graphics {
     val BYTES_PER_FLOAT = 4
+    val BYTES_PER_INT = 4
 
-    fun floatBuffer(vararg items: Float): FloatBuffer = ByteBuffer
+    fun floatBufferOf(vararg items: Float): FloatBuffer = ByteBuffer
             .allocateDirect(items.size * BYTES_PER_FLOAT)
             .order(ByteOrder.nativeOrder())
             .asFloatBuffer()
