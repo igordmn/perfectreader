@@ -14,7 +14,13 @@ namespace {
         return axgx | xbxx | xxxr;
     }
 
-    inline uint32_t alphaMultiply(uint32_t color, uint32_t alpha) {
+    /**
+     * Умножение A B G R компонентов цвета на alpha
+     * если умножаем на 255, значит компоненты не меняются.
+     * если умножаем на 0, то все компоненты превращаются в 0.
+     * если умножаем на 127, то все делится пополам
+     */
+    inline uint32_t multiplyAlpha(uint32_t color, uint32_t alpha) {
         /*
          * диапазон 0..255 преобразовывается в 1..256.
          * в результате можно поделить на 256 быстрым методом (>> 8)
@@ -27,16 +33,30 @@ namespace {
         return xbxr & 0x00FF00FF | axgx & 0xFF00FF00;
     }
 
-    inline uint32_t abgrBlendAlpha(uint32_t src, uint32_t preMultipliedDst, uint32_t srcA) {
-        return alphaMultiply(src, srcA) + alphaMultiply(preMultipliedDst, (uint32_t) (255 - srcA));
+    /**
+     * Умножение B G R компонентов цвета на компонент A
+     */
+    inline uint32_t premultiplyAlpha(uint32_t color) {
+        uint32_t alpha = color >> 24;
+        return alpha << 24 | 0x00FFFFFF & multiplyAlpha(color, alpha);
+    }
+
+    /**
+     * Альфа смешивание для цветов с превычесленной альфой
+     * pre-multipled alpha - это когда цвет (0.5*255 0.75*255 0 0) передается в виде (0.5*255 0.375*255 0 0)
+     * См https://en.wikipedia.org/wiki/Alpha_compositing по тексту "pre-multiplied alpha"
+     */
+    inline uint32_t alphaBlendPremultiplied(uint32_t src, uint32_t dst) {
+        uint32_t srcA = src >> 24;
+        return src + multiplyAlpha(dst, (uint32_t) (255 - srcA));
     }
 }
 
 void paintUtils::copyPixels(
         PaintBuffer &dst, uint8_t *src, uint16_t srcWidth, uint16_t srcHeight, uint16_t srcStride,
-        int16_t x, int16_t y, uint32_t color
+        int16_t x, int16_t y, uint32_t argbColor
 ) {
-    uint32_t abgrColor = argb2abgr(color);
+    uint32_t color = premultiplyAlpha(argb2abgr(argbColor));
 
     uint16_t factX = min(dst.width, (uint16_t) max((int16_t) 0, x));
     uint16_t factY = min(dst.height, (uint16_t) max((int16_t) 0, y));
@@ -52,7 +72,9 @@ void paintUtils::copyPixels(
         uint32_t *dr = d;
         uint8_t *sr = s;
         for (uint16_t xi = 0; xi < factWidth; ++xi) {
-            *dr = abgrBlendAlpha(abgrColor, *dr, *sr);
+            uint8_t textAlpha = *sr;
+            uint32_t pixelColor = multiplyAlpha(color, textAlpha);
+            *dr = alphaBlendPremultiplied(pixelColor, *dr);
             dr++;
             sr++;
         }
