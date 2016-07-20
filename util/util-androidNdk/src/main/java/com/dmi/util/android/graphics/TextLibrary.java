@@ -15,11 +15,11 @@ public class TextLibrary {
         nativeGetGlyphIndices(nativePtr, facePath.nativePtr, chars, indices);
     }
 
-    public void renderGlyphs(TextConfig config, int[] glyphIndices, float[] coordinates, PaintBuffer paintBuffer) {
+    public void renderGlyphs(TextConfig config, int[] glyphIndices, float[] coordinates, PixelBuffer pixelBuffer) {
         nativeRenderGlyphs(
                 nativePtr, glyphIndices, coordinates,
                 config.faceID.nativePtr, config.sizeInPixels, config.color,
-                paintBuffer.nativePtr
+                pixelBuffer.nativePtr
         );
     }
 

@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 namespace dmi {
-    struct PaintBuffer {
+    struct PixelBuffer {
         uint16_t width;
         uint16_t height;
         uint16_t stride;   // количество пикселей с строке, >= width

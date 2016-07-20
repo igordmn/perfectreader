@@ -5,7 +5,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PorterDuff
 import com.dmi.util.android.graphics.BitmapPaint
-import com.dmi.util.android.graphics.PaintBuffer
+import com.dmi.util.android.graphics.PixelBuffer
 import com.dmi.util.android.graphics.TextConfig
 import com.dmi.util.android.graphics.TextLibrary
 import com.dmi.util.graphic.Color
@@ -20,7 +20,7 @@ class Canvas(private val textLibrary: TextLibrary, private val bitmap: Bitmap, p
 
     protected val pathDrawer = PathDrawer()
     protected val scaledTextConfig = TextConfig()
-    protected val paintBuffer = PaintBuffer()
+    protected val pixelBuffer = PixelBuffer()
 
     fun clear() {
         androidCanvas.drawColor(Color.TRANSPARENT.value, PorterDuff.Mode.CLEAR)
@@ -40,14 +40,14 @@ class Canvas(private val textLibrary: TextLibrary, private val bitmap: Bitmap, p
     }
 
     fun drawText(textConfig: TextConfig, glyphIndices: IntArray, coordinates: FloatArray) {
-        BitmapPaint.lockBuffer(paintBuffer, bitmap)
+        BitmapPaint.lockBuffer(pixelBuffer, bitmap)
         scaledTextConfig.apply {
             faceID = textConfig.faceID
             sizeInPixels = textConfig.sizeInPixels * scale
             color = textConfig.color
         }
-        textLibrary.renderGlyphs(scaledTextConfig, glyphIndices, coordinates, paintBuffer)
-        BitmapPaint.unlockBufferAndPost(paintBuffer, bitmap)
+        textLibrary.renderGlyphs(scaledTextConfig, glyphIndices, coordinates, pixelBuffer)
+        BitmapPaint.unlockBufferAndPost(pixelBuffer, bitmap)
     }
 
     inner class PathDrawer internal constructor() {

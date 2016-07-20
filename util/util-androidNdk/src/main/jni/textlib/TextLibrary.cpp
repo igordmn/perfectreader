@@ -5,7 +5,7 @@
 #include FT_FREETYPE_H
 #include FT_CACHE_H
 #include "../util/JniUtils.h"
-#include "../paint/PaintBuffer.h"
+#include "../paint/PixelBuffer.h"
 #include "../paint/PaintUtils.h"
 #include "FTErrors.h"
 #include "FontFaceID.h"
@@ -84,11 +84,11 @@ extern "C" JNIEXPORT void JNICALL
 Java_com_dmi_util_android_graphics_TextLibrary_nativeRenderGlyphs(
         JNIEnv *env, jobject,
         jlong libraryPtr, jintArray jGlyphIndices, jfloatArray jCoordinates,
-        jlong faceIDPtr, jfloat sizeInPixels, jint color, jlong paintBufferPtr
+        jlong faceIDPtr, jfloat sizeInPixels, jint color, jlong pixelBufferPtr
 ) {
     TextLibrary &library = *((TextLibrary *) libraryPtr);
     FontFaceID *faceID = (FontFaceID *) faceIDPtr;
-    PaintBuffer &buffer = *((PaintBuffer *) paintBufferPtr);
+    PixelBuffer &buffer = *((PixelBuffer *) pixelBufferPtr);
 
     FTC_SBitCache sBitCache = library.sBitCache;
 

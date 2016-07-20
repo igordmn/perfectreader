@@ -1,6 +1,6 @@
 package com.dmi.util.android.graphics;
 
-public class PaintBuffer {
+public class PixelBuffer {
     long nativePtr = 0;
     volatile boolean isLocked = false;
 }

@@ -3,14 +3,14 @@ package com.dmi.util.android.graphics;
 import android.graphics.Bitmap;
 
 public class BitmapPaint {
-    public static void lockBuffer(PaintBuffer buffer, Bitmap bitmap) {
+    public static void lockBuffer(PixelBuffer buffer, Bitmap bitmap) {
         if (buffer.isLocked)
             throw new IllegalStateException("Buffer is already locked");
         buffer.isLocked = true;
         buffer.nativePtr = nativeLockBuffer(bitmap);
     }
 
-    public static void unlockBufferAndPost(PaintBuffer buffer, Bitmap bitmap) {
+    public static void unlockBufferAndPost(PixelBuffer buffer, Bitmap bitmap) {
         if (!buffer.isLocked)
             throw new IllegalStateException("Buffer is not locked");
         nativeUnlockBufferAndPost(bitmap, buffer.nativePtr);
@@ -19,5 +19,5 @@ public class BitmapPaint {
     }
 
     private static native long nativeLockBuffer(Bitmap bitmap);
-    private static native void nativeUnlockBufferAndPost(Bitmap bitmap, long paintBufferPtr);
+    private static native void nativeUnlockBufferAndPost(Bitmap bitmap, long pixelBufferPtr);
 }

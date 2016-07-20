@@ -1,4 +1,4 @@
-#include "../paint/PaintBuffer.h"
+#include "../paint/PixelBuffer.h"
 
 #include "../util/JniUtils.h"
 #include "../util/Debug.h"
@@ -15,17 +15,17 @@ Java_com_dmi_util_android_graphics_BitmapPaint_nativeLockBuffer(JNIEnv *env, jcl
     CHECKM(info.format == ANDROID_BITMAP_FORMAT_RGBA_8888, "Bitmap must be RGBA_8888")
     CHECKE(AndroidBitmap_lockPixels(env, jBitmap, &pixels));
 
-    PaintBuffer *paintBuffer = new PaintBuffer();
-    paintBuffer->width = (uint16_t) info.width;
-    paintBuffer->height = (uint16_t) info.height;
-    paintBuffer->stride = (uint16_t) (info.stride / 4);
-    paintBuffer->data = (uint32_t *) pixels;
+    PixelBuffer *pixelBuffer = new PixelBuffer();
+    pixelBuffer->width = (uint16_t) info.width;
+    pixelBuffer->height = (uint16_t) info.height;
+    pixelBuffer->stride = (uint16_t) (info.stride / 4);
+    pixelBuffer->data = (uint32_t *) pixels;
 
-    return (jlong) paintBuffer;
+    return (jlong) pixelBuffer;
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_dmi_util_android_graphics_BitmapPaint_nativeUnlockBufferAndPost(JNIEnv *env, jclass, jobject jBitmap, jlong paintBufferPtr) {
-    delete (PaintBuffer *) paintBufferPtr;
+Java_com_dmi_util_android_graphics_BitmapPaint_nativeUnlockBufferAndPost(JNIEnv *env, jclass, jobject jBitmap, jlong pixelBufferPtr) {
+    delete (PixelBuffer *) pixelBufferPtr;
     CHECKE(AndroidBitmap_unlockPixels(env, jBitmap));
 }
