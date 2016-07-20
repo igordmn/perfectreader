@@ -22,9 +22,9 @@ namespace {
          */
         alpha += 1;
 
-        uint32_t xrxb = ((color & 0x00FF00FF) * alpha) >> 8;
+        uint32_t xbxr = ((color & 0x00FF00FF) * alpha) >> 8;
         uint32_t axgx = ((color >> 8) & 0x00FF00FF) * alpha;
-        return xrxb & 0x00FF00FF | axgx & 0xFF00FF00;
+        return xbxr & 0x00FF00FF | axgx & 0xFF00FF00;
     }
 
     inline uint32_t abgrBlendAlpha(uint32_t src, uint32_t preMultipliedDst, uint32_t srcA) {
