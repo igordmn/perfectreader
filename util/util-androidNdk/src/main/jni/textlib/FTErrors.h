@@ -7,6 +7,9 @@
 #define FT_ERROR_START_LIST     {
 #define FT_ERROR_END_LIST       { 0, nullptr } };
 
+#define FT_CHECK(errorCode) CHECKM(errorCode == 0, ftErrorMessage(errorCode))
+#define FT_CHECKM(errorCode, message, ...) CHECKM(errorCode == 0, formatFTErrorMessage(errorCode, message, ## __VA_ARGS__))
+
 namespace dmi {
     const struct {
         int errorCode;
@@ -15,8 +18,6 @@ namespace dmi {
 
 #include FT_ERRORS_H
 
-#define FT_CHECK(errorCode) CHECKM(errorCode == 0, ftErrorMessage(errorCode))
-
     const char *ftErrorMessage(int errorCode) {
         for (int i = 0; i < sizeof(ftErrors); i++) {
             if (ftErrors[i].errorCode == errorCode) {
@@ -24,5 +25,12 @@ namespace dmi {
             }
         }
         return "unknown error";
+    }
+
+    template<typename ... Args>
+    std::string formatFTErrorMessage(int errorCode, const std::string &message, Args ... args) {
+        const char *errorCodeMessage = ftErrorMessage(errorCode);
+        std:: string userMessage = dmi::formatErrorMessage(message, args ...);
+        return formatErrorMessage("%s; %s", errorCodeMessage, userMessage.c_str());
     }
 }

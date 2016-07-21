@@ -24,7 +24,10 @@ namespace {
 
         static FT_Error FaceRequester(FTC_FaceID ftFaceID, FT_Library library, void *reqData, FT_Face *face) {
             FontFaceID *faceID = (FontFaceID *) ftFaceID;
-            FT_CHECK(FT_New_Face(library, faceID->filePath.c_str(), 0, face));
+            FT_CHECKM(
+                    FT_New_Face(library, faceID->filePath.c_str(), faceID->index, face),
+                    "path: %s, index: %d", faceID->filePath.c_str(), faceID->index
+            );
             return 0;
         }
 
