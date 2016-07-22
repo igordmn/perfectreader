@@ -43,7 +43,7 @@ class CanvasTestActivity : AppCompatActivity() {
         private val sizeF = size.toFloat()
 
         val textLibrary = TextLibrary()
-        val facePath = FontFaceID(File(getExternalStorageDirectory(), "perfectreader/fonts/ARIAL.TTF"), 0)
+        val facePath = FontFaceID(File(getExternalStorageDirectory(), "fonts/ARIAL.TTF"), 0)
         val textConfig = TextConfig(facePath, 14F, Color.BLUE.value)
         val glyphIndices = IntArray(bookChars.size).apply {
             textLibrary.getGlyphIndices(facePath, bookChars, this)
