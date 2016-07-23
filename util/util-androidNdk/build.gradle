@@ -14,9 +14,9 @@ model {
             moduleName = 'utilAndroid'
             platformVersion = projectVersions.minSdk
             toolchain 'clang'
-            cppFlags.addAll('-std=c++14', '-fexceptions', '-Wall', '-Wno-unknown-pragmas')
+            cppFlags.addAll('-std=c++14', '-fexceptions', '-Wall', '-Wno-unknown-pragmas', '-std=c++11')
             ldLibs.addAll('android', 'jnigraphics', 'log', 'GLESv2')
-            stl = 'stlport_static'
+            stl = 'c++_static'
             abiFilters.addAll(projectAbi)
         }
 

@@ -2,6 +2,7 @@
 
 #include <android/log.h>
 #include <string>
+#include <cstdlib>
 #include "JniUtils.h"
 
 namespace dmi {
@@ -38,6 +39,6 @@ namespace dmi {
             );
         }
 
-        abort();
+        std::abort();
     }
 }

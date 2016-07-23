@@ -18,7 +18,7 @@ namespace dmi {
 
 #include FT_ERRORS_H
 
-    const char *ftErrorMessage(int errorCode) {
+    inline const char *ftErrorMessage(int errorCode) {
         for (int i = 0; i < sizeof(ftErrors); i++) {
             if (ftErrors[i].errorCode == errorCode) {
                 return ftErrors[i].errorMessage;
