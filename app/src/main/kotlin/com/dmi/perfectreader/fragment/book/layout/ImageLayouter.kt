@@ -27,20 +27,20 @@ class ImageLayouter(
 
                     when {
                         width is Fixed && height is Fixed -> {
-                            factWidth = width.configure(space.width.percentBase)
-                            factHeight = height.configure(space.height.percentBase)
+                            factWidth = width.compute(space.width.percentBase)
+                            factHeight = height.compute(space.height.percentBase)
                         }
                         width is Fixed && height is Auto -> {
-                            factWidth = width.configure(space.width.percentBase)
-                            factHeight = height.configure(factWidth / imageRatio, space.height.percentBase)
+                            factWidth = width.compute(space.width.percentBase)
+                            factHeight = height.compute(factWidth / imageRatio, space.height.percentBase)
                         }
                         width is Auto && height is Fixed -> {
-                            factHeight = height.configure(space.height.percentBase)
-                            factWidth = width.configure(factHeight * imageRatio, space.width.percentBase)
+                            factHeight = height.compute(space.height.percentBase)
+                            factWidth = width.compute(factHeight * imageRatio, space.width.percentBase)
                         }
                         width is Auto && height is Auto -> {
-                            factWidth = width.configure(imageWidth, space.width.percentBase)
-                            factHeight = height.configure(factWidth / imageRatio, space.height.percentBase)
+                            factWidth = width.compute(imageWidth, space.width.percentBase)
+                            factHeight = height.compute(factWidth / imageRatio, space.height.percentBase)
                         }
                         else -> throw IllegalStateException()
                     }

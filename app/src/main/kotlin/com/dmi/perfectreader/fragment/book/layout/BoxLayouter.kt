@@ -40,8 +40,8 @@ class BoxLayouter(
             fun computeHeight(wrapHeight: Float) = size.height.compute(space.height.percentBase, { wrapHeight })
 
             fun ConfiguredSize.Dimension.compute(percentBase: Float, getAutoValue: () -> Float) = when (this) {
-                is ConfiguredSize.Dimension.Fixed -> configure(percentBase)
-                is ConfiguredSize.Dimension.Auto -> configure(getAutoValue(), percentBase)
+                is ConfiguredSize.Dimension.Fixed -> compute(percentBase)
+                is ConfiguredSize.Dimension.Auto -> compute(getAutoValue(), percentBase)
             }
 
             fun computeAutoWidth() = when (space.width.area) {
@@ -72,7 +72,7 @@ class BoxLayouter(
 
             fun childHeightDimension() = when (size.height) {
                 is ConfiguredSize.Dimension.Fixed -> childFixedDimension(
-                        size.height.configure(space.height.percentBase)
+                        size.height.compute(space.height.percentBase)
                 )
                 is ConfiguredSize.Dimension.Auto -> childWrapDimension(
                         when (space.height.area) {

@@ -28,14 +28,14 @@ class ContentSize(val width: Dimension, val height: Dimension) : Serializable {
 data class ConfiguredSize(val width: Dimension, val height: Dimension) {
     sealed class Dimension {
         class Auto(val limits: Limits = Limits.NONE) : Dimension() {
-            fun configure(autoValue: Float, percentBase: Float) = limits.clampCompute(autoValue, percentBase)
+            fun compute(autoValue: Float, percentBase: Float) = limits.clampCompute(autoValue, percentBase)
 
             override fun equals(other: Any?) = safeEquals(other) { limits == it.limits }
             override fun hashCode() = limits.hashCode()
         }
 
         class Fixed(val value: Length, val limits: Limits = Limits.NONE) : Dimension() {
-            fun configure(percentBase: Float) = limits.clampCompute(value.configure(percentBase), percentBase)
+            fun compute(percentBase: Float) = limits.clampCompute(value.compute(percentBase), percentBase)
 
             override fun equals(other: Any?) = safeEquals(other) { value == it.value && limits == it.limits }
             override fun hashCode() = com.dmi.util.lang.hashCode(value.hashCode(), limits.hashCode())
@@ -49,8 +49,8 @@ data class ConfiguredSize(val width: Dimension, val height: Dimension) {
 
         fun clampCompute(value: Float, percentBase: Float) = clamp(
                 value,
-                min.configure(percentBase),
-                max.configure(percentBase)
+                min.compute(percentBase),
+                max.compute(percentBase)
         )
     }
 }

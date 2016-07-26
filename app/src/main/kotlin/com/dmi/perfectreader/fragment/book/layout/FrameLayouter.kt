@@ -15,20 +15,20 @@ class FrameLayouter(
     override fun layout(obj: ConfiguredFrame, space: LayoutSpace): LayoutFrame {
         return object {
             fun layout(): LayoutFrame {
-                val marginLeft = obj.margins.left.configure(space.width.percentBase)
-                val marginRight = obj.margins.right.configure(space.width.percentBase)
-                val marginTop = obj.margins.top.configure(space.height.percentBase)
-                val marginBottom = obj.margins.bottom.configure(space.height.percentBase)
+                val marginLeft = obj.margins.left.compute(space.width.percentBase)
+                val marginRight = obj.margins.right.compute(space.width.percentBase)
+                val marginTop = obj.margins.top.compute(space.height.percentBase)
+                val marginBottom = obj.margins.bottom.compute(space.height.percentBase)
 
                 val borderLeft = obj.borders.left.width
                 val borderRight = obj.borders.right.width
                 val borderTop = obj.borders.top.width
                 val borderBottom = obj.borders.bottom.width
 
-                val paddingLeft = obj.paddings.left.configure(space.width.percentBase)
-                val paddingRight = obj.paddings.right.configure(space.width.percentBase)
-                val paddingTop = obj.paddings.top.configure(space.height.percentBase)
-                val paddingBottom = obj.paddings.bottom.configure(space.height.percentBase)
+                val paddingLeft = obj.paddings.left.compute(space.width.percentBase)
+                val paddingRight = obj.paddings.right.compute(space.width.percentBase)
+                val paddingTop = obj.paddings.top.compute(space.height.percentBase)
+                val paddingBottom = obj.paddings.bottom.compute(space.height.percentBase)
 
                 val additionalWidth = marginLeft + marginRight + borderLeft + borderRight + paddingLeft + paddingRight
                 val additionalHeight = marginTop + marginBottom + borderTop + borderBottom + paddingTop + paddingBottom
