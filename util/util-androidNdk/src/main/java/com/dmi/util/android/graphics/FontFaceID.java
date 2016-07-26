@@ -24,5 +24,5 @@ public class FontFaceID {
     }
 
     private native long nativeNewFontFace(String filePath, int index);
-    private native void nativeDestroyFontFace(long facePtr);
+    private native void nativeDestroyFontFace(long ptr);
 }

@@ -6,8 +6,8 @@ import android.opengl.Matrix
 import android.os.Bundle
 import android.os.Environment.getExternalStorageDirectory
 import android.support.v7.app.AppCompatActivity
+import com.dmi.util.android.graphics.FontConfig
 import com.dmi.util.android.graphics.FontFaceID
-import com.dmi.util.android.graphics.TextConfig
 import com.dmi.util.android.graphics.TextLibrary
 import com.dmi.util.android.opengl.*
 import com.dmi.util.android.paint.Canvas
@@ -44,7 +44,67 @@ class CanvasTestActivity : AppCompatActivity() {
 
         val textLibrary = TextLibrary()
         val facePath = FontFaceID(File(getExternalStorageDirectory(), "fonts/ARIAL.TTF"), 0)
-        val textConfig = TextConfig(facePath, 14F, Color.BLUE.value)
+        val fontConfig = run {
+            val sizeX = 14F
+            val sizeY = 14F
+
+            val hinting = true
+            val forceAutoHinting = false
+            val lightHinting = true
+
+            val scaleX = 1.0F
+            val scaleY = 1.0F
+            val skewX = 1.0F
+            val skewY = 1.0F
+
+            val embolden = false
+            val emboldenStrengthX = 0.0F
+            val emboldenStrengthY = 0.0F
+
+            val strokeInside = false
+            val strokeOutside = false
+            val strokeLineCap = FontConfig.StrokeLineCap.BUTT
+            val strokeLineJoin = FontConfig.StrokeLineJoin.BEVEL
+            val strokeMiterLimit = 0F
+            val strokeRadius = 0F
+
+            val antialias = true
+            val gamma = 1.0F
+            val blurRadius = 0F
+            val color = Color.BLUE.value
+
+            FontConfig(
+                    facePath,
+                    sizeX,
+                    sizeY,
+
+                    hinting,
+                    forceAutoHinting,
+                    lightHinting,
+
+                    scaleX,
+                    scaleY,
+                    skewX,
+                    skewY,
+
+                    embolden,
+                    emboldenStrengthX,
+                    emboldenStrengthY,
+
+                    strokeInside,
+                    strokeOutside,
+                    strokeLineCap,
+                    strokeLineJoin,
+                    strokeMiterLimit,
+                    strokeRadius,
+
+                    antialias,
+                    gamma,
+                    blurRadius,
+                    color
+            )
+        }
+
         val glyphIndices = IntArray(bookChars.size).apply {
             textLibrary.getGlyphIndices(facePath, bookChars, this)
         }
@@ -99,7 +159,7 @@ class CanvasTestActivity : AppCompatActivity() {
             canvas.clear()
 
             measureTime {
-                canvas.drawText(textConfig, glyphIndices, coordinates)
+                canvas.drawText(fontConfig, glyphIndices, coordinates)
             }
 
             texture.refreshBy(bitmap)

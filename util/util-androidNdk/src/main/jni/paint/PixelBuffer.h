@@ -4,9 +4,16 @@
 
 namespace dmi {
     struct PixelBuffer {
-        uint16_t width;
-        uint16_t height;
-        uint16_t stride;   // количество пикселей с строке, >= width
-        uint32_t *data;    // пиксели в формате ABGR
+        uint16_t width = 0;
+        uint16_t height = 0;
+        uint16_t stride = 0;   // количество пикселей с строке, >= width
+        uint32_t *data = 0;    // пиксели в формате ABGR
+    };
+
+    struct AlphaBuffer {
+        uint16_t width = 0;
+        uint16_t height = 0;
+        uint16_t stride = 0;   // количество пикселей с строке, >= width
+        uint8_t *data = 0;    // пиксели в формате ABGR
     };
 }

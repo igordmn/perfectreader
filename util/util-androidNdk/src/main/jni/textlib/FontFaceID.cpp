@@ -11,6 +11,6 @@ Java_com_dmi_util_android_graphics_FontFaceID_nativeNewFontFace(JNIEnv *env, job
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_dmi_util_android_graphics_FontFaceID_nativeDestroyFontFace(JNIEnv *, jobject, jlong facePtr) {
-    delete (FontFaceID *) facePtr;
+Java_com_dmi_util_android_graphics_FontFaceID_nativeDestroyFontFace(JNIEnv *, jobject, jlong ptr) {
+    delete (FontFaceID *) ptr;
 }

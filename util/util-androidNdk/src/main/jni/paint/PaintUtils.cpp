@@ -7,13 +7,6 @@ using namespace dmi;
 using namespace paintUtils;
 
 namespace {
-    inline uint32_t argb2abgr(uint32_t argb) {
-        uint32_t axgx = argb & 0xFF00FF00;
-        uint32_t xbxx = (argb & 0x000000FF) << 16;
-        uint32_t xxxr = (argb & 0x00FF0000) >> 16;
-        return axgx | xbxx | xxxr;
-    }
-
     /**
      * Умножение A B G R компонентов цвета на alpha
      * если умножаем на 255, значит компоненты не меняются.
@@ -52,19 +45,23 @@ namespace {
     }
 }
 
-void paintUtils::copyPixels(
-        PixelBuffer &dst, uint8_t *src, uint16_t srcWidth, uint16_t srcHeight, uint16_t srcStride,
-        int16_t x, int16_t y, uint32_t argbColor
-) {
-    uint32_t color = premultiplyAlpha(argb2abgr(argbColor));
+uint32_t paintUtils::argb2abgr(uint32_t argb) {
+    uint32_t axgx = argb & 0xFF00FF00;
+    uint32_t xbxx = (argb & 0x000000FF) << 16;
+    uint32_t xxxr = (argb & 0x00FF0000) >> 16;
+    return axgx | xbxx | xxxr;
+}
+
+void paintUtils::copyPixels(PixelBuffer &dst, const AlphaBuffer &src, int16_t x, int16_t y, uint32_t color) {
+    uint32_t premultiplyColor = premultiplyAlpha(color);
 
     uint16_t factX = min(dst.width, (uint16_t) max((int16_t) 0, x));
     uint16_t factY = min(dst.height, (uint16_t) max((int16_t) 0, y));
-    uint16_t factWidth = min((uint16_t) (dst.width - factX), srcWidth);
-    uint16_t factHeight = min((uint16_t) (dst.height - factY), srcHeight);
+    uint16_t factWidth = min((uint16_t) (dst.width - factX), src.width);
+    uint16_t factHeight = min((uint16_t) (dst.height - factY), src.height);
 
     uint32_t *d = dst.data;
-    uint8_t *s = src;
+    uint8_t *s = src.data;
 
     d += dst.stride * factY + factX;
 
@@ -73,12 +70,12 @@ void paintUtils::copyPixels(
         uint8_t *sr = s;
         for (uint16_t xi = 0; xi < factWidth; ++xi) {
             uint8_t textAlpha = *sr;
-            uint32_t pixelColor = multiplyAlpha(color, textAlpha);
+            uint32_t pixelColor = multiplyAlpha(premultiplyColor, textAlpha);
             *dr = alphaBlendPremultiplied(pixelColor, *dr);
             dr++;
             sr++;
         }
         d += dst.stride;
-        s += srcStride;
+        s += src.stride;
     }
 }
