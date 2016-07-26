@@ -1,5 +1,7 @@
 package com.dmi.util.android.graphics;
 
+import com.dmi.util.graphic.Color;
+
 public class FontConfig {
     final long nativePtr;
 
@@ -37,7 +39,7 @@ public class FontConfig {
             boolean antialias,
             float gamma,
             float blurRadius,
-            int color // todo зависимость от модуля common
+            Color color
     ) {
         this.faceID = faceID;
 
@@ -69,7 +71,7 @@ public class FontConfig {
                 antialias,
                 gamma,
                 blurRadius,
-                color
+                color.getValue()
         );
     }
 

@@ -71,7 +71,7 @@ class CanvasTestActivity : AppCompatActivity() {
             val antialias = true
             val gamma = 1.0F
             val blurRadius = 0F
-            val color = Color.BLUE.value
+            val color = Color.BLUE
 
             FontConfig(
                     facePath,
