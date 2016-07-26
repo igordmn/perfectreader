@@ -24,10 +24,11 @@ class ContentParagraph(
     override fun configure(config: LayoutConfig) = ConfiguredParagraph(
             if (config.ignoreDeclaredLocale) config.defaultLocale else locale ?: config.defaultLocale,
             runs.map { it.configure(config) },
-            firstLineIndent ?: config.firstLineIndent,
+            (firstLineIndent ?: config.firstLineIndent) * config.density,
             textAlign ?: config.textAlign,
             config.hyphenation,
-            config.hangingConfig, range
+            config.hangingConfig,
+            range
     )
 
     sealed class Run {
@@ -95,7 +96,7 @@ private class FontStyleCache {
 }
 
 private fun ContentFontStyle.configure(config: LayoutConfig) = ConfiguredFontStyle(
-        (size ?: ContentParagraph.DEFAULT_FONT_SIZE) * config.fontSizeMultiplier,
+        (size ?: ContentParagraph.DEFAULT_FONT_SIZE) * config.density * config.fontSizeMultiplier,
         color ?: Color.BLACK,
         config.textRenderConfig,
         config.selectionConfig

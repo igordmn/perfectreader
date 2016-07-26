@@ -5,6 +5,11 @@ import java.io.Serializable
 interface Length : Serializable {
     fun compute(percentBase: Float): Float
 
+    fun configure(config: LayoutConfig) = when (this) {
+        is Length.Absolute -> Length.Absolute(value * config.density)
+        else -> this
+    }
+
     data class Absolute(val value: Float) : Length {
         init {
             require(value >= 0F)

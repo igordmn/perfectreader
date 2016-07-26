@@ -23,8 +23,8 @@ class ContentFrame(
 
     override fun configure(config: LayoutConfig) = ConfiguredFrame(
             margins.configure(config, styleType),
-            paddings.configure(),
-            borders.configure(),
+            paddings.configure(config),
+            borders.configure(config),
             background.configure(),
             child.configure(config),
             range
@@ -37,47 +37,47 @@ class ContentFrame(
     class Margins(val left: Length?, val right: Length?, val top: Length?, val bottom: Length?) {
         fun configure(config: LayoutConfig, styleType: StyleType): ConfiguredFrame.Margins {
             return if (styleType == StyleType.PARAGRAPH) {
-                val top = top ?: Length.Absolute(DEFAULT_PARAGRAPH_VERTICAL_MARGIN)
-                val bottom = bottom ?: Length.Absolute(DEFAULT_PARAGRAPH_VERTICAL_MARGIN)
+                val top = (top ?: Length.Absolute(DEFAULT_PARAGRAPH_VERTICAL_MARGIN)).configure(config)
+                val bottom = (bottom ?: Length.Absolute(DEFAULT_PARAGRAPH_VERTICAL_MARGIN)).configure(config)
                 ConfiguredFrame.Margins(
-                        left ?: Length.Absolute(0F),
-                        right ?: Length.Absolute(0F),
+                        (left ?: Length.Absolute(0F)).configure(config),
+                        (right ?: Length.Absolute(0F)).configure(config),
                         Length.Multiplier(top, config.paragraphVerticalMarginMultiplier),
                         Length.Multiplier(bottom, config.paragraphVerticalMarginMultiplier)
                 )
             } else {
                 ConfiguredFrame.Margins(
-                        left ?: Length.Absolute(0F),
-                        right ?: Length.Absolute(0F),
-                        top ?: Length.Absolute(0F),
-                        bottom ?: Length.Absolute(0F)
+                        (left ?: Length.Absolute(0F)).configure(config),
+                        (right ?: Length.Absolute(0F)).configure(config),
+                        (top ?: Length.Absolute(0F)).configure(config),
+                        (bottom ?: Length.Absolute(0F)).configure(config)
                 )
             }
         }
     }
 
     class Paddings(val left: Length?, val right: Length?, val top: Length?, val bottom: Length?) {
-        fun configure() = ConfiguredFrame.Paddings(
-                left ?: Length.Absolute(0F),
-                right ?: Length.Absolute(0F),
-                top ?: Length.Absolute(0F),
-                bottom ?: Length.Absolute(0F)
+        fun configure(config: LayoutConfig) = ConfiguredFrame.Paddings(
+                (left ?: Length.Absolute(0F)).configure(config),
+                (right ?: Length.Absolute(0F)).configure(config),
+                (top ?: Length.Absolute(0F)).configure(config),
+                (bottom ?: Length.Absolute(0F)).configure(config)
         )
     }
 
     class Border(val width: Float?, val color: Color?) {
-        fun configure() = ConfiguredFrame.Border(
-                width ?: 0F,
+        fun configure(config: LayoutConfig) = ConfiguredFrame.Border(
+                (width ?: 0F) * config.density,
                 color ?: Color.BLACK
         )
     }
 
     class Borders(val left: Border, val right: Border, val top: Border, val bottom: Border) {
-        fun configure() = ConfiguredFrame.Borders(
-                left.configure(),
-                right.configure(),
-                top.configure(),
-                bottom.configure()
+        fun configure(config: LayoutConfig) = ConfiguredFrame.Borders(
+                left.configure(config),
+                right.configure(config),
+                top.configure(config),
+                bottom.configure(config)
         )
     }
 }

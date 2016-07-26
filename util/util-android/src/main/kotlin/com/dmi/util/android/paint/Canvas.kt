@@ -12,7 +12,7 @@ import com.dmi.util.graphic.Color
 import android.graphics.Canvas as AndroidCanvas
 
 @Suppress("ProtectedInFinal")
-class Canvas(private val textLibrary: TextLibrary, private val bitmap: Bitmap, private val scale: Float) {
+class Canvas(private val textLibrary: TextLibrary, private val bitmap: Bitmap) {
     protected val androidCanvas = AndroidCanvas(bitmap)
     protected val rectPaint = Paint().apply { isAntiAlias = true }
     protected val pathPaint = Paint().apply { isAntiAlias = true }
@@ -27,7 +27,7 @@ class Canvas(private val textLibrary: TextLibrary, private val bitmap: Bitmap, p
 
     fun drawRect(left: Float, top: Float, right: Float, bottom: Float, color: Color) {
         rectPaint.color = color.value
-        androidCanvas.drawRect(left * scale, top * scale, right * scale, bottom * scale, rectPaint)
+        androidCanvas.drawRect(left, top, right, bottom, rectPaint)
     }
 
     inline fun drawPath(color: Color, draw: (PathDrawer) -> Unit) {
@@ -40,14 +40,12 @@ class Canvas(private val textLibrary: TextLibrary, private val bitmap: Bitmap, p
 
     fun drawText(fontConfig: FontConfig, glyphIndices: IntArray, coordinates: FloatArray) {
         BitmapPaint.lockBuffer(pixelBuffer, bitmap)
-        // todo преобразовать fontConfig из dp в px
-        // todo преобразовать координаты из dp в px
         textLibrary.renderGlyphs(fontConfig, glyphIndices, coordinates, pixelBuffer)
         BitmapPaint.unlockBufferAndPost(pixelBuffer, bitmap)
     }
 
     inner class PathDrawer internal constructor() {
-        fun moveTo(x: Float, y: Float) = path.moveTo(x * scale, y * scale)
-        fun lineTo(x: Float, y: Float) = path.lineTo(x * scale, y * scale)
+        fun moveTo(x: Float, y: Float) = path.moveTo(x, y)
+        fun lineTo(x: Float, y: Float) = path.lineTo(x, y)
     }
 }

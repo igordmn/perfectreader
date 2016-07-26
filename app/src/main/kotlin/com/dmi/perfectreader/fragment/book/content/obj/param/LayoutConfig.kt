@@ -3,12 +3,14 @@ package com.dmi.perfectreader.fragment.book.content.obj.param
 import android.content.Context
 import com.dmi.perfectreader.data.UserSettings
 import com.dmi.util.graphic.Color
+import org.jetbrains.anko.displayMetrics
 import java.util.*
 import com.dmi.perfectreader.data.UserSettingKeys.Analyze as AnalyzeKeys
 import com.dmi.perfectreader.data.UserSettingKeys.Format as FormatKeys
 import com.dmi.perfectreader.data.UserSettingKeys.UI as UIKeys
 
 class LayoutConfig(
+        val density: Float,
         val defaultLocale: Locale,
         val ignoreDeclaredLocale: Boolean,
         val firstLineIndent: Float,
@@ -23,6 +25,7 @@ class LayoutConfig(
 )
 
 fun settingsLayoutConfig(context: Context, settings: UserSettings) = LayoutConfig(
+        context.displayMetrics.density,
         defaultLocale = parseLanguage(context, settings[AnalyzeKeys.defaultLanguage]),
         ignoreDeclaredLocale = settings[AnalyzeKeys.ignoreDeclaredLanguage],
         firstLineIndent = settings[FormatKeys.firstLineIndent],

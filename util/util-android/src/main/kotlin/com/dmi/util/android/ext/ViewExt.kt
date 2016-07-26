@@ -5,8 +5,8 @@ import android.view.View
 import com.dmi.util.graphic.SizeF
 import org.jetbrains.anko.layoutInflater
 
-fun View.dipToPx(value: Float): Float = value * resources.displayMetrics.density
-fun View.dipToPx(size: SizeF): SizeF = size * resources.displayMetrics.density
+fun View.dip2Px(value: Float): Float = value * resources.displayMetrics.density
+fun View.dip2Px(size: SizeF): SizeF = size * resources.displayMetrics.density
 fun View.px2dip(px: Float): Float = px / resources.displayMetrics.density
 fun View.px2dip(size: SizeF): SizeF = size / resources.displayMetrics.density
 

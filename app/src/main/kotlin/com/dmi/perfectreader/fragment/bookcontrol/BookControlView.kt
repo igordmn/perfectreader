@@ -8,7 +8,6 @@ import android.widget.FrameLayout
 import com.dmi.perfectreader.fragment.bookcontrol.entity.HardKey
 import com.dmi.perfectreader.fragment.bookcontrol.entity.TouchInfo
 import com.dmi.util.android.base.BaseView
-import com.dmi.util.android.base.px2dip
 import com.dmi.util.android.widget.onKey
 import com.dmi.util.android.widget.onSizeChange
 
@@ -21,7 +20,7 @@ open class BookControlView(
         widget.isFocusable = false
         widget.setOnTouchListener(this)
         widget.onSizeChange { size, oldSize ->
-            model.resize(px2dip(size.toFloat()))
+            model.resize(size.toFloat())
         }
         widget.onKey { keyCode, keyEvent ->
             if (keyEvent.action == KeyEvent.ACTION_DOWN) {
@@ -49,10 +48,7 @@ open class BookControlView(
         return true
     }
 
-    private fun touchInfo(event: MotionEvent) = TouchInfo(
-            px2dip(event.x),
-            px2dip(event.y)
-    )
+    private fun touchInfo(event: MotionEvent) = TouchInfo(event.x, event.y)
 
     private fun fromKeyCode(keyCode: Int) = when (keyCode) {
         KeyEvent.KEYCODE_VOLUME_UP -> HardKey.VOLUME_UP

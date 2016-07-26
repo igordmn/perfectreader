@@ -4,10 +4,8 @@ import android.content.Context
 import android.support.annotation.CallSuper
 import android.view.View
 import android.view.ViewGroup
-import com.dmi.util.android.ext.dipToPx
-import com.dmi.util.android.ext.dipToPx
+import com.dmi.util.android.ext.dip2Px
 import com.dmi.util.android.ext.inflate
-import com.dmi.util.android.ext.px2dip
 import com.dmi.util.android.ext.px2dip
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.lang.returnValue
@@ -64,7 +62,7 @@ abstract class BaseView(val widget: ViewGroup) {
 }
 
 inline fun <reified T : View> BaseView.find(id: Int): T = widget.find(id)
-fun BaseView.dipToPx(value: Float) = widget.dipToPx(value)
-fun BaseView.dipToPx(size: SizeF) = widget.dipToPx(size)
+fun BaseView.dip2Px(value: Float) = widget.dip2Px(value)
+fun BaseView.dip2Px(size: SizeF) = widget.dip2Px(size)
 fun BaseView.px2dip(px: Float) = widget.px2dip(px)
 fun BaseView.px2dip(size: SizeF) = widget.px2dip(size)

@@ -16,17 +16,16 @@ class BookControl(
         private val userSettings: Settings,
         private val book: Book,
         private val reader: Reader,
-        private val closeApp: () -> Unit
+        private val closeApp: () -> Unit,
+        dip2px: (Float) -> Float
 ) : BaseViewModel() {
-    companion object {
-        private val TOUCH_SENSITIVITY = 8F
-        private val LEFT_SIDE_WIDTH_FOR_SLIDE = 40F
-        private val SLIDE_SENSITIVITY = 20F
+    private val TOUCH_SENSITIVITY = dip2px(8F)
+    private val LEFT_SIDE_WIDTH_FOR_SLIDE = dip2px(40F)
+    private val SLIDE_SENSITIVITY = dip2px(20F)
 
-        private val FONT_SIZE_MAX = 4F
-        private val FONT_SIZE_MIN = 0.2F
-        private val FONT_SIZE_DELTA = 0.05F
-    }
+    private val FONT_SIZE_MAX = 4F
+    private val FONT_SIZE_MIN = 0.2F
+    private val FONT_SIZE_DELTA = 0.05F
 
     private lateinit var size: SizeF
 

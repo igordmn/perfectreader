@@ -5,21 +5,21 @@ import com.dmi.util.lang.safeEquals
 import java.io.Serializable
 
 class ContentSize(val width: Dimension, val height: Dimension) : Serializable {
-    fun configure() = ConfiguredSize(
-            width.configure(),
-            height.configure()
+    fun configure(config: LayoutConfig) = ConfiguredSize(
+            width.configure(config),
+            height.configure(config)
     )
 
     class Dimension(val value: Length?, val min: Length?, val max: Length?) {
-        fun configure(): ConfiguredSize.Dimension {
+        fun configure(config: LayoutConfig): ConfiguredSize.Dimension {
             val limits = ConfiguredSize.Limits(
-                    min ?: Length.Absolute(0F),
-                    max ?: Length.Absolute(Float.MAX_VALUE)
+                    (min ?: Length.Absolute(0F)).configure(config),
+                    (max ?: Length.Absolute(Float.POSITIVE_INFINITY)).configure(config)
             )
             return if (value == null) {
                 ConfiguredSize.Dimension.Auto(limits)
             } else {
-                ConfiguredSize.Dimension.Fixed(value, limits)
+                ConfiguredSize.Dimension.Fixed(value.configure(config), limits)
             }
         }
     }
@@ -44,7 +44,7 @@ data class ConfiguredSize(val width: Dimension, val height: Dimension) {
 
     data class Limits(val min: Length, val max: Length) {
         companion object {
-            val NONE: Limits = Limits(Length.Absolute(0F), Length.Absolute(Float.MAX_VALUE))
+            val NONE: Limits = Limits(Length.Absolute(0F), Length.Absolute(Float.POSITIVE_INFINITY))
         }
 
         fun clampCompute(value: Float, percentBase: Float) = clamp(

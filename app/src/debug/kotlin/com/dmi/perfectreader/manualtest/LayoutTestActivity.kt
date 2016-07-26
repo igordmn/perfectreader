@@ -25,9 +25,9 @@ import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.column.LayoutColumn
 import com.dmi.perfectreader.fragment.book.pagination.column.merge
+import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.perfectreader.fragment.book.pagination.part.splitIntoParts
 import com.dmi.perfectreader.fragment.book.paint.ColumnPainter
-import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.perfectreader.fragment.book.paint.PartPainter
 import com.dmi.perfectreader.fragment.book.paint.UniversalObjectPainter
 import com.dmi.util.graphic.Color
@@ -155,12 +155,9 @@ class LayoutTestActivity : AppCompatActivity() {
 
         val view = object : View(this) {
             override fun onDraw(canvas: Canvas) {
-                val density = resources.displayMetrics.density
                 canvas.save()
-                canvas.scale(density, density)
                 canvas.drawColor(Color.WHITE.value)
                 painter.paint(column, context, canvas)
-                canvas.restore()
             }
         }
 

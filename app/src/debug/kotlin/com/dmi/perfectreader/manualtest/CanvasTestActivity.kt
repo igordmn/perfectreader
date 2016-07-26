@@ -130,7 +130,7 @@ class CanvasTestActivity : AppCompatActivity() {
 
         private val texture: GLTexture
         private val bitmap = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888)
-        private val canvas = Canvas(textLibrary, bitmap, 1F)
+        private val canvas = Canvas(textLibrary, bitmap)
 
         init {
             glDisable(GL_DEPTH_TEST)

@@ -48,6 +48,7 @@ class AppObjects(applicationContext: Context) {
     val databases = AppDatabases(applicationContext)
     val userData = UserData(databases.user)
     val userSettings = UserSettings(databases.user)
+    val dip2px = { value: Float -> value * applicationContext.resources.displayMetrics.density }
 
     val createMain = { activity: AppActivity ->
         val intent = activity.intent
@@ -88,7 +89,7 @@ class AppObjects(applicationContext: Context) {
                 Book(createSized, bookData, bitmapDecoder, locationConverter)
             }
 
-            val createBookControl = { reader: Reader -> BookControl(userSettings, reader.book, reader, closeApp) }
+            val createBookControl = { reader: Reader -> BookControl(userSettings, reader.book, reader, closeApp, dip2px) }
             val createMenu = { reader: Reader, close: () -> Unit ->
                 Menu(reader.book, close)
             }
@@ -102,7 +103,6 @@ class AppObjects(applicationContext: Context) {
     val createMainView = { activity: AppActivity, model: Main ->
         val context: Context = activity
         val lifeCycle = activity.lifeCycle
-        val density = activity.resources.displayMetrics.density
 
         val createReaderView = { model: Reader ->
             val createBookView = { model: Book ->
@@ -114,8 +114,8 @@ class AppObjects(applicationContext: Context) {
                     val layoutPartPainter = PartPainter(objectPainter)
                     val layoutColumnPainter = ColumnPainter(layoutPartPainter)
                     val pagePainter = PagePainter(layoutColumnPainter)
-                    val pageTextureRefresher = GLTextureRefresher(size, density)
-                    val createGLPages = { GLPages(context, size, density, pageTextureRefresher, pagePainter) }
+                    val pageTextureRefresher = GLTextureRefresher(size)
+                    val createGLPages = { GLPages(context, size, pageTextureRefresher, pagePainter) }
 
                     GLBook(size, renderModel, createGLPages)
                 }

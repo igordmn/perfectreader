@@ -5,7 +5,6 @@ import android.opengl.GLSurfaceView
 import android.widget.FrameLayout
 import com.dmi.perfectreader.BuildConfig.DEBUG_SHOWRENDERFREEZES
 import com.dmi.util.android.base.BaseView
-import com.dmi.util.android.base.px2dip
 import com.dmi.util.android.opengl.DebuggableRenderer
 import com.dmi.util.android.opengl.GLSurfaceViewExt
 import com.dmi.util.android.opengl.setNotifiableRenderer
@@ -33,7 +32,7 @@ class BookView(
         }
         glSurface.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         glSurface.onSizeChange { size, oldSize ->
-            model.resize(px2dip(size.toFloat()))
+            model.resize(size.toFloat())
         }
         subscribe(activityLifeCycle.isResumedObservable) {
             if (it) {

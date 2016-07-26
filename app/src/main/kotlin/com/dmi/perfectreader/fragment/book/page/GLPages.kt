@@ -19,7 +19,6 @@ import java.util.*
 class GLPages(
         context: Context,
         size: Size,
-        density: Float,
         private val pageRefresher: GLTextureRefresher,
         private val pagePainter: PagePainter
 ) {
@@ -29,8 +28,8 @@ class GLPages(
     private val viewMatrix = FloatArray(16)
     private val viewProjectionMatrix = FloatArray(16)
 
-    private val pageColorPlane = GLColorPlane(context, sizeF / density)
-    private val pageTexturePlane = GLTexturePlane(context, sizeF / density)
+    private val pageColorPlane = GLColorPlane(context, sizeF)
+    private val pageTexturePlane = GLTexturePlane(context, sizeF)
     private val pagesTexturePool = ImmediatelyCreatePool(MAX_LOADED_PAGES) { GLTexture(size) }
 
     private val pageBackground = GLPageBackground(pageColorPlane)
@@ -41,7 +40,7 @@ class GLPages(
     val onNeedDraw = pageRefresher.onNeedRefresh merge pageBackground.onChanged merge pageSet.onChanged
 
     init {
-        orthoM(projectionMatrix, 0, 0F, sizeF.width / density, sizeF.height / density, 0F, -1F, 1F)
+        orthoM(projectionMatrix, 0, 0F, sizeF.width, sizeF.height, 0F, -1F, 1F)
         setLookAtM(viewMatrix, 0, 0F, 0F, 1F, 0F, 0F, 0F, 0F, 1F, 0F)
     }
 
