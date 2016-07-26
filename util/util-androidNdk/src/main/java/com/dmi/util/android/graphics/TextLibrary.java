@@ -3,7 +3,7 @@ package com.dmi.util.android.graphics;
 public class TextLibrary {
     private static int CACHE_MAX_FACES = 4;
     private static int CACHE_MAX_SIZES = 4;
-    private static int CACHE_MAX_BYTES = 1024 * 1024 * 6;  // 8 MB
+    private static int CACHE_MAX_BYTES = 1024 * 1024 * 6;
 
     private final long nativePtr = nativeNewTextLibrary(CACHE_MAX_FACES, CACHE_MAX_SIZES, CACHE_MAX_BYTES);
 
