@@ -54,10 +54,9 @@ class CanvasTestActivity : AppCompatActivity() {
 
             val scaleX = 1.0F
             val scaleY = 1.0F
-            val skewX = 1.0F
-            val skewY = 1.0F
+            val skewX = 0.0F
+            val skewY = 0.0F
 
-            val embolden = false
             val emboldenStrengthX = 0.0F
             val emboldenStrengthY = 0.0F
 
@@ -69,8 +68,8 @@ class CanvasTestActivity : AppCompatActivity() {
             val strokeRadius = 0F
 
             val antialias = true
-            val gamma = 1.0F
             val blurRadius = 0F
+            val gamma = 1.0F
             val color = Color.BLUE
 
             FontConfig(
@@ -87,7 +86,6 @@ class CanvasTestActivity : AppCompatActivity() {
                     skewX,
                     skewY,
 
-                    embolden,
                     emboldenStrengthX,
                     emboldenStrengthY,
 
@@ -99,8 +97,8 @@ class CanvasTestActivity : AppCompatActivity() {
                     strokeRadius,
 
                     antialias,
-                    gamma,
                     blurRadius,
+                    gamma,
                     color
             )
         }

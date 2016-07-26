@@ -25,7 +25,6 @@ public class FontConfig {
             float skewX,
             float skewY,
 
-            boolean embolden,
             float emboldenStrengthX,
             float emboldenStrengthY,
 
@@ -37,8 +36,8 @@ public class FontConfig {
             float strokeRadius,
 
             boolean antialias,
-            float gamma,
             float blurRadius,
+            float gamma,
             Color color
     ) {
         this.faceID = faceID;
@@ -57,7 +56,6 @@ public class FontConfig {
                 skewX,
                 skewY,
 
-                embolden,
                 emboldenStrengthX,
                 emboldenStrengthY,
 
@@ -69,8 +67,8 @@ public class FontConfig {
                 strokeRadius,
 
                 antialias,
-                gamma,
                 blurRadius,
+                gamma,
                 color.getValue()
         );
     }
@@ -99,7 +97,6 @@ public class FontConfig {
             float skewX,
             float skewY,
 
-            boolean embolden,
             float emboldenStrengthX,
             float emboldenStrengthY,
 
@@ -111,8 +108,8 @@ public class FontConfig {
             float strokeRadius,
 
             boolean antialias,
-            float gamma,
             float blurRadius,
+            float gamma,
             int colorARGB
     );
 

@@ -22,7 +22,6 @@ Java_com_dmi_util_android_graphics_FontConfig_nativeNewFontConfig(
         jfloat skewX,
         jfloat skewY,
 
-        jboolean embolden,
         jfloat emboldenStrengthX,
         jfloat emboldenStrengthY,
 
@@ -34,8 +33,8 @@ Java_com_dmi_util_android_graphics_FontConfig_nativeNewFontConfig(
         jfloat strokeRadius,
 
         jboolean antialias,
-        jfloat gamma,
         jfloat blurRadius,
+        jfloat gamma,
         jint colorARGB
 ) {
     FontFaceID *faceID = (FontFaceID *) faceIDPtr;
@@ -67,7 +66,6 @@ Java_com_dmi_util_android_graphics_FontConfig_nativeNewFontConfig(
             skewX,
             skewY,
 
-            embolden,
             emboldenStrengthX,
             emboldenStrengthY,
 
@@ -79,8 +77,8 @@ Java_com_dmi_util_android_graphics_FontConfig_nativeNewFontConfig(
             strokeRadius,
 
             antialias,
-            gamma,
             blurRadius,
+            gamma,
             color
     );
 }

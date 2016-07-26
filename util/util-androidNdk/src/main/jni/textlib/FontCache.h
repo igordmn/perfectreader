@@ -19,6 +19,8 @@ namespace dmi {
     };
 
     struct GlyphBitmap {
+        int16_t left;
+        int16_t top;
         AlphaBuffer buffer;
     };
 

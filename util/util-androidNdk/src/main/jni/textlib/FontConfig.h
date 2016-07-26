@@ -18,7 +18,6 @@ namespace dmi {
         const float skewX;
         const float skewY;
 
-        const bool embolden;
         const float emboldenStrengthX;
         const float emboldenStrengthY;
 
@@ -30,8 +29,8 @@ namespace dmi {
         const float strokeRadius;
 
         const bool antialias;
-        const float gamma;
         const float blurRadius;
+        const float gamma;
         const uint32_t color;
 
         FontConfig(
@@ -46,10 +45,8 @@ namespace dmi {
                 float scaleX,
                 float scaleY,
                 float skewX,
-                float
-                skewY,
+                float skewY,
 
-                bool embolden,
                 float emboldenStrengthX,
                 float emboldenStrengthY,
 
@@ -61,8 +58,8 @@ namespace dmi {
                 float strokeRadius,
 
                 bool antialias,
-                float gamma,
                 float blurRadius,
+                float gamma,
                 uint32_t color
         ) : faceID(faceID),
             sizeX(sizeX),
@@ -77,7 +74,6 @@ namespace dmi {
             skewX(skewX),
             skewY(skewY),
 
-            embolden(embolden),
             emboldenStrengthX(emboldenStrengthX),
             emboldenStrengthY(emboldenStrengthY),
 
@@ -89,8 +85,8 @@ namespace dmi {
             strokeRadius(strokeRadius),
 
             antialias(antialias),
-            gamma(gamma),
             blurRadius(blurRadius),
+            gamma(gamma),
             color(color) {
         }
     };

@@ -52,23 +52,26 @@ uint32_t paintUtils::argb2abgr(uint32_t argb) {
     return axgx | xbxx | xxxr;
 }
 
-void paintUtils::copyPixels(PixelBuffer &dst, const AlphaBuffer &src, int16_t x, int16_t y, uint32_t color) {
+void paintUtils::copyPixelsAlphaBlend(PixelBuffer &dst, const AlphaBuffer &src, int16_t x, int16_t y, uint32_t color) {
     uint32_t premultiplyColor = premultiplyAlpha(color);
 
-    uint16_t factX = min(dst.width, (uint16_t) max((int16_t) 0, x));
-    uint16_t factY = min(dst.height, (uint16_t) max((int16_t) 0, y));
-    uint16_t factWidth = min((uint16_t) (dst.width - factX), src.width);
-    uint16_t factHeight = min((uint16_t) (dst.height - factY), src.height);
+    uint16_t factDstX = min(dst.width, (uint16_t) max((int16_t) 0, x));
+    uint16_t factDstY = min(dst.height, (uint16_t) max((int16_t) 0, y));
+    uint16_t factSrcX = min(src.width, (uint16_t) max((int16_t) 0, (int16_t) -x));
+    uint16_t factSrcY = min(src.height, (uint16_t) max((int16_t) 0, (int16_t) -y));
+    uint16_t factSrcWidth = min((uint16_t) (dst.width - factDstX), (uint16_t) (src.width - factSrcX));
+    uint16_t factSrcHeight = min((uint16_t) (dst.height - factDstY), (uint16_t) (src.height - factSrcY));
 
     uint32_t *d = dst.data;
     uint8_t *s = src.data;
 
-    d += dst.stride * factY + factX;
+    d += dst.stride * factDstY + factDstX;
+    s += src.stride * factSrcY + factSrcX;
 
-    for (uint16_t yi = 0; yi < factHeight; ++yi) {
+    for (uint16_t yi = 0; yi < factSrcHeight; ++yi) {
         uint32_t *dr = d;
         uint8_t *sr = s;
-        for (uint16_t xi = 0; xi < factWidth; ++xi) {
+        for (uint16_t xi = 0; xi < factSrcWidth; ++xi) {
             uint8_t textAlpha = *sr;
             uint32_t pixelColor = multiplyAlpha(premultiplyColor, textAlpha);
             *dr = alphaBlendPremultiplied(pixelColor, *dr);
@@ -78,4 +81,33 @@ void paintUtils::copyPixels(PixelBuffer &dst, const AlphaBuffer &src, int16_t x,
         d += dst.stride;
         s += src.stride;
     }
+}
+
+void paintUtils::copyPixels(AlphaBuffer &dst, const AlphaBuffer &src, int16_t x, int16_t y) {
+    uint16_t factDstX = min(dst.width, (uint16_t) max((int16_t) 0, x));
+    uint16_t factDstY = min(dst.height, (uint16_t) max((int16_t) 0, y));
+    uint16_t factSrcX = min(src.width, (uint16_t) max((int16_t) 0, (int16_t) -x));
+    uint16_t factSrcY = min(src.height, (uint16_t) max((int16_t) 0, (int16_t) -y));
+    uint16_t factSrcWidth = min((uint16_t) (dst.width - factDstX), (uint16_t) (src.width - factSrcX));
+    uint16_t factSrcHeight = min((uint16_t) (dst.height - factDstY), (uint16_t) (src.height - factSrcY));
+
+    uint8_t *d = dst.data;
+    uint8_t *s = src.data;
+
+    d += dst.stride * factDstY + factDstX;
+    s += src.stride * factSrcY + factSrcX;
+
+    for (int yi = 0; yi <= factSrcWidth; yi++) {
+        memcpy(d, s, factSrcHeight);
+        d += dst.stride;
+        s += src.stride;
+    }
+}
+
+void paintUtils::clear(AlphaBuffer &src, uint8_t alpha) {
+    memset(src.data, alpha, src.stride * src.height);
+}
+
+void paintUtils::blur(AlphaBuffer &dst, const AlphaBuffer &src, float radius) {
+
 }

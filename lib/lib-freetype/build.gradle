@@ -28,6 +28,7 @@ model {
                                 'src/base/ftinit.c',
                                 'src/base/ftbitmap.c',
                                 'src/base/ftglyph.c',
+                                'src/base/ftstroke.c',
                                 'src/autofit/autofit.c',
                                 'src/smooth/smooth.c',
                                 'src/raster/raster.c',

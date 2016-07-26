@@ -97,7 +97,7 @@ Java_com_dmi_util_android_graphics_TextLibrary_nativeRenderGlyphs(
 
         const GlyphBitmap &glyphBitmap = cache.getGlyphBitmap(fontConfig, index, 0);
         const AlphaBuffer &glyphBuffer = glyphBitmap.buffer;
-        copyPixels(buffer, glyphBuffer, (int16_t) x, (int16_t) y, fontConfig->color);
+        copyPixelsAlphaBlend(buffer, glyphBuffer, (int16_t) x + glyphBitmap.left, (int16_t) y + glyphBitmap.top, fontConfig->color);
     }
 
     env->ReleaseIntArrayElements(jGlyphIndices, glyphIndices, 0);
