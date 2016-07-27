@@ -8,6 +8,7 @@ import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutImage
 import com.dmi.util.graphic.SizeF
 
+// todo если размеры изображения не указаны, его нужно масштабировать по density
 class ImageLayouter(
         private val bitmapDecoder: BitmapDecoder
 ) : ObjectLayouter<ConfiguredImage, LayoutImage> {
