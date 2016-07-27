@@ -9,7 +9,7 @@
 
 #define HASH_FUNCTION HASH_SFH
 
-#include "../thirdParty/uthash.h"
+#include "../thirdParty/uthash/uthash.h"
 
 using namespace std;
 
