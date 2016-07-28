@@ -9,7 +9,7 @@ import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutObject
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
-import org.amshove.kluent.shouldEqual
+import com.dmi.test.shouldEqual
 import org.junit.Test
 
 @Suppress("IllegalIdentifier")

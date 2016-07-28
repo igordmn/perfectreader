@@ -1,6 +1,6 @@
 package com.dmi.util.concurrent
 
-import org.amshove.kluent.shouldEqual
+import com.dmi.test.shouldEqual
 import org.junit.Test
 import rx.Subscription
 import rx.schedulers.Schedulers

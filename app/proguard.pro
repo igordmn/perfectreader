@@ -21,6 +21,7 @@
 -dontnote rx.internal.**
 -dontnote org.adw.library.**
 -dontnote com.github.moduth.**
+-dontnote org.jetbrains.annotations.**
 
 # Java
 -keepattributes *Annotation*
@@ -85,3 +86,6 @@
 
 # BlockCanary
 -dontwarn com.github.moduth.**
+
+# Test
+-dontwarn android.test.**

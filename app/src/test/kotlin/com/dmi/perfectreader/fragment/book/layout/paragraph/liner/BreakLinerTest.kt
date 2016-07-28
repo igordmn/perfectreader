@@ -5,7 +5,7 @@ import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.Breaker
 import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.Breaks
 import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.NoneBreaks
 import com.dmi.perfectreader.fragment.book.layout.paragraph.liner.Liner.*
-import org.amshove.kluent.shouldEqual
+import com.dmi.test.shouldEqual
 import org.junit.Test
 import java.lang.Character.isUpperCase
 import java.util.*

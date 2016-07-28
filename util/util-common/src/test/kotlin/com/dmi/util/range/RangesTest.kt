@@ -1,6 +1,6 @@
 package com.dmi.util.range
 
-import org.amshove.kluent.shouldEqual
+import com.dmi.test.shouldEqual
 import org.junit.Test
 
 @Suppress("IllegalIdentifier")

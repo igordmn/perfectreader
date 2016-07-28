@@ -18,7 +18,7 @@ import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.util.graphic.Color
 import com.dmi.util.graphic.SizeF
-import org.amshove.kluent.shouldEqual
+import com.dmi.test.shouldEqual
 import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 import java.util.*

@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.fragment.book.layout.paragraph.hyphenator
 
-import org.amshove.kluent.shouldEqual
+import com.dmi.test.shouldEqual
 import org.junit.Test
 import java.io.FileInputStream
 

@@ -6,7 +6,7 @@ import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.part.LayoutPart
 import com.dmi.perfectreader.fragment.book.pagination.part.splitIntoParts
-import org.amshove.kluent.shouldEqual
+import com.dmi.test.shouldEqual
 import org.junit.Test
 import java.util.*
 
