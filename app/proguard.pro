@@ -89,3 +89,7 @@
 
 # Test
 -dontwarn android.test.**
+-keep class com.dmi.util.android.test.PaintUtilsTestJNI
+-keepclassmembers class com.dmi.util.android.test.PaintUtilsTestJNI {
+    *;
+}

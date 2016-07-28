@@ -1,6 +1,7 @@
 #include "PaintUtils.h"
 
-#include "../util/JniUtils.h"
+#include <algorithm>
+#include <cmath>
 
 using namespace std;
 using namespace dmi;
@@ -97,8 +98,8 @@ void paintUtils::copyPixels(AlphaBuffer &dst, const AlphaBuffer &src, int16_t x,
     d += dst.stride * factDstY + factDstX;
     s += src.stride * factSrcY + factSrcX;
 
-    for (int yi = 0; yi <= factSrcWidth; yi++) {
-        memcpy(d, s, factSrcHeight);
+    for (int yi = 0; yi < factSrcHeight; yi++) {
+        memcpy(d, s, factSrcWidth);
         d += dst.stride;
         s += src.stride;
     }
@@ -106,8 +107,4 @@ void paintUtils::copyPixels(AlphaBuffer &dst, const AlphaBuffer &src, int16_t x,
 
 void paintUtils::clear(AlphaBuffer &src, uint8_t alpha) {
     memset(src.data, alpha, src.stride * src.height);
-}
-
-void paintUtils::blur(AlphaBuffer &dst, const AlphaBuffer &src, float radius) {
-
 }

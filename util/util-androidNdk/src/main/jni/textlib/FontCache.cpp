@@ -4,9 +4,11 @@
 #include FT_FREETYPE_H
 #include FT_CACHE_H
 #include FT_STROKER_H
+#include FT_BITMAP_H
 #include FT_OUTLINE_H
 #include "../paint/PixelBuffer.h"
 #include "../paint/PaintUtils.h"
+#include "../paint/Blur.h"
 #include "FTErrors.h"
 #include "FontFaceID.h"
 
@@ -32,6 +34,12 @@ namespace {
 
     signed long freetypeToF16Dot16(float value) {
         return (signed long) (value * 0x10000L);
+    }
+
+    FT_BitmapGlyph renderGlyph(FT_Glyph glyph, FT_Render_Mode renderMode, FT_Vector* origin) {
+        FT_Glyph bitmapGlyph = glyph;
+        FT_CHECK(FT_Glyph_To_Bitmap(&bitmapGlyph, renderMode, origin, 0));
+        return (FT_BitmapGlyph) bitmapGlyph;
     }
 }
 
@@ -153,11 +161,12 @@ namespace dmi {
                 FT_Glyph strokeGlyph = ftGlyph;
                 FT_Stroker stroker;
                 FT_Stroker_New(ftGlyph->library, &stroker);
-                FT_Stroker_Set(stroker,
-                               freetypeToF26Dot6(fontConfig->strokeRadius),
-                               fontConfig->strokeLineCap,
-                               fontConfig->strokeLineJoin,
-                               freetypeToF16Dot16(fontConfig->strokeMiterLimit)
+                FT_Stroker_Set(
+                        stroker,
+                        freetypeToF26Dot6(fontConfig->strokeRadius),
+                        fontConfig->strokeLineCap,
+                        fontConfig->strokeLineJoin,
+                        freetypeToF16Dot16(fontConfig->strokeMiterLimit)
                 );
 
                 if (fontConfig->strokeInside && fontConfig->strokeOutside) {
@@ -196,55 +205,62 @@ namespace dmi {
             const Glyph &glyph = getGlyph(fontConfig, index);
 
             FT_Glyph ftGlyph = glyph.ftGlyph;
-            FT_Render_Mode_ renderMode = fontConfig->antialias ? FT_RENDER_MODE_NORMAL : FT_RENDER_MODE_MONO;
-            FT_CHECK(FT_Glyph_To_Bitmap(&ftGlyph, renderMode, 0, 0));
-            FT_BitmapGlyph bitmapGlyph = (FT_BitmapGlyph) ftGlyph;
-            FT_Bitmap &ftBitmap = bitmapGlyph->bitmap;
+            FT_Render_Mode renderMode = fontConfig->antialias ? FT_RENDER_MODE_NORMAL : FT_RENDER_MODE_MONO;
+            FT_BitmapGlyph bitmapGlyph = renderGlyph(ftGlyph, renderMode, 0);
+
+            FT_Bitmap *ftBitmap = &bitmapGlyph->bitmap;
+            if (!fontConfig->antialias) {
+                FT_Bitmap *convertedBitmap = new FT_Bitmap();
+                FT_Bitmap_Init(convertedBitmap);
+                FT_CHECK(FT_Bitmap_Convert(ftGlyph->library, ftBitmap, convertedBitmap, 1));
+                uint8_t *c = convertedBitmap->buffer;
+                for (int i = 0; i < convertedBitmap->pitch * convertedBitmap->rows; i++) {
+                    *c = (uint8_t) (*c == 1 ? 255 : 0);
+                    c++;
+                }
+                ftBitmap = convertedBitmap;
+            }
 
             bitmap = new GlyphBitmap();
 
             if (fontConfig->blurRadius == 0) {
                 bitmap->top = (int16_t) -bitmapGlyph->top;
                 bitmap->left = (int16_t) bitmapGlyph->left;
-                bitmap->buffer.width = (uint16_t) ftBitmap.width;
-                bitmap->buffer.height = (uint16_t) ftBitmap.rows;
-                bitmap->buffer.stride = (uint16_t) ftBitmap.pitch;
-                bitmap->buffer.data = new uint8_t[ftBitmap.pitch * ftBitmap.rows];
-                memcpy(bitmap->buffer.data, ftBitmap.buffer, ftBitmap.pitch * ftBitmap.rows);
+                bitmap->buffer.width = (uint16_t) ftBitmap->width;
+                bitmap->buffer.height = (uint16_t) ftBitmap->rows;
+                bitmap->buffer.stride = (uint16_t) ftBitmap->pitch;
+                bitmap->buffer.data = new uint8_t[ftBitmap->pitch * ftBitmap->rows];
+                memcpy(bitmap->buffer.data, ftBitmap->buffer, ftBitmap->pitch * ftBitmap->rows);
             } else {
                 AlphaBuffer original;
-                original.width = (uint16_t) ftBitmap.width;
-                original.height = (uint16_t) ftBitmap.rows;
-                original.stride = (uint16_t) ftBitmap.pitch;
-                original.data = ftBitmap.buffer;
+                original.width = (uint16_t) ftBitmap->width;
+                original.height = (uint16_t) ftBitmap->rows;
+                original.stride = (uint16_t) ftBitmap->pitch;
+                original.data = ftBitmap->buffer;
 
-                uint16_t additionalPixels = (uint16_t) (fontConfig->blurRadius + 1);
-
-                AlphaBuffer expanded;
-                expanded.width = (uint16_t) (ftBitmap.width + 2 * additionalPixels);
-                expanded.height = (uint16_t) (ftBitmap.rows + 2 * additionalPixels);
-                expanded.stride = (uint16_t) ftBitmap.pitch;
-                expanded.data = new uint8_t[expanded.stride * expanded.height];
-                paintUtils::clear(expanded, 0);
-                paintUtils::copyPixels(expanded, original, additionalPixels, additionalPixels);
+                uint16_t additionalPixels = blur::gaussianBlurAdditionalPixels(fontConfig->blurRadius);
 
                 AlphaBuffer blurred;
-                blurred.width = expanded.width;
-                blurred.height = expanded.height;
-                blurred.stride = expanded.stride;
-                blurred.data = new uint8_t[expanded.stride * expanded.height];
-
-                paintUtils::blur(blurred, expanded, fontConfig->blurRadius);
-
-                delete[] expanded.data;
+                blurred.width = (uint16_t) (original.width + 2 * additionalPixels);
+                blurred.height = (uint16_t) (original.height + 2 * additionalPixels);
+                blurred.stride = blurred.width;
+                blurred.data = new uint8_t[blurred.stride * blurred.height];
+                paintUtils::clear(blurred, 0);
+                paintUtils::copyPixels(blurred, original, additionalPixels, additionalPixels);
+                blur::gaussianBlur(blurred, fontConfig->blurRadius);
 
                 bitmap->top = (int16_t) -bitmapGlyph->top - additionalPixels;
                 bitmap->left = (int16_t) bitmapGlyph->left - additionalPixels;
                 bitmap->buffer = blurred;
             }
 
-            // ftGlyph - это уже bitmapGlyph, а не glyph.ftGlyph (после вызова FT_Glyph_To_Bitmap указатель поменялся). Его нужно удалить
-            FT_Done_Glyph(ftGlyph);
+            if (!fontConfig->antialias) {
+                FT_Bitmap *convertedBitmap = ftBitmap;
+                FT_CHECK(FT_Bitmap_Done(ftGlyph->library, convertedBitmap));
+                delete convertedBitmap;
+            }
+
+            FT_Done_Glyph((FT_Glyph) bitmapGlyph);
 
             glyphCache.put(glyphBitmapCacheKey, bitmap);
         }
