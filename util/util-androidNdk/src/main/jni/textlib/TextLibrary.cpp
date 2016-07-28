@@ -91,11 +91,12 @@ Java_com_dmi_util_android_graphics_TextLibrary_nativeRenderGlyphs(
     uint32_t i = 0, c = 0;
 
     while (i < size) {
-        float x = (float) coordinates[c++];
-        float y = (float) coordinates[c++];
+        float x = coordinates[c++];
+        float y = coordinates[c++];
         uint32_t index = (uint32_t) glyphIndices[i++];
+        uint8_t subpixelX = (uint8_t) ((x - (int) x) * FontCache::SUBPIXEL_COUNT);
 
-        const GlyphBitmap &glyphBitmap = cache.getGlyphBitmap(fontConfig, index, 0);
+        const GlyphBitmap &glyphBitmap = cache.getGlyphBitmap(fontConfig, index, subpixelX);
         const AlphaBuffer &glyphBuffer = glyphBitmap.buffer;
         copyPixelsAlphaBlend(buffer, glyphBuffer, (int16_t) x + glyphBitmap.left, (int16_t) y + glyphBitmap.top, fontConfig->color);
     }

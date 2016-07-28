@@ -193,6 +193,9 @@ namespace dmi {
         return *glyph;
     }
 
+    /**
+     * @param subpixelX от 0 до SUBPIXEL_COUNT - 1. смещение относительно левой границы пикселя. 0 - нет смещения, SUBPIXEL_COUNT - 1 - почти полное смещение
+     */
     const GlyphBitmap &FontCache::getGlyphBitmap(FontConfig *fontConfig, uint32_t index, uint8_t subpixelX) {
         glyphBitmapCacheKey.isBitmap = true;
         glyphBitmapCacheKey.fontConfig = fontConfig;
@@ -206,7 +209,10 @@ namespace dmi {
 
             FT_Glyph ftGlyph = glyph.ftGlyph;
             FT_Render_Mode renderMode = fontConfig->antialias ? FT_RENDER_MODE_NORMAL : FT_RENDER_MODE_MONO;
-            FT_BitmapGlyph bitmapGlyph = renderGlyph(ftGlyph, renderMode, 0);
+            FT_Vector origin;
+            origin.x = subpixelX * 64 / SUBPIXEL_COUNT;
+            origin.y = 0;
+            FT_BitmapGlyph bitmapGlyph = renderGlyph(ftGlyph, renderMode, &origin);
 
             FT_Bitmap *ftBitmap = &bitmapGlyph->bitmap;
             if (!fontConfig->antialias) {

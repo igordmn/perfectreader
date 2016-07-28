@@ -43,6 +43,8 @@ namespace dmi {
         static void destroyEntry(const GlyphCacheKey &, void *);
 
     public:
+        static const uint8_t SUBPIXEL_COUNT = 4;
+
         FontCache(FT_Library library, uint16_t cacheMaxFaces, uint16_t cacheMaxSizes, uint32_t cacheMaxBytes);
         ~FontCache();
 
