@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.fragment.book.content.obj
 
-import com.dmi.perfectreader.fragment.book.content.obj.param.LayoutConfig
+import com.dmi.perfectreader.fragment.book.content.obj.param.ContentConfig
 import com.dmi.perfectreader.fragment.book.content.obj.param.Length
 import com.dmi.perfectreader.fragment.book.content.obj.param.StyleType
 import com.dmi.perfectreader.fragment.book.location.LocationRange
@@ -21,7 +21,7 @@ class ContentFrame(
 
     override val length = child.length
 
-    override fun configure(config: LayoutConfig) = ConfiguredFrame(
+    override fun configure(config: ContentConfig) = ConfiguredFrame(
             margins.configure(config, styleType),
             paddings.configure(config),
             borders.configure(config),
@@ -35,7 +35,7 @@ class ContentFrame(
     }
 
     class Margins(val left: Length?, val right: Length?, val top: Length?, val bottom: Length?) {
-        fun configure(config: LayoutConfig, styleType: StyleType): ConfiguredFrame.Margins {
+        fun configure(config: ContentConfig, styleType: StyleType): ConfiguredFrame.Margins {
             return if (styleType == StyleType.PARAGRAPH) {
                 val top = (top ?: Length.Absolute(DEFAULT_PARAGRAPH_VERTICAL_MARGIN)).configure(config)
                 val bottom = (bottom ?: Length.Absolute(DEFAULT_PARAGRAPH_VERTICAL_MARGIN)).configure(config)
@@ -57,7 +57,7 @@ class ContentFrame(
     }
 
     class Paddings(val left: Length?, val right: Length?, val top: Length?, val bottom: Length?) {
-        fun configure(config: LayoutConfig) = ConfiguredFrame.Paddings(
+        fun configure(config: ContentConfig) = ConfiguredFrame.Paddings(
                 (left ?: Length.Absolute(0F)).configure(config),
                 (right ?: Length.Absolute(0F)).configure(config),
                 (top ?: Length.Absolute(0F)).configure(config),
@@ -66,14 +66,14 @@ class ContentFrame(
     }
 
     class Border(val width: Float?, val color: Color?) {
-        fun configure(config: LayoutConfig) = ConfiguredFrame.Border(
+        fun configure(config: ContentConfig) = ConfiguredFrame.Border(
                 (width ?: 0F) * config.density,
                 color ?: Color.BLACK
         )
     }
 
     class Borders(val left: Border, val right: Border, val top: Border, val bottom: Border) {
-        fun configure(config: LayoutConfig) = ConfiguredFrame.Borders(
+        fun configure(config: ContentConfig) = ConfiguredFrame.Borders(
                 left.configure(config),
                 right.configure(config),
                 top.configure(config),

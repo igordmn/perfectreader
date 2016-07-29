@@ -12,7 +12,7 @@ class ContentBox(
 ) : ContentObject(range) {
     override val length = children.sumByDouble { it.length }
 
-    override fun configure(config: LayoutConfig) = ConfiguredBox(
+    override fun configure(config: ContentConfig) = ConfiguredBox(
             size.configure(config),
             contentAlign ?: Align.LEFT,
             children.map { it.configure(config) },

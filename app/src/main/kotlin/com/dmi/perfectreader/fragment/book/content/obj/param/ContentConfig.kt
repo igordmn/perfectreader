@@ -10,7 +10,7 @@ import com.dmi.perfectreader.data.UserSettingKeys.Format as FormatKeys
 import com.dmi.perfectreader.data.UserSettingKeys.Image as ImageKeys
 import com.dmi.perfectreader.data.UserSettingKeys.UI as UIKeys
 
-class LayoutConfig(
+class ContentConfig(
         val density: Float,
         val defaultLocale: Locale,
         val ignoreDeclaredLocale: Boolean,
@@ -27,7 +27,7 @@ class LayoutConfig(
         val imageScaleFiltered: Boolean
 )
 
-fun settingsLayoutConfig(context: Context, settings: UserSettings) = LayoutConfig(
+fun settingsLayoutConfig(context: Context, settings: UserSettings) = ContentConfig(
         context.displayMetrics.density,
         defaultLocale = parseLanguage(context, settings[AnalyzeKeys.defaultLanguage]),
         ignoreDeclaredLocale = settings[AnalyzeKeys.ignoreDeclaredLanguage],

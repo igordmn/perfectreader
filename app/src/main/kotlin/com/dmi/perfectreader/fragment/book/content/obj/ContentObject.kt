@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.fragment.book.content.obj
 
-import com.dmi.perfectreader.fragment.book.content.obj.param.LayoutConfig
+import com.dmi.perfectreader.fragment.book.content.obj.param.ContentConfig
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import java.io.Serializable
 
@@ -21,7 +21,7 @@ abstract class ContentObject(val range: LocationRange) : Serializable {
      *   эта функция возьмет конкретный шрифт на карте памяти /sdcard/Fonts/RobotoI.ttf)
      * - преобразование dip (device independent pixels) в px
      */
-    abstract fun configure(config: LayoutConfig): ConfiguredObject
+    abstract fun configure(config: ContentConfig): ConfiguredObject
 }
 
 abstract class ConfiguredObject(val range: LocationRange)

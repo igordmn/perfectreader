@@ -21,7 +21,7 @@ class ContentParagraph(
         val DEFAULT_FONT_SIZE = 20F
     }
 
-    override fun configure(config: LayoutConfig) = ConfiguredParagraph(
+    override fun configure(config: ContentConfig) = ConfiguredParagraph(
             if (config.ignoreDeclaredLocale) config.defaultLocale else locale ?: config.defaultLocale,
             runs.map { it.configure(config) },
             (firstLineIndent ?: config.firstLineIndent) * config.density,
@@ -33,12 +33,12 @@ class ContentParagraph(
 
     sealed class Run {
         abstract val length: Double
-        abstract fun configure(config: LayoutConfig): ConfiguredParagraph.Run
+        abstract fun configure(config: ContentConfig): ConfiguredParagraph.Run
 
         class Object(val obj: ContentObject) : Run() {
             override val length = obj.length
 
-            override fun configure(config: LayoutConfig) = ConfiguredParagraph.Run.Object(
+            override fun configure(config: ContentConfig) = ConfiguredParagraph.Run.Object(
                     obj.configure(config)
             )
         }
@@ -46,7 +46,7 @@ class ContentParagraph(
         class Text(val text: String, val style: ContentFontStyle, val range: LocationRange) : Run() {
             override val length = text.length.toDouble()
 
-            override fun configure(config: LayoutConfig) = ConfiguredParagraph.Run.Text(
+            override fun configure(config: ContentConfig) = ConfiguredParagraph.Run.Text(
                     text, fontStyleCache.configure(style, config), range
             )
         }
@@ -79,9 +79,9 @@ class ConfiguredParagraph(
 
 private class FontStyleCache {
     private val lastConfigured = WeakHashMap<ContentFontStyle, ConfiguredFontStyle>()
-    private val lastConfigs = WeakHashMap<ContentFontStyle, LayoutConfig>()
+    private val lastConfigs = WeakHashMap<ContentFontStyle, ContentConfig>()
 
-    fun configure(style: ContentFontStyle, config: LayoutConfig): ConfiguredFontStyle {
+    fun configure(style: ContentFontStyle, config: ContentConfig): ConfiguredFontStyle {
         val lastConfigured = lastConfigured[style]
         val lastConfig = lastConfigs[style]
         if (lastConfigured != null && lastConfig === config) {
@@ -95,7 +95,7 @@ private class FontStyleCache {
     }
 }
 
-private fun ContentFontStyle.configure(config: LayoutConfig) = ConfiguredFontStyle(
+private fun ContentFontStyle.configure(config: ContentConfig) = ConfiguredFontStyle(
         (size ?: ContentParagraph.DEFAULT_FONT_SIZE) * config.density * config.fontSizeMultiplier,
         color ?: Color.BLACK,
         config.textRenderConfig,

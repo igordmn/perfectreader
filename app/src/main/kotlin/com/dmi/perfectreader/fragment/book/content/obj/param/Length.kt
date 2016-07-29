@@ -5,7 +5,7 @@ import java.io.Serializable
 interface Length : Serializable {
     fun compute(percentBase: Float): Float
 
-    fun configure(config: LayoutConfig) = when (this) {
+    fun configure(config: ContentConfig) = when (this) {
         is Length.Absolute -> Length.Absolute(value * config.density)
         else -> this
     }
