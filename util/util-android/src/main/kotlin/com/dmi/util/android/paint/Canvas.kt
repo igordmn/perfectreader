@@ -4,22 +4,17 @@ import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PorterDuff
-import com.dmi.util.android.graphics.BitmapPaint
-import com.dmi.util.android.graphics.FontConfig
-import com.dmi.util.android.graphics.PixelBuffer
-import com.dmi.util.android.graphics.TextLibrary
 import com.dmi.util.graphic.Color
 import android.graphics.Canvas as AndroidCanvas
 
 @Suppress("ProtectedInFinal")
-class Canvas(private val textLibrary: TextLibrary, private val bitmap: Bitmap) {
+class Canvas(bitmap: Bitmap) {
     protected val androidCanvas = AndroidCanvas(bitmap)
     protected val rectPaint = Paint().apply { isAntiAlias = true }
     protected val pathPaint = Paint().apply { isAntiAlias = true }
     protected val path = Path()
 
     protected val pathDrawer = PathDrawer()
-    protected val pixelBuffer = PixelBuffer()
 
     fun clear() {
         androidCanvas.drawColor(Color.TRANSPARENT.value, PorterDuff.Mode.CLEAR)
@@ -36,12 +31,6 @@ class Canvas(private val textLibrary: TextLibrary, private val bitmap: Bitmap) {
         draw(pathDrawer)
         path.close()
         androidCanvas.drawPath(path, pathPaint)
-    }
-
-    fun drawText(fontConfig: FontConfig, glyphIndices: IntArray, coordinates: FloatArray) {
-        BitmapPaint.lockBuffer(pixelBuffer, bitmap)
-        textLibrary.renderGlyphs(fontConfig, glyphIndices, coordinates, pixelBuffer)
-        BitmapPaint.unlockBufferAndPost(pixelBuffer, bitmap)
     }
 
     inner class PathDrawer internal constructor() {
