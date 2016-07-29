@@ -8,9 +8,11 @@ import com.dmi.util.setting.Settings.Keys
 
 object UserSettingKeys : Keys() {
     object Analyze : Keys(this) {
-        val defaultCharset by key("auto")
+        val defaultCharsetIsAuto by key(true)
+        val defaultCharset by key("")
         val ignoreDeclaredCharset by key(false)
-        val defaultLanguage by key("system")
+        val defaultLanguageIsSystem by key(true)
+        val defaultLanguage by key("")
         val ignoreDeclaredLanguage by key(false)
     }
 

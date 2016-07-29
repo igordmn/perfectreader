@@ -2,25 +2,25 @@ package com.dmi.perfectreader.fragment.book.parse
 
 import com.dmi.perfectreader.data.UserSettingKeys
 import com.dmi.util.setting.Settings
+import com.dmi.perfectreader.data.UserSettingKeys.Analyze as AnalyzeKeys
 
 class ParseConfig(
         val defaultCharset: Charset,
         val ignoreDeclaredCharset: Boolean
 ) {
     sealed class Charset {
-        companion object {
-            fun parse(str: String) = when (str) {
-                "auto" -> Charset.Auto
-                else -> Fixed(str)
-            }
-        }
-
-        object Auto: Charset()
-        class Fixed(val name: String): Charset()
+        object Auto : Charset()
+        class Fixed(val name: String) : Charset()
     }
 }
 
-fun settingsParseConfig(userSettings: Settings) = ParseConfig(
-        ParseConfig.Charset.parse(userSettings[UserSettingKeys.Analyze.defaultCharset]),
-        userSettings[UserSettingKeys.Analyze.ignoreDeclaredCharset]
+fun settingsParseConfig(settings: Settings) = ParseConfig(
+        defaultCharset(settings),
+        settings[UserSettingKeys.Analyze.ignoreDeclaredCharset]
 )
+
+private fun defaultCharset(settings: Settings) = if (settings[AnalyzeKeys.defaultCharsetIsAuto]) {
+    ParseConfig.Charset.Auto
+} else {
+    ParseConfig.Charset.Fixed(settings[AnalyzeKeys.defaultCharset])
+}

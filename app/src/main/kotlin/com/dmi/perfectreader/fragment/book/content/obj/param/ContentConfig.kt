@@ -29,7 +29,7 @@ class ContentConfig(
 
 fun settingsLayoutConfig(context: Context, settings: UserSettings) = ContentConfig(
         context.displayMetrics.density,
-        defaultLocale = parseLanguage(context, settings[AnalyzeKeys.defaultLanguage]),
+        defaultLocale = defaultLocale(context, settings),
         ignoreDeclaredLocale = settings[AnalyzeKeys.ignoreDeclaredLanguage],
         firstLineIndent = settings[FormatKeys.firstLineIndent],
         textAlign = settings[FormatKeys.textAlign],
@@ -47,7 +47,11 @@ fun settingsLayoutConfig(context: Context, settings: UserSettings) = ContentConf
         imageScaleFiltered = settings[ImageKeys.scaleFiltered]
 )
 
-private fun parseLanguage(context: Context, str: String) = when (str) {
-    "system" -> Locale(context.resources.configuration.locale.language)
-    else -> Locale(str)
-}
+private fun defaultLocale(context: Context, settings: UserSettings) =
+        if (settings[AnalyzeKeys.defaultLanguageIsSystem]) {
+            systemLocale(context)
+        } else {
+            Locale(settings[AnalyzeKeys.defaultLanguage])
+        }
+
+private fun systemLocale(context: Context) = Locale(context.resources.configuration.locale.language)
