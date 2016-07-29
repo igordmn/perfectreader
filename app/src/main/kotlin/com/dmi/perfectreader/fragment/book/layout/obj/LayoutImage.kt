@@ -5,6 +5,7 @@ import com.dmi.perfectreader.fragment.book.location.LocationRange
 class LayoutImage(
         width: Float,
         height: Float,
-        range: LocationRange,
-        val src: String?
+        val scaleFiltered: Boolean,
+        val src: String?,
+        range: LocationRange
 ) : LayoutObject(width, height, emptyList(), range)

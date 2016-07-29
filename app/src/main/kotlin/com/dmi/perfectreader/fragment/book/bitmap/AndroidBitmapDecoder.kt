@@ -2,43 +2,43 @@ package com.dmi.perfectreader.fragment.book.bitmap
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.dmi.util.graphic.SizeF
+import com.dmi.util.graphic.Size
 import java.io.InputStream
 
-class AndroidBitmapDecoder(private val openResource: (path: String) -> InputStream) : BitmapDecoder {
-    override fun loadDimensions(src: String): SizeF {
+class AndroidBitmapDecoder(
+        private val openResource: (path: String) -> InputStream
+) : BitmapDecoder {
+    override fun loadDimensions(src: String): Size {
         openResource(src).use {
             val bitmapOptions = BitmapFactory.Options()
             bitmapOptions.inJustDecodeBounds = true
             BitmapFactory.decodeStream(it, null, bitmapOptions)
-            return SizeF(
-                    bitmapOptions.outWidth.toFloat(),
-                    bitmapOptions.outHeight.toFloat()
-            )
+            return Size(bitmapOptions.outWidth, bitmapOptions.outHeight)
         }
     }
 
-    override fun decode(src: String, maxWidth: Float, maxHeight: Float): Bitmap {
+    override fun decode(src: String, width: Int, height: Int, scaleFiltered: Boolean): Bitmap {
         val (factWidth, factHeight) = loadDimensions(src)
         openResource(src).use {
             val bitmapOptions = BitmapFactory.Options()
-            bitmapOptions.inSampleSize = calculateSampleSize(factWidth, factHeight, maxWidth, maxHeight)
-            return BitmapFactory.decodeStream(it, null, bitmapOptions)
+            bitmapOptions.inSampleSize = calculateSampleSize(factWidth, factHeight, width, height)
+            val bitmap = BitmapFactory.decodeStream(it, null, bitmapOptions)
+            return Bitmap.createScaledBitmap(bitmap, width, height, scaleFiltered)
         }
     }
 
-    private fun calculateSampleSize(factWidth: Float, factHeight: Float, desiredMaxWidth: Float, desiredMaxHeight: Float): Int {
+    private fun calculateSampleSize(factWidth: Int, factHeight: Int, desiredWidth: Int, desiredHeight: Int): Int {
         var sampleSize = 1
 
-        if (factHeight > desiredMaxHeight || factWidth > desiredMaxWidth) {
+        if (factHeight > desiredHeight || factWidth > desiredWidth) {
             val halfHeight = factHeight / 2
             val halfWidth = factWidth / 2
 
-            while ((halfWidth / sampleSize) > desiredMaxWidth &&
-                   (halfHeight / sampleSize) > desiredMaxHeight
-            ) {
+            while ((halfWidth / sampleSize) > desiredWidth && (halfHeight / sampleSize) > desiredHeight) {
                 sampleSize *= 2
             }
+            if (sampleSize > 1)
+                sampleSize /= 2
         }
 
         return sampleSize

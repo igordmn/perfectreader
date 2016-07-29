@@ -6,23 +6,28 @@ import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredSize.Dime
 import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredSize.Dimension.Fixed
 import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutImage
+import com.dmi.util.graphic.Size
 import com.dmi.util.graphic.SizeF
+import java.lang.Math.round
 
-// todo если размеры изображения не указаны, его нужно масштабировать по density
 class ImageLayouter(
         private val bitmapDecoder: BitmapDecoder
 ) : ObjectLayouter<ConfiguredImage, LayoutImage> {
     override fun layout(obj: ConfiguredImage, space: LayoutSpace): LayoutImage {
         return object {
             fun layout(): LayoutImage {
-                val (imageWidth, imageHeight) = if (obj.src != null) bitmapDecoder.loadDimensions(obj.src) else SizeF(0F, 0F)
+                val (imageWidth, imageHeight) = if (obj.src != null) {
+                    (bitmapDecoder.loadDimensions(obj.src) * obj.sourceScale).toInt()
+                } else {
+                    Size(0, 0)
+                }
                 val (width, height) = configureDimensions(imageHeight, imageWidth)
-                return LayoutImage(width, height, obj.range, obj.src)
+                return LayoutImage(width, height, obj.scaleFiltered, obj.src, obj.range)
             }
 
-            private fun configureDimensions(imageHeight: Float, imageWidth: Float): Pair<Float, Float> {
+            private fun configureDimensions(imageHeight: Int, imageWidth: Int): SizeF {
                 with (obj.size) {
-                    val imageRatio = imageWidth / imageHeight
+                    val imageRatio = imageWidth / imageHeight.toFloat()
                     val factWidth: Float
                     val factHeight: Float
 
@@ -40,13 +45,13 @@ class ImageLayouter(
                             factWidth = width.compute(factHeight * imageRatio, space.width.percentBase)
                         }
                         width is Auto && height is Auto -> {
-                            factWidth = width.compute(imageWidth, space.width.percentBase)
+                            factWidth = width.compute(imageWidth.toFloat(), space.width.percentBase)
                             factHeight = height.compute(factWidth / imageRatio, space.height.percentBase)
                         }
                         else -> throw IllegalStateException()
                     }
 
-                    return Pair(factWidth, factHeight)
+                    return SizeF(round(factWidth).toFloat(), round(factHeight).toFloat())
                 }
             }
         }.layout()

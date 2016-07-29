@@ -29,6 +29,12 @@ object UserSettingKeys : Keys() {
         val pageMarginBottom by key(20F)
     }
 
+    object Image : Keys(this) {
+        val sourceScaleByDpi by key(true)
+        val sourceScale by key(1F)
+        val scaleFiltered by key(true)
+    }
+
     object Control : Keys(this) {
         object TapZones : Keys(this) {
             interface TapZoneActions {

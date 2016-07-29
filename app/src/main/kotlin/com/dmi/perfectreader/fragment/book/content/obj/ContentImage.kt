@@ -15,6 +15,8 @@ class ContentImage(
     override fun configure(config: LayoutConfig) = ConfiguredImage(
             size.configure(config),
             src,
+            config.imageSourceScale,
+            config.imageScaleFiltered,
             range
     )
 }
@@ -22,5 +24,7 @@ class ContentImage(
 class ConfiguredImage(
         val size: ConfiguredSize,
         val src: String?,
+        val sourceScale: Float,
+        val scaleFiltered: Boolean,
         range: LocationRange
 ) : ConfiguredObject(range)

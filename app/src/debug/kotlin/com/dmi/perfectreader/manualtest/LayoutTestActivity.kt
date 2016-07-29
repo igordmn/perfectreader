@@ -82,6 +82,8 @@ class LayoutTestActivity : AppCompatActivity() {
         val image = testFrame(ConfiguredImage(
                 ConfiguredSize(Dimension.Auto(), Dimension.Auto()),
                 "manualtest/pagebook/image.png",
+                2F,
+                true,
                 range(1500, 1600)
         ))
 

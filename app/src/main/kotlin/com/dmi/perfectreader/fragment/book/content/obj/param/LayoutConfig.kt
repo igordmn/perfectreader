@@ -7,6 +7,7 @@ import org.jetbrains.anko.displayMetrics
 import java.util.*
 import com.dmi.perfectreader.data.UserSettingKeys.Analyze as AnalyzeKeys
 import com.dmi.perfectreader.data.UserSettingKeys.Format as FormatKeys
+import com.dmi.perfectreader.data.UserSettingKeys.Image as ImageKeys
 import com.dmi.perfectreader.data.UserSettingKeys.UI as UIKeys
 
 class LayoutConfig(
@@ -21,7 +22,9 @@ class LayoutConfig(
         val hangingConfig: HangingConfig,
         val hyphenation: Boolean,
         val textRenderConfig: TextRenderConfig,
-        val selectionConfig: SelectionConfig
+        val selectionConfig: SelectionConfig,
+        val imageSourceScale: Float,
+        val imageScaleFiltered: Boolean
 )
 
 fun settingsLayoutConfig(context: Context, settings: UserSettings) = LayoutConfig(
@@ -39,7 +42,9 @@ fun settingsLayoutConfig(context: Context, settings: UserSettings) = LayoutConfi
         selectionConfig = SelectionConfig(
                 Color(settings[UIKeys.selectionBackgroundColor]),
                 Color(settings[UIKeys.selectionTextColor])
-        )
+        ),
+        imageSourceScale = if (settings[ImageKeys.sourceScaleByDpi]) context.displayMetrics.density else settings[ImageKeys.sourceScale],
+        imageScaleFiltered = settings[ImageKeys.scaleFiltered]
 )
 
 private fun parseLanguage(context: Context, str: String) = when (str) {
