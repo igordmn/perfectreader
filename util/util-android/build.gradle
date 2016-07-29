@@ -14,19 +14,10 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
     }
-
-    publishNonDefault true
-}
-
-configurations {
-    debug
-    release
 }
 
 dependencies {
     compile project(':util:util-common')
-    debugCompile project(path: ':util:util-androidNdk', configuration: 'debug')
-    releaseCompile project(path: ':util:util-androidNdk', configuration: 'release')
     compile "com.android.support:appcompat-v7:$projectVersions.supportLibrary"
     compile "com.android.support:cardview-v7:$projectVersions.supportLibrary"
     compile "com.android.support:recyclerview-v7:$projectVersions.supportLibrary"

@@ -76,8 +76,7 @@ android {
 
 dependencies {
     compile project(':util:util-common')
-    debugCompile project(path: ':util:util-android', configuration: 'debug')
-    releaseCompile project(path: ':util:util-android', configuration: 'release')
+    compile project(':util:util-android')
 
     debugCompile 'com.github.moduth:blockcanary-android:1.2.1'
     releaseCompile 'com.github.moduth:blockcanary-no-op:1.2.1'
