@@ -1,6 +1,8 @@
 package com.dmi.perfectreader.fragment.book
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.opengl.GLSurfaceView
 import android.widget.FrameLayout
 import com.dmi.perfectreader.BuildConfig.DEBUG_SHOWRENDERFREEZES
@@ -21,6 +23,14 @@ class BookView(
     private val glSurface = GLSurfaceViewExt(context)
 
     init {
+        /*
+         * Фикс бага с анимацией.
+         * Без этого не работает анимация исчезновения меню.
+         * Решение найдено здесь:
+         * http://stackoverflow.com/questions/14925060/ugly-fragment-transition-to-surfaceview-with-overlay
+         */
+        glSurface.background = ColorDrawable(Color.TRANSPARENT)
+
         widget.addView(glSurface)
         widget.keepScreenOn = true
         glSurface.setNotifiableRenderer { size ->
