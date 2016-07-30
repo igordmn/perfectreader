@@ -3,7 +3,7 @@ package com.dmi.util.debug
 import com.dmi.util.log
 import java.lang.System.nanoTime
 
-inline fun benchmark(name: String = "", iterations: Int = 10, run: () -> Unit) {
+fun benchmark(name: String = "", iterations: Int = 10, run: () -> Unit) {
     run()  // cold call
 
     val t1 = nanoTime()
