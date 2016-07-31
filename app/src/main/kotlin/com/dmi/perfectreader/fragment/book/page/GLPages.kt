@@ -89,13 +89,13 @@ class GLPages(
             toRemove.forEach { page->
                 pages.remove(page)
                 val glPage = pageToGLPage.remove(page)!!
-                glPage.onChanged.subscribe(onChanged)
                 glPages.remove(glPage)
                 glPage.destroy()
             }
 
             toAdd.forEach { page->
                 val glPage = createPage(page)
+                glPage.onChanged.subscribe(onChanged)
                 pages.add(page)
                 pageToGLPage[page] = glPage
                 glPages.add(glPage)
