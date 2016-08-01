@@ -19,7 +19,6 @@ import com.dmi.perfectreader.fragment.book.layout.paragraph.hyphenator.TeXHyphen
 import com.dmi.perfectreader.fragment.book.layout.paragraph.hyphenator.TeXPatternsSource
 import com.dmi.perfectreader.fragment.book.layout.paragraph.liner.BreakLiner
 import com.dmi.perfectreader.fragment.book.layout.paragraph.metrics.PaintTextMetrics
-import com.dmi.perfectreader.fragment.book.page.GLPages
 import com.dmi.perfectreader.fragment.book.page.GLTextureRefresher
 import com.dmi.perfectreader.fragment.book.page.Pages
 import com.dmi.perfectreader.fragment.book.page.PagesLoader
@@ -115,9 +114,8 @@ class AppObjects(applicationContext: Context) {
                     val layoutColumnPainter = ColumnPainter(layoutPartPainter)
                     val pagePainter = PagePainter(layoutColumnPainter)
                     val pageTextureRefresher = GLTextureRefresher(size)
-                    val createGLPages = { GLPages(context, size, pageTextureRefresher, pagePainter) }
 
-                    GLBook(size, renderModel, createGLPages)
+                    GLBook(context, size, renderModel,  pageTextureRefresher, pagePainter)
                 }
 
                 BookView(context, model, createGLBook, lifeCycle)
