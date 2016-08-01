@@ -14,7 +14,11 @@ class SlidePagesAnimation(private val pageWidth: Float, private val singleSlideS
 
     val isAnimating: Boolean get() = distance != 0F
     val isGoingNext: Boolean get() = distance > 0F
-    val visibleSlides = ArrayList<Slide>()
+    val slides = ArrayList<Slide>()
+
+    val hasSlides: Boolean get() = slides.size > 0
+    val firstSlideIndex: Int get() = slides.first().relativeIndex
+    val lastSlideIndex: Int get() = slides.last().relativeIndex
 
     init {
         require(singleSlideSeconds > 0F)
@@ -44,7 +48,7 @@ class SlidePagesAnimation(private val pageWidth: Float, private val singleSlideS
     }
 
     fun updateSlides() {
-        visibleSlides.clear()
+        slides.clear()
 
         val distanceInPages = distance / pageWidth
 
@@ -54,7 +58,7 @@ class SlidePagesAnimation(private val pageWidth: Float, private val singleSlideS
         var relativeIndex = firstRelativeIndex
         var offsetX = firstPageX
         while (offsetX < pageWidth) {
-            visibleSlides.add(Slide(relativeIndex, offsetX))
+            slides.add(Slide(relativeIndex, offsetX))
             relativeIndex++
             offsetX += pageWidth
         }

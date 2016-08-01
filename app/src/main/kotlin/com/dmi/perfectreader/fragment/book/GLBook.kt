@@ -8,7 +8,6 @@ import android.opengl.Matrix.setLookAtM
 import com.dmi.perfectreader.fragment.book.page.GLPage
 import com.dmi.perfectreader.fragment.book.page.GLPageBackground
 import com.dmi.perfectreader.fragment.book.page.GLTextureRefresher
-import com.dmi.perfectreader.fragment.book.page.PagesRenderModel
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.paint.PagePainter
 import com.dmi.util.android.opengl.GLColorPlane
@@ -28,7 +27,7 @@ import java.util.*
 class GLBook(
         context: Context,
         size: Size,
-        private val model: BookRenderModel,
+        private val model: Book,
         private val pageRefresher: GLTextureRefresher,
         private val pagePainter: PagePainter
 ) : NotifiableRenderer {
@@ -40,7 +39,7 @@ class GLBook(
 
     private val pageColorPlane = GLColorPlane(context, sizeF)
     private val pageTexturePlane = GLTexturePlane(context, sizeF)
-    private val pagesTexturePool = ImmediatelyCreatePool(PagesRenderModel.MAX_LOADED_PAGES) { GLTexture(size) }
+    private val pagesTexturePool = ImmediatelyCreatePool(AnimatedBook.MAX_LOADED_PAGES) { GLTexture(size) }
 
     private val pageBackground = GLPageBackground(pageColorPlane)
     private val pageSet = GLPageSet {
@@ -72,16 +71,13 @@ class GLBook(
         glClear(GL_COLOR_BUFFER_BIT)
 
         model.update()
-
-        val pages = model.pages
-        pageSet.setModel(pages.pageSet)
-
-        pages.visibleSlides.forEach { drawSlide(it) }
+        pageSet.setModel(model.loadedPages)
+        model.visibleSlides.forEach { drawSlide(it) }
 
         pageRefresher.refresh()
     }
 
-    private fun drawSlide(slide: PagesRenderModel.Slide) {
+    private fun drawSlide(slide: AnimatedBook.Slide) {
         Matrix.translateM(viewMatrix, 0, slide.offsetX, 0F, 0F)
         Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
         if (slide.page != null) {

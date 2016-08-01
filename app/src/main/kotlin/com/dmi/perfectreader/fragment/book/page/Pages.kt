@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.fragment.book.page
 
-import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.location.Location
+import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.util.collection.DuplexBuffer
 import com.dmi.util.collection.SequenceEntry
 import java.lang.Math.min

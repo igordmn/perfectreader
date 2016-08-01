@@ -66,7 +66,7 @@ class AppObjects(applicationContext: Context) {
                 val breaker = CompositeBreaker(LineBreaker(), ObjectBreaker(), wordBreaker)
                 val layouter = UniversalObjectLayouter(PaintTextMetrics(), BreakLiner(breaker), bitmapDecoder)
 
-                val createSized = { size: SizeF ->
+                val createAnimated = { size: SizeF ->
                     val createPages = { Pages(bookData.location) }
                     val createPagesLoader = { pages: Pages ->
                         val layoutConfig = settingsLayoutConfig(applicationContext, userSettings)
@@ -78,14 +78,14 @@ class AppObjects(applicationContext: Context) {
                         val pageSequence = PageSequence(layoutColumnSequence, pageConfig)
                         PagesLoader(pages, pageSequence)
                     }
-                    val renderModel = BookRenderModel(size)
+                    val sizedBook = SizedBook(createPages, createPagesLoader)
 
-                    SizedBook(createPages, createPagesLoader, renderModel)
+                    AnimatedBook(size, sizedBook)
                 }
 
                 val locationConverter = bookData.content.locationConverter
 
-                Book(createSized, bookData, bitmapDecoder, locationConverter)
+                Book(createAnimated, bookData, bitmapDecoder, locationConverter)
             }
 
             val createBookControl = { reader: Reader -> BookControl(userSettings, reader.book, reader, closeApp, dip2px) }
@@ -107,15 +107,13 @@ class AppObjects(applicationContext: Context) {
             val createBookView = { model: Book ->
                 val bitmapDecoder = model.bitmapDecoder
                 val createGLBook = { size: Size ->
-                    val renderModel = model.renderModel
-
                     val objectPainter = UniversalObjectPainter(bitmapDecoder)
                     val layoutPartPainter = PartPainter(objectPainter)
                     val layoutColumnPainter = ColumnPainter(layoutPartPainter)
                     val pagePainter = PagePainter(layoutColumnPainter)
                     val pageTextureRefresher = GLTextureRefresher(size)
 
-                    GLBook(context, size, renderModel,  pageTextureRefresher, pagePainter)
+                    GLBook(context, size, model, pageTextureRefresher, pagePainter)
                 }
 
                 BookView(context, model, createGLBook, lifeCycle)

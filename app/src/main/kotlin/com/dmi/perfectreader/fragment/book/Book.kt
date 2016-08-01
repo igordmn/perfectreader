@@ -1,52 +1,64 @@
 package com.dmi.perfectreader.fragment.book
 
+import com.dmi.perfectreader.fragment.book.bitmap.BitmapDecoder
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationConverter
-import com.dmi.perfectreader.fragment.book.bitmap.BitmapDecoder
+import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.lang.returnUnit
+import rx.lang.kotlin.PublishSubject
+import java.util.*
 
 class Book(
-        private val createSized: (SizeF) -> SizedBook,
+        private val createAnimated: (SizeF) -> AnimatedBook,
         private val data: BookData,
         val bitmapDecoder: BitmapDecoder,
         val locationConverter: LocationConverter
 ) : BaseViewModel() {
     val locationObservable = data.locationObservable
+    val loadedPages:  LinkedHashSet<Page> get() = animated!!.loadedPages
+    val visibleSlides : ArrayList<AnimatedBook.Slide> get() = animated!!.visibleSlides
+    val onChanged = PublishSubject<Unit>()
 
-    val renderModel: BookRenderModel get() = sized!!.renderModel
-
-    private var sized: SizedBook? = null
+    private var animated: AnimatedBook? = null
 
     fun resize(size: SizeF) {
-        sized?.destroy()
-        sized = createSized(size)
+        animated?.destroy()
+        val animated = createAnimated(size)
+        animated.onChanged.subscribe {
+            onChanged.onNext(Unit)
+        }
+        this.animated = animated
     }
 
     override fun destroy() {
         super.destroy()
-        sized?.destroy()
+        animated?.destroy()
     }
 
-    fun reformat() = sized?.reformat().returnUnit()
+    fun reformat() = animated?.reformat().returnUnit()
 
     fun goLocation(location: Location) {
         data.location = location
-        sized?.goLocation(location)
+        animated?.goLocation(location)
     }
 
     fun goNextPage() {
-        sized?.let {
+        animated?.let {
             it.goNextPage()
             data.location = it.location
         }
     }
 
     fun goPreviousPage() {
-        sized?.let {
+        animated?.let {
             it.goPreviousPage()
             data.location = it.location
         }
+    }
+
+    fun update() {
+        animated?.update()
     }
 }
