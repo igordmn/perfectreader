@@ -23,13 +23,13 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
     val onChanged = PublishSubject<Unit>()
 
     private val animation = SlidePagesAnimation(size.width, SINGLE_SLIDE_SECONDS)
-    private val sizePagesSnapshot = DuplexBuffer<Page>(Pages.MAX_RELATIVE_INDEX)
+    private val sizedPagesSnapshot = DuplexBuffer<Page>(Pages.MAX_RELATIVE_INDEX)
     private val updateMutex = Object()  // для синхронизации между GL потоком и Main потоком
 
     init {
         sized.onChanged.subscribe {
             synchronized(updateMutex) {
-                sized.forEachPageIndexed { i, page -> sizePagesSnapshot[i] = page }
+                sized.forEachPageIndexed { i, page -> sizedPagesSnapshot[i] = page }
                 onChanged()
             }
         }
@@ -109,17 +109,17 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
         visibleSlides.clear()
 
         animation.slides.forEach { slide ->
-            val page = addPage(sizePagesSnapshot, slide.relativeIndex)
+            val page = addPage(sizedPagesSnapshot, slide.relativeIndex)
             visibleSlides.add(Slide(page, slide.offsetX))
         }
 
         if (animation.hasSlides) {
             if (!animation.isAnimating || animation.isGoingNext) {
-                addPage(sizePagesSnapshot, animation.lastSlideIndex + 1)
-                addPage(sizePagesSnapshot, animation.firstSlideIndex - 1)
+                addPage(sizedPagesSnapshot, animation.lastSlideIndex + 1)
+                addPage(sizedPagesSnapshot, animation.firstSlideIndex - 1)
             } else {
-                addPage(sizePagesSnapshot, animation.firstSlideIndex - 1)
-                addPage(sizePagesSnapshot, animation.lastSlideIndex + 1)
+                addPage(sizedPagesSnapshot, animation.firstSlideIndex - 1)
+                addPage(sizedPagesSnapshot, animation.lastSlideIndex + 1)
             }
         }
     }
