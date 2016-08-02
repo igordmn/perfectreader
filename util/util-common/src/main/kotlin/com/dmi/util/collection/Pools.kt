@@ -2,7 +2,7 @@ package com.dmi.util.collection
 
 import com.dmi.util.lang.returnUnit
 import java.util.*
-import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.Semaphore
 
 interface Pool<T> {
     fun acquire(): T
@@ -23,12 +23,17 @@ class ImmediatelyCreatePool<T>(val size: Int, create: () -> T) : Pool<T> {
     override fun release(obj: T) = free.add(obj).returnUnit()
 }
 
-class SinglePool<T>(create: () -> T) : Pool<T> {
-    private val value = AtomicReference(create())
+class SingleBlockingPool<T>(create: () -> T) : Pool<T> {
+    private val value = create()
+    private val semaphore = Semaphore(1)
 
-    override fun acquire() = value.getAndSet(null).apply {
-        require(this != null)
+    override fun acquire(): T {
+        semaphore.acquire()
+        return value
     }
 
-    override fun release(obj: T) = value.set(obj)
+    override fun release(obj: T) {
+        require(obj === value)
+        semaphore.release()
+    }
 }

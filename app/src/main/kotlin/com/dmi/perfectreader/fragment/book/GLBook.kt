@@ -5,11 +5,12 @@ import android.opengl.GLES20.*
 import android.opengl.Matrix
 import android.opengl.Matrix.orthoM
 import android.opengl.Matrix.setLookAtM
+import com.dmi.perfectreader.fragment.book.page.BitmapBuffer
 import com.dmi.perfectreader.fragment.book.page.GLPage
 import com.dmi.perfectreader.fragment.book.page.GLPageBackground
-import com.dmi.perfectreader.fragment.book.page.GLTextureRefresher
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
-import com.dmi.perfectreader.fragment.book.paint.PagePainter
+import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
+import com.dmi.perfectreader.fragment.book.render.PageRenderer
 import com.dmi.util.android.opengl.GLColorPlane
 import com.dmi.util.android.opengl.GLTexture
 import com.dmi.util.android.opengl.GLTexturePlane
@@ -17,6 +18,7 @@ import com.dmi.util.android.opengl.NotifiableRenderer
 import com.dmi.util.android.system.ThreadPriority
 import com.dmi.util.android.system.setPriority
 import com.dmi.util.collection.ImmediatelyCreatePool
+import com.dmi.util.collection.SingleBlockingPool
 import com.dmi.util.ext.merge
 import com.dmi.util.graphic.Size
 import com.dmi.util.refWatcher
@@ -28,8 +30,7 @@ class GLBook(
         context: Context,
         size: Size,
         private val model: Book,
-        private val pageRefresher: GLTextureRefresher,
-        private val pagePainter: PagePainter
+        private val pageRenderer: PageRenderer
 ) : NotifiableRenderer {
     private val sizeF = size.toFloat()
 
@@ -40,13 +41,12 @@ class GLBook(
     private val pageColorPlane = GLColorPlane(context, sizeF)
     private val pageTexturePlane = GLTexturePlane(context, sizeF)
     private val pagesTexturePool = ImmediatelyCreatePool(AnimatedBook.MAX_LOADED_PAGES) { GLTexture(size) }
+    private val bitmapBufferPool = SingleBlockingPool { BitmapBuffer(size.width, size.height) }
 
     private val pageBackground = GLPageBackground(pageColorPlane)
-    private val pages = GLPages {
-        GLPage(it, pagesTexturePool, pageTexturePlane, pageBackground, pagePainter, pageRefresher)
-    }
+    private val pages = GLPages()
 
-    override val onNeedDraw = pageRefresher.onNeedRefresh merge pageBackground.onChanged merge pages.onChanged merge model.onChanged
+    override val onNeedDraw = pageBackground.onChanged merge pages.onChanged merge model.onChanged
 
     init {
         currentThread().setPriority(ThreadPriority.DISPLAY)
@@ -62,7 +62,6 @@ class GLBook(
 
     override fun destroy() {
         pages.destroy()
-        pageRefresher.destroy()
         refWatcher.watch(this)
     }
 
@@ -71,10 +70,8 @@ class GLBook(
         glClear(GL_COLOR_BUFFER_BIT)
 
         model.update()
-        pages.setModel(model.loadedPages)
+        pages.setModel(model.loadedPages, model.pageContext)
         model.visibleSlides.forEach { drawSlide(it) }
-
-        pageRefresher.refresh()
     }
 
     private fun drawSlide(slide: AnimatedBook.Slide) {
@@ -88,9 +85,7 @@ class GLBook(
         Matrix.translateM(viewMatrix, 0, -slide.offsetX, 0F, 0F)
     }
 
-    private class GLPages(
-            private val createPage: (Page) -> GLPage
-    ) {
+    private inner class GLPages {
         private val pages = LinkedHashSet<Page>()
         private val glPages = HashSet<GLPage>()
         private val pageToGLPage = HashMap<Page, GLPage>()
@@ -101,7 +96,7 @@ class GLBook(
             glPages.forEach { it.destroy() }
         }
 
-        fun setModel(model: LinkedHashSet<Page>) {
+        fun setModel(model: LinkedHashSet<Page>, pageContext: PageContext) {
             val toRemove = this.pages - model
             val toAdd = model - this.pages
 
@@ -113,11 +108,15 @@ class GLBook(
             }
 
             toAdd.forEach { page->
-                val glPage = createPage(page)
+                val glPage = GLPage(page, pageContext, pagesTexturePool, pageTexturePlane, pageBackground, bitmapBufferPool, pageRenderer)
                 glPage.onChanged.subscribe(onChanged)
                 pages.add(page)
                 pageToGLPage[page] = glPage
                 glPages.add(glPage)
+            }
+
+            glPages.forEach {
+                it.pageContext = pageContext
             }
         }
 

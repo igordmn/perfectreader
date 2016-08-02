@@ -5,7 +5,7 @@ import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 
 class PagePainter(private val columnPainter: ColumnPainter) {
-    fun paint(page: Page, canvas: Canvas) {
+    fun paint(page: Page, context: PageContext, canvas: Canvas) {
         val column = page.column
         val contentSize = page.contentSize
         val margins = page.margins
@@ -17,7 +17,7 @@ class PagePainter(private val columnPainter: ColumnPainter) {
 
         canvas.clipRect(0F, margins.top, pageWidth, margins.top + contentHeight)
         canvas.translate(margins.left, margins.top)
-        columnPainter.paint(column, PageContext(null), canvas)
+        columnPainter.paint(column, context, canvas)
 
         canvas.restore()
     }

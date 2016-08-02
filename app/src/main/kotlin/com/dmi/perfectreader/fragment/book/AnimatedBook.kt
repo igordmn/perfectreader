@@ -4,6 +4,7 @@ import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.page.Pages
 import com.dmi.perfectreader.fragment.book.page.SlidePagesAnimation
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
+import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.util.collection.DuplexBuffer
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.mainScheduler
@@ -18,6 +19,7 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
     }
 
     val location: Location get() = sized.location
+    val pageContext: PageContext get() = sized.pageContext
     val loadedPages = LinkedHashSet<Page>()
     val visibleSlides = ArrayList<Slide>()
     val onChanged = PublishSubject<Unit>()

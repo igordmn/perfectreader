@@ -4,6 +4,7 @@ import com.dmi.perfectreader.fragment.book.bitmap.BitmapDecoder
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationConverter
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
+import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.lang.returnUnit
@@ -17,6 +18,7 @@ class Book(
         val locationConverter: LocationConverter
 ) : BaseViewModel() {
     val locationObservable = data.locationObservable
+    val pageContext: PageContext get() = animated!!.pageContext
     val loadedPages:  LinkedHashSet<Page> get() = animated!!.loadedPages
     val visibleSlides : ArrayList<AnimatedBook.Slide> get() = animated!!.visibleSlides
     val onChanged = PublishSubject<Unit>()

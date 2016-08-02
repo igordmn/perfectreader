@@ -4,6 +4,7 @@ import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.page.Pages
 import com.dmi.perfectreader.fragment.book.page.PagesLoader
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
+import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import rx.lang.kotlin.PublishSubject
 
 class SizedBook(
@@ -14,6 +15,8 @@ class SizedBook(
     private lateinit var pagesLoader: PagesLoader
 
     val location: Location get() = pages.location
+    var pageContext: PageContext = PageContext(null)
+        private set
     val onChanged = PublishSubject<Unit>()
 
     init {

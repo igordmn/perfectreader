@@ -2,14 +2,14 @@ package com.dmi.perfectreader.app
 
 import android.os.StrictMode
 import com.dmi.perfectreader.BuildConfig
+import com.dmi.util.android.log.AndroidLog
+import com.dmi.util.android.system.ThreadPriority
+import com.dmi.util.android.system.setPriority
 import com.dmi.util.debug.DisabledRefWatcher
 import com.dmi.util.ext.async
 import com.dmi.util.initPlatform
-import com.dmi.util.android.log.AndroidLog
 import com.dmi.util.log.DebugLog
 import com.dmi.util.log.ReleaseLog
-import com.dmi.util.android.system.ThreadPriority
-import com.dmi.util.android.system.setPriority
 import com.github.moduth.blockcanary.BlockCanary
 import com.github.moduth.blockcanary.BlockCanaryContext
 import com.squareup.leakcanary.LeakCanary
@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadFactory
 
 val dataAccessScheduler = singleThreadScheduler("dataAccess", ThreadPriority.BACKGROUND)
 val bookLoadScheduler = singleThreadScheduler("bookLoad", ThreadPriority.BACKGROUND)
-val pagePaintScheduler = singleThreadScheduler("pagePaint", ThreadPriority.BACKGROUND)
+val glBackgroundScheduler = singleThreadScheduler("pagePaint", ThreadPriority.BACKGROUND)
 val pageLoadScheduler = singleThreadScheduler("pageLoad", ThreadPriority.BACKGROUND)
 
 fun dataAccessAsync(run: () -> Unit) = async(dataAccessScheduler, run)
