@@ -42,11 +42,11 @@ class GLBook(
     private val pagesTexturePool = ImmediatelyCreatePool(AnimatedBook.MAX_LOADED_PAGES) { GLTexture(size) }
 
     private val pageBackground = GLPageBackground(pageColorPlane)
-    private val pageSet = GLPageSet {
+    private val pages = GLPages {
         GLPage(it, pagesTexturePool, pageTexturePlane, pageBackground, pagePainter, pageRefresher)
     }
 
-    override val onNeedDraw = pageRefresher.onNeedRefresh merge pageBackground.onChanged merge pageSet.onChanged merge model.onChanged
+    override val onNeedDraw = pageRefresher.onNeedRefresh merge pageBackground.onChanged merge pages.onChanged merge model.onChanged
 
     init {
         currentThread().setPriority(ThreadPriority.DISPLAY)
@@ -61,7 +61,7 @@ class GLBook(
     }
 
     override fun destroy() {
-        pageSet.destroy()
+        pages.destroy()
         pageRefresher.destroy()
         refWatcher.watch(this)
     }
@@ -71,7 +71,7 @@ class GLBook(
         glClear(GL_COLOR_BUFFER_BIT)
 
         model.update()
-        pageSet.setModel(model.loadedPages)
+        pages.setModel(model.loadedPages)
         model.visibleSlides.forEach { drawSlide(it) }
 
         pageRefresher.refresh()
@@ -81,14 +81,14 @@ class GLBook(
         Matrix.translateM(viewMatrix, 0, slide.offsetX, 0F, 0F)
         Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
         if (slide.page != null) {
-            pageSet[slide.page].draw(viewProjectionMatrix)
+            pages.forPage(slide.page).draw(viewProjectionMatrix)
         } else {
             pageBackground.draw(viewProjectionMatrix)
         }
         Matrix.translateM(viewMatrix, 0, -slide.offsetX, 0F, 0F)
     }
 
-    private class GLPageSet(
+    private class GLPages(
             private val createPage: (Page) -> GLPage
     ) {
         private val pages = LinkedHashSet<Page>()
@@ -121,6 +121,6 @@ class GLBook(
             }
         }
 
-        operator fun get(page: Page) = pageToGLPage[page]!!
+        fun forPage(page: Page) = pageToGLPage[page]!!
     }
 }
