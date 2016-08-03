@@ -66,6 +66,42 @@ class WordBreakerTest {
         hyphenIndicesOf(breaks, text) shouldEqual emptyList<Int>()
     }
 
+    @Test
+    fun `don't add hyphen between non-letters`() {
+        // given
+//        val b = byteArrayOf(
+//            0, 0x41, // A
+//            0xD8.toByte(), 1, // High surrogate
+//            0xDC.toByte(), 2, // Low surrogate
+//            0, 0x42 // B
+//        )
+//        val s = String(b, Charsets.UTF_16)
+
+        // \uD801\uDC02 это суррогатная пара для 'DESERET CAPITAL LETTER LONG A'
+        // см. http://www.fileformat.info/info/unicode/char/10402/index.htm
+        val text = "text t1xt te1t t11t t\uD801\uDC02xt te\uD801\uDC02t t\uD801\uDC02\uD801\uDC02t t\uD801\uDC021t t1\uD801\uDC02t"
+        val breaker = WordBreaker(hyphenatorResolver(
+                mapOf(
+                        "text" to listOf(2),
+                        "t1xt" to listOf(2),
+                        "te1t" to listOf(2),
+                        "t11t" to listOf(2),
+                        "t\uD801\uDC02xt" to listOf(3),
+                        "te\uD801\uDC02t" to listOf(2),
+                        "t\uD801\uDC02\uD801\uDC02t" to listOf(3),
+                        "t\uD801\uDC021t" to listOf(3),
+                        "t1\uD801\uDC02t" to listOf(2)
+                )
+        ))
+
+        // when
+        val breaks = breaker.breakText(text, Locale.US, Breaker.Config(true))
+
+        // then
+        breakIndicesOf(breaks, text) shouldEqual listOf(2, 2 + 5, 7 + 5, 12 + 5, 17 + 6, 23 + 5, 28 + 7, 35 + 7, 42 + 5)
+        hyphenIndicesOf(breaks, text) shouldEqual listOf(2, 23, 28, 35)
+    }
+
     fun hyphenatorResolver(wordToBreakIndices: Map<String, List<Int>> = emptyMap()) = object : HyphenatorResolver {
         override fun hyphenatorFor(locale: Locale) = object : Hyphenator {
             override fun hyphenateWord(text: CharSequence, beginIndex: Int, endIndex: Int): Hyphens {
@@ -79,7 +115,7 @@ class WordBreakerTest {
                 return hyphens(beginIndex, listOf())
             }
 
-            override fun alphabetContains(ch: Char) = ch >= ('a') && ch <= ('z')
+            override fun alphabetContains(ch: Char) = ch >= ('a') && ch <= ('z') || ch == '1' || ch == '\uD801' || ch == '\uDC02'
 
             fun hyphens(beginIndex: Int, indices: List<Int>) = object : Hyphens {
                 override fun hasHyphenBefore(index: Int) = indices.contains(index - beginIndex)
