@@ -4,8 +4,9 @@ import android.graphics.PorterDuff
 import com.dmi.perfectreader.app.glBackgroundScheduler
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
-import com.dmi.perfectreader.fragment.book.render.PageRenderer
 import com.dmi.perfectreader.fragment.book.render.obj.RenderPage
+import com.dmi.perfectreader.fragment.book.render.paint.PagePainter
+import com.dmi.perfectreader.fragment.book.render.render.PageRenderer
 import com.dmi.util.android.opengl.GLTexture
 import com.dmi.util.android.opengl.GLTexturePlane
 import com.dmi.util.collection.Pool
@@ -20,7 +21,8 @@ class GLPage(
         private val texturePlane: GLTexturePlane,
         private val background: GLPageBackground,
         private val bitmapBufferPool: Pool<BitmapBuffer>,
-        private val pageRenderer: PageRenderer
+        private val pageRenderer: PageRenderer,
+        private val pagePainter: PagePainter
 ) {
     private var texture = texturePool.acquire()
     private var refreshed = false
@@ -50,14 +52,14 @@ class GLPage(
 
     private fun render(newContext: PageContext, oldContext: PageContext?): RenderResult {
         val renderPage = renderPage()
-        val dirtyRect = renderPage.dirtyRect(oldContext, newContext)
+        val dirtyRect = pagePainter.dirtyRect(renderPage, oldContext, newContext)
         return if (dirtyRect.isEmpty) {
             RenderResult(null, dirtyRect)
         } else {
             val buffer = bitmapBufferPool.acquire()
             val canvas = buffer.canvas
             canvas.drawColor(Color.TRANSPARENT.value, PorterDuff.Mode.CLEAR)
-            renderPage.paint(newContext, canvas, dirtyRect)
+            pagePainter.paint(renderPage, newContext, canvas, dirtyRect)
             RenderResult(buffer, dirtyRect)
         }
     }

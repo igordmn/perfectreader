@@ -25,13 +25,12 @@ import com.dmi.perfectreader.fragment.book.pagination.column.LayoutColumnSequenc
 import com.dmi.perfectreader.fragment.book.pagination.page.PageSequence
 import com.dmi.perfectreader.fragment.book.pagination.page.settingsPageConfig
 import com.dmi.perfectreader.fragment.book.pagination.part.LayoutPartSequence
-import com.dmi.perfectreader.fragment.book.paint.ColumnPainter
-import com.dmi.perfectreader.fragment.book.paint.PagePainter
-import com.dmi.perfectreader.fragment.book.paint.PartPainter
-import com.dmi.perfectreader.fragment.book.paint.UniversalObjectPainter
 import com.dmi.perfectreader.fragment.book.parse.BookContentParserFactory
 import com.dmi.perfectreader.fragment.book.parse.settingsParseConfig
-import com.dmi.perfectreader.fragment.book.render.PageRenderer
+import com.dmi.perfectreader.fragment.book.render.paint.*
+import com.dmi.perfectreader.fragment.book.render.render.ImageRenderer
+import com.dmi.perfectreader.fragment.book.render.render.PageRenderer
+import com.dmi.perfectreader.fragment.book.render.render.UniversalObjectRenderer
 import com.dmi.perfectreader.fragment.bookcontrol.BookControl
 import com.dmi.perfectreader.fragment.bookcontrol.BookControlView
 import com.dmi.perfectreader.fragment.main.Main
@@ -107,13 +106,18 @@ class AppObjects(applicationContext: Context) {
             val createBookView = { model: Book ->
                 val bitmapDecoder = model.bitmapDecoder
                 val createGLBook = { size: Size ->
-                    val objectPainter = UniversalObjectPainter(bitmapDecoder)
-                    val layoutPartPainter = PartPainter(objectPainter)
-                    val layoutColumnPainter = ColumnPainter(layoutPartPainter)
-                    val pagePainter = PagePainter(layoutColumnPainter)
-                    val pageRenderer = PageRenderer(pagePainter)
+                    val objectPainter = UniversalObjectPainter(
+                            FramePainter(),
+                            ImagePainter(),
+                            TextPainter()
+                    )
+                    val objectRenderer = UniversalObjectRenderer(
+                            ImageRenderer(bitmapDecoder)
+                    )
+                    val pageRenderer = PageRenderer(objectRenderer)
+                    val pagePainter = PagePainter(objectPainter)
 
-                    GLBook(context, size, model, pageRenderer)
+                    GLBook(context, size, model, pageRenderer, pagePainter)
                 }
 
                 BookView(context, model, createGLBook, lifeCycle)

@@ -25,12 +25,15 @@ import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.column.LayoutColumn
 import com.dmi.perfectreader.fragment.book.pagination.column.merge
+import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.perfectreader.fragment.book.pagination.part.splitIntoParts
-import com.dmi.perfectreader.fragment.book.paint.ColumnPainter
-import com.dmi.perfectreader.fragment.book.paint.PartPainter
-import com.dmi.perfectreader.fragment.book.paint.UniversalObjectPainter
+import com.dmi.perfectreader.fragment.book.render.paint.*
+import com.dmi.perfectreader.fragment.book.render.render.ImageRenderer
+import com.dmi.perfectreader.fragment.book.render.render.PageRenderer
+import com.dmi.perfectreader.fragment.book.render.render.UniversalObjectRenderer
 import com.dmi.util.graphic.Color
+import com.dmi.util.graphic.Rect
 import com.dmi.util.graphic.SizeF
 import java.util.*
 
@@ -62,7 +65,7 @@ class LayoutTestActivity : AppCompatActivity() {
 
 
         val textRenderConfig = TextRenderConfig(true, true, true, false)
-        val selectionConfig = SelectionConfig(Color(255, 180, 213, 254), Color.WHITE)
+        val selectionConfig = SelectionConfig(Color(255, 180, 213, 254))
         val hangingConfig = DefaultHangingConfig
 
         val testParagraph = ConfiguredParagraph(
@@ -140,13 +143,17 @@ class LayoutTestActivity : AppCompatActivity() {
         val layoutRoot = layouter.layout(rootBox, LayoutSpace.root(SizeF(700F, 700F)))
         val layoutParts = splitIntoParts(layoutRoot)
 
-        val painter = ColumnPainter(PartPainter(UniversalObjectPainter(bitmapDecoder)))
-
         val begin = layoutParts.first().range.begin
         var column = LayoutColumn(emptyList(), 0F, LocationRange(begin, begin))
         for (part in layoutParts) {
             column = column merge part
         }
+
+        val pageRenderer = PageRenderer(UniversalObjectRenderer(ImageRenderer(bitmapDecoder)))
+        val pagePainter = PagePainter(UniversalObjectPainter(FramePainter(), ImagePainter(), TextPainter()))
+
+        val page = Page(column, SizeF(720F, 1280F), Page.Margins(0F, 0F, 0F, 0F))
+        val renderPage = pageRenderer.render(page)
 
         val selectionRange = run {
             val run1 = testParagraph.runs[0] as ConfiguredParagraph.Run.Text
@@ -159,7 +166,7 @@ class LayoutTestActivity : AppCompatActivity() {
             override fun onDraw(canvas: Canvas) {
                 canvas.save()
                 canvas.drawColor(Color.WHITE.value)
-                painter.paint(column, context, canvas)
+                pagePainter.paint(renderPage, context, canvas, Rect(0, 1, 0, 1))
             }
         }
 

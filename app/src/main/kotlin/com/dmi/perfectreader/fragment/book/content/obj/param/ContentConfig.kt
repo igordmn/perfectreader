@@ -40,8 +40,7 @@ fun settingsLayoutConfig(context: Context, settings: UserSettings) = ContentConf
         hyphenation = settings[FormatKeys.hyphenation],
         textRenderConfig = TextRenderConfig(antialias = true, hinting = true, linearScaling = false, subpixel = true),
         selectionConfig = SelectionConfig(
-                Color(settings[UIKeys.selectionBackgroundColor]),
-                Color(settings[UIKeys.selectionTextColor])
+                Color(settings[UIKeys.selectionBackgroundColor])
         ),
         imageSourceScale = if (settings[ImageKeys.sourceScaleByDpi]) context.displayMetrics.density else settings[ImageKeys.sourceScale],
         imageScaleFiltered = settings[ImageKeys.scaleFiltered]

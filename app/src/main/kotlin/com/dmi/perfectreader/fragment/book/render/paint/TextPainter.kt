@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.fragment.book.paint
+package com.dmi.perfectreader.fragment.book.render.paint
 
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -12,22 +12,25 @@ import com.dmi.perfectreader.fragment.book.layout.obj.LayoutText
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
+import com.dmi.perfectreader.fragment.book.render.obj.RenderText
 import com.dmi.util.lang.intRound
 
-open class TextPainter : ObjectPainter<LayoutText> {
+open class TextPainter {
     private val textPaintCache = PaintCache()
     private val selectionBackgroundPaint = Paint()
 
-    override fun paintItself(obj: LayoutText, context: PageContext, canvas: Canvas) {
+    fun paint(obj: RenderText, context: PageContext, canvas: Canvas) {
+        val layoutObj = obj.layoutObj
+
         if (context.selectionRange != null) {
-            val selectionBegin = obj.indexOf(context.selectionRange.begin)
-            val selectionEnd = obj.indexOf(context.selectionRange.end)
-            drawSelectionRect(obj, canvas, selectionBegin, selectionEnd)
-            drawText(obj, canvas, 0, selectionBegin, false)
-            drawText(obj, canvas, selectionBegin, selectionEnd, true)
-            drawText(obj, canvas, selectionEnd, obj.text.length, false)
-        } else {
-            drawText(obj, canvas, 0, obj.text.length, false)
+            val selectionBegin = layoutObj.indexOf(context.selectionRange.begin)
+            val selectionEnd = layoutObj.indexOf(context.selectionRange.end)
+            drawSelectionRect(obj.x, obj.y, layoutObj, canvas, selectionBegin, selectionEnd)
+        }
+
+        if (layoutObj !is LayoutSpaceText) {
+            val paint = textPaintCache.forStyle(layoutObj.style)
+            canvas.drawText(layoutObj.text, 0, layoutObj.text.length, obj.x, obj.y + layoutObj.baseline, paint)
         }
     }
 
@@ -39,20 +42,12 @@ open class TextPainter : ObjectPainter<LayoutText> {
         else -> 0.0
     }
 
-    private fun drawText(obj: LayoutText, canvas: Canvas, begin: Int, end: Int, selected: Boolean) {
-        if (end > begin && obj !is LayoutSpaceText) {
-            val textPaint = textPaintCache.forStyle(obj.style, selected)
-            val offsetX = obj.charOffsets[begin]
-            canvas.drawText(obj.text, begin, end, offsetX, obj.baseline, textPaint)
-        }
-    }
-
-    private fun drawSelectionRect(obj: LayoutText, canvas: Canvas, begin: Int, end: Int) {
+    private fun drawSelectionRect(x: Float, y: Float, obj: LayoutText, canvas: Canvas, begin: Int, end: Int) {
         val left = obj.charOffsets[begin]
         val right = if (end < obj.text.length) obj.charOffsets[end] else obj.width
         selectionBackgroundPaint.color = obj.style.selectionConfig.backgroundColor.value
         canvas.drawRect(
-                RectF(left, 0F, right, obj.height),
+                RectF(x + left, y, x + right, y + obj.height),
                 selectionBackgroundPaint
         )
     }
@@ -61,18 +56,16 @@ open class TextPainter : ObjectPainter<LayoutText> {
         private val paint = TextPaint()
 
         private var lastStyle: ConfiguredFontStyle? = null
-        private var lastSelected: Boolean? = null
 
-        fun forStyle(style: ConfiguredFontStyle, selected: Boolean): TextPaint {
-            if (lastStyle !== style || lastSelected !== selected) {
+        fun forStyle(style: ConfiguredFontStyle): TextPaint {
+            if (lastStyle !== style) {
                 paint.isAntiAlias = style.renderConfig.antialias
                 paint.isSubpixelText = style.renderConfig.subpixel
                 paint.hinting = if (style.renderConfig.hinting) HINTING_ON else HINTING_OFF
                 paint.isLinearText = style.renderConfig.linearScaling
-                paint.color = if (selected) style.selectionConfig.textColor.value else style.color.value
+                paint.color = style.color.value
                 paint.textSize = style.size
                 lastStyle = style
-                lastSelected = selected
             }
             return paint
         }

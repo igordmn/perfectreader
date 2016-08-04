@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.fragment.book.paint
+package com.dmi.perfectreader.fragment.book.render.paint
 
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -8,22 +8,22 @@ import android.graphics.RectF
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutFrame
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutFrame.Background
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutFrame.Border
-import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
+import com.dmi.perfectreader.fragment.book.render.obj.RenderFrame
 import com.dmi.util.graphic.Color
 
-class FramePainter : ObjectPainter<LayoutFrame> {
+class FramePainter {
     private val backgroundPaint = Paint().apply { isAntiAlias = true }
     private val borderPaint = Paint().apply { isAntiAlias = true }
     private val path = Path()
 
-    override fun paintItself(obj: LayoutFrame, context: PageContext, canvas: Canvas) {
-        with (obj) {
-            canvas.translate(internalMargins.left, internalMargins.top)
-            paintContents(obj, canvas,
+    fun paint(obj: RenderFrame, canvas: Canvas) {
+        with (obj.layoutObj) {
+            canvas.translate(obj.x + internalMargins.left, obj.y + internalMargins.top)
+            paintContents(obj.layoutObj, canvas,
                     width - internalMargins.left - internalMargins.right,
                     height - internalMargins.top - internalMargins.bottom
             )
-            canvas.translate(-internalMargins.left, -internalMargins.top)
+            canvas.translate(-obj.x - internalMargins.left, -obj.y - internalMargins.top)
         }
     }
 

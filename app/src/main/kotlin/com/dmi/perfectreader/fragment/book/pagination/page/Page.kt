@@ -9,6 +9,7 @@ class Page(
         val contentSize: SizeF,
         val margins: Margins
 ) {
+    val size = SizeF(contentSize.width + margins.left + margins.right, contentSize.height + margins.top + margins.bottom)
     val range: LocationRange get() = column.range
 
     class Margins(val left: Float, val right: Float, val top: Float, val bottom: Float)

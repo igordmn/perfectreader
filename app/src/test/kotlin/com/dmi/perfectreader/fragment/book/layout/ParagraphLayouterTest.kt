@@ -16,9 +16,9 @@ import com.dmi.perfectreader.fragment.book.layout.paragraph.liner.Liner
 import com.dmi.perfectreader.fragment.book.layout.paragraph.metrics.TextMetrics
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
+import com.dmi.test.shouldEqual
 import com.dmi.util.graphic.Color
 import com.dmi.util.graphic.SizeF
-import com.dmi.test.shouldEqual
 import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 import java.util.*
@@ -989,7 +989,7 @@ class ParagraphLayouterTest {
             0F,
             Color.TRANSPARENT,
             TextRenderConfig(false, false, false, false),
-            SelectionConfig(Color.TRANSPARENT, Color.WHITE)
+            SelectionConfig(Color.TRANSPARENT)
     )
 
     fun textMetrics() =

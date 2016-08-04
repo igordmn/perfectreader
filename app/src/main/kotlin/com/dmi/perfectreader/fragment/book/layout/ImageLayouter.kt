@@ -7,7 +7,6 @@ import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredSize.Dime
 import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutImage
 import com.dmi.util.graphic.Size
-import com.dmi.util.graphic.SizeF
 import java.lang.Math.round
 
 class ImageLayouter(
@@ -22,10 +21,10 @@ class ImageLayouter(
                     Size(0, 0)
                 }
                 val (width, height) = configureDimensions(imageHeight, imageWidth)
-                return LayoutImage(width, height, obj.scaleFiltered, obj.src, obj.range)
+                return LayoutImage(width.toFloat(), height.toFloat(), width, height, obj.scaleFiltered, obj.src, obj.range)
             }
 
-            private fun configureDimensions(imageHeight: Int, imageWidth: Int): SizeF {
+            private fun configureDimensions(imageHeight: Int, imageWidth: Int): Size {
                 with (obj.size) {
                     val imageRatio = imageWidth / imageHeight.toFloat()
                     val factWidth: Float
@@ -51,7 +50,7 @@ class ImageLayouter(
                         else -> throw IllegalStateException()
                     }
 
-                    return SizeF(round(factWidth).toFloat(), round(factHeight).toFloat())
+                    return Size(round(factWidth), round(factHeight))
                 }
             }
         }.layout()

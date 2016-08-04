@@ -201,6 +201,5 @@ object UserSettingKeys : Keys() {
 
     object UI : Keys(this) {
         val selectionBackgroundColor by key(Color(255, 174, 223, 240).value)
-        val selectionTextColor by key(Color.WHITE.value)
     }
 }
