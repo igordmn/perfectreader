@@ -19,18 +19,28 @@ open class TextPainter {
     private val textPaintCache = PaintCache()
     private val selectionBackgroundPaint = Paint()
 
-    fun paint(obj: RenderText, context: PageContext, canvas: Canvas) {
-        val layoutObj = obj.layoutObj
+    fun paint(obj: RenderText, context: PageContext, canvas: Canvas, layer: PaintLayer) {
+        when (layer) {
+            PaintLayer.SELECTION -> paintSelection(obj, context, canvas)
+            PaintLayer.TEXT -> paintText(canvas, obj)
+            else -> Unit
+        }
+    }
 
+    private fun paintText(canvas: Canvas, obj: RenderText) {
+        val layoutObj = obj.layoutObj
+        if (layoutObj !is LayoutSpaceText) {
+            val paint = textPaintCache.forStyle(layoutObj.style)
+            canvas.drawText(layoutObj.text, 0, layoutObj.text.length, obj.x, obj.y + layoutObj.baseline, paint)
+        }
+    }
+
+    private fun paintSelection(obj: RenderText, context: PageContext, canvas: Canvas) {
+        val layoutObj = obj.layoutObj
         if (context.selectionRange != null) {
             val selectionBegin = layoutObj.indexOf(context.selectionRange.begin)
             val selectionEnd = layoutObj.indexOf(context.selectionRange.end)
             drawSelectionRect(obj.x, obj.y, layoutObj, canvas, selectionBegin, selectionEnd)
-        }
-
-        if (layoutObj !is LayoutSpaceText) {
-            val paint = textPaintCache.forStyle(layoutObj.style)
-            canvas.drawText(layoutObj.text, 0, layoutObj.text.length, obj.x, obj.y + layoutObj.baseline, paint)
         }
     }
 

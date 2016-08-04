@@ -12,10 +12,10 @@ class UniversalObjectPainter(
         private val imagePainter: ImagePainter,
         private val textPainter: TextPainter
 ) {
-    fun paint(obj: RenderObject, context: PageContext, canvas: Canvas) = when (obj) {
-        is RenderFrame -> framePainter.paint(obj, canvas)
-        is RenderImage -> imagePainter.paint(obj, canvas)
-        is RenderText -> textPainter.paint(obj, context, canvas)
+    fun paint(obj: RenderObject, context: PageContext, canvas: Canvas, layer: PaintLayer) = when (obj) {
+        is RenderFrame -> framePainter.paint(obj, canvas, layer)
+        is RenderImage -> imagePainter.paint(obj, canvas, layer)
+        is RenderText -> textPainter.paint(obj, context, canvas, layer)
         else -> throw UnsupportedOperationException()
     }
 }

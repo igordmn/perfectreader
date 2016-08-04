@@ -16,14 +16,16 @@ class FramePainter {
     private val borderPaint = Paint().apply { isAntiAlias = true }
     private val path = Path()
 
-    fun paint(obj: RenderFrame, canvas: Canvas) {
-        with (obj.layoutObj) {
-            canvas.translate(obj.x + internalMargins.left, obj.y + internalMargins.top)
-            paintContents(obj.layoutObj, canvas,
-                    width - internalMargins.left - internalMargins.right,
-                    height - internalMargins.top - internalMargins.bottom
-            )
-            canvas.translate(-obj.x - internalMargins.left, -obj.y - internalMargins.top)
+    fun paint(obj: RenderFrame, canvas: Canvas, layer: PaintLayer) {
+        if (layer == PaintLayer.FRAME) {
+            with(obj.layoutObj) {
+                canvas.translate(obj.x + internalMargins.left, obj.y + internalMargins.top)
+                paintContents(obj.layoutObj, canvas,
+                        width - internalMargins.left - internalMargins.right,
+                        height - internalMargins.top - internalMargins.bottom
+                )
+                canvas.translate(-obj.x - internalMargins.left, -obj.y - internalMargins.top)
+            }
         }
     }
 

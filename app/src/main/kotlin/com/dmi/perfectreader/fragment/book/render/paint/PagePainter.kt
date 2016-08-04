@@ -2,6 +2,7 @@ package com.dmi.perfectreader.fragment.book.render.paint
 
 import android.graphics.Canvas
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
+import com.dmi.perfectreader.fragment.book.render.obj.RenderObject
 import com.dmi.perfectreader.fragment.book.render.obj.RenderPage
 import com.dmi.util.graphic.Rect
 
@@ -24,10 +25,17 @@ class PagePainter(private val objectPainter: UniversalObjectPainter) {
         canvas.save()
         canvas.clipRect(0F, margins.top, size.width, margins.top + contentSize.height)
 
-        for (i in 0..objects.size - 1) {
-            objectPainter.paint(objects[i], context, canvas)
-        }
+        paintObjects(canvas, context, objects, PaintLayer.FRAME)
+        paintObjects(canvas, context, objects, PaintLayer.IMAGE)
+        paintObjects(canvas, context, objects, PaintLayer.SELECTION)
+        paintObjects(canvas, context, objects, PaintLayer.TEXT)
 
         canvas.restore()
+    }
+
+    private fun paintObjects(canvas: Canvas, context: PageContext, objects: List<RenderObject>, layer: PaintLayer) {
+        for (i in 0..objects.size - 1) {
+            objectPainter.paint(objects[i], context, canvas, layer)
+        }
     }
 }
