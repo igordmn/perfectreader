@@ -13,6 +13,8 @@ android {
 
         minSdkVersion projectVersions.minSdk
         targetSdkVersion projectVersions.targetSdk
+
+        vectorDrawables.useSupportLibrary = true
     }
 
     if (config['sign.enabled']) {

@@ -8,7 +8,7 @@
     <string name="bookMenuSettings">Настройки</string>
     <string name="bookMenuSearch">Поиск</string>
     <string name="bookMenuSwitchTheme">Переключить тему</string>
-    <string name="bookMenuAutoscroll">Включить автопрокрутку</string>
+    <string name="bookMenuAutoScroll">Включить автопрокрутку</string>
     <string name="bookMenuTextToSpeech">Читать вслух</string>
     <string name="bookMenuAddBookmark">Добавить закладку</string>
 </resources>

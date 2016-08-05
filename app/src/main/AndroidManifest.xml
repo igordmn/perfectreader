@@ -15,7 +15,7 @@
         android:name=".app.App"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backupscheme"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="Perfect Reader"
         android:largeHeap="true"
         android:supportsRtl="false"

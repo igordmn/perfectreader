@@ -1,7 +1,11 @@
 package com.dmi.util.android.base
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.support.annotation.CallSuper
+import android.support.graphics.drawable.VectorDrawableCompat
+import android.support.v4.content.ContextCompat.getColor
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.View
 import android.view.ViewGroup
 import com.dmi.util.android.ext.dip2Px
@@ -62,7 +66,15 @@ abstract class BaseView(val widget: ViewGroup) {
 }
 
 inline fun <reified T : View> BaseView.find(id: Int): T = widget.find(id)
+
 fun BaseView.dip2Px(value: Float) = widget.dip2Px(value)
 fun BaseView.dip2Px(size: SizeF) = widget.dip2Px(size)
 fun BaseView.px2dip(px: Float) = widget.px2dip(px)
 fun BaseView.px2dip(size: SizeF) = widget.px2dip(size)
+
+fun BaseView.color(resID: Int) = getColor(widget.context, resID)
+
+fun BaseView.drawable(resID: Int): Drawable = DrawableCompat.wrap(VectorDrawableCompat.create(widget.context.resources, resID, widget.context.theme)!!)
+fun BaseView.drawable(resID: Int, tintColor: Int): Drawable = drawable(resID).apply {
+    DrawableCompat.setTint(this, tintColor)
+}
