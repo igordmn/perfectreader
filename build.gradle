@@ -12,7 +12,7 @@ buildscript {
                 minSdk        : 16,
                 targetSdk     : 23,
                 compileSdk    : 23,
-                supportLibrary: '23.3.0',
+                supportLibrary: '24.0.0',
         ]
 
         projectRepositories = {
