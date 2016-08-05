@@ -8,6 +8,7 @@ import com.dmi.util.android.system.setPriority
 import com.dmi.util.debug.DisabledRefWatcher
 import com.dmi.util.ext.async
 import com.dmi.util.initPlatform
+import com.dmi.util.log
 import com.dmi.util.log.DebugLog
 import com.dmi.util.log.ReleaseLog
 import com.github.moduth.blockcanary.BlockCanary
@@ -40,6 +41,7 @@ private class SingleThreadFactory(
 
 fun initAndroidPlatform(app: App) {
     val log = initLog()
+    initMainExceptionCatcher()
     val scheduler = AndroidSchedulers.mainThread()
     val refWatcher = initRefWatcher(app)
     initPlatform(log, scheduler, refWatcher)
@@ -51,6 +53,14 @@ private fun initLog() = if (BuildConfig.DEBUG) {
     DebugLog(AndroidLog)
 } else {
     ReleaseLog(AndroidLog)
+}
+
+fun initMainExceptionCatcher() {
+    val oldHandler = Thread.getDefaultUncaughtExceptionHandler()
+    Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+        log.e(throwable, "Exception in thread \"${thread.name}\":")
+        oldHandler.uncaughtException(thread, Throwable("See stacktrace above"))
+    }
 }
 
 private fun initRefWatcher(app: App) = if (BuildConfig.DEBUG_LEAKCANARY) {
