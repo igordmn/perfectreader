@@ -9,8 +9,8 @@ import com.dmi.util.rx.rxObservable
 import rx.lang.kotlin.BehaviorSubject
 
 class Reader(
-        private val createBook: () -> Book,
-        private val createBookControl: (Reader) -> BookControl,
+        createBook: () -> Book,
+        createBookControl: (Reader) -> BookControl,
         private val createMenu: (Reader, close: () -> Unit) -> Menu
 ) : BaseViewModel() {
     val menuObservable = BehaviorSubject<Menu?>()

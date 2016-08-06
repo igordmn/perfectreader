@@ -42,9 +42,7 @@ class ReaderView(
         }
 
         subscribe(model.menuObservable) { it ->
-            menu = toggleChildByModel(it, menu, R.id.menuContainer) {
-                createMenu(it)
-            }
+            menu = toggleChildByModel(it, menu, R.id.menuContainer, createMenu)
         }
     }
 }
