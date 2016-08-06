@@ -15,7 +15,6 @@ import com.dmi.util.android.base.drawable
 import com.dmi.util.android.base.find
 import com.dmi.util.android.ext.onClick
 import com.dmi.util.android.widget.addHintOnLongClick
-import com.dmi.util.android.widget.onKeyDown
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 import org.jetbrains.anko.onClick
 import java.lang.Math.round
@@ -56,18 +55,6 @@ class MenuView(
         }
         currentChapterText.text = "X — Alice's evidence"
         currentPageText.text = "302 / 2031"
-        widget.onKeyDown { keyCode, keyEvent ->
-            onKeyDown(keyCode)
-        }
-    }
-
-    private fun onKeyDown(keyCode: Int): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU) {
-            model.close()
-            return true
-        } else {
-            return false
-        }
     }
 
     private fun initBottomBar() {
@@ -105,5 +92,14 @@ class MenuView(
 
     private fun initMiddleSpace() {
         middleSpace.onClick { model.close() }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU) {
+            model.close()
+            return true
+        } else {
+            return super.onKeyDown(keyCode, event)
+        }
     }
 }

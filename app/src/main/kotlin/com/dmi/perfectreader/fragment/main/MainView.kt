@@ -12,7 +12,6 @@ import com.dmi.perfectreader.fragment.reader.Reader
 import com.dmi.perfectreader.fragment.reader.ReaderView
 import com.dmi.util.android.base.BaseView
 import com.dmi.util.android.base.find
-import com.dmi.util.android.widget.onKeyDown
 
 class MainView(
         private val context: Context,
@@ -50,17 +49,15 @@ class MainView(
             }
             readerContainer.visibility = if (reader != null) View.VISIBLE else View.GONE
         }
-
-        widget.onKeyDown { keyCode, keyEvent -> onKeyDown(keyCode) }
     }
 
-    private fun onKeyDown(keyCode: Int): Boolean {
-        if (reader != null) {
-            return false
-        } else {
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (reader == null) {
             if (keyCode == KeyEvent.KEYCODE_BACK)
                 model.close()
             return true
+        } else {
+            return super.onKeyDown(keyCode, event)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.dmi.util.android.base
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.KeyEvent
 import com.dmi.util.android.system.ActivityLifeCycle
 
 abstract class BaseActivity<V : BaseView, VM : BaseViewModel> protected constructor() : AppCompatActivity() {
@@ -61,4 +62,16 @@ abstract class BaseActivity<V : BaseView, VM : BaseViewModel> protected construc
     }
 
     final override fun onRetainCustomNonConfigurationInstance() = viewModel
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent) =
+            view.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent) =
+            view.onKeyUp(keyCode, event) || super.onKeyUp(keyCode, event)
+
+    override fun onKeyLongPress(keyCode: Int, event: KeyEvent) =
+            view.onKeyLongPress(keyCode, event) || super.onKeyLongPress(keyCode, event)
+
+    override fun onKeyMultiple(keyCode: Int, repeatCount: Int, event: KeyEvent) =
+            view.onKeyMultiple(keyCode, repeatCount, event) || super.onKeyMultiple(keyCode, repeatCount, event)
 }

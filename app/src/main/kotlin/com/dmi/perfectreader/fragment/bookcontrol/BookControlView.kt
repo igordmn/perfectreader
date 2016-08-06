@@ -8,7 +8,6 @@ import android.widget.FrameLayout
 import com.dmi.perfectreader.fragment.bookcontrol.entity.HardKey
 import com.dmi.perfectreader.fragment.bookcontrol.entity.TouchInfo
 import com.dmi.util.android.base.BaseView
-import com.dmi.util.android.widget.onKey
 import com.dmi.util.android.widget.onSizeChange
 
 open class BookControlView(
@@ -22,13 +21,6 @@ open class BookControlView(
         widget.onSizeChange { size, oldSize ->
             model.resize(size.toFloat())
         }
-        widget.onKey { keyCode, keyEvent ->
-            if (keyEvent.action == KeyEvent.ACTION_DOWN) {
-                onKeyDown(keyCode)
-            } else {
-                true
-            }
-        }
     }
 
     override fun onTouch(view: View, event: MotionEvent): Boolean {
@@ -38,13 +30,6 @@ open class BookControlView(
             MotionEvent.ACTION_UP -> model.onTouchUp(touchInfo(event))
             else -> Unit
         }
-        return true
-    }
-
-    private fun onKeyDown(keyCode: Int): Boolean {
-        val hardKey = fromKeyCode(keyCode)
-        if (hardKey != null)
-            model.onKeyDown(hardKey)
         return true
     }
 
@@ -63,5 +48,16 @@ open class BookControlView(
         KeyEvent.KEYCODE_DPAD_UP -> HardKey.TRACKBALL_UP
         KeyEvent.KEYCODE_DPAD_DOWN -> HardKey.TRACKBALL_DOWN
         else -> null
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        val hardKey = fromKeyCode(keyCode)
+        if (hardKey != null)
+            model.onKeyDown(hardKey)
+        return true
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        return true
     }
 }

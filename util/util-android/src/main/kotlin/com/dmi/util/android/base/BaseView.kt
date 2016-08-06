@@ -6,6 +6,7 @@ import android.support.annotation.CallSuper
 import android.support.graphics.drawable.VectorDrawableCompat
 import android.support.v4.content.ContextCompat.getColor
 import android.support.v4.graphics.drawable.DrawableCompat
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import com.dmi.util.android.ext.dip2Px
@@ -14,6 +15,7 @@ import com.dmi.util.android.ext.px2dip
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.lang.returnValue
 import com.dmi.util.refWatcher
+import org.jetbrains.anko.collections.forEachReversed
 import org.jetbrains.anko.find
 import rx.Observable
 import rx.subscriptions.CompositeSubscription
@@ -23,7 +25,7 @@ abstract class BaseView(val widget: ViewGroup) {
     constructor(context: Context, layoutId: Int) : this(context.inflate(layoutId))
 
     private val subscriptions = CompositeSubscription()
-    private val children = LinkedHashSet<BaseView>()
+    private val children = ArrayList<BaseView>()
     private val childToContainer = HashMap<BaseView, ViewGroup>()
 
     @CallSuper
@@ -63,6 +65,30 @@ abstract class BaseView(val widget: ViewGroup) {
 
     protected fun <T> subscribe(observable: Observable<T>, onNext: (T) -> Unit) =
             subscriptions.add(observable.subscribe(onNext))
+
+    open fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean = childrenHandleKey {
+        it.onKeyDown(keyCode, event)
+    }
+
+    open fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean = childrenHandleKey {
+        it.onKeyUp(keyCode, event)
+    }
+
+    open fun onKeyLongPress(keyCode: Int, event: KeyEvent): Boolean = childrenHandleKey {
+        it.onKeyLongPress(keyCode, event)
+    }
+
+    open fun onKeyMultiple(keyCode: Int, repeatCount: Int, event: KeyEvent): Boolean = childrenHandleKey {
+        it.onKeyMultiple(keyCode, repeatCount, event)
+    }
+
+    private inline fun childrenHandleKey(action: (child: BaseView) -> Boolean): Boolean {
+        children.forEachReversed {
+            if (action(it))
+                return true
+        }
+        return false
+    }
 }
 
 inline fun <reified T : View> BaseView.find(id: Int): T = widget.find(id)
