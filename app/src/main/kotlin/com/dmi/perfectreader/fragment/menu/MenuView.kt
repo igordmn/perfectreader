@@ -77,7 +77,6 @@ class MenuView(
         DrawableCompat.setTint(textToSpeechButton.drawable, color(R.color.icon_dark))
         DrawableCompat.setTint(addBookmarkButton.drawable, color(R.color.icon_dark))
 
-
         addHintOnLongClick(searchButton)
         addHintOnLongClick(switchThemeButton)
         addHintOnLongClick(autoScrollButton)

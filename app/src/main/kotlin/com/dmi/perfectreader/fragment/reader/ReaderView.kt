@@ -15,10 +15,10 @@ import com.dmi.util.android.base.BaseView
 import com.dmi.util.android.base.find
 
 class ReaderView(
-        private val context: Context,
-        private val model: Reader,
-        private val createBook: (Book) -> BookView,
-        private val createBookControl: (BookControl) -> BookControlView,
+        context: Context,
+        model: Reader,
+        createBook: (Book) -> BookView,
+        createBookControl: (BookControl) -> BookControlView,
         private val createMenu: (Menu) -> MenuView
 ) : BaseView(context, R.layout.fragment_reader) {
     private val menuContainer = find<ViewGroup>(R.id.menuContainer)
@@ -29,14 +29,14 @@ class ReaderView(
         addChild(createBookControl(model.control), R.id.bookControlContainer)
 
         menuContainer.layoutTransition = LayoutTransition().apply {
-            val appearingAnimation = ObjectAnimator.ofFloat(null, "alpha", 0F, 1F);
-            val disappearingAnimation = ObjectAnimator.ofFloat(null, "alpha", 1F, 0F);
+            val appearingAnimation = ObjectAnimator.ofFloat(null, "alpha", 0F, 1F)
+            val disappearingAnimation = ObjectAnimator.ofFloat(null, "alpha", 1F, 0F)
 
-            setAnimator(LayoutTransition.APPEARING, appearingAnimation);
+            setAnimator(LayoutTransition.APPEARING, appearingAnimation)
             setDuration(LayoutTransition.APPEARING, 300)
             setStartDelay(LayoutTransition.APPEARING, 0)
 
-            setAnimator(LayoutTransition.DISAPPEARING, disappearingAnimation);
+            setAnimator(LayoutTransition.DISAPPEARING, disappearingAnimation)
             setDuration(LayoutTransition.DISAPPEARING, 300)
             setStartDelay(LayoutTransition.DISAPPEARING, 0)
         }
