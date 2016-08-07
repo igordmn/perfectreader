@@ -25,7 +25,7 @@ abstract class BaseView(val widget: ViewGroup) {
     constructor(context: Context, layoutId: Int) : this(context.inflate(layoutId))
 
     private val subscriptions = CompositeSubscription()
-    private val children = ArrayList<BaseView>()
+    private val children = LinkedList<BaseView>()
     private val childToContainer = HashMap<BaseView, ViewGroup>()
 
     @CallSuper
