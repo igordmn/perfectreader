@@ -53,11 +53,9 @@ open class TextPainter {
     }
 
     private fun drawSelectionRect(x: Float, y: Float, obj: LayoutText, canvas: Canvas, begin: Int, end: Int) {
-        val left = obj.charOffsets[begin]
-        val right = if (end < obj.text.length) obj.charOffsets[end] else obj.width
         selectionBackgroundPaint.color = obj.style.selectionConfig.backgroundColor.value
         canvas.drawRect(
-                RectF(x + left, y, x + right, y + obj.height),
+                RectF(x + obj.charOffset(begin), y, x + obj.charOffset(end), y + obj.height),
                 selectionBackgroundPaint
         )
     }
