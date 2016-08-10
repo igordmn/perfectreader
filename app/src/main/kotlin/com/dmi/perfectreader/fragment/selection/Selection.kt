@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.fragment.selection
 
 import com.dmi.perfectreader.fragment.book.Book
+import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.selection.selectionHandlePositionAt
@@ -39,19 +40,27 @@ class Selection(private val book: Book) : BaseViewModel() {
         if (currentPage != null && selectionRange != null && !isAnimating) {
             val pageRange = currentPage.range
 
+            fun createHandle(handleLocation: Location, alignLeft: Boolean, isNotOnPage: Boolean) : Handle {
+                val position = selectionHandlePositionAt(currentPage, handleLocation, alignLeft)
+                return if (position != null) {
+                    if (isNotOnPage) Handle.NotOnPage(position) else Handle.Visible(position)
+                } else {
+                    Handle.Invisible
+                }
+            }
+
             leftHandle = when {
                 selectionRange.begin < pageRange.begin && selectionRange.end <= pageRange.begin -> {
                     Handle.Invisible
                 }
                 selectionRange.begin < pageRange.begin && selectionRange.end > pageRange.begin -> {
-                    Handle.NotOnPage(leftTopHandlePosition(currentPage))
+                    createHandle(pageRange.begin, alignLeft = true, isNotOnPage = true)
                 }
                 selectionRange.begin >= pageRange.end && selectionRange.end > pageRange.end -> {
-                    Handle.NotOnPage(rightBottomHandlePosition(currentPage))
+                    createHandle(pageRange.end, alignLeft = false, isNotOnPage = true)
                 }
                 else -> {
-                    val position = selectionHandlePositionAt(currentPage, selectionRange.begin, true)
-                    if (position != null) Handle.Visible(position) else Handle.Invisible
+                    createHandle(selectionRange.begin, alignLeft = true, isNotOnPage = false)
                 }
             }
 
@@ -60,14 +69,13 @@ class Selection(private val book: Book) : BaseViewModel() {
                     Handle.Invisible
                 }
                 selectionRange.end > pageRange.end && selectionRange.begin < pageRange.end -> {
-                    Handle.NotOnPage(rightBottomHandlePosition(currentPage))
+                    createHandle(pageRange.end, alignLeft = false, isNotOnPage = true)
                 }
                 selectionRange.end <= pageRange.begin  -> {
-                    Handle.NotOnPage(leftTopHandlePosition(currentPage))
+                    createHandle(pageRange.begin, alignLeft = true, isNotOnPage = true)
                 }
                 else -> {
-                    val position = selectionHandlePositionAt(currentPage, selectionRange.end, false)
-                    if (position != null) Handle.Visible(position) else Handle.Invisible
+                    createHandle( selectionRange.end, alignLeft = false, isNotOnPage = false)
                 }
             }
         } else {
@@ -75,12 +83,6 @@ class Selection(private val book: Book) : BaseViewModel() {
             rightHandle = Handle.Invisible
         }
     }
-
-    private fun leftTopHandlePosition(page: Page) =
-            PositionF(page.margins.left, page.margins.top)
-
-    private fun rightBottomHandlePosition(page: Page) =
-            PositionF(page.size.width - page.margins.right, page.size.height - page.margins.bottom)
 
     /**
      * @return newIsLeft

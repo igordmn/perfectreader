@@ -73,6 +73,7 @@ class GLBook(
 
         model.update()
         pages.setModel(model.loadedPages, model.pageContext)
+        pages.refresh()
         model.visibleSlides.forEach { drawSlide(it) }
     }
 
@@ -124,6 +125,12 @@ class GLBook(
 
             glPages.forEach {
                 it.pageContext = pageContext
+            }
+        }
+
+        fun refresh() {
+            glPages.forEach {
+                it.refresh()
             }
         }
 

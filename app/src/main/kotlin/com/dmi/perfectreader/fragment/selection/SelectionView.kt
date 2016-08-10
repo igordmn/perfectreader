@@ -22,6 +22,7 @@ class SelectionView(
         private val model: Selection
 ) : BaseView(FrameLayout(context)) {
     private val HANDLE_WIDTH = round(dip2Px(24F))
+    private val ADDITIONAL_TOUCH_RADIUS = round(dip2Px(24F))
 
     private val leftHandle = HandleView(
             drawable(R.drawable.selection_handle_left, color(R.color.primary)).apply {
@@ -77,7 +78,7 @@ class SelectionView(
     private var touchedHandleInfo: TouchedHandleInfo? = null
 
     private fun onTouch(event: MotionEvent): Boolean {
-        val touchRadius = event.touchMajor / 2
+        val touchRadius = event.touchMajor / 2 + ADDITIONAL_TOUCH_RADIUS
         val touchPosition = PositionF(event.x, event.y)
 
         return when (event.action) {

@@ -42,23 +42,27 @@ class BookControl(
     fun onTouchDown(touchInfo: TouchInfo) {
         touchDownX = touchInfo.x
         touchDownY = touchInfo.y
-        oldApplySlideActionTouchY = touchDownY
-        nowIsSlideByLeftSide = false
+        if (mode == ControlMode.NORMAL) {
+            oldApplySlideActionTouchY = touchDownY
+            nowIsSlideByLeftSide = false
+        }
     }
 
     fun onTouchMove(touchInfo: TouchInfo) {
-        val y = touchInfo.y
-        val onLeftSide = touchDownX <= LEFT_SIDE_WIDTH_FOR_SLIDE
-        val isTouchedFar = Math.abs(y - touchDownY) >= TOUCH_SENSITIVITY
-        if (onLeftSide && isTouchedFar) {
-            nowIsSlideByLeftSide = true
-        }
+        if (mode == ControlMode.NORMAL) {
+            val y = touchInfo.y
+            val onLeftSide = touchDownX <= LEFT_SIDE_WIDTH_FOR_SLIDE
+            val isTouchedFar = Math.abs(y - touchDownY) >= TOUCH_SENSITIVITY
+            if (onLeftSide && isTouchedFar) {
+                nowIsSlideByLeftSide = true
+            }
 
-        if (nowIsSlideByLeftSide) {
-            if (Math.abs(oldApplySlideActionTouchY - y) >= SLIDE_SENSITIVITY) {
-                val count = ((y - oldApplySlideActionTouchY) / SLIDE_SENSITIVITY).toInt()
-                changeFontSize(count)
-                oldApplySlideActionTouchY = y
+            if (nowIsSlideByLeftSide) {
+                if (Math.abs(oldApplySlideActionTouchY - y) >= SLIDE_SENSITIVITY) {
+                    val count = ((y - oldApplySlideActionTouchY) / SLIDE_SENSITIVITY).toInt()
+                    changeFontSize(count)
+                    oldApplySlideActionTouchY = y
+                }
             }
         }
     }
@@ -75,16 +79,15 @@ class BookControl(
     fun onTouchUp(touchInfo: TouchInfo) {
         val x = touchInfo.x
         val y = touchInfo.y
-        val radius = touchInfo.radius
-        if (!nowIsSlideByLeftSide) {
-            val touchOffsetX = x - touchDownX
-            val touchOffsetY = y - touchDownY
-            val touchOffset = Math.sqrt((touchOffsetX * touchOffsetX + touchOffsetY * touchOffsetY).toDouble()).toFloat()
-            val isTap = touchOffset <= TOUCH_SENSITIVITY
+        if (mode == ControlMode.NORMAL) {
+            val radius = touchInfo.radius
+            if (!nowIsSlideByLeftSide) {
+                val touchOffsetX = x - touchDownX
+                val touchOffsetY = y - touchDownY
+                val touchOffset = Math.sqrt((touchOffsetX * touchOffsetX + touchOffsetY * touchOffsetY).toDouble()).toFloat()
+                val isTap = touchOffset <= TOUCH_SENSITIVITY
 
-            if (isTap) {
-                if (mode == ControlMode.NORMAL) {
-                    // todo убрать после тестирования выделения текста
+                if (isTap) {
 //                    val xPart = x / size.width
 //                    val yPart = y / size.height
 //                    val configuration = userSettings[ControlKeys.TapZones.ShortTaps.configuration]
@@ -93,9 +96,23 @@ class BookControl(
 //                    performCoordinatedAction(action, x, y, radius)
                     startSelection(x, y)
                 } else {
-                    cancelSelection()
+                    val swipeLeft = touchOffsetX <= -TOUCH_SENSITIVITY
+                    val swipeRight = touchOffsetX >= TOUCH_SENSITIVITY
+                    if (swipeLeft) {
+                        book.goNextPage()
+                    } else if (swipeRight) {
+                        book.goPreviousPage()
+                    }
                 }
-            } else {
+            }
+        } else {
+            val touchOffsetX = x - touchDownX
+            val touchOffsetY = y - touchDownY
+            val touchOffset = Math.sqrt((touchOffsetX * touchOffsetX + touchOffsetY * touchOffsetY).toDouble()).toFloat()
+            val isTap = touchOffset <= TOUCH_SENSITIVITY
+            if (isTap) {
+                cancelSelection()
+            }else {
                 val swipeLeft = touchOffsetX <= -TOUCH_SENSITIVITY
                 val swipeRight = touchOffsetX >= TOUCH_SENSITIVITY
                 if (swipeLeft) {
@@ -143,6 +160,7 @@ class BookControl(
 
     private fun cancelSelection() {
         reader.toggleSelection()
+        book.selectionRange = null
         mode = ControlMode.NORMAL
     }
 }

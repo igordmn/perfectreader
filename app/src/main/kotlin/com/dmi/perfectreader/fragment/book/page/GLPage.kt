@@ -81,14 +81,18 @@ class GLPage(
         texturePool.release(texture)
     }
 
-    fun draw(matrix: FloatArray) {
-        background.draw(matrix)
+    fun refresh() {
         bitmapLoader.completeIfReady { result ->
             if (result.buffer != null) {
                 texture.refreshBy(result.buffer.bitmap, result.dirtyRect)
                 refreshed = true
             }
         }
+    }
+
+    fun draw(matrix: FloatArray) {
+        background.draw(matrix)
+
         if (refreshed)
             texturePlane.draw(matrix, texture)
     }
