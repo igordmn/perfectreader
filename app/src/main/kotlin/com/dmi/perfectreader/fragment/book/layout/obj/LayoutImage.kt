@@ -10,4 +10,6 @@ class LayoutImage(
         val scaleFiltered: Boolean,
         val src: String?,
         range: LocationRange
-) : LayoutObject(width, height, emptyList(), range)
+) : LayoutObject(width, height, emptyList(), range) {
+    override fun isClickable() = true
+}

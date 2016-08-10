@@ -39,6 +39,8 @@ import com.dmi.perfectreader.fragment.menu.Menu
 import com.dmi.perfectreader.fragment.menu.MenuView
 import com.dmi.perfectreader.fragment.reader.Reader
 import com.dmi.perfectreader.fragment.reader.ReaderView
+import com.dmi.perfectreader.fragment.selection.Selection
+import com.dmi.perfectreader.fragment.selection.SelectionView
 import com.dmi.util.graphic.Size
 import com.dmi.util.graphic.SizeF
 
@@ -88,11 +90,12 @@ class AppObjects(applicationContext: Context) {
             }
 
             val createBookControl = { reader: Reader -> BookControl(userSettings, reader.book, reader, closeApp, dip2px) }
+            val createSelection = { reader: Reader -> Selection(reader.book) }
             val createMenu = { reader: Reader, close: () -> Unit ->
                 Menu(reader.book, close)
             }
 
-            Reader(createBook, createBookControl, createMenu)
+            Reader(createBook, createBookControl, createSelection, createMenu)
         }
 
         Main(intent, bookContentParserFactory, userData, createReader, closeApp)
@@ -125,9 +128,10 @@ class AppObjects(applicationContext: Context) {
 
 
             val createBookControlView = { model: BookControl -> BookControlView(context, model) }
+            val createSelectionView = { model: Selection -> SelectionView(context, model)}
             val createMenuView = { model: Menu -> MenuView(context, model) }
 
-            ReaderView(context, model, createBookView, createBookControlView, createMenuView)
+            ReaderView(context, model, createBookView, createBookControlView, createSelectionView, createMenuView)
         }
 
         MainView(activity, model, createReaderView)

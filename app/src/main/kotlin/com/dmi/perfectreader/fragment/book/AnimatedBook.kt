@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.fragment.book
 
 import com.dmi.perfectreader.fragment.book.location.Location
+import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.page.Pages
 import com.dmi.perfectreader.fragment.book.page.SlidePagesAnimation
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
@@ -9,6 +10,7 @@ import com.dmi.util.collection.DuplexBuffer
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.mainScheduler
 import com.dmi.util.rx.runOn
+import com.dmi.util.rx.rxObservable
 import rx.lang.kotlin.PublishSubject
 import java.util.*
 
@@ -18,18 +20,27 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
         val MAX_LOADED_PAGES = 3
     }
 
+    val onIsAnimatingChanged = PublishSubject<Boolean>()
+
     val location: Location get() = sized.location
+    var selectionRange: LocationRange?
+        get() = sized.selectionRange
+        set(value) = run { sized.selectionRange = value }
+
     val pageContext: PageContext get() = sized.pageContext
+    var isAnimating: Boolean by rxObservable(false, onIsAnimatingChanged)
+        private set
     val loadedPages = LinkedHashSet<Page>()
     val visibleSlides = ArrayList<Slide>()
     val onChanged = PublishSubject<Unit>()
+    val onPagesChanged = sized.onPagesChanged
 
     private val animation = SlidePagesAnimation(size.width, SINGLE_SLIDE_SECONDS)
     private val sizedPagesSnapshot = DuplexBuffer<Page>(Pages.MAX_RELATIVE_INDEX)
     private val updateMutex = Object()  // для синхронизации между GL потоком и Main потоком
 
     init {
-        sized.onChanged.subscribe {
+        sized.onPagesChanged.subscribe {
             synchronized(updateMutex) {
                 sized.forEachPageIndexed { i, page -> sizedPagesSnapshot[i] = page }
                 onChanged()
@@ -49,6 +60,7 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
     fun goLocation(location: Location) = synchronized(updateMutex) {
         sized.goLocation(location)
         animation.goPage()
+        isAnimating = animation.isAnimating
         onChanged()
     }
 
@@ -56,6 +68,7 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
         if (canGoNextPage()) {
             sized.goNextPage()
             animation.goNextPage()
+            isAnimating = animation.isAnimating
             onChanged()
         }
     }
@@ -64,6 +77,7 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
         if (canGoPreviousPage()) {
             sized.goPreviousPage()
             animation.goPreviousPage()
+            isAnimating = animation.isAnimating
             onChanged()
         }
     }
@@ -78,6 +92,8 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
         return slideNotTooFar && sized.canGoPreviousPage()
     }
 
+    fun pageAt(relativeIndex: Int) = sized.pageAt(relativeIndex)
+
     /**
      * Вызывается из GL потока
      */
@@ -85,6 +101,7 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
         val wasAnimating = animation.isAnimating
 
         animation.update()
+        isAnimating = animation.isAnimating
         updatePagesAndSlides()
 
         if (animation.isAnimating)

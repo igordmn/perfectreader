@@ -55,7 +55,7 @@ open class TextPainter {
     private fun drawSelectionRect(x: Float, y: Float, obj: LayoutText, canvas: Canvas, begin: Int, end: Int) {
         selectionBackgroundPaint.color = obj.style.selectionConfig.backgroundColor.value
         canvas.drawRect(
-                RectF(x + obj.charOffset(begin), y, x + obj.charOffset(end), y + obj.height),
+                RectF(x + obj.charLeft(begin), y, x + obj.charLeft(end), y + obj.height),
                 selectionBackgroundPaint
         )
     }

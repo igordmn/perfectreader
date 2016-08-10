@@ -19,10 +19,12 @@ open class LayoutText(width: Float,
     val charCount = text.length
 
     init {
+        require(text.length > 0)
         require(text.length == charOffsets.size)
     }
 
-    fun charOffset(index: Int) = if (index < charCount) charOffsets[index] else width
+    fun charLeft(index: Int) = if (index < charCount) charOffsets[index] else width
+    fun charRight(index: Int) = charLeft(index + 1)
 
     fun charLocation(index: Int) = range.sublocation(
             index.toDouble() / charCount

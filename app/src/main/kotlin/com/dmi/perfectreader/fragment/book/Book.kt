@@ -3,6 +3,7 @@ package com.dmi.perfectreader.fragment.book
 import com.dmi.perfectreader.fragment.book.bitmap.BitmapDecoder
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationConverter
+import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.util.android.base.BaseViewModel
@@ -18,18 +19,33 @@ class Book(
         val locationConverter: LocationConverter
 ) : BaseViewModel() {
     val locationObservable = data.locationObservable
+    val onIsAnimatingChanged = PublishSubject<Boolean>()
+    val onChanged = PublishSubject<Unit>()
+    val onPagesChanged = PublishSubject<Unit>()
+
+    val content = data.content
+    var selectionRange: LocationRange?
+        get() = animated!!.selectionRange
+        set(value) = run { animated!!.selectionRange = value }
+
     val pageContext: PageContext get() = animated!!.pageContext
+    val isAnimating: Boolean get() = animated!!.isAnimating
     val loadedPages:  LinkedHashSet<Page> get() = animated!!.loadedPages
     val visibleSlides : ArrayList<AnimatedBook.Slide> get() = animated!!.visibleSlides
-    val onChanged = PublishSubject<Unit>()
 
     private var animated: AnimatedBook? = null
 
     fun resize(size: SizeF) {
         animated?.destroy()
         val animated = createAnimated(size)
+        animated.onIsAnimatingChanged.subscribe {
+            onIsAnimatingChanged.onNext(it)
+        }
         animated.onChanged.subscribe {
             onChanged.onNext(Unit)
+        }
+        animated.onPagesChanged.subscribe {
+            onPagesChanged.onNext(Unit)
         }
         this.animated = animated
     }
@@ -59,6 +75,8 @@ class Book(
             data.location = it.location
         }
     }
+
+    fun pageAt(relativeIndex: Int) = animated?.pageAt(relativeIndex)
 
     fun update() {
         animated?.update()

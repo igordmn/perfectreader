@@ -22,6 +22,8 @@ abstract class LayoutObject(
      */
     open fun internalMargins() = Margins.ZERO
 
+    open fun isClickable() = false
+
     class Margins(val left: Float, val right: Float, val top: Float, val bottom: Float) {
         companion object {
             val ZERO = Margins(0F, 0F, 0F, 0F)

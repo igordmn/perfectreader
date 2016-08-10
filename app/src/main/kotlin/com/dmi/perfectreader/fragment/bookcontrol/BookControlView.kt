@@ -33,7 +33,7 @@ open class BookControlView(
         return true
     }
 
-    private fun touchInfo(event: MotionEvent) = TouchInfo(event.x, event.y)
+    private fun touchInfo(event: MotionEvent) = TouchInfo(event.x, event.y, event.touchMajor / 2)
 
     private fun fromKeyCode(keyCode: Int) = when (keyCode) {
         KeyEvent.KEYCODE_VOLUME_UP -> HardKey.VOLUME_UP

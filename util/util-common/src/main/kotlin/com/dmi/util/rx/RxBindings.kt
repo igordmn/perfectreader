@@ -14,7 +14,9 @@ fun <T : Any?> rxObservable(initial: T, subject: Subject<T, T>) = object : ReadW
     override fun getValue(thisRef: Any?, property: KProperty<*>) = value
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        this.value = value
-        subject.onNext(value)
+        if (value != this.value) {
+            this.value = value
+            subject.onNext(value)
+        }
     }
 }
