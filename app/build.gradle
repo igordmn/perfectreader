@@ -97,4 +97,5 @@ dependencies {
 
     androidTestCompile project(':util:util-testCommon')
     testCompile project(':util:util-testCommon')
+    testCompile 'junit:junit:4.12'
 }

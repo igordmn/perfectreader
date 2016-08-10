@@ -7,8 +7,8 @@ buildscript {
         projectVersions = [
                 kotlin        : '1.0.3',
                 buildTools    : '24',
-                androidPlugin : '2.2.0-alpha5',
-                androidExperimentalPlugin : '0.8.0-alpha5',
+                androidPlugin : '2.2.0-beta1',
+                androidExperimentalPlugin : '0.8.0-beta1',
                 minSdk        : 16,
                 targetSdk     : 23,
                 compileSdk    : 23,
