@@ -29,6 +29,7 @@ class GLPage(
 
     private val bitmapLoader = SingleResourceLoader<RenderResult>(glBackgroundScheduler, destroyResult = { releaseBuffer(it) })
     private var renderPage: RenderPage? = null
+    private var renderedPageContext: PageContext? = null
 
     var pageContext: PageContext = pageContext
         set(value) {
@@ -45,21 +46,22 @@ class GLPage(
     private fun scheduleRender(oldContext: PageContext?, newContext: PageContext) {
         if (oldContext !== newContext) {
             bitmapLoader.schedule {
-                render(newContext, oldContext)
+                render(newContext)
             }
         }
     }
 
-    private fun render(newContext: PageContext, oldContext: PageContext?): RenderResult {
+    private fun render(context: PageContext): RenderResult {
         val renderPage = renderPage()
-        val dirtyRect = pagePainter.dirtyRect(renderPage, oldContext, newContext)
+        val dirtyRect = pagePainter.dirtyRect(renderPage, renderedPageContext, context)
+        renderedPageContext = context
         return if (dirtyRect.isEmpty) {
             RenderResult(null, dirtyRect)
         } else {
             val buffer = bitmapBufferPool.acquire()
             val canvas = buffer.canvas
             canvas.drawColor(Color.TRANSPARENT.value, PorterDuff.Mode.CLEAR)
-            pagePainter.paint(renderPage, newContext, canvas, dirtyRect)
+            pagePainter.paint(renderPage, context, canvas, dirtyRect)
             RenderResult(buffer, dirtyRect)
         }
     }
