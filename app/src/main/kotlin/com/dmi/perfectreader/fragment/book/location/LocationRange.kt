@@ -26,6 +26,4 @@ data class LocationRange(override val begin: Location, override val end: Locatio
         require(location >= begin && location <= end)
         return (location.offset - begin.offset) / (end.offset - begin.offset)
     }
-
-    operator fun contains(location: Location) = location >= begin && location < end
 }
