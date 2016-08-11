@@ -1,8 +1,9 @@
 package com.dmi.perfectreader.fragment.book.location
 
 import com.dmi.util.range.Range
+import java.io.Serializable
 
-data class LocationRange(override val begin: Location, override val end: Location) : Range<Location> {
+data class LocationRange(override val begin: Location, override val end: Location) : Range<Location>, Serializable {
     init {
         require(end >= begin)
     }

@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.fragment.book
 
+import android.os.Bundle
 import com.dmi.perfectreader.fragment.book.bitmap.BitmapDecoder
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationConverter
@@ -8,6 +9,7 @@ import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.graphic.SizeF
+import com.dmi.util.lang.afterSet
 import com.dmi.util.lang.returnUnit
 import rx.lang.kotlin.PublishSubject
 import java.util.*
@@ -24,14 +26,16 @@ class Book(
     val onPagesChanged = PublishSubject<Unit>()
 
     val content = data.content
-    var selectionRange: LocationRange?
-        get() = animated!!.selectionRange
-        set(value) = run { animated!!.selectionRange = value }
+    var selectionRange: LocationRange? by saveState<LocationRange?>(null) afterSet { value ->
+        pageContext = PageContext(value)
+        onChanged.onNext(Unit)
+    }
 
-    val pageContext: PageContext get() = animated!!.pageContext
-    val isAnimating: Boolean get() = animated!!.isAnimating
-    val loadedPages:  LinkedHashSet<Page> get() = animated!!.loadedPages
-    val visibleSlides : ArrayList<AnimatedBook.Slide> get() = animated!!.visibleSlides
+    var pageContext: PageContext = PageContext(null)
+        private set
+    val isAnimating: Boolean get() = animated?.isAnimating ?: false
+    val loadedPages: LinkedHashSet<Page> get() = animated!!.loadedPages
+    val visibleSlides: ArrayList<AnimatedBook.Slide> get() = animated!!.visibleSlides
 
     private var animated: AnimatedBook? = null
 
@@ -48,6 +52,11 @@ class Book(
             onPagesChanged.onNext(Unit)
         }
         this.animated = animated
+    }
+
+    override fun restore(state: Bundle) {
+        super.restore(state)
+        pageContext = PageContext(selectionRange)
     }
 
     override fun destroy() {

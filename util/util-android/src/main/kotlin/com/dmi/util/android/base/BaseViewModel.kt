@@ -2,8 +2,8 @@ package com.dmi.util.android.base
 
 import android.os.Bundle
 import android.support.annotation.CallSuper
-import com.dmi.util.lang.returnValue
 import com.dmi.util.android.persist.StateSaver
+import com.dmi.util.lang.returnValue
 import com.dmi.util.refWatcher
 import rx.Observable
 import rx.subscriptions.CompositeSubscription
@@ -16,7 +16,7 @@ abstract class BaseViewModel {
     private val children = LinkedHashSet<BaseViewModel>()
     private var restoredState: Bundle? = null
 
-    fun <T : Serializable> saveState(initial: T) = propertyStateSaver.register(initial)
+    fun <T : Serializable?> saveState(initial: T) = propertyStateSaver.register(initial)
 
     protected fun <T : BaseViewModel> initChild(child: T): T {
         restoredState?.let {
