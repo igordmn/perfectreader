@@ -26,4 +26,10 @@ data class LocationRange(override val begin: Location, override val end: Locatio
         require(location >= begin && location <= end)
         return (location.offset - begin.offset) / (end.offset - begin.offset)
     }
+
+    infix fun intersects(other: LocationRange): LocationRange? {
+        val intersectionBegin = max(begin, other.begin)
+        val intersectionEnd = min(end, other.end)
+        return if (intersectionBegin <= intersectionEnd) LocationRange(intersectionBegin, intersectionEnd) else null
+    }
 }
