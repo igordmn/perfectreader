@@ -25,7 +25,7 @@ fun selectionLocationNearestTo(page: Page, x: Float, y: Float, oppositeLocation:
                     else -> obj.charIndex(oppositeLocation)
                 }
                 if (i < oppositeCharIndex && i < obj.charCount || i > oppositeCharIndex && i > 0) {
-                    val selectionX = objLeft + obj.charLeft(i)
+                    val selectionX = objLeft + obj.charOffset(i)
                     val selectionY = objTop + obj.height
                     val sqrDistance = sqrDistance(x, y, selectionX, selectionY)
                     if (sqrDistance <= nearestSqrDistance) {
@@ -52,7 +52,7 @@ fun selectionHandlePositionAt(page: Page, location: Location, alignLeft: Boolean
                     val locationDistance = distance(location, charLocation)
                     if (locationDistance <= nearestLocationDistance) {
                         nearestPositionFound = true
-                        nearestPositionX = objLeft + obj.charLeft(i)
+                        nearestPositionX = objLeft + obj.charOffset(i)
                         nearestPositionY = objTop + obj.height
                         nearestLocationDistance = locationDistance
                     }
@@ -85,7 +85,7 @@ fun selectionCharAt(page: Page, x: Float, y: Float): LayoutChar? {
 
 private fun charIndexAt(obj: LayoutText, objX: Float, x: Float): Int {
     for (i in 0..obj.charCount - 1) {
-        if (x < objX + obj.charLeft(i))
+        if (x < objX + obj.charOffset(i))
             return i
     }
 

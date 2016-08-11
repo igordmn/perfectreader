@@ -4,20 +4,17 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Paint.HINTING_OFF
 import android.graphics.Paint.HINTING_ON
-import android.graphics.RectF
 import android.text.TextPaint
 import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredFontStyle
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutSpaceText
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutText
 import com.dmi.perfectreader.fragment.book.location.Location
-import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.perfectreader.fragment.book.render.obj.RenderText
-import com.dmi.util.lang.intRound
 
 open class TextPainter {
     private val textPaintCache = PaintCache()
-    private val selectionBackgroundPaint = Paint()
+    private val selectionPaint = Paint()
 
     fun paint(obj: RenderText, context: PageContext, canvas: Canvas, layer: PaintLayer) {
         when (layer) {
@@ -37,27 +34,27 @@ open class TextPainter {
 
     private fun paintSelection(obj: RenderText, context: PageContext, canvas: Canvas) {
         val layoutObj = obj.layoutObj
-        if (context.selectionRange != null) {
-            val selectionBegin = layoutObj.indexOf(context.selectionRange.begin)
-            val selectionEnd = layoutObj.indexOf(context.selectionRange.end)
-            drawSelectionRect(obj.x, obj.y, layoutObj, canvas, selectionBegin, selectionEnd)
+        val selectionRange = context.selectionRange
+        if (selectionRange != null) {
+            val selectionBeginIndex = layoutObj.clampCharIndex(selectionRange.begin)
+            val selectionEndIndex = layoutObj.clampCharIndex(selectionRange.end)
+
+            if (selectionBeginIndex < selectionEndIndex) {
+                selectionPaint.color = layoutObj.style.selectionConfig.backgroundColor.value
+                val selectionLeft = layoutObj.charOffset(selectionBeginIndex)
+                val selectionRight = layoutObj.charOffset(selectionEndIndex)
+                canvas.drawRect(
+                        obj.x + selectionLeft, obj.y, obj.x + selectionRight, obj.y + layoutObj.height,
+                        selectionPaint
+                )
+            }
         }
     }
 
-    private fun LayoutText.indexOf(location: Location) = intRound(range.clampPercentOf(location) * text.length)
-
-    private fun LocationRange.clampPercentOf(location: Location) = when {
-        location >= begin && location <= end -> percentOf(location)
-        location > end -> 1.0
-        else -> 0.0
-    }
-
-    private fun drawSelectionRect(x: Float, y: Float, obj: LayoutText, canvas: Canvas, begin: Int, end: Int) {
-        selectionBackgroundPaint.color = obj.style.selectionConfig.backgroundColor.value
-        canvas.drawRect(
-                RectF(x + obj.charLeft(begin), y, x + obj.charLeft(end), y + obj.height),
-                selectionBackgroundPaint
-        )
+    private fun LayoutText.clampCharIndex(location: Location) = when {
+        location >= range.begin && location <= range.end -> charIndex(location)
+        location > range.end -> charCount
+        else -> 0
     }
 
     private class PaintCache {

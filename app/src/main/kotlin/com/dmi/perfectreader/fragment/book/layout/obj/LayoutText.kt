@@ -23,12 +23,17 @@ open class LayoutText(width: Float,
         require(text.length == charOffsets.size)
     }
 
-    fun charLeft(index: Int) = if (index < charCount) charOffsets[index] else width
-    fun charRight(index: Int) = charLeft(index + 1)
+    fun charOffset(index: Int): Float {
+        require(index >=0 && index <= charCount)
+        return if (index < charCount) charOffsets[index] else width
+    }
 
-    fun charLocation(index: Int) = range.sublocation(
-            index.toDouble() / charCount
-    )
+    fun charLocation(index: Int): Location {
+        require(index >=0 && index <= charCount)
+        return range.sublocation(
+                index.toDouble() / charCount
+        )
+    }
 
     fun charIndex(location: Location): Int {
         require(location >= range.begin && location <= range.end)
