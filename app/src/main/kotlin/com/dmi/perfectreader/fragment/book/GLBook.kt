@@ -90,7 +90,7 @@ class GLBook(
 
     private inner class GLPages {
         private val pages = LinkedHashSet<Page>()
-        private val glPages = HashSet<GLPage>()
+        private val glPages = ArrayList<GLPage>()
         private val pageToGLPage = HashMap<Page, GLPage>()
 
         val onChanged = PublishSubject<Unit>()
@@ -103,10 +103,11 @@ class GLBook(
             val toRemove = this.pages - model
             val toAdd = model - this.pages
 
+            pages.clear()
+            glPages.clear()
+
             toRemove.forEach { page->
-                pages.remove(page)
                 val glPage = pageToGLPage.remove(page)!!
-                glPages.remove(glPage)
                 glPage.destroy()
             }
 
@@ -118,9 +119,12 @@ class GLBook(
                         pageRenderer, pagePainter
                 )
                 glPage.onChanged.subscribe(onChanged)
-                pages.add(page)
                 pageToGLPage[page] = glPage
-                glPages.add(glPage)
+            }
+
+            pages.addAll(model)
+            pages.forEach {
+                glPages.add(forPage(it))
             }
 
             glPages.forEach {
