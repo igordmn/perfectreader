@@ -13,10 +13,12 @@ import com.dmi.test.shouldEqual
 import com.dmi.util.graphic.Color
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.graphic.SizeF
+import org.junit.Ignore
 import org.junit.Test
 import java.lang.Math.round
 import java.util.*
 
+@Ignore
 class SelectionUtilsTest {
     @Test
     fun selectionLocationNearestToPosition() {

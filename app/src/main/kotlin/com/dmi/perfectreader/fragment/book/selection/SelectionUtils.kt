@@ -7,15 +7,16 @@ import com.dmi.perfectreader.fragment.book.location.LocationDistance
 import com.dmi.perfectreader.fragment.book.location.distance
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.util.graphic.PositionF
-import com.dmi.util.graphic.sqrDistance
 import com.dmi.util.graphic.sqrDistanceToRect
 
 /**
+ * Поиск локации ближайшей нижней половины каретки по y, либо по x (если y одинаков)
  * @param oppositeLocation сюда передается selectionRange.begin, если ищется selectionRange.end, и наоборот
  */
 fun selectionLocationNearestTo(page: Page, x: Float, y: Float, oppositeLocation: Location): Location? {
     var nearestLocation: Location? = null
-    var nearestSqrDistance = Float.MAX_VALUE
+    var nearestXDistance = Float.MAX_VALUE
+    var nearestYDistance = Float.MAX_VALUE
     page.forEachChildRecursive(0F, 0F) { objLeft, objTop, obj ->
         if (obj is LayoutText) {
             for (i in 0..obj.charCount) {
@@ -25,12 +26,19 @@ fun selectionLocationNearestTo(page: Page, x: Float, y: Float, oppositeLocation:
                     else -> obj.charIndex(oppositeLocation)
                 }
                 if (i < oppositeCharIndex && i < obj.charCount || i > oppositeCharIndex && i > 0) {
-                    val selectionX = objLeft + obj.charOffset(i)
-                    val selectionY = objTop + obj.height
-                    val sqrDistance = sqrDistance(x, y, selectionX, selectionY)
-                    if (sqrDistance <= nearestSqrDistance) {
+                    val caretX = objLeft + obj.charOffset(i)
+                    val caretHalf = objTop + obj.height / 2
+                    val caretBottom = objTop + obj.height
+                    val xDistance = Math.abs(x - caretX)
+                    val yDistance = when {
+                        y < caretHalf -> caretHalf - y
+                        y > caretBottom -> y - caretBottom
+                        else -> 0F
+                    }
+                    if (yDistance < nearestYDistance || yDistance == nearestYDistance && xDistance <= nearestXDistance) {
                         nearestLocation = obj.charLocation(i)
-                        nearestSqrDistance = sqrDistance
+                        nearestXDistance = xDistance
+                        nearestYDistance = yDistance
                     }
                 }
             }
