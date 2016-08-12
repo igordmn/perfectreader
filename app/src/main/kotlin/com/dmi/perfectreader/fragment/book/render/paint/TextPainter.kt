@@ -7,10 +7,10 @@ import android.graphics.Paint.HINTING_ON
 import android.text.TextPaint
 import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredFontStyle
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutSpaceText
-import com.dmi.perfectreader.fragment.book.layout.obj.LayoutText
-import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.perfectreader.fragment.book.render.obj.RenderText
+import com.dmi.perfectreader.fragment.book.selection.beginIndexOfSelectedChar
+import com.dmi.perfectreader.fragment.book.selection.endIndexOfSelectedChar
 
 open class TextPainter {
     private val textPaintCache = PaintCache()
@@ -36,8 +36,8 @@ open class TextPainter {
         val layoutObj = obj.layoutObj
         val selectionRange = context.selectionRange
         if (selectionRange != null) {
-            val selectionBeginIndex = layoutObj.clampCharIndex(selectionRange.begin)
-            val selectionEndIndex = layoutObj.clampCharIndex(selectionRange.end)
+            val selectionBeginIndex = beginIndexOfSelectedChar(layoutObj, selectionRange.begin)
+            val selectionEndIndex = endIndexOfSelectedChar(layoutObj, selectionRange.end)
 
             if (selectionBeginIndex < selectionEndIndex) {
                 selectionPaint.color = layoutObj.style.selectionConfig.backgroundColor.value
@@ -49,12 +49,6 @@ open class TextPainter {
                 )
             }
         }
-    }
-
-    private fun LayoutText.clampCharIndex(location: Location) = when {
-        location >= range.begin && location <= range.end -> charIndex(location)
-        location > range.end -> charCount
-        else -> 0
     }
 
     private class PaintCache {

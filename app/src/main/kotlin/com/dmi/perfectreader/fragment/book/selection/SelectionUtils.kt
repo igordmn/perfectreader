@@ -18,7 +18,7 @@ fun selectionLocationNearestTo(page: Page, x: Float, y: Float, oppositeLocation:
     var nearestXDistance = Float.MAX_VALUE
     var nearestYDistance = Float.MAX_VALUE
     page.forEachChildRecursive(0F, 0F) { objLeft, objTop, obj ->
-        if (obj is LayoutText) {
+        if (obj is LayoutText && isSelectable(obj)) {
             for (i in 0..obj.charCount) {
                 val oppositeCharIndex = when {
                     oppositeLocation < obj.range.begin -> 0
@@ -47,13 +47,33 @@ fun selectionLocationNearestTo(page: Page, x: Float, y: Float, oppositeLocation:
     return nearestLocation
 }
 
+// порядок проверок составлен таким образом, чтобы исключить переносы на краю выделения
+fun beginIndexOfSelectedChar(layoutText: LayoutText, selectionBegin: Location) = when {
+    selectionBegin >= layoutText.range.end -> layoutText.charCount
+    selectionBegin <= layoutText.range.begin -> 0
+    else -> layoutText.charIndex(selectionBegin)
+}
+
+// порядок проверок составлен таким образом, чтобы исключить переносы на краю выделения
+fun endIndexOfSelectedChar(layoutText: LayoutText, selectionEnd: Location) = when {
+    selectionEnd <= layoutText.range.begin -> 0
+    selectionEnd >= layoutText.range.end -> layoutText.charCount
+    else -> layoutText.charIndex(selectionEnd)
+}
+
+/**
+ * Исключает объекты, которые были добавлены в процессе форматирования текста, вроде переносов.
+ * Выделять переносы можно только, если они находятся не на краю выделения, а между двух выделенных символов
+ */
+fun isSelectable(layoutText: LayoutText) = layoutText.range.end > layoutText.range.begin
+
 fun selectionHandlePositionAt(page: Page, location: Location, alignLeft: Boolean): PositionF? {
     var nearestPositionFound = false
     var nearestPositionX = 0F
     var nearestPositionY = 0F
     var nearestLocationDistance = LocationDistance.MAX
     page.forEachChildRecursive(0F, 0F) { objLeft, objTop, obj ->
-        if (obj is LayoutText) {
+        if (obj is LayoutText && isSelectable(obj)) {
             for (i in 0..obj.charCount) {
                 if (alignLeft && i < obj.charCount || !alignLeft && i > 0) {
                     val charLocation = obj.charLocation(i)
@@ -76,7 +96,7 @@ fun selectionCharAt(page: Page, x: Float, y: Float): LayoutChar? {
     var nearestCharIndex = -1
     var nearestDistance = Float.MAX_VALUE
     page.forEachChildRecursive(0F, 0F) { objLeft, objTop, obj ->
-        if (obj is LayoutText) {
+        if (obj is LayoutText && isSelectable(obj)) {
             val objRight = objLeft + obj.width
             val objBottom = objTop + obj.height
 
