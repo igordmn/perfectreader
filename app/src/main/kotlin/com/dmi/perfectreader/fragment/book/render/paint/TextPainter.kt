@@ -7,6 +7,7 @@ import android.graphics.Paint.HINTING_ON
 import android.text.TextPaint
 import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredFontStyle
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutSpaceText
+import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.perfectreader.fragment.book.render.obj.RenderText
 import com.dmi.perfectreader.fragment.book.selection.beginIndexOfSelectedChar
@@ -22,6 +23,24 @@ open class TextPainter {
             PaintLayer.TEXT -> paintText(canvas, obj)
             else -> Unit
         }
+    }
+
+    fun isChanged(obj: RenderText, oldContext: PageContext, newContext: PageContext): Boolean {
+        val oldSelectionRange = oldContext.selectionRange
+        val newSelectionRange = newContext.selectionRange
+        return when {
+            oldSelectionRange != null && newSelectionRange != null -> isChanged(obj, oldSelectionRange, newSelectionRange)
+            oldSelectionRange == null && newSelectionRange == null -> false
+            else -> true
+        }
+    }
+
+    fun isChanged(obj: RenderText, oldSelectionRange: LocationRange, newSelectionRange: LocationRange): Boolean {
+        val oldSelectionBeginIndex = beginIndexOfSelectedChar(obj.layoutObj, oldSelectionRange.begin)
+        val oldSelectionEndIndex = endIndexOfSelectedChar(obj.layoutObj, oldSelectionRange.end)
+        val newSelectionBeginIndex = beginIndexOfSelectedChar(obj.layoutObj, newSelectionRange.begin)
+        val newSelectionEndIndex = endIndexOfSelectedChar(obj.layoutObj, newSelectionRange.end)
+        return newSelectionBeginIndex != oldSelectionBeginIndex || newSelectionEndIndex != oldSelectionEndIndex
     }
 
     private fun paintText(canvas: Canvas, obj: RenderText) {
