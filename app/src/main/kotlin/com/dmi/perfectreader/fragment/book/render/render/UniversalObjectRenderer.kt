@@ -12,9 +12,9 @@ import java.util.*
 class UniversalObjectRenderer(private val imageRenderer: ImageRenderer) {
     fun render(x: Float, y: Float, obj: LayoutObject, objects: ArrayList<RenderObject>) {
         when (obj) {
+            is LayoutText -> objects.add(RenderText(x, y, obj))
             is LayoutFrame -> objects.add(RenderFrame(x, y, obj))
             is LayoutImage -> imageRenderer.render(x, y, obj, objects)
-            is LayoutText -> objects.add(RenderText(x, y, obj))
         }
     }
 }

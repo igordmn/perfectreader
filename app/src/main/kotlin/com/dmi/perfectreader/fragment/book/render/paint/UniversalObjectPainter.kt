@@ -20,9 +20,9 @@ class UniversalObjectPainter(
     }
 
     fun isChanged(obj: RenderObject, oldContext: PageContext, newContext: PageContext) = when (obj) {
+        is RenderText -> textPainter.isChanged(obj, oldContext, newContext)
         is RenderFrame -> false
         is RenderImage -> false
-        is RenderText -> textPainter.isChanged(obj, oldContext, newContext)
         else -> throw UnsupportedOperationException()
     }
 }
