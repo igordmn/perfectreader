@@ -4,8 +4,9 @@ import com.dmi.perfectreader.fragment.book.Book
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
-import com.dmi.perfectreader.fragment.book.selection.selectionHandlePositionAt
-import com.dmi.perfectreader.fragment.book.selection.selectionLocationNearestTo
+import com.dmi.perfectreader.fragment.book.selection.positionOf
+import com.dmi.perfectreader.fragment.book.selection.selectionCaretAt
+import com.dmi.perfectreader.fragment.book.selection.selectionCaretNearestTo
 import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.mainScheduler
@@ -40,8 +41,9 @@ class Selection(private val book: Book) : BaseViewModel() {
         if (currentPage != null && selectionRange != null && !isAnimating) {
             val pageRange = currentPage.range
 
-            fun createHandle(handleLocation: Location, alignLeft: Boolean, isNotOnPage: Boolean) : Handle {
-                val position = selectionHandlePositionAt(currentPage, handleLocation, alignLeft)
+            fun createHandle(location: Location, isLeft: Boolean, isNotOnPage: Boolean) : Handle {
+                val caret = selectionCaretAt(currentPage, location, isLeft)
+                val position = if (caret != null) positionOf(currentPage, caret) else null
                 return if (position != null) {
                     if (isNotOnPage) Handle.NotOnPage(position) else Handle.Visible(position)
                 } else {
@@ -54,13 +56,13 @@ class Selection(private val book: Book) : BaseViewModel() {
                     Handle.Invisible
                 }
                 selectionRange.begin < pageRange.begin && selectionRange.end > pageRange.begin -> {
-                    createHandle(pageRange.begin, alignLeft = true, isNotOnPage = true)
+                    createHandle(pageRange.begin, isLeft = true, isNotOnPage = true)
                 }
                 selectionRange.begin >= pageRange.end && selectionRange.end > pageRange.end -> {
-                    createHandle(pageRange.end, alignLeft = false, isNotOnPage = true)
+                    createHandle(pageRange.end, isLeft = false, isNotOnPage = true)
                 }
                 else -> {
-                    createHandle(selectionRange.begin, alignLeft = true, isNotOnPage = false)
+                    createHandle(selectionRange.begin, isLeft = true, isNotOnPage = false)
                 }
             }
 
@@ -69,13 +71,13 @@ class Selection(private val book: Book) : BaseViewModel() {
                     Handle.Invisible
                 }
                 selectionRange.end > pageRange.end && selectionRange.begin < pageRange.end -> {
-                    createHandle(pageRange.end, alignLeft = false, isNotOnPage = true)
+                    createHandle(pageRange.end, isLeft = false, isNotOnPage = true)
                 }
                 selectionRange.end <= pageRange.begin  -> {
-                    createHandle(pageRange.begin, alignLeft = true, isNotOnPage = true)
+                    createHandle(pageRange.begin, isLeft = true, isNotOnPage = true)
                 }
                 else -> {
-                    createHandle( selectionRange.end, alignLeft = false, isNotOnPage = false)
+                    createHandle( selectionRange.end, isLeft = false, isNotOnPage = false)
                 }
             }
         } else {
@@ -111,7 +113,8 @@ class Selection(private val book: Book) : BaseViewModel() {
 
     private fun newSelectionRange(oldRange: LocationRange, page: Page, touchPosition: PositionF, isLeftHandle: Boolean): LocationRange {
         val oppositeLocation = if (isLeftHandle) oldRange.end else oldRange.begin
-        val selectionLocation = selectionLocationNearestTo(page, touchPosition.x, touchPosition.y, oppositeLocation)
+        val selectionChar = selectionCaretNearestTo(page, touchPosition.x, touchPosition.y, oppositeLocation)
+        val selectionLocation = selectionChar?.obj?.charLocation(selectionChar.charIndex)
         return if (selectionLocation != null) {
             if (isLeftHandle) {
                 if (selectionLocation <= oldRange.end) {
