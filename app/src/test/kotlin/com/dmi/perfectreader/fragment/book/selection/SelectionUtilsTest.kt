@@ -16,145 +16,183 @@ import org.junit.Test
 import java.util.*
 
 class SelectionUtilsTest {
-//    @Test
-//    fun selectionCaretNearestToPosition() {
-//        // given
-//        val charOffsets = floatArrayOf(1F, 2F, 3F, 7F)
-//
-//        val text1 = text(50F, 8F, charOffsets, range(0, 30))
-//        val text2 = text(20F, 8F, charOffsets, range(30, 50))
-//        val text3 = text(50F, 8F, charOffsets, range(50, 80))
-//        val text4 = text(50F, 8F, charOffsets, range(90, 94))
-//        val page = page(
-//                LayoutBox(100F, 100F, listOf(
-//                        childLine(
-//                                11F, 10F, 80F, 10F, range(0, 50),
-//                                LayoutChild(16F - 11F, 10F - 10F, text1),
-//                                LayoutChild(56F - 11F, 10F - 10F, text2)   // пересекает предыдущий на 10 px
-//                        ),
-//                        childLine(
-//                                12F, 20F, 80F, 10F, range(50, 100),
-//                                LayoutChild(17F - 12F, 20F - 20F, text3),
-//                                LayoutChild(70F - 12F, 20F - 20F, text4)
-//                        )
-//                ), range(0, 100))
-//        )
-//
-//        // expect
-//
-//        // text1:
-//        // x      17    18    19    23                           66
-//        // text   |  a  |  b  |  c  |  d                         |
-//        // loc    0    7.5    15   22.5                          30
-//
-//        selectionLocationNearestTo(page, -10F, -10F, Location(1000.0)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, -10F, -10F, Location(7.5)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, -10F, -10F, Location(3.75)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, -10F, -10F, Location(3.74)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, -10F, -10F, Location(0.0)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, -10F, -10F, Location(-1000.0)) shouldEqual Location(7.5)
-//
-//        selectionLocationNearestTo(page, 17F, 10F, Location(1000.0)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, 17F, 10F, Location(7.5)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, 17F, 10F, Location(3.75)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, 17F, 10F, Location(3.74)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, 17F, 10F, Location(0.0)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, 17F, 10F, Location(-1000.0)) shouldEqual Location(7.5)
-//
-//        selectionLocationNearestTo(page, 17F, -10F, Location(1000.0)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, 17F, -10F, Location(7.5)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, 17F, -10F, Location(3.75)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, 17F, -10F, Location(3.74)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, 17F, -10F, Location(0.0)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, 17F, -10F, Location(-1000.0)) shouldEqual Location(7.5)
-//
-//        selectionLocationNearestTo(page, 17.49F, 10F, Location(1000.0)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, 17.49F, 10F, Location(7.5)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, 17.49F, 10F, Location(3.75)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, 17.49F, 10F, Location(3.74)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, 17.49F, 10F, Location(0.0)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, 17.49F, 10F, Location(-1000.0)) shouldEqual Location(7.5)
-//
-//        selectionLocationNearestTo(page, 17.5F, 10F, Location(1000.0)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, 17.5F, 10F, Location(15.0)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, 17.5F, 10F, Location(7.5 + 3.75)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, 17.5F, 10F, Location(7.5 + 3.74)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, 17.5F, 10F, Location(3.75)) shouldEqual Location(0.0)
-//        selectionLocationNearestTo(page, 17.5F, 10F, Location(3.74)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, 17.5F, 10F, Location(-1000.0)) shouldEqual Location(7.5)
-//
-//        selectionLocationNearestTo(page, 18.5F, 10F, Location(1000.0)) shouldEqual Location(15.0)
-//        selectionLocationNearestTo(page, 18.5F, 10F, Location(22.5)) shouldEqual Location(15.0)
-//        selectionLocationNearestTo(page, 18.5F, 10F, Location(15.0 + 3.75)) shouldEqual Location(15.0)
-//        selectionLocationNearestTo(page, 18.5F, 10F, Location(15.0 + 3.74)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, 18.5F, 10F, Location(7.5 + 3.75)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, 18.5F, 10F, Location(7.5 + 3.74)) shouldEqual Location(15.0)
-//        selectionLocationNearestTo(page, 18.5F, 10F, Location(-1000.0)) shouldEqual Location(15.0)
-//
-//
-//        // text1:
-//        // x      17    18    19    23                           66
-//        // text   |  a  |  b  |  c  |  d                         |
-//        // loc    0    7.5    15   22.5                          30
-//
-//        // text2:
-//        // x                                57    58    59    63    83
-//        // text                             |  a  |  b  |  c  |  d  |
-//        // loc                              30    35    40    45    50
-//
-//        selectionLocationNearestTo(page, 26F, 10F, Location(1000.0)) shouldEqual Location(22.5)
-//        selectionLocationNearestTo(page, 26F, 10F, Location(30.0 - 3.75)) shouldEqual Location(22.5)
-//        selectionLocationNearestTo(page, 26F, 10F, Location(30.0 - 3.76)) shouldEqual Location(15.0)
-//        selectionLocationNearestTo(page, 26F, 10F, Location(22.5 - 3.75)) shouldEqual Location(15.0)
-//        selectionLocationNearestTo(page, 26F, 10F, Location(22.5 - 3.76)) shouldEqual Location(22.5)
-//        selectionLocationNearestTo(page, 26F, 10F, Location(-1000.0)) shouldEqual Location(22.5)
-//
-//        selectionLocationNearestTo(page, (23F + 57F) / 2 - 0.01F, 10F, Location(1000.0)) shouldEqual Location(22.5)
-//        selectionLocationNearestTo(page, (23F + 57F) / 2 - 0.01F, 10F, Location(22.6)) shouldEqual Location(35.0)
-//        selectionLocationNearestTo(page, (23F + 57F) / 2, 10F, Location(1000.0)) shouldEqual Location(30.0)
-//        selectionLocationNearestTo(page, (23F + 58F) / 2 - 0.01F, 10F, Location(-1000.0)) shouldEqual Location(22.5)
-//        selectionLocationNearestTo(page, (23F + 58F) / 2, 10F, Location(-1000.0)) shouldEqual Location(35.0)
-//        selectionLocationNearestTo(page, (63F + 66F) / 2, 10F, Location(-1000.0)) shouldEqual Location(45.0)
-//        selectionLocationNearestTo(page, (63F + 66F) / 2 + 0.01F, 10F, Location(-1000.0)) shouldEqual Location(30.0)
-//        selectionLocationNearestTo(page, 84F, 10F, Location(-1000.0)) shouldEqual Location(50.0)
-//
-//
-//        // text1, y = 10, height = 8:
-//        // x      17    18    19    23                           66
-//        // text   |  a  |  b  |  c  |  d                         |
-//        // loc    0    7.5    15   22.5                          30
-//
-//        // text3, y = 20, height = 8:
-//        // x            18    19    20    24    67
-//        // text         |  a  |  b  |  c  |  d  |
-//        // loc          50   57.5   65   72.5   80
-//
-//        selectionLocationNearestTo(page, 18F, (18F + 28F) / 2 - 0.01F, Location(1000.0)) shouldEqual Location(7.5)
-//        selectionLocationNearestTo(page, 18F, (18F + 28F) / 2, Location(1000.0)) shouldEqual Location(50.0)
-//
-//        // text3:
-//        // x            18    19    20    24    67
-//        // text         |  a  |  b  |  c  |  d  |
-//        // loc          50   57.5   65   72.5   80
-//
-//        // text4:
-//        // x                                                                  71    72    73    77          120
-//        // text                                                               |  a  |  b  |  c  |  d         |
-//        // loc                                                                90    91    92    93           94
-//
-//        selectionLocationNearestTo(page, (24F + 71F) / 2 - 0.01F, 100F, Location(1000.0)) shouldEqual Location(72.5)
-//        selectionLocationNearestTo(page, (24F + 71F) / 2, 100F, Location(1000.0)) shouldEqual Location(90.0)
-//        selectionLocationNearestTo(page, (24F + 71F) / 2, 100F, Location(83.0)) shouldEqual Location(72.5)
-//        selectionLocationNearestTo(page, (24F + 72F) / 2, 100F, Location(83.0)) shouldEqual Location(91.0)
-//
-//        selectionLocationNearestTo(page, (67F + 72F) / 2 - 0.01F, 100F, Location(-1000.0)) shouldEqual Location(80.0)
-//        selectionLocationNearestTo(page, (67F + 72F) / 2, 100F, Location(-1000.0)) shouldEqual Location(91.0)
-//        selectionLocationNearestTo(page, (67F + 72F) / 2, 100F, Location(83.0)) shouldEqual Location(91.0)
-//        selectionLocationNearestTo(page, (24F + 72F) / 2 - 0.01F, 100F, Location(83.0)) shouldEqual Location(72.5)
-//
-//        selectionLocationNearestTo(page, 1000F, 1000F, Location(1000.0)) shouldEqual Location(93.0)
-//        selectionLocationNearestTo(page, 1000F, 1000F, Location(-1000.0)) shouldEqual Location(94.0)
-//    }
+    @Test
+    fun selectionCaretNearestToPosition() {
+        // given
+        val charOffsets = floatArrayOf(1F, 2F, 3F, 7F)
+
+        val text1 = text(50F, 8F, charOffsets, range(0, 30))
+        val text2 = text(20F, 8F, charOffsets, range(30, 50))
+        val text3 = text(10F, 4F, charOffsets, range(50, 80))
+        val text4 = text(10F, 8F, charOffsets, range(90, 94))
+        val page = page(
+                LayoutBox(100F, 100F, listOf(
+                        childLine(
+                                11F, 10F, 80F, 10F, range(0, 50),
+                                LayoutChild(16F - 11F, 10F - 10F, text1),
+                                LayoutChild(56F - 11F, 10F - 10F, text2)   // пересекает предыдущий на 10 px
+                        ),
+                        childLine(
+                                12F, 20F, 80F, 10F, range(50, 100),
+                                LayoutChild(17F - 12F, 22F - 20F, text3),
+                                LayoutChild(30F - 12F, 20F - 20F, text4)
+                        )
+                ), range(0, 100))
+        )
+
+        // expect
+
+        selectionCaretNearestTo(page, 1000F, 1000F, Location(1000.0)) shouldEqual Caret(text4, 3)
+        selectionCaretNearestTo(page, 1000F, 1000F, Location(-1000.0)) shouldEqual Caret(text4, 4)
+        selectionCaretNearestTo(page, -1000F, -1000F, Location(1000.0)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, -1000F, -1000F, Location(-1000.0)) shouldEqual Caret(text1, 1)
+
+
+        // text1:
+        // x      17    18    19    23                           66
+        // text   |  a  |  b  |  c  |  d                         |
+        // loc    0    7.5    15   22.5                          30
+
+        selectionCaretNearestTo(page, -10F, -10F, Location(1000.0)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, -10F, -10F, Location(7.5)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, -10F, -10F, Location(3.75)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, -10F, -10F, Location(3.74)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, -10F, -10F, Location(0.0)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, -10F, -10F, Location(-1000.0)) shouldEqual Caret(text1, 1)
+
+        selectionCaretNearestTo(page, 17F, 10F, Location(1000.0)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, 17F, 10F, Location(7.5)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, 17F, 10F, Location(3.75)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, 17F, 10F, Location(3.74)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, 17F, 10F, Location(0.0)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, 17F, 10F, Location(-1000.0)) shouldEqual Caret(text1, 1)
+
+        selectionCaretNearestTo(page, 17F, -10F, Location(1000.0)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, 17F, -10F, Location(7.5)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, 17F, -10F, Location(3.75)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, 17F, -10F, Location(3.74)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, 17F, -10F, Location(0.0)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, 17F, -10F, Location(-1000.0)) shouldEqual Caret(text1, 1)
+
+        selectionCaretNearestTo(page, 17.49F, 10F, Location(1000.0)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, 17.49F, 10F, Location(7.5)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, 17.49F, 10F, Location(3.75)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, 17.49F, 10F, Location(3.74)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, 17.49F, 10F, Location(0.0)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, 17.49F, 10F, Location(-1000.0)) shouldEqual Caret(text1, 1)
+
+        selectionCaretNearestTo(page, 17.5F, 10F, Location(1000.0)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, 17.5F, 10F, Location(15.0)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, 17.5F, 10F, Location(7.5 + 3.75)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, 17.5F, 10F, Location(7.5 + 3.74)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, 17.5F, 10F, Location(3.75)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, 17.5F, 10F, Location(3.74)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, 17.5F, 10F, Location(-1000.0)) shouldEqual Caret(text1, 1)
+
+        selectionCaretNearestTo(page, 18.5F, 10F, Location(1000.0)) shouldEqual Caret(text1, 2)
+        selectionCaretNearestTo(page, 18.5F, 10F, Location(22.5)) shouldEqual Caret(text1, 2)
+        selectionCaretNearestTo(page, 18.5F, 10F, Location(15.0 + 3.75)) shouldEqual Caret(text1, 2)
+        selectionCaretNearestTo(page, 18.5F, 10F, Location(15.0 + 3.74)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, 18.5F, 10F, Location(7.5 + 3.75)) shouldEqual Caret(text1, 1)
+        selectionCaretNearestTo(page, 18.5F, 10F, Location(7.5 + 3.74)) shouldEqual Caret(text1, 2)
+        selectionCaretNearestTo(page, 18.5F, 10F, Location(-1000.0)) shouldEqual Caret(text1, 2)
+
+
+        // text1:
+        // x      17    18    19    23                           66
+        // text   |  a  |  b  |  c  |  d                         |
+        // loc    0    7.5    15   22.5                          30
+
+        // text2:
+        // x                                57    58    59    63    83
+        // text                             |  a  |  b  |  c  |  d  |
+        // loc                              30    35    40    45    50
+
+        selectionCaretNearestTo(page, 26F, 10F, Location(1000.0)) shouldEqual Caret(text1, 3)
+        selectionCaretNearestTo(page, 26F, 10F, Location(30.0 - 3.75)) shouldEqual Caret(text1, 3)
+        selectionCaretNearestTo(page, 26F, 10F, Location(30.0 - 3.76)) shouldEqual Caret(text1, 2)
+        selectionCaretNearestTo(page, 26F, 10F, Location(22.5 - 3.75)) shouldEqual Caret(text1, 2)
+        selectionCaretNearestTo(page, 26F, 10F, Location(22.5 - 3.76)) shouldEqual Caret(text1, 3)
+        selectionCaretNearestTo(page, 26F, 10F, Location(-1000.0)) shouldEqual Caret(text1, 3)
+
+        selectionCaretNearestTo(page, (23F + 57F) / 2 - 0.01F, 10F, Location(1000.0)) shouldEqual Caret(text1, 3)
+        selectionCaretNearestTo(page, (23F + 57F) / 2 - 0.01F, 10F, Location(22.6)) shouldEqual Caret(text2, 1)
+        selectionCaretNearestTo(page, (23F + 57F) / 2, 10F, Location(1000.0)) shouldEqual Caret(text2, 0)
+        selectionCaretNearestTo(page, (23F + 58F) / 2 - 0.01F, 10F, Location(-1000.0)) shouldEqual Caret(text1, 3)
+        selectionCaretNearestTo(page, (23F + 58F) / 2, 10F, Location(-1000.0)) shouldEqual Caret(text2, 1)
+        selectionCaretNearestTo(page, (63F + 66F) / 2, 10F, Location(-1000.0)) shouldEqual Caret(text2, 3)
+        selectionCaretNearestTo(page, (63F + 66F) / 2 + 0.01F, 10F, Location(-1000.0)) shouldEqual Caret(text1, 4)
+        selectionCaretNearestTo(page, 84F, 10F, Location(-1000.0)) shouldEqual Caret(text2, 4)
+
+
+        // text1, y = 10, height = 8:
+        // x      17    18    19    23                           66
+        // text   |  a  |  b  |  c  |  d                         |
+        // loc    0    7.5    15   22.5                          30
+
+        // text3, y = 22, height = 4:
+        // x            18    19    20    24    27
+        // text         |  a  |  b  |  c  |  d  |
+        // loc          50   57.5   65   72.5   80
+
+        // text4, y = 20, height = 8:
+        // x                                                31    32    33    37    40
+        // text                                             |  a  |  b  |  c  |  d  |
+        // loc                                              90    91    92    93    94
+
+        val text1caretBottom = 10F + 8
+        val text3caretHalf = 22F + 4 / 2
+        val text3caretBottom = 22F + 4
+
+        selectionCaretNearestTo(page, -100F, (text1caretBottom + text3caretHalf) / 2 - 0.01F, Location(1000.0)) shouldEqual Caret(text1, 0)
+        selectionCaretNearestTo(page, 0F, (text1caretBottom + text3caretHalf) / 2 - 0.01F, Location(1000.0)) shouldEqual Caret(text1, 0)
+
+        selectionCaretNearestTo(page, -100F, (text1caretBottom + text3caretHalf) / 2 + 0.01F, Location(1000.0)) shouldEqual Caret(text3, 0)
+        selectionCaretNearestTo(page, 0F, (text1caretBottom + text3caretHalf) / 2 + 0.01F, Location(1000.0)) shouldEqual Caret(text3, 0)
+        selectionCaretNearestTo(page, (24F + 31F) / 2 - 0.01F, (text1caretBottom + text3caretHalf) / 2 + 0.01F, Location(1000.0)) shouldEqual Caret(text3, 3)
+        selectionCaretNearestTo(page, (24F + 31F) / 2 + 0.01F, (text1caretBottom + text3caretHalf) / 2 + 0.01F, Location(1000.0)) shouldEqual Caret(text4, 0)
+        selectionCaretNearestTo(page, 66F, (text1caretBottom + text3caretHalf) / 2 + 0.01F, Location(1000.0)) shouldEqual Caret(text4, 3)
+        selectionCaretNearestTo(page, 1000F, (text1caretBottom + text3caretHalf) / 2 + 0.01F, Location(1000.0)) shouldEqual Caret(text4, 3)
+
+        selectionCaretNearestTo(page, -100F, text3caretBottom - 0.01F, Location(1000.0)) shouldEqual Caret(text3, 0)
+        selectionCaretNearestTo(page, 0F, text3caretBottom - 0.01F, Location(1000.0)) shouldEqual Caret(text3, 0)
+        selectionCaretNearestTo(page, (24F + 31F) / 2 - 0.01F, text3caretBottom - 0.01F, Location(1000.0)) shouldEqual Caret(text3, 3)
+        selectionCaretNearestTo(page, (24F + 31F) / 2 + 0.01F, text3caretBottom - 0.01F, Location(1000.0)) shouldEqual Caret(text4, 0)
+        selectionCaretNearestTo(page, 1000F, text3caretBottom - 0.01F, Location(1000.0)) shouldEqual Caret(text4, 3)
+
+        selectionCaretNearestTo(page, -100F, text3caretBottom + 0.01F, Location(1000.0)) shouldEqual Caret(text4, 0)
+        selectionCaretNearestTo(page, 0F, text3caretBottom + 0.01F, Location(1000.0)) shouldEqual Caret(text4, 0)
+        selectionCaretNearestTo(page, (24F + 31F) / 2 - 0.01F, text3caretBottom + 0.01F, Location(1000.0)) shouldEqual Caret(text4, 0)
+        selectionCaretNearestTo(page, (24F + 31F) / 2 + 0.01F, text3caretBottom + 0.01F, Location(1000.0)) shouldEqual Caret(text4, 0)
+        selectionCaretNearestTo(page, 1000F, text3caretBottom + 0.01F, Location(1000.0)) shouldEqual Caret(text4, 3)
+
+        selectionCaretNearestTo(page, -100F, 1000F, Location(1000.0)) shouldEqual Caret(text4, 0)
+        selectionCaretNearestTo(page, 0F, 1000F, Location(1000.0)) shouldEqual Caret(text4, 0)
+        selectionCaretNearestTo(page, (24F + 31F) / 2 - 0.01F, 1000F, Location(1000.0)) shouldEqual Caret(text4, 0)
+        selectionCaretNearestTo(page, (24F + 31F) / 2 + 0.01F, 1000F, Location(1000.0)) shouldEqual Caret(text4, 0)
+        selectionCaretNearestTo(page, 1000F, 1000F, Location(1000.0)) shouldEqual Caret(text4, 3)
+
+
+        // text3, y = 22, height = 4:
+        // x            18    19    20    24    27
+        // text         |  a  |  b  |  c  |  d  |
+        // loc          50   57.5   65   72.5   80
+
+        // text4, y = 20, height = 8:
+        // x                                                31    32    33    37    40
+        // text                                             |  a  |  b  |  c  |  d  |
+        // loc                                              90    91    92    93    94
+
+        selectionCaretNearestTo(page, (24F + 31F) / 2 - 0.01F, text3caretBottom - 0.01F, Location(1000.0)) shouldEqual Caret(text3, 3)
+        selectionCaretNearestTo(page, (24F + 31F) / 2, text3caretBottom - 0.01F, Location(1000.0)) shouldEqual Caret(text4, 0)
+        selectionCaretNearestTo(page, (24F + 31F) / 2, text3caretBottom - 0.01F, Location(83.0)) shouldEqual Caret(text3, 3)
+        selectionCaretNearestTo(page, (24F + 32F) / 2, text3caretBottom - 0.01F, Location(83.0)) shouldEqual Caret(text4, 1)
+
+        selectionCaretNearestTo(page, (27F + 32F) / 2 - 0.01F, text3caretBottom - 0.01F, Location(-1000.0)) shouldEqual Caret(text3, 4)
+        selectionCaretNearestTo(page, (27F + 32F) / 2, text3caretBottom - 0.01F, Location(-1000.0)) shouldEqual Caret(text4, 1)
+        selectionCaretNearestTo(page, (27F + 32F) / 2, text3caretBottom - 0.01F, Location(83.0)) shouldEqual Caret(text4, 1)
+        selectionCaretNearestTo(page, (24F + 32F) / 2 - 0.01F, text3caretBottom - 0.01F, Location(83.0)) shouldEqual Caret(text3, 3)
+    }
 
     @Test
     fun selectionCaretAtLocation() {
@@ -203,7 +241,7 @@ class SelectionUtilsTest {
         selectionCaretAtLeft(page, location(235)) shouldEqual Caret(text4, 3)
         selectionCaretAtLeft(page, location(240)) shouldEqual Caret(text4, 3)
         selectionCaretAtLeft(page, location(2340)) shouldEqual Caret(text4, 3)
-        
+
         selectionCaretAtRight(page, location(2340)) shouldEqual Caret(text4, 4)
         selectionCaretAtRight(page, location(240)) shouldEqual Caret(text4, 4)
         selectionCaretAtRight(page, location(235)) shouldEqual Caret(text4, 4)
