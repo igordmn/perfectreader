@@ -22,9 +22,9 @@ fun <L : Comparable<L>> indexOfNearestRange(rangeAt: (index: Int) -> Range<L>, l
         if (location >= midRange.end) {
             low = mid + 1
             index = mid
-        } else if (location < midRange.begin)
+        } else if (location < midRange.begin) {
             high = mid - 1
-        else {
+        } else {
             index = mid
             break
         }
