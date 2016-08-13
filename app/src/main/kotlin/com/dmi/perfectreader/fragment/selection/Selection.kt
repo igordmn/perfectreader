@@ -67,7 +67,7 @@ class Selection(private val book: Book) : BaseViewModel() {
                     notOnPageOrInvisible(selectionCaretAtBegin(currentPage).position())
                 }
                 else -> {
-                    visibleOrInvisible(selectionCaretAtLeft(currentPage, selectionRange.end).position())
+                    visibleOrInvisible(selectionCaretAtRight(currentPage, selectionRange.end).position())
                 }
             }
         } else {
