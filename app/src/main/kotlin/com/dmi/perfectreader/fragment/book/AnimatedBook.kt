@@ -1,13 +1,11 @@
 package com.dmi.perfectreader.fragment.book
 
+import android.view.Choreographer
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.page.Pages
 import com.dmi.perfectreader.fragment.book.page.SlidePagesAnimation
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
-import com.dmi.util.collection.DuplexBuffer
 import com.dmi.util.graphic.SizeF
-import com.dmi.util.mainScheduler
-import com.dmi.util.rx.runOn
 import com.dmi.util.rx.rxObservable
 import rx.lang.kotlin.PublishSubject
 import java.util.*
@@ -25,53 +23,52 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
         private set
     val loadedPages = LinkedHashSet<Page>()
     val visibleSlides = ArrayList<Slide>()
-    val onChanged = PublishSubject<Unit>()
+    val onNewFrame = PublishSubject<Unit>()
     val onPagesChanged = sized.onPagesChanged
 
     private val animation = SlidePagesAnimation(size.width, SINGLE_SLIDE_SECONDS)
-    private val sizedPagesSnapshot = DuplexBuffer<Page>(Pages.MAX_RELATIVE_INDEX)
-    private val updateMutex = Object()  // для синхронизации между GL потоком и Main потоком
+    private val frameMutex = Object()
 
     init {
         sized.onPagesChanged.subscribe {
-            synchronized(updateMutex) {
-                sized.forEachPageIndexed { i, page -> sizedPagesSnapshot[i] = page }
-                onChanged()
-            }
+            scheduleFrameUpdate()
         }
     }
 
     fun destroy() {
         sized.destroy()
+        Choreographer.getInstance().removeFrameCallback(frameCallback)
     }
 
     fun reformat() {
         sized.reformat()
-        onChanged()
+        scheduleFrameUpdate()
     }
 
-    fun goLocation(location: Location) = synchronized(updateMutex) {
+    fun goLocation(location: Location) {
         sized.goLocation(location)
         animation.goPage()
         isAnimating = animation.isAnimating
-        onChanged()
+        scheduleFrameUpdate()
     }
 
-    fun goNextPage() = synchronized(updateMutex) {
+    fun goNextPage() {
         if (canGoNextPage()) {
             sized.goNextPage()
             animation.goNextPage()
             isAnimating = animation.isAnimating
-            onChanged()
+            scheduleFrameUpdate()
+            checkNextPageIsValid()
         }
     }
 
-    fun goPreviousPage() = synchronized(updateMutex) {
+    fun goPreviousPage() {
         if (canGoPreviousPage()) {
             sized.goPreviousPage()
             animation.goPreviousPage()
             isAnimating = animation.isAnimating
-            onChanged()
+            scheduleFrameUpdate()
+            checkNextPageIsValid()
         }
     }
 
@@ -87,31 +84,43 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
 
     fun pageAt(relativeIndex: Int) = sized.pageAt(relativeIndex)
 
-    /**
-     * Вызывается из GL потока
-     */
-    fun update() = synchronized(updateMutex) {
-        val wasAnimating = animation.isAnimating
+    private var updateScheduled = false
+    private val frameCallback = Choreographer.FrameCallback {
+        println(it)
+        updateScheduled = false
+        updateFrame()
+    }
 
+    /**
+     * Может вызываться из другого потока
+     */
+    fun takeFrame(frame: BookFrame) = synchronized(frameMutex) {
+        frame.loadedPages.retainAll(loadedPages)
+        frame.loadedPages.addAll(loadedPages)
+        frame.visibleSlides.clear()
+        frame.visibleSlides.addAll(visibleSlides)
+    }
+
+    private fun scheduleFrameUpdate() {
+        if (!updateScheduled) {
+            updateScheduled = true
+            Choreographer.getInstance().postFrameCallback(frameCallback)
+        }
+    }
+
+    private fun updateFrame() = synchronized(frameMutex) {
         animation.update()
         isAnimating = animation.isAnimating
         updatePagesAndSlides()
+        checkNextPageIsValid()
+
+        onNewFrame.onNext(Unit)
 
         if (animation.isAnimating)
-            onChanged()
-
-        if (wasAnimating && !animation.isAnimating) {
-            onStopAnimate()
-        }
+            scheduleFrameUpdate()
     }
 
-    private fun onStopAnimate() {
-        runOn(mainScheduler) {
-            checkNextPageIsValid()
-        }
-    }
-
-    private fun checkNextPageIsValid() = synchronized(updateMutex) {
+    private fun checkNextPageIsValid() {
         if (!animation.isAnimating)
             sized.checkNextPageIsValid()
     }
@@ -121,24 +130,24 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
         visibleSlides.clear()
 
         animation.slides.forEach { slide ->
-            val page = addPage(sizedPagesSnapshot, slide.relativeIndex)
+            val page = addPage(slide.relativeIndex)
             visibleSlides.add(Slide(page, slide.offsetX))
         }
 
         if (animation.hasSlides) {
             if (!animation.isAnimating || animation.isGoingNext) {
-                addPage(sizedPagesSnapshot, animation.lastSlideIndex + 1)
-                addPage(sizedPagesSnapshot, animation.firstSlideIndex - 1)
+                addPage(animation.lastSlideIndex + 1)
+                addPage(animation.firstSlideIndex - 1)
             } else {
-                addPage(sizedPagesSnapshot, animation.firstSlideIndex - 1)
-                addPage(sizedPagesSnapshot, animation.lastSlideIndex + 1)
+                addPage(animation.firstSlideIndex - 1)
+                addPage(animation.lastSlideIndex + 1)
             }
         }
     }
 
-    private fun addPage(pages: DuplexBuffer<Page>, relativeIndex: Int): Page? {
+    private fun addPage(relativeIndex: Int): Page? {
         if (loadedPages.size < MAX_LOADED_PAGES && Math.abs(relativeIndex) <= Pages.MAX_RELATIVE_INDEX) {
-            val page = pages[relativeIndex]
+            val page = sized.pageAt(relativeIndex)
             if (page != null) {
                 loadedPages.add(page)
                 return page
@@ -146,8 +155,6 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
         }
         return null
     }
-
-    private fun onChanged() = onChanged.onNext(Unit)
 
     class Slide(val page: Page?, val offsetX: Float)
 }

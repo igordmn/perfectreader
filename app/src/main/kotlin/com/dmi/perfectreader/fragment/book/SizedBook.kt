@@ -24,7 +24,7 @@ class SizedBook(
     private fun initPages() {
         pages = createPages()
         pagesLoader = createPagesLoader(pages)
-        pagesLoader.onLoad.subscribe(this.onPagesChanged)
+        pagesLoader.onLoad.subscribe(onPagesChanged)
         pagesLoader.check()
     }
 
@@ -35,40 +35,39 @@ class SizedBook(
     fun reformat() {
         pagesLoader.destroy()
         initPages()
-        this.onPagesChanged.onNext(Unit)
-        this.onPagesChanged.onNext(Unit)
+        onPagesChanged.onNext(Unit)
     }
 
     fun goLocation(location: Location) {
         pages.goLocation(location)
         pagesLoader.check()
-        this.onPagesChanged.onNext(Unit)
+        onPagesChanged.onNext(Unit)
     }
 
     fun goNextPage() {
         require(canGoNextPage())
         pages.goNextPage()
         pagesLoader.check()
-        this.onPagesChanged.onNext(Unit)
+        onPagesChanged.onNext(Unit)
     }
 
     fun goPreviousPage() {
         require(canGoPreviousPage())
         pages.goPreviousPage()
         pagesLoader.check()
-        this.onPagesChanged.onNext(Unit)
+        onPagesChanged.onNext(Unit)
     }
 
     fun canGoNextPage() = pages.canGoNextPage()
     fun canGoPreviousPage() = pages.canGoPreviousPage()
 
     fun checkNextPageIsValid() {
-        pages.checkNextPageIsValid()
-        pagesLoader.check()
-        this.onPagesChanged.onNext(Unit)
+        if (!pages.isNextPagesValid()) {
+            pages.fixPages()
+            pagesLoader.check()
+            onPagesChanged.onNext(Unit)
+        }
     }
 
     fun pageAt(relativeIndex: Int): Page? = pages[relativeIndex]
-
-    fun forEachPageIndexed(action: (index: Int, page: Page?) -> Unit) = pages.forEachIndexed(action)
 }

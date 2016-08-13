@@ -35,6 +35,7 @@ class GLBook(
         private val pagePainter: PagePainter
 ) : NotifiableRenderer {
     private val sizeF = size.toFloat()
+    private val bookFrame = BookFrame()
 
     private val projectionMatrix = FloatArray(16)
     private val viewMatrix = FloatArray(16)
@@ -48,7 +49,7 @@ class GLBook(
     private val pageBackground = GLPageBackground(pageColorPlane)
     private val pages = GLPages()
 
-    override val onNeedDraw = pageBackground.onChanged merge pages.onChanged merge model.onChanged
+    override val onNeedDraw = pageBackground.onChanged merge pages.onChanged merge model.onNewFrame
 
     init {
         currentThread().setPriority(ThreadPriority.DISPLAY)
@@ -71,10 +72,10 @@ class GLBook(
         glClearColor(1F, 1F, 1F, 1F)
         glClear(GL_COLOR_BUFFER_BIT)
 
-        model.update()
-        pages.setModel(model.loadedPages, model.pageContext)
+        model.takeFrame(bookFrame)
+        pages.setModel(bookFrame.loadedPages, bookFrame.pageContext)
         pages.refresh()
-        model.visibleSlides.forEach { drawSlide(it) }
+        bookFrame.visibleSlides.forEach { drawSlide(it) }
     }
 
     private fun drawSlide(slide: AnimatedBook.Slide) {

@@ -5,14 +5,12 @@ import com.dmi.perfectreader.fragment.book.bitmap.BitmapDecoder
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationConverter
 import com.dmi.perfectreader.fragment.book.location.LocationRange
-import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.lang.afterSet
 import com.dmi.util.lang.returnUnit
 import rx.lang.kotlin.PublishSubject
-import java.util.*
 
 class Book(
         private val createAnimated: (SizeF) -> AnimatedBook,
@@ -22,20 +20,18 @@ class Book(
 ) : BaseViewModel() {
     val locationObservable = data.locationObservable
     val onIsAnimatingChanged = PublishSubject<Boolean>()
-    val onChanged = PublishSubject<Unit>()
+    val onNewFrame = PublishSubject<Unit>()
     val onPagesChanged = PublishSubject<Unit>()
 
     val content = data.content
     var selectionRange: LocationRange? by saveState<LocationRange?>(null) afterSet { value ->
         pageContext = PageContext(value)
-        onChanged.onNext(Unit)
+        onNewFrame.onNext(Unit)
     }
 
     var pageContext: PageContext = PageContext(null)
         private set
     val isAnimating: Boolean get() = animated?.isAnimating ?: false
-    val loadedPages: LinkedHashSet<Page> get() = animated!!.loadedPages
-    val visibleSlides: ArrayList<AnimatedBook.Slide> get() = animated!!.visibleSlides
 
     private var animated: AnimatedBook? = null
 
@@ -45,8 +41,8 @@ class Book(
         animated.onIsAnimatingChanged.subscribe {
             onIsAnimatingChanged.onNext(it)
         }
-        animated.onChanged.subscribe {
-            onChanged.onNext(Unit)
+        animated.onNewFrame.subscribe {
+            onNewFrame.onNext(Unit)
         }
         animated.onPagesChanged.subscribe {
             onPagesChanged.onNext(Unit)
@@ -87,7 +83,8 @@ class Book(
 
     fun pageAt(relativeIndex: Int) = animated?.pageAt(relativeIndex)
 
-    fun update() {
-        animated?.update()
+    fun takeFrame(frame: BookFrame) {
+        animated!!.takeFrame(frame)
+        frame.pageContext = pageContext
     }
 }

@@ -6,7 +6,6 @@ import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.selection.*
 import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.graphic.PositionF
-import com.dmi.util.mainScheduler
 import com.dmi.util.rx.rxObservable
 import rx.lang.kotlin.BehaviorSubject
 
@@ -22,10 +21,10 @@ class Selection(private val book: Book) : BaseViewModel() {
     init {
         updateHandles()
 
-        subscribe(book.onIsAnimatingChanged.observeOn(mainScheduler)) {
+        subscribe(book.onIsAnimatingChanged) {
             updateHandles()
         }
-        subscribe(book.onPagesChanged.observeOn(mainScheduler)) {
+        subscribe(book.onPagesChanged) {
             updateHandles()
         }
     }

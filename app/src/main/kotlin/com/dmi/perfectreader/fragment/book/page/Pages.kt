@@ -62,18 +62,13 @@ class Pages(
         rightLoadedCount = min(rightLoadedCount + 1, MAX_RELATIVE_INDEX)
     }
 
-    fun checkNextPageIsValid() {
-        if (!nextIsValid())
-            clearLoadedRight()
-    }
-
-    private fun nextIsValid(): Boolean {
+    fun isNextPagesValid(): Boolean {
         val current = get(0)
         val next = get(1)
         return current == null || next == null || current.range.end == next.range.begin
     }
 
-    private fun clearLoadedRight() {
+    fun fixPages() {
         for (i in 1..MAX_RELATIVE_INDEX) {
             currentEntries[i] = null
         }
