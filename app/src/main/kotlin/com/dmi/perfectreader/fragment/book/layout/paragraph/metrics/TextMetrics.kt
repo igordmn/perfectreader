@@ -5,7 +5,7 @@ import com.dmi.util.lang.Reusable
 
 interface TextMetrics {
     @Reusable
-    fun charWidths(text: CharSequence, style: ConfiguredFontStyle): FloatArray
+    fun charAdvances(text: CharSequence, style: ConfiguredFontStyle): FloatArray
 
     fun verticalMetrics(style: ConfiguredFontStyle): VerticalMetrics
 

@@ -119,7 +119,7 @@ class ParagraphLayouter(
                 for (i in 1..tokens.size - 2) {
                     val token = tokens[i]
                     if (token.isSpace)
-                        totalMidspace += text.widthOf(token.beginIndex, token.endIndex)
+                        totalMidspace += text.advanceOf(token.beginIndex, token.endIndex)
                 }
 
                 return if (totalMidspace > 0) (totalMidspace + totalExpansion) / totalMidspace else 1F
@@ -128,7 +128,7 @@ class ParagraphLayouter(
             inner class PrelayoutedText : Liner.MeasuredText {
                 private val plainTextBuilder = Reusables.plainTextBuilder()
                 private val plainIndexToRunIndex = Reusables.plainIndexToRunIndex()
-                private val plainIndexToWidth = Reusables.plainIndexToWidth()
+                private val plainIndexToAdvance = Reusables.plainIndexToWidth()
                 private val plainIndexToRight = Reusables.plainIndexToTotalWidth()
                 private val runIndexToPlainBeginIndex = Reusables.runIndexToPlainBeginIndex()
                 private val runIndexToObject = Reusables.runIndexToObject()
@@ -166,10 +166,10 @@ class ParagraphLayouter(
 
                     plainTextBuilder.append(text)
 
-                    val charWidths = textMetrics.charWidths(text, run.style)
+                    val charAdvances = textMetrics.charAdvances(text, run.style)
                     for (i in 0..text.length - 1) {
                         plainIndexToRunIndex.add(runIndex)
-                        addWidth(charWidths[i])
+                        addAdvance(charAdvances[i])
                     }
 
                     runIndexToPlainBeginIndex.add(plainTextBuilder.length - text.length)
@@ -180,7 +180,7 @@ class ParagraphLayouter(
                 }
 
                 private fun hyphenWidth(run: Run.Text): Float {
-                    return textMetrics.charWidths(HYPHEN_STRING, run.style)[0]
+                    return textMetrics.charAdvances(HYPHEN_STRING, run.style)[0]
                 }
 
                 private fun prelayoutObject(runIndex: Int, run: Run.Object) {
@@ -188,7 +188,7 @@ class ParagraphLayouter(
 
                     plainTextBuilder.append(LayoutChars.OBJECT_REPLACEMENT_CHARACTER)
                     plainIndexToRunIndex.add(runIndex)
-                    addWidth(layoutObj.width)
+                    addAdvance(layoutObj.width)
 
                     runIndexToPlainBeginIndex.add(plainTextBuilder.length - 1)
                     runIndexToObject.add(layoutObj)
@@ -197,19 +197,19 @@ class ParagraphLayouter(
                     runIndexToHyphenWidth.add(0F)
                 }
 
-                private fun addWidth(width: Float) {
+                private fun addAdvance(advance: Float) {
                     val size = plainIndexToRight.size()
                     val currentWidth = if (size > 0) plainIndexToRight[size - 1] else 0F
-                    plainIndexToWidth.add(width)
-                    plainIndexToRight.add(currentWidth + width)
+                    plainIndexToAdvance.add(advance)
+                    plainIndexToRight.add(currentWidth + advance)
                 }
 
-                override fun widthOf(index: Int) = plainIndexToWidth[index]
+                override fun advanceOf(index: Int) = plainIndexToAdvance[index]
 
-                override fun widthOf(beginIndex: Int, endIndex: Int): Float {
-                    val widthToBegin = if (beginIndex > 0) plainIndexToRight[beginIndex - 1] else 0F
-                    val widthToEnd = if (endIndex > 0) plainIndexToRight[endIndex - 1] else 0F
-                    return widthToEnd - widthToBegin
+                override fun advanceOf(beginIndex: Int, endIndex: Int): Float {
+                    val advanceToBegin = if (beginIndex > 0) plainIndexToRight[beginIndex - 1] else 0F
+                    val advanceToEnd = if (endIndex > 0) plainIndexToRight[endIndex - 1] else 0F
+                    return advanceToEnd - advanceToBegin
                 }
 
                 override fun hyphenWidthAfter(index: Int): Float {
@@ -252,7 +252,7 @@ class ParagraphLayouter(
 
                     line.addObject(
                             LayoutSpaceText(
-                                    width = widthOf(beginIndex, endIndex) * scaleX,
+                                    width = advanceOf(beginIndex, endIndex) * scaleX,
                                     height = runIndexToHeight[runIndex],
                                     text = run.text.subSequence(beginOfRunText, endOfRunText),
                                     locale = locale,
@@ -281,7 +281,7 @@ class ParagraphLayouter(
 
                     line.addObject(
                             LayoutText(
-                                    width = widthOf(beginIndex, endIndex),
+                                    width = advanceOf(beginIndex, endIndex),
                                     height = runIndexToHeight[runIndex],
                                     text = run.text.subSequence(beginOfRunText, endOfRunText),
                                     locale = locale,
@@ -327,7 +327,7 @@ class ParagraphLayouter(
 
                 private fun computeCharOffsets(begin: Int, end: Int, scaleX: Float) =
                         FloatArray(end - begin) { i ->
-                            widthOf(begin, begin + i) * scaleX
+                            advanceOf(begin, begin + i) * scaleX
                         }
             }
         }.layout()

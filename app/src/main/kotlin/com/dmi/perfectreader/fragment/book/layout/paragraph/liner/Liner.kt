@@ -22,8 +22,8 @@ interface Liner {
     interface MeasuredText {
         val plainText: String
         val locale: Locale
-        fun widthOf(index: Int): Float
-        fun widthOf(beginIndex: Int, endIndex: Int): Float
+        fun advanceOf(index: Int): Float
+        fun advanceOf(beginIndex: Int, endIndex: Int): Float
         fun hyphenWidthAfter(index: Int): Float
     }
 

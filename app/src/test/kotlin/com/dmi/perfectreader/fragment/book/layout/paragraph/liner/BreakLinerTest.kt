@@ -468,14 +468,14 @@ class BreakLinerTest {
                 override val plainText = text
                 override val locale = Locale.US
 
-                override fun widthOf(index: Int) = if (isSpaceChar(text[index])) SPACE_WIDTH else SYMBOL_WIDTH
+                override fun advanceOf(index: Int) = if (isSpaceChar(text[index])) SPACE_WIDTH else SYMBOL_WIDTH
 
-                override fun widthOf(beginIndex: Int, endIndex: Int): Float {
-                    var width = 0F
+                override fun advanceOf(beginIndex: Int, endIndex: Int): Float {
+                    var advance = 0F
                     for (i in beginIndex..endIndex - 1) {
-                        width += widthOf(i)
+                        advance += advanceOf(i)
                     }
-                    return width
+                    return advance
                 }
 
                 override fun hyphenWidthAfter(index: Int) = HYPHEN_WIDTH

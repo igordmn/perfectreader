@@ -152,7 +152,7 @@ class BreakLiner(private val breaker: Breaker) : Liner {
 
                 fun setEnd(endIndex: Int, hasHyphenAfter: Boolean) {
                     if (isEmpty) {
-                        val leftHang = config.leftHangFactor(text[beginIndex]) * measuredText.widthOf(beginIndex)
+                        val leftHang = config.leftHangFactor(text[beginIndex]) * measuredText.advanceOf(beginIndex)
                         left = indent - leftHang
                     }
 
@@ -160,7 +160,7 @@ class BreakLiner(private val breaker: Breaker) : Liner {
                     this.hasHyphenAfter = hasHyphenAfter
 
                     val trailingSpacesBegin = trailingSpacesBegin(beginIndex, endIndex)
-                    val symbolsWidth = measuredText.widthOf(beginIndex, trailingSpacesBegin)
+                    val symbolsWidth = measuredText.advanceOf(beginIndex, trailingSpacesBegin)
                     val hyphenWidth = if (hasHyphenAfter) measuredText.hyphenWidthAfter(endIndex - 1) else 0F
                     val rightHang = rightHang(beginIndex, trailingSpacesBegin, hyphenWidth, hasHyphenAfter)
                     width = max(0F, symbolsWidth + hyphenWidth - rightHang)
@@ -183,7 +183,7 @@ class BreakLiner(private val breaker: Breaker) : Liner {
                             return config.rightHangFactor(LayoutChars.HYPHEN) * hyphenWidth
                         } else {
                             val lastChar = text[lastIndex]
-                            return config.rightHangFactor(lastChar) * measuredText.widthOf(lastIndex)
+                            return config.rightHangFactor(lastChar) * measuredText.advanceOf(lastIndex)
                         }
                     } else {
                         return 0F

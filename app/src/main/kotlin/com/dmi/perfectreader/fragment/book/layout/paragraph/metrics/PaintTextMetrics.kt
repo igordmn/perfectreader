@@ -8,7 +8,7 @@ import com.dmi.util.lang.ReusableFloatArray
 
 class PaintTextMetrics : TextMetrics {
     @Reusable
-    override fun charWidths(text: CharSequence, style: ConfiguredFontStyle): FloatArray {
+    override fun charAdvances(text: CharSequence, style: ConfiguredFontStyle): FloatArray {
         val textPaint = Reusables.textPaint
         val charWidths = Reusables.charWidths(text.length)
 

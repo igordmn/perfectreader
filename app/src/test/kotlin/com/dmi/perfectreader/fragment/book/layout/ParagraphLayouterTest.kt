@@ -118,10 +118,10 @@ class ParagraphLayouterTest {
         with (liner.measuredText) {
             plainText.toString() shouldEqual "some text"
             locale shouldEqual Locale.US
-            widthOf(0) shouldEqual LETTER_WIDTH1
-            widthOf(4) shouldEqual SPACE_WIDTH1
-            widthOf(0, 9) shouldEqual 4 * LETTER_WIDTH1 + SPACE_WIDTH1 + 4 * LETTER_WIDTH2
-            widthOf(4, 8) shouldEqual SPACE_WIDTH1 + 3 * LETTER_WIDTH2
+            advanceOf(0) shouldEqual LETTER_WIDTH1
+            advanceOf(4) shouldEqual SPACE_WIDTH1
+            advanceOf(0, 9) shouldEqual 4 * LETTER_WIDTH1 + SPACE_WIDTH1 + 4 * LETTER_WIDTH2
+            advanceOf(4, 8) shouldEqual SPACE_WIDTH1 + 3 * LETTER_WIDTH2
             hyphenWidthAfter(0) shouldEqual HYPHEN_WIDTH1
             hyphenWidthAfter(4) shouldEqual HYPHEN_WIDTH1
             hyphenWidthAfter(5) shouldEqual HYPHEN_WIDTH2
@@ -171,8 +171,8 @@ class ParagraphLayouterTest {
         with (liner.measuredText) {
             plainText.toString() shouldEqual "\uFFFCtext\uFFFC"
             locale shouldEqual Locale.US
-            widthOf(0) shouldEqual 30F
-            widthOf(5) shouldEqual 100F
+            advanceOf(0) shouldEqual 30F
+            advanceOf(5) shouldEqual 100F
             hyphenWidthAfter(0) shouldEqual 0F
             hyphenWidthAfter(5) shouldEqual 0F
         }
@@ -994,13 +994,13 @@ class ParagraphLayouterTest {
 
     fun textMetrics() =
             object : TextMetrics {
-                override fun charWidths(text: CharSequence, style: ConfiguredFontStyle) = FloatArray(text.length)
+                override fun charAdvances(text: CharSequence, style: ConfiguredFontStyle) = FloatArray(text.length)
                 override fun verticalMetrics(style: ConfiguredFontStyle) = TextMetrics.VerticalMetrics()
             }
 
     fun textMetrics(styleToParams: Map<ConfiguredFontStyle, TestMetrics>) =
             object : TextMetrics {
-                override fun charWidths(text: CharSequence, style: ConfiguredFontStyle): FloatArray {
+                override fun charAdvances(text: CharSequence, style: ConfiguredFontStyle): FloatArray {
                     val params = styleToParams[style] as TestMetrics
 
                     if (text == HYPHEN_STRING) {
