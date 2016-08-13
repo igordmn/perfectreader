@@ -6,7 +6,7 @@ import com.dmi.perfectreader.fragment.book.page.PagesLoader
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import rx.lang.kotlin.PublishSubject
 
-class SizedBook(
+class StaticBook(
         private val createPages: () -> Pages,
         private val createPagesLoader: (Pages) -> PagesLoader
 ) {

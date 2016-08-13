@@ -10,7 +10,7 @@ import com.dmi.util.rx.rxObservable
 import rx.lang.kotlin.PublishSubject
 import java.util.*
 
-class AnimatedBook(size: SizeF, private val sized: SizedBook) {
+class AnimatedBook(size: SizeF, private val staticBook: StaticBook) {
     companion object {
         private val SINGLE_SLIDE_SECONDS = 0.4F
         val MAX_LOADED_PAGES = 3
@@ -18,35 +18,35 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
 
     val onIsAnimatingChanged = PublishSubject<Boolean>()
 
-    val location: Location get() = sized.location
+    val location: Location get() = staticBook.location
     var isAnimating: Boolean by rxObservable(false, onIsAnimatingChanged)
         private set
     val loadedPages = LinkedHashSet<Page>()
     val visibleSlides = ArrayList<Slide>()
     val onNewFrame = PublishSubject<Unit>()
-    val onPagesChanged = sized.onPagesChanged
+    val onPagesChanged = staticBook.onPagesChanged
 
     private val animation = SlidePagesAnimation(size.width, SINGLE_SLIDE_SECONDS)
     private val frameMutex = Object()
 
     init {
-        sized.onPagesChanged.subscribe {
+        staticBook.onPagesChanged.subscribe {
             scheduleFrameUpdate()
         }
     }
 
     fun destroy() {
-        sized.destroy()
+        staticBook.destroy()
         Choreographer.getInstance().removeFrameCallback(frameCallback)
     }
 
     fun reformat() {
-        sized.reformat()
+        staticBook.reformat()
         scheduleFrameUpdate()
     }
 
     fun goLocation(location: Location) {
-        sized.goLocation(location)
+        staticBook.goLocation(location)
         animation.goPage()
         isAnimating = animation.isAnimating
         scheduleFrameUpdate()
@@ -54,7 +54,7 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
 
     fun goNextPage() {
         if (canGoNextPage()) {
-            sized.goNextPage()
+            staticBook.goNextPage()
             animation.goNextPage()
             isAnimating = animation.isAnimating
             scheduleFrameUpdate()
@@ -64,7 +64,7 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
 
     fun goPreviousPage() {
         if (canGoPreviousPage()) {
-            sized.goPreviousPage()
+            staticBook.goPreviousPage()
             animation.goPreviousPage()
             isAnimating = animation.isAnimating
             scheduleFrameUpdate()
@@ -74,15 +74,15 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
 
     private fun canGoNextPage(): Boolean {
         val slideNotTooFar = animation.hasSlides && animation.firstSlideIndex >= -Pages.MAX_RELATIVE_INDEX
-        return slideNotTooFar && sized.canGoNextPage()
+        return slideNotTooFar && staticBook.canGoNextPage()
     }
 
     private fun canGoPreviousPage(): Boolean {
         val slideNotTooFar = animation.hasSlides && animation.lastSlideIndex <= Pages.MAX_RELATIVE_INDEX
-        return slideNotTooFar && sized.canGoPreviousPage()
+        return slideNotTooFar && staticBook.canGoPreviousPage()
     }
 
-    fun pageAt(relativeIndex: Int) = sized.pageAt(relativeIndex)
+    fun pageAt(relativeIndex: Int) = staticBook.pageAt(relativeIndex)
 
     private var updateScheduled = false
     private val frameCallback = Choreographer.FrameCallback {
@@ -122,7 +122,7 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
 
     private fun checkNextPageIsValid() {
         if (!animation.isAnimating)
-            sized.checkNextPageIsValid()
+            staticBook.checkNextPageIsValid()
     }
 
     private fun updatePagesAndSlides() {
@@ -147,7 +147,7 @@ class AnimatedBook(size: SizeF, private val sized: SizedBook) {
 
     private fun addPage(relativeIndex: Int): Page? {
         if (loadedPages.size < MAX_LOADED_PAGES && Math.abs(relativeIndex) <= Pages.MAX_RELATIVE_INDEX) {
-            val page = sized.pageAt(relativeIndex)
+            val page = staticBook.pageAt(relativeIndex)
             if (page != null) {
                 loadedPages.add(page)
                 return page

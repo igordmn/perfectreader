@@ -79,9 +79,9 @@ class AppObjects(applicationContext: Context) {
                         val pageSequence = PageSequence(layoutColumnSequence, pageConfig)
                         PagesLoader(pages, pageSequence)
                     }
-                    val sizedBook = SizedBook(createPages, createPagesLoader)
+                    val staticBook = StaticBook(createPages, createPagesLoader)
 
-                    AnimatedBook(size, sizedBook)
+                    AnimatedBook(size, staticBook)
                 }
 
                 val locationConverter = bookData.content.locationConverter
