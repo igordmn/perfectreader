@@ -111,6 +111,27 @@ fun selectionCaretAtRight(page: Page, location: Location): Caret? {
     return if (nearestObj != null) Caret(nearestObj!!, nearestCharIndex) else null
 }
 
+fun selectionCaretAtBegin(page: Page): Caret? {
+    var firstObj: LayoutText? = null
+    page.forEachChildRecursive(0F, 0F) { objLeft, objTop, obj ->
+        if (obj is LayoutText) {
+            if (firstObj == null)
+                firstObj = obj
+        }
+    }
+    return if (firstObj != null) Caret(firstObj!!, 0) else null
+}
+
+fun selectionCaretAtEnd(page: Page): Caret? {
+    var lastObj: LayoutText? = null
+    page.forEachChildRecursive(0F, 0F) { objLeft, objTop, obj ->
+        if (obj is LayoutText) {
+            lastObj = obj
+        }
+    }
+    return if (lastObj != null) Caret(lastObj!!, lastObj!!.charCount) else null
+}
+
 private inline fun iterateSelectableObjects(
         page: Page,
         crossinline action: (objLeft: Float, objTop: Float, obj: LayoutText) -> Unit

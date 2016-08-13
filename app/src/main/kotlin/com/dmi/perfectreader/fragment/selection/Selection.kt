@@ -1,13 +1,9 @@
 package com.dmi.perfectreader.fragment.selection
 
 import com.dmi.perfectreader.fragment.book.Book
-import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
-import com.dmi.perfectreader.fragment.book.selection.positionOf
-import com.dmi.perfectreader.fragment.book.selection.selectionCaretAtLeft
-import com.dmi.perfectreader.fragment.book.selection.selectionCaretAtRight
-import com.dmi.perfectreader.fragment.book.selection.selectionCaretNearestTo
+import com.dmi.perfectreader.fragment.book.selection.*
 import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.mainScheduler
@@ -42,28 +38,22 @@ class Selection(private val book: Book) : BaseViewModel() {
         if (currentPage != null && selectionRange != null && !isAnimating) {
             val pageRange = currentPage.range
 
-            fun createHandle(location: Location, isLeft: Boolean, isNotOnPage: Boolean) : Handle {
-                val caret = if (isLeft) selectionCaretAtLeft(currentPage, location) else selectionCaretAtRight(currentPage, location)
-                val position = if (caret != null) positionOf(currentPage, caret) else null
-                return if (position != null) {
-                    if (isNotOnPage) Handle.NotOnPage(position) else Handle.Visible(position)
-                } else {
-                    Handle.Invisible
-                }
-            }
+            fun Caret?.position() = if (this != null) positionOf(currentPage, this) else null
+            fun notOnPageOrInvisible(position: PositionF?) = if (position != null) Handle.NotOnPage(position) else Handle.Invisible
+            fun visibleOrInvisible(position: PositionF?) = if (position != null) Handle.Visible(position) else Handle.Invisible
 
             leftHandle = when {
                 selectionRange.begin < pageRange.begin && selectionRange.end <= pageRange.begin -> {
                     Handle.Invisible
                 }
                 selectionRange.begin < pageRange.begin && selectionRange.end > pageRange.begin -> {
-                    createHandle(pageRange.begin, isLeft = true, isNotOnPage = true)
+                    notOnPageOrInvisible(selectionCaretAtBegin(currentPage).position())
                 }
                 selectionRange.begin >= pageRange.end && selectionRange.end > pageRange.end -> {
-                    createHandle(pageRange.end, isLeft = false, isNotOnPage = true)
+                    notOnPageOrInvisible(selectionCaretAtEnd(currentPage).position())
                 }
                 else -> {
-                    createHandle(selectionRange.begin, isLeft = true, isNotOnPage = false)
+                    visibleOrInvisible(selectionCaretAtLeft(currentPage, selectionRange.begin).position())
                 }
             }
 
@@ -72,13 +62,13 @@ class Selection(private val book: Book) : BaseViewModel() {
                     Handle.Invisible
                 }
                 selectionRange.end > pageRange.end && selectionRange.begin < pageRange.end -> {
-                    createHandle(pageRange.end, isLeft = false, isNotOnPage = true)
+                    notOnPageOrInvisible(selectionCaretAtEnd(currentPage).position())
                 }
                 selectionRange.end <= pageRange.begin  -> {
-                    createHandle(pageRange.begin, isLeft = true, isNotOnPage = true)
+                    notOnPageOrInvisible(selectionCaretAtBegin(currentPage).position())
                 }
                 else -> {
-                    createHandle( selectionRange.end, isLeft = false, isNotOnPage = false)
+                    visibleOrInvisible(selectionCaretAtLeft(currentPage, selectionRange.end).position())
                 }
             }
         } else {
