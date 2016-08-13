@@ -1,13 +1,13 @@
-package com.dmi.perfectreader.fragment.bookcontrol
+package com.dmi.perfectreader.fragment.control
 
 import com.dmi.perfectreader.fragment.book.Book
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.selection.selectionCaretNearestTo
-import com.dmi.perfectreader.fragment.bookcontrol.entity.Action
-import com.dmi.perfectreader.fragment.bookcontrol.entity.ControlMode
-import com.dmi.perfectreader.fragment.bookcontrol.entity.HardKey
-import com.dmi.perfectreader.fragment.bookcontrol.entity.TouchInfo
+import com.dmi.perfectreader.fragment.control.entity.Action
+import com.dmi.perfectreader.fragment.control.entity.ControlMode
+import com.dmi.perfectreader.fragment.control.entity.HardKey
+import com.dmi.perfectreader.fragment.control.entity.TouchInfo
 import com.dmi.perfectreader.fragment.reader.Reader
 import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.graphic.SizeF
@@ -15,7 +15,7 @@ import com.dmi.util.setting.Settings
 import com.dmi.perfectreader.data.UserSettingKeys.Control as ControlKeys
 import com.dmi.perfectreader.data.UserSettingKeys.Format as FormatKeys
 
-class BookControl(
+class Control(
         private val userSettings: Settings,
         private val book: Book,
         private val reader: Reader,

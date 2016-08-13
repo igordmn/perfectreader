@@ -1,18 +1,18 @@
-package com.dmi.perfectreader.fragment.bookcontrol
+package com.dmi.perfectreader.fragment.control
 
 import android.content.Context
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import com.dmi.perfectreader.fragment.bookcontrol.entity.HardKey
-import com.dmi.perfectreader.fragment.bookcontrol.entity.TouchInfo
+import com.dmi.perfectreader.fragment.control.entity.HardKey
+import com.dmi.perfectreader.fragment.control.entity.TouchInfo
 import com.dmi.util.android.base.BaseView
 import com.dmi.util.android.widget.onSizeChange
 
-open class BookControlView(
+open class ControlView(
         context: Context,
-        private val model: BookControl
+        private val model: Control
 ) : BaseView(FrameLayout(context)), View.OnTouchListener {
     init {
         widget.isClickable = false

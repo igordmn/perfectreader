@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.data
 
 import com.dmi.perfectreader.fragment.book.content.obj.param.TextAlign
-import com.dmi.perfectreader.fragment.bookcontrol.entity.*
+import com.dmi.perfectreader.fragment.control.entity.*
 import com.dmi.util.graphic.Color
 import com.dmi.util.setting.Settings.EnumKey
 import com.dmi.util.setting.Settings.Keys

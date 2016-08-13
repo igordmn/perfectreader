@@ -2,7 +2,7 @@ package com.dmi.perfectreader.fragment.reader
 
 import android.os.Bundle
 import com.dmi.perfectreader.fragment.book.Book
-import com.dmi.perfectreader.fragment.bookcontrol.BookControl
+import com.dmi.perfectreader.fragment.control.Control
 import com.dmi.perfectreader.fragment.menu.Menu
 import com.dmi.perfectreader.fragment.selection.Selection
 import com.dmi.util.android.base.BaseViewModel
@@ -11,7 +11,7 @@ import rx.lang.kotlin.BehaviorSubject
 
 class Reader(
         createBook: () -> Book,
-        createBookControl: (Reader) -> BookControl,
+        createControl: (Reader) -> Control,
         private val createSelection: (Reader) -> Selection,
         private val createMenu: (Reader, close: () -> Unit) -> Menu
 ) : BaseViewModel() {
@@ -19,7 +19,7 @@ class Reader(
     val menuObservable = BehaviorSubject<Menu?>()
 
     val book = initChild(createBook())
-    val control = initChild(createBookControl(this))
+    val control = initChild(createControl(this))
     var selection: Selection?  by rxObservable(null, selectionObservable)
     var menu: Menu? by rxObservable(null, menuObservable)
 

@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.fragment.book.Book
 import com.dmi.perfectreader.fragment.book.BookView
-import com.dmi.perfectreader.fragment.bookcontrol.BookControl
-import com.dmi.perfectreader.fragment.bookcontrol.BookControlView
+import com.dmi.perfectreader.fragment.control.Control
+import com.dmi.perfectreader.fragment.control.ControlView
 import com.dmi.perfectreader.fragment.menu.Menu
 import com.dmi.perfectreader.fragment.menu.MenuView
 import com.dmi.perfectreader.fragment.selection.Selection
@@ -20,7 +20,7 @@ class ReaderView(
         context: Context,
         model: Reader,
         createBook: (Book) -> BookView,
-        createBookControl: (BookControl) -> BookControlView,
+        createControl: (Control) -> ControlView,
         private val createSelection: (Selection) -> SelectionView,
         private val createMenu: (Menu) -> MenuView
 ) : BaseView(context, R.layout.fragment_reader) {
@@ -30,7 +30,7 @@ class ReaderView(
 
     init {
         addChild(createBook(model.book), R.id.bookContainer)
-        addChild(createBookControl(model.control), R.id.bookControlContainer)
+        addChild(createControl(model.control), R.id.controlContainer)
 
         menuContainer.layoutTransition = LayoutTransition().apply {
             val appearingAnimation = ObjectAnimator.ofFloat(null, "alpha", 0F, 1F)

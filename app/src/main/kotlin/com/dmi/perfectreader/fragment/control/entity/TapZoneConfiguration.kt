@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.fragment.bookcontrol.entity
+package com.dmi.perfectreader.fragment.control.entity
 
 import com.dmi.util.lang.clamp
 

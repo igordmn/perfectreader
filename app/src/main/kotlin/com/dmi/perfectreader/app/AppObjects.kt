@@ -31,8 +31,8 @@ import com.dmi.perfectreader.fragment.book.render.paint.*
 import com.dmi.perfectreader.fragment.book.render.render.ImageRenderer
 import com.dmi.perfectreader.fragment.book.render.render.PageRenderer
 import com.dmi.perfectreader.fragment.book.render.render.UniversalObjectRenderer
-import com.dmi.perfectreader.fragment.bookcontrol.BookControl
-import com.dmi.perfectreader.fragment.bookcontrol.BookControlView
+import com.dmi.perfectreader.fragment.control.Control
+import com.dmi.perfectreader.fragment.control.ControlView
 import com.dmi.perfectreader.fragment.main.Main
 import com.dmi.perfectreader.fragment.main.MainView
 import com.dmi.perfectreader.fragment.menu.Menu
@@ -89,13 +89,13 @@ class AppObjects(applicationContext: Context) {
                 Book(createAnimated, bookData, bitmapDecoder, locationConverter)
             }
 
-            val createBookControl = { reader: Reader -> BookControl(userSettings, reader.book, reader, closeApp, dip2px) }
+            val createControl = { reader: Reader -> Control(userSettings, reader.book, reader, closeApp, dip2px) }
             val createSelection = { reader: Reader -> Selection(reader.book) }
             val createMenu = { reader: Reader, close: () -> Unit ->
                 Menu(reader.book, close)
             }
 
-            Reader(createBook, createBookControl, createSelection, createMenu)
+            Reader(createBook, createControl, createSelection, createMenu)
         }
 
         Main(intent, bookContentParserFactory, userData, createReader, closeApp)
@@ -127,11 +127,11 @@ class AppObjects(applicationContext: Context) {
             }
 
 
-            val createBookControlView = { model: BookControl -> BookControlView(context, model) }
+            val createControlView = { model: Control -> ControlView(context, model) }
             val createSelectionView = { model: Selection -> SelectionView(context, model)}
             val createMenuView = { model: Menu -> MenuView(context, model) }
 
-            ReaderView(context, model, createBookView, createBookControlView, createSelectionView, createMenuView)
+            ReaderView(context, model, createBookView, createControlView, createSelectionView, createMenuView)
         }
 
         MainView(activity, model, createReaderView)

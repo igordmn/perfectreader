@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.fragment.bookcontrol.entity
+package com.dmi.perfectreader.fragment.control.entity
 
 /**
  * Как активируются интерактивные элементы на странице (ссылки, кнопки и др.)
