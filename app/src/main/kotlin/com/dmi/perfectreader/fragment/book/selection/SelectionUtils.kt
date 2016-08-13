@@ -132,9 +132,9 @@ fun selectionCaretAtEnd(page: Page): Caret? {
     return if (lastObj != null) Caret(lastObj!!, lastObj!!.charCount) else null
 }
 
-private inline fun iterateSelectableObjects(
+private fun iterateSelectableObjects(
         page: Page,
-        crossinline action: (objLeft: Float, objTop: Float, obj: LayoutText) -> Unit
+        action: (objLeft: Float, objTop: Float, obj: LayoutText) -> Unit
 ) {
     page.forEachChildRecursive(0F, 0F) { objLeft, objTop, obj ->
         if (obj is LayoutText && isSelectable(obj)) {
