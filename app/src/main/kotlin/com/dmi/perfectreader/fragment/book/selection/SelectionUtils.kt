@@ -16,27 +16,29 @@ fun selectionCaretNearestTo(page: Page, x: Float, y: Float, oppositeLocation: Lo
     var nearestCharIndex = -1
     var nearestXDistance = Float.MAX_VALUE
     var nearestYDistance = Float.MAX_VALUE
-    iterateSelectableCharIndices(page) { objLeft, objTop, obj, i ->
-        val oppositeCharIndex = when {
-            oppositeLocation < obj.range.begin -> 0
-            oppositeLocation > obj.range.end -> obj.charCount
-            else -> obj.charIndex(oppositeLocation)
-        }
-        if (i < oppositeCharIndex && i < obj.charCount || i > oppositeCharIndex && i > 0) {
-            val caretX = objLeft + obj.charOffset(i)
-            val caretHalf = objTop + obj.height / 2
-            val caretBottom = objTop + obj.height
-            val xDistance = Math.abs(x - caretX)
-            val yDistance = when {
-                y < caretHalf -> caretHalf - y
-                y > caretBottom -> y - caretBottom
-                else -> 0F
+    iterateSelectableObjects(page) { objLeft, objTop, obj ->
+        for (i in 0..obj.charCount) {
+            val oppositeCharIndex = when {
+                oppositeLocation < obj.range.begin -> 0
+                oppositeLocation > obj.range.end -> obj.charCount
+                else -> obj.charIndex(oppositeLocation)
             }
-            if (yDistance < nearestYDistance || yDistance == nearestYDistance && xDistance <= nearestXDistance) {
-                nearestObj = obj
-                nearestCharIndex = i
-                nearestXDistance = xDistance
-                nearestYDistance = yDistance
+            if (i < oppositeCharIndex && i < obj.charCount || i > oppositeCharIndex && i > 0) {
+                val caretX = objLeft + obj.charOffset(i)
+                val caretHalf = objTop + obj.height / 2
+                val caretBottom = objTop + obj.height
+                val xDistance = Math.abs(x - caretX)
+                val yDistance = when {
+                    y < caretHalf -> caretHalf - y
+                    y > caretBottom -> y - caretBottom
+                    else -> 0F
+                }
+                if (yDistance < nearestYDistance || yDistance == nearestYDistance && xDistance <= nearestXDistance) {
+                    nearestObj = obj
+                    nearestCharIndex = i
+                    nearestXDistance = xDistance
+                    nearestYDistance = yDistance
+                }
             }
         }
     }
@@ -47,28 +49,53 @@ fun selectionCaretAt(page: Page, location: Location, isLeft: Boolean): Caret? {
     var nearestObj: LayoutText? = null
     var nearestCharIndex = -1
 
-    iterateSelectableCharIndices(page) { objLeft, objTop, obj, i ->
-        val charLocation = obj.charLocation(i)
-        if (isLeft && i < obj.charCount && nearestObj == null && charLocation >= location ||
-            !isLeft && i > 0 && charLocation <= location
-        ) {
-            nearestObj = obj
-            nearestCharIndex = i
+    if (isLeft) {
+        iterateSelectableObjects(page) { objLeft, objTop, obj ->
+            if (nearestObj == null) {
+                when {
+                    location < obj.range.begin -> {
+                        nearestObj = obj
+                        nearestCharIndex = obj.charCount
+                    }
+                    obj.range.end < location -> Unit
+                    else -> for (i in 0..obj.charCount - 1) {
+                        if (obj.charLocation(i) >= location) {
+                            nearestObj = obj
+                            nearestCharIndex = i
+                            break
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        iterateSelectableObjects(page) { objLeft, objTop, obj ->
+            when {
+                location < obj.range.begin -> Unit
+                obj.range.end < location -> {
+                    nearestObj = obj
+                    nearestCharIndex = 0
+                }
+                else -> for (i in 1..obj.charCount) {
+                    if (obj.charLocation(i) <= location) {
+                        nearestObj = obj
+                        nearestCharIndex = i
+                    }
+                }
+            }
         }
     }
 
     return if (nearestObj != null) Caret(nearestObj!!, nearestCharIndex) else null
 }
 
-private inline fun iterateSelectableCharIndices(
+private inline fun iterateSelectableObjects(
         page: Page,
-        crossinline action: (objLeft: Float, objTop: Float, obj: LayoutText, i: Int) -> Unit
+        crossinline action: (objLeft: Float, objTop: Float, obj: LayoutText) -> Unit
 ) {
     page.forEachChildRecursive(0F, 0F) { objLeft, objTop, obj ->
         if (obj is LayoutText && isSelectable(obj)) {
-            for (i in 0..obj.charCount) {
-                action(objLeft, objTop, obj, i)
-            }
+            action(objLeft, objTop, obj)
         }
     }
 }
