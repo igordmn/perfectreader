@@ -5,7 +5,8 @@ import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.selection.positionOf
-import com.dmi.perfectreader.fragment.book.selection.selectionCaretAt
+import com.dmi.perfectreader.fragment.book.selection.selectionCaretAtLeft
+import com.dmi.perfectreader.fragment.book.selection.selectionCaretAtRight
 import com.dmi.perfectreader.fragment.book.selection.selectionCaretNearestTo
 import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.graphic.PositionF
@@ -42,7 +43,7 @@ class Selection(private val book: Book) : BaseViewModel() {
             val pageRange = currentPage.range
 
             fun createHandle(location: Location, isLeft: Boolean, isNotOnPage: Boolean) : Handle {
-                val caret = selectionCaretAt(currentPage, location, isLeft)
+                val caret = if (isLeft) selectionCaretAtLeft(currentPage, location) else selectionCaretAtRight(currentPage, location)
                 val position = if (caret != null) positionOf(currentPage, caret) else null
                 return if (position != null) {
                     if (isNotOnPage) Handle.NotOnPage(position) else Handle.Visible(position)

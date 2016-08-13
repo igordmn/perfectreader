@@ -45,45 +45,67 @@ fun selectionCaretNearestTo(page: Page, x: Float, y: Float, oppositeLocation: Lo
     return if (nearestObj != null) Caret(nearestObj!!, nearestCharIndex) else null
 }
 
-fun selectionCaretAt(page: Page, location: Location, isLeft: Boolean): Caret? {
+fun selectionCaretAtLeft(page: Page, location: Location): Caret? {
     var nearestObj: LayoutText? = null
     var nearestCharIndex = -1
+    var lastObj: LayoutText? = null
 
-    if (isLeft) {
-        iterateSelectableObjects(page) { objLeft, objTop, obj ->
-            if (nearestObj == null) {
-                when {
-                    location < obj.range.begin -> {
-                        nearestObj = obj
-                        nearestCharIndex = obj.charCount
-                    }
-                    obj.range.end < location -> Unit
-                    else -> for (i in 0..obj.charCount - 1) {
-                        if (obj.charLocation(i) >= location) {
-                            nearestObj = obj
-                            nearestCharIndex = i
-                            break
-                        }
-                    }
-                }
-            }
-        }
-    } else {
-        iterateSelectableObjects(page) { objLeft, objTop, obj ->
+    iterateSelectableObjects(page) { objLeft, objTop, obj ->
+        if (nearestObj == null) {
             when {
-                location < obj.range.begin -> Unit
-                obj.range.end < location -> {
+                location < obj.range.begin -> {
                     nearestObj = obj
                     nearestCharIndex = 0
                 }
-                else -> for (i in 1..obj.charCount) {
-                    if (obj.charLocation(i) <= location) {
+                obj.range.end < location -> Unit
+                else -> {
+                    val index = obj.charIndex(location)
+                    if (index < obj.charCount) {
                         nearestObj = obj
-                        nearestCharIndex = i
+                        nearestCharIndex = index
                     }
                 }
             }
         }
+        lastObj = obj
+    }
+
+    if (nearestObj == null && lastObj != null) {
+        nearestObj = lastObj
+        nearestCharIndex = lastObj!!.charCount - 1
+    }
+
+    return if (nearestObj != null) Caret(nearestObj!!, nearestCharIndex) else null
+}
+
+fun selectionCaretAtRight(page: Page, location: Location): Caret? {
+    var nearestObj: LayoutText? = null
+    var nearestCharIndex = -1
+    var firstObj: LayoutText? = null
+
+    iterateSelectableObjects(page) { objLeft, objTop, obj ->
+        if (firstObj == null)
+            firstObj = obj
+
+        when {
+            location < obj.range.begin -> Unit
+            obj.range.end < location -> {
+                nearestObj = obj
+                nearestCharIndex = obj.charCount
+            }
+            else -> {
+                val index = obj.charIndex(location)
+                if (index > 0) {
+                    nearestObj = obj
+                    nearestCharIndex = index
+                }
+            }
+        }
+    }
+
+    if (nearestObj == null && firstObj != null) {
+        nearestObj = firstObj
+        nearestCharIndex = 0
     }
 
     return if (nearestObj != null) Caret(nearestObj!!, nearestCharIndex) else null
