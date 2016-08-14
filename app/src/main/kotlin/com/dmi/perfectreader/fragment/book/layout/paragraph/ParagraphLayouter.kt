@@ -134,6 +134,7 @@ class ParagraphLayouter(
                 private val runIndexToObject = Reusables.runIndexToObject()
                 private val runIndexToHeight = Reusables.runIndexToHeight()
                 private val runIndexToBaseline = Reusables.runIndexToBaseline()
+                private val runIndexToLeading = Reusables.runIndexToLeading()
                 private val runIndexToHyphenWidth = Reusables.runIndexToHyphenWidth()
 
                 private val childrenSpace = LayoutSpace(
@@ -174,8 +175,9 @@ class ParagraphLayouter(
 
                     runIndexToPlainBeginIndex.add(plainTextBuilder.length - text.length)
                     runIndexToObject.add(null)
-                    runIndexToHeight.add(-verticalMetrics.ascent + verticalMetrics.descent + verticalMetrics.leading)
+                    runIndexToHeight.add(-verticalMetrics.ascent + verticalMetrics.descent)
                     runIndexToBaseline.add(-verticalMetrics.ascent)
+                    runIndexToLeading.add(verticalMetrics.leading)
                     runIndexToHyphenWidth.add(hyphenWidth(run))
                 }
 
@@ -194,6 +196,7 @@ class ParagraphLayouter(
                     runIndexToObject.add(layoutObj)
                     runIndexToHeight.add(layoutObj.height)
                     runIndexToBaseline.add(layoutObj.height)
+                    runIndexToLeading.add(0F)
                     runIndexToHyphenWidth.add(0F)
                 }
 
@@ -247,6 +250,7 @@ class ParagraphLayouter(
 
                     val plainBeginOfRun = runIndexToPlainBeginIndex[runIndex]
                     val baseline = runIndexToBaseline[runIndex]
+                    val leading = runIndexToLeading[runIndex]
                     val beginOfRunText = beginIndex - plainBeginOfRun
                     val endOfRunText = endIndex - plainBeginOfRun
 
@@ -261,7 +265,8 @@ class ParagraphLayouter(
                                     style = run.style,
                                     range = run.subrange(beginOfRunText, endOfRunText)
                             ),
-                            baseline
+                            baseline,
+                            leading
                     )
                 }
 
@@ -276,6 +281,7 @@ class ParagraphLayouter(
                 private fun layoutTextRun(beginIndex: Int, endIndex: Int, runIndex: Int, run: Run.Text, line: LineBuilder) {
                     val plainBeginOfRun = runIndexToPlainBeginIndex[runIndex]
                     val baseline = runIndexToBaseline[runIndex]
+                    val leading = runIndexToLeading[runIndex]
                     val beginOfRunText = beginIndex - plainBeginOfRun
                     val endOfRunText = endIndex - plainBeginOfRun
 
@@ -290,14 +296,16 @@ class ParagraphLayouter(
                                     style = run.style,
                                     range = run.subrange(beginOfRunText, endOfRunText)
                             ),
-                            baseline
+                            baseline,
+                            leading
                     )
                 }
 
                 private fun layoutObjectRun(runIndex: Int, line: LineBuilder) {
                     line.addObject(
                             runIndexToObject[runIndex]!!,
-                            runIndexToBaseline[runIndex]
+                            runIndexToBaseline[runIndex],
+                            runIndexToLeading[runIndex]
                     )
                 }
 
@@ -308,6 +316,7 @@ class ParagraphLayouter(
                     val indexOfHyphen = (plainIndex - plainBeginOfRun) + 1
                     if (run is Run.Text) {
                         val baseline = runIndexToBaseline[runIndex]
+                        val leading = runIndexToLeading[runIndex]
 
                         line.addObject(
                                 LayoutText(
@@ -320,7 +329,8 @@ class ParagraphLayouter(
                                         style = run.style,
                                         range = run.subrange(indexOfHyphen, indexOfHyphen)
                                 ),
-                                baseline
+                                baseline,
+                                leading
                         )
                     }
                 }
@@ -337,6 +347,7 @@ class ParagraphLayouter(
         private var width = 0F
         private val objects = ArrayList<LayoutObject>(32)
         private val baselines = FloatArrayList(32)
+        private val leadings = FloatArrayList(32)
         private val lefts = FloatArrayList(32)
         private var offset = 0F
 
@@ -352,9 +363,10 @@ class ParagraphLayouter(
             this.offset += offset
         }
 
-        fun addObject(obj: LayoutObject, baseline: Float) {
+        fun addObject(obj: LayoutObject, baseline: Float, leading: Float) {
             objects.add(obj)
             baselines.add(baseline)
+            leadings.add(leading)
             lefts.add(offset)
             offset += obj.width
         }
@@ -364,21 +376,31 @@ class ParagraphLayouter(
 
             var lineBaseline = 0F
             for (i in 0..objects.size - 1) {
-                val baseline = baselines[i]
-                if (baseline > lineBaseline) {
+                val baseline = leadings[i] / 2 + baselines[i]
+                if (baseline > lineBaseline)
                     lineBaseline = baseline
-                }
             }
 
-            var lineHeight = 0F
             for (i in 0..objects.size - 1) {
                 val x = lefts[i]
                 val y = lineBaseline - baselines[i]
                 val obj = objects[i]
-                if (y + obj.height > lineHeight) {
-                    lineHeight = y + obj.height
-                }
                 children.add(LayoutChild(x, y, obj))
+            }
+
+            var lineHeight = 0F
+            for (i in 0..objects.size - 1) {
+                val child = children[i]
+                val objLineHeight = child.y + child.obj.height + leadings[i] / 2
+                if (objLineHeight > lineHeight)
+                    lineHeight = objLineHeight
+            }
+
+            var minFactLeading = lineHeight - objects[0].height
+            for (i in 0..objects.size - 1) {
+                val factLeading = lineHeight - objects[i].height
+                if (factLeading < minFactLeading)
+                    minFactLeading = factLeading
             }
 
             val range = LocationRange(
@@ -386,7 +408,7 @@ class ParagraphLayouter(
                     objects.last().range.end
             )
 
-            return LayoutLine(width, lineHeight, children, range)
+            return LayoutLine(width, lineHeight, minFactLeading / 2, children, range)
         }
     }
 
@@ -417,6 +439,7 @@ class ParagraphLayouter(
         val runIndexToObject = ReusableArrayList<LayoutObject?>(INITIAL_RUNS_CAPACITY)
         val runIndexToHeight = ReusableFloatArrayList(INITIAL_RUNS_CAPACITY)
         val runIndexToBaseline = ReusableFloatArrayList(INITIAL_RUNS_CAPACITY)
+        val runIndexToLeading = ReusableFloatArrayList(INITIAL_RUNS_CAPACITY)
         val runIndexToHyphenWidth = ReusableFloatArrayList(INITIAL_RUNS_CAPACITY)
     }
 }

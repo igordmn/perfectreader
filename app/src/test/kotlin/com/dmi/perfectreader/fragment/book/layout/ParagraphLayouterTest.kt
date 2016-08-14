@@ -236,7 +236,7 @@ class ParagraphLayouterTest {
         val HYPHEN_WIDTH2 = 10F
         val ASCENT2 = -16F
         val DESCENT2 = 10F
-        val LEADING2 = 1F
+        val LEADING2 = 4F
         val style2 = style()
 
         val runs = listOf(
@@ -267,8 +267,10 @@ class ParagraphLayouterTest {
 
         // then
         with (layoutObj) {
-            val HEIGHT1 = -ASCENT1 + DESCENT1 + LEADING1
-            val HEIGHT2 = -ASCENT2 + DESCENT2 + LEADING2
+            val HEIGHT1 = -ASCENT1 + DESCENT1
+            val HEIGHT2 = -ASCENT2 + DESCENT2
+            val LINE_HEIGHT1 = HEIGHT1 + LEADING1
+            val LINE_HEIGHT2 = HEIGHT2 + LEADING2
 
             with (children[0].obj as LayoutLine) {
                 childTexts shouldEqual listOf("some", " ")
@@ -283,7 +285,7 @@ class ParagraphLayouterTest {
                 childWidths shouldEqual listOf(4 * LETTER_WIDTH1, 1 * SPACE_WIDTH1)
                 childHeights shouldEqual listOf(HEIGHT1, HEIGHT1)
                 childXs shouldEqual listOf(20F, 20 + 4 * LETTER_WIDTH1)
-                childYs shouldEqual listOf(0F, 0F)
+                childYs shouldEqual listOf(LEADING1 / 2, LEADING1 / 2)
 
                 range == LocationRange(
                         runs[0].sublocation(0),
@@ -315,7 +317,7 @@ class ParagraphLayouterTest {
                         -5F + 1 * LETTER_WIDTH1 + 3 * LETTER_WIDTH2,
                         -5F + 1 * LETTER_WIDTH1 + 3 * LETTER_WIDTH2 + 1 * SPACE_WIDTH2
                 )
-                childYs shouldEqual listOf(ASCENT1 - ASCENT2, 0F, 0F, 0F)
+                childYs shouldEqual listOf(LEADING2 / 2 - ASCENT2 + ASCENT1, LEADING2 / 2, LEADING2 / 2, LEADING2 / 2)
 
                 range == LocationRange(
                         runs[0].sublocation(5),
@@ -343,7 +345,7 @@ class ParagraphLayouterTest {
                 childWidths shouldEqual listOf(1 * SPACE_WIDTH2, 1 * SPACE_WIDTH1, 5 * LETTER_WIDTH1)
                 childHeights shouldEqual listOf(HEIGHT2, HEIGHT1, HEIGHT1)
                 childXs shouldEqual listOf(0F, SPACE_WIDTH2, SPACE_WIDTH2 + SPACE_WIDTH1)
-                childYs shouldEqual listOf(0F, ASCENT1 - ASCENT2, ASCENT1 - ASCENT2)
+                childYs shouldEqual listOf(LEADING2 / 2, LEADING2 / 2 - ASCENT2 + ASCENT1, LEADING2 / 2 - ASCENT2 + ASCENT1)
 
                 range == LocationRange(
                         runs[1].sublocation(9),
@@ -368,7 +370,7 @@ class ParagraphLayouterTest {
                 childWidths shouldEqual listOf(1 * LETTER_WIDTH1)
                 childHeights shouldEqual listOf(HEIGHT1)
                 childXs shouldEqual listOf(0F)
-                childYs shouldEqual listOf(0F)
+                childYs shouldEqual listOf(LEADING1 / 2)
 
                 range == LocationRange(
                         runs[2].sublocation(6),
@@ -380,11 +382,12 @@ class ParagraphLayouterTest {
             }
 
             width shouldEqual 200F
-            height shouldEqual 1 * HEIGHT1 + 2 * HEIGHT2 + 1 * HEIGHT1
+            height shouldEqual 1 * LINE_HEIGHT1 + 2 * LINE_HEIGHT2 + 1 * LINE_HEIGHT1
             childWidths shouldEqual listOf(200F, 200F, 200F, 200F)
-            childHeights shouldEqual listOf(HEIGHT1, HEIGHT2, HEIGHT2, HEIGHT1)
+            childHeights shouldEqual listOf(LINE_HEIGHT1, LINE_HEIGHT2, LINE_HEIGHT2, LINE_HEIGHT1)
             childXs shouldEqual listOf(0F, 0F, 0F, 0F)
-            childYs shouldEqual listOf(0F, HEIGHT1, HEIGHT1 + HEIGHT2, HEIGHT1 + HEIGHT2 + HEIGHT2)
+            childYs shouldEqual listOf(0F, LINE_HEIGHT1, LINE_HEIGHT1 + LINE_HEIGHT2, LINE_HEIGHT1 + LINE_HEIGHT2 + LINE_HEIGHT2)
+            blankVerticalMargins shouldEqual listOf(LEADING1 / 2, LEADING2 / 2, LEADING2 / 2, LEADING1 / 2)
             range shouldEqual obj.range
         }
 
@@ -1077,7 +1080,16 @@ class ParagraphLayouterTest {
 
     val LayoutObject.childTexts: List<String>
         get() = children.map {
-            with (it.obj as LayoutText) { text.toString() }
+            with(it.obj as LayoutText) { text.toString() }
+        }
+
+    val LayoutObject.blankVerticalMargins: List<Float?>
+        get() = children.map {
+            if (it.obj is LayoutLine) {
+                (it.obj as LayoutLine).blankVerticalMargins
+            } else {
+                null
+            }
         }
 
     val LayoutObject.childIsSpaces: List<Boolean>

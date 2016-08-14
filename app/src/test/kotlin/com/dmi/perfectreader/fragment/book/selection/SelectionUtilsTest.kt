@@ -327,7 +327,7 @@ class SelectionUtilsTest {
             children.add(child2)
         if (child3 != null)
             children.add(child3)
-        return LayoutChild(x, y, LayoutLine(width, height, children, range))
+        return LayoutChild(x, y, LayoutLine(width, height, 0F, children, range))
     }
 
     fun clickable(width: Float, height: Float, range: LocationRange) = object : LayoutObject(width, height, listOf(), range) {
