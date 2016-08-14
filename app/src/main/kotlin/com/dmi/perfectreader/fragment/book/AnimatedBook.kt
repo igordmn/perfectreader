@@ -86,7 +86,6 @@ class AnimatedBook(size: SizeF, private val staticBook: StaticBook) {
 
     private var updateScheduled = false
     private val frameCallback = Choreographer.FrameCallback {
-        println(it)
         updateScheduled = false
         updateFrame()
     }
