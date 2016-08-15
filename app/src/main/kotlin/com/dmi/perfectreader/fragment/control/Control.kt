@@ -147,7 +147,7 @@ class Control(
     private fun startSelection(x: Float, y: Float) {
         val currentPage = book.pageAt(0)
         if (currentPage != null) {
-            val nearestSelectionCaret = selectionCaretNearestTo(currentPage, x, y, Location.MAX)
+            val nearestSelectionCaret = selectionCharNearestTo(currentPage, x, y)
             if (nearestSelectionCaret != null) {
                 val begin = nearestSelectionCaret.obj.charLocation(nearestSelectionCaret.charIndex)
                 val end = nearestSelectionCaret.obj.charLocation(nearestSelectionCaret.charIndex + 1)
