@@ -30,20 +30,10 @@ class PagePainter(private val objectPainter: UniversalObjectPainter) {
     }
 
     fun paint(renderPage: RenderPage, context: PageContext, canvas: Canvas, dirtyRect: Rect) {
-        val objects = renderPage.objects
-        val margins = renderPage.page.margins
-        val size = renderPage.page.size
-        val contentSize = renderPage.page.contentSize
-
-        canvas.save()
-        canvas.clipRect(0F, margins.top, size.width, margins.top + contentSize.height)
-
-        paintObjects(canvas, context, objects, PaintLayer.FRAME)
-        paintObjects(canvas, context, objects, PaintLayer.IMAGE)
-        paintObjects(canvas, context, objects, PaintLayer.SELECTION)
-        paintObjects(canvas, context, objects, PaintLayer.TEXT)
-
-        canvas.restore()
+        paintObjects(canvas, context, renderPage.objects, PaintLayer.FRAME)
+        paintObjects(canvas, context, renderPage.objects, PaintLayer.IMAGE)
+        paintObjects(canvas, context, renderPage.objects, PaintLayer.SELECTION)
+        paintObjects(canvas, context, renderPage.objects, PaintLayer.TEXT)
     }
 
     private fun paintObjects(canvas: Canvas, context: PageContext, objects: List<RenderObject>, layer: PaintLayer) {
