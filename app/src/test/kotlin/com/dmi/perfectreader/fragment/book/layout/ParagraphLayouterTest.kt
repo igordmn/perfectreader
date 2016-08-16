@@ -4,7 +4,7 @@ import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredObject
 import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredParagraph
 import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredParagraph.Run
 import com.dmi.perfectreader.fragment.book.content.obj.param.*
-import com.dmi.perfectreader.fragment.book.layout.common.LayoutChars
+import com.dmi.util.text.Chars
 import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace.Area
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutLine
@@ -25,7 +25,7 @@ import java.util.*
 
 @Suppress("IllegalIdentifier")
 class ParagraphLayouterTest {
-    val HYPHEN_STRING = LayoutChars.HYPHEN.toString()
+    val HYPHEN_STRING = Chars.HYPHEN.toString()
 
     @Test
     fun `configure lines`() {
@@ -288,12 +288,12 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(LEADING1 / 2, LEADING1 / 2)
 
                 range == LocationRange(
-                        runs[0].sublocation(0),
-                        runs[0].sublocation(5)
+                        runs[0].charLocation(0),
+                        runs[0].charLocation(5)
                 )
                 childRanges shouldEqual listOf(
-                        runs[0].subrange(0, 4),
-                        runs[0].subrange(4, 5)
+                        runs[0].charRange(0, 4),
+                        runs[0].charRange(4, 5)
                 )
             }
 
@@ -320,14 +320,14 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(LEADING2 / 2 - ASCENT2 + ASCENT1, LEADING2 / 2, LEADING2 / 2, LEADING2 / 2)
 
                 range == LocationRange(
-                        runs[0].sublocation(5),
-                        runs[1].sublocation(9)
+                        runs[0].charLocation(5),
+                        runs[1].charLocation(9)
                 )
                 childRanges shouldEqual listOf(
-                        runs[0].subrange(5, 6),
-                        runs[1].subrange(0, 3),
-                        runs[1].subrange(3, 4),
-                        runs[1].subrange(4, 9)
+                        runs[0].charRange(5, 6),
+                        runs[1].charRange(0, 3),
+                        runs[1].charRange(3, 4),
+                        runs[1].charRange(4, 9)
                 )
             }
 
@@ -348,13 +348,13 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(LEADING2 / 2, LEADING2 / 2 - ASCENT2 + ASCENT1, LEADING2 / 2 - ASCENT2 + ASCENT1)
 
                 range == LocationRange(
-                        runs[1].sublocation(9),
-                        runs[2].sublocation(6)
+                        runs[1].charLocation(9),
+                        runs[2].charLocation(6)
                 )
                 childRanges shouldEqual listOf(
-                        runs[1].subrange(9, 10),
-                        runs[2].subrange(0, 1),
-                        runs[2].subrange(1, 6)
+                        runs[1].charRange(9, 10),
+                        runs[2].charRange(0, 1),
+                        runs[2].charRange(1, 6)
                 )
             }
 
@@ -373,11 +373,11 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(LEADING1 / 2)
 
                 range == LocationRange(
-                        runs[2].sublocation(6),
-                        runs[2].sublocation(7)
+                        runs[2].charLocation(6),
+                        runs[2].charLocation(7)
                 )
                 childRanges shouldEqual listOf(
-                        runs[2].subrange(6, 7)
+                        runs[2].charRange(6, 7)
                 )
             }
 
@@ -536,12 +536,12 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(0F, 0F)
 
                 range == LocationRange(
-                        run0.sublocation(0),
-                        run0.sublocation(1)
+                        run0.charLocation(0),
+                        run0.charLocation(1)
                 )
                 childRanges shouldEqual listOf(
-                        run0.subrange(0, 1),
-                        run0.subrange(1, 1)
+                        run0.charRange(0, 1),
+                        run0.charRange(1, 1)
                 )
             }
 
@@ -560,12 +560,12 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(0F, 0F)
 
                 range == LocationRange(
-                        run0.sublocation(0),
-                        run0.sublocation(4)
+                        run0.charLocation(0),
+                        run0.charLocation(4)
                 )
                 childRanges shouldEqual listOf(
-                        run0.subrange(1, 4),
-                        run0.subrange(4, 4)
+                        run0.charRange(1, 4),
+                        run0.charRange(4, 4)
                 )
             }
 
@@ -594,13 +594,13 @@ class ParagraphLayouterTest {
                 childYs shouldEqual listOf(8F, 0F, 0F)
 
                 range == LocationRange(
-                        run2.sublocation(0),
-                        run3.sublocation(4)
+                        run2.charLocation(0),
+                        run3.charLocation(4)
                 )
                 childRanges shouldEqual listOf(
-                        run2.subrange(0, 1),
-                        run3.subrange(0, 4),
-                        run3.subrange(4, 4)
+                        run2.charRange(0, 1),
+                        run3.charRange(0, 4),
+                        run3.charRange(4, 4)
                 )
             }
 

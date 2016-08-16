@@ -1,9 +1,10 @@
 package com.dmi.perfectreader.fragment.book.layout.obj
 
 import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredFontStyle
+import com.dmi.perfectreader.fragment.book.location.textIndexAt
+import com.dmi.perfectreader.fragment.book.location.textSubLocation
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
-import java.lang.Math.round
 import java.util.*
 import java.util.Collections.emptyList
 
@@ -28,17 +29,8 @@ open class LayoutText(width: Float,
         return if (index < charCount) charOffsets[index] else width
     }
 
-    fun charLocation(index: Int): Location {
-        require(index >=0 && index <= charCount)
-        return range.sublocation(
-                index.toDouble() / charCount
-        )
-    }
-
-    fun charIndex(location: Location): Int {
-        require(location >= range.begin && location <= range.end)
-        return round(range.percentOf(location) * charCount).toInt()
-    }
+    fun charLocation(index: Int) = textSubLocation(text, range, index)
+    fun charIndex(location: Location)= textIndexAt(text, range, location)
 
     override fun toString() = text.toString()
 }

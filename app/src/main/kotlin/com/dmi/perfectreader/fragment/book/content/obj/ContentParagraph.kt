@@ -2,6 +2,8 @@ package com.dmi.perfectreader.fragment.book.content.obj
 
 import com.dmi.perfectreader.fragment.book.content.obj.param.*
 import com.dmi.perfectreader.fragment.book.location.LocationRange
+import com.dmi.perfectreader.fragment.book.location.textSubLocation
+import com.dmi.perfectreader.fragment.book.location.textSubRange
 import com.dmi.util.graphic.Color
 import java.util.*
 
@@ -21,6 +23,10 @@ class ContentParagraph(
         val DEFAULT_FONT_SIZE = 20F
     }
 
+    init {
+        require(runs.size > 0)
+    }
+
     override fun configure(config: ContentConfig) = ConfiguredParagraph(
             if (config.ignoreDeclaredLocale) config.defaultLocale else locale ?: config.defaultLocale,
             runs.map { it.configure(config) },
@@ -32,23 +38,32 @@ class ContentParagraph(
     )
 
     sealed class Run {
+        abstract val range: LocationRange
         abstract val length: Double
         abstract fun configure(config: ContentConfig): ConfiguredParagraph.Run
 
         class Object(val obj: ContentObject) : Run() {
             override val length = obj.length
+            override val range = obj.range
 
             override fun configure(config: ContentConfig) = ConfiguredParagraph.Run.Object(
                     obj.configure(config)
             )
         }
 
-        class Text(val text: String, val style: ContentFontStyle, val range: LocationRange) : Run() {
+        class Text(val text: String, val style: ContentFontStyle, override val range: LocationRange) : Run() {
+            init {
+                require(text.length > 0)
+            }
+
             override val length = text.length.toDouble()
 
             override fun configure(config: ContentConfig) = ConfiguredParagraph.Run.Text(
                     text, fontStyleCache.configure(style, config), range
             )
+
+            fun charRange(beginIndex: Int, endIndex: Int) = textSubRange(text, range, beginIndex, endIndex)
+            fun charLocation(index: Int) = textSubLocation(text, range, index)
         }
     }
 }
@@ -65,14 +80,8 @@ class ConfiguredParagraph(
     sealed class Run {
         class Object(val obj: ConfiguredObject) : Run()
         class Text(val text: String, val style: ConfiguredFontStyle, val range: LocationRange) : Run() {
-            fun subrange(beginIndex: Int, endIndex: Int) = range.subrange(
-                    beginIndex.toDouble() / text.length,
-                    endIndex.toDouble() / text.length
-            )
-
-            fun sublocation(index: Int) = range.sublocation(
-                    index.toDouble() / text.length
-            )
+            fun charRange(beginIndex: Int, endIndex: Int) = textSubRange(text, range, beginIndex, endIndex)
+            fun charLocation(index: Int) = textSubLocation(text, range, index)
         }
     }
 }

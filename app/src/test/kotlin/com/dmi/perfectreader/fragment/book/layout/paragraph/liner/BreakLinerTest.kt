@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.fragment.book.layout.paragraph.liner
 
-import com.dmi.perfectreader.fragment.book.layout.common.LayoutChars
+import com.dmi.util.text.Chars
 import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.Breaker
 import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.Breaks
 import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.NoneBreaks
@@ -297,7 +297,7 @@ class BreakLinerTest {
         // when
         val lines = liner.makeLines(measuredText(text),
                 config(75F, 0F, true, emptyMap(), mapOf(
-                        LayoutChars.HYPHEN to 1.0F
+                        Chars.HYPHEN to 1.0F
                 ))
         )
 

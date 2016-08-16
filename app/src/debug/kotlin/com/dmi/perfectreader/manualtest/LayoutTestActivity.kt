@@ -158,7 +158,7 @@ class LayoutTestActivity : AppCompatActivity() {
         val selectionRange = run {
             val run1 = testParagraph.runs[0] as ConfiguredParagraph.Run.Text
             val run2 = paragraphs[1].runs[0] as ConfiguredParagraph.Run.Text
-            LocationRange(run1.sublocation(1), run2.sublocation(10))
+            LocationRange(run1.charLocation(1), run2.charLocation(10))
         }
         val context = PageContext(selectionRange)
 

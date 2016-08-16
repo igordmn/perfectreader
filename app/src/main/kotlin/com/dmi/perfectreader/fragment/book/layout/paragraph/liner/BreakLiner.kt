@@ -1,10 +1,10 @@
 package com.dmi.perfectreader.fragment.book.layout.paragraph.liner
 
-import com.dmi.perfectreader.fragment.book.layout.common.LayoutChars
 import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.Breaker
 import com.dmi.perfectreader.fragment.book.layout.paragraph.liner.Liner.Line
 import com.dmi.perfectreader.fragment.book.layout.paragraph.liner.Liner.Token
 import com.dmi.util.lang.ReusableArrayList
+import com.dmi.util.text.Chars
 import java.lang.Math.max
 import java.lang.Math.min
 
@@ -180,7 +180,7 @@ class BreakLiner(private val breaker: Breaker) : Liner {
                     val lastIndex = trailingSpacesBegin - 1
                     if (lastIndex >= beginIndex) {
                         if (hasHyphenAfter) {
-                            return config.rightHangFactor(LayoutChars.HYPHEN) * hyphenWidth
+                            return config.rightHangFactor(Chars.HYPHEN) * hyphenWidth
                         } else {
                             val lastChar = text[lastIndex]
                             return config.rightHangFactor(lastChar) * measuredText.advanceOf(lastIndex)

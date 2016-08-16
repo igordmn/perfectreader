@@ -6,7 +6,7 @@ import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredParagraph
 import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredParagraph.Run
 import com.dmi.perfectreader.fragment.book.content.obj.param.TextAlign
 import com.dmi.perfectreader.fragment.book.layout.ObjectLayouter
-import com.dmi.perfectreader.fragment.book.layout.common.LayoutChars
+import com.dmi.util.text.Chars
 import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace.Area
 import com.dmi.perfectreader.fragment.book.layout.obj.*
@@ -26,7 +26,7 @@ class ParagraphLayouter(
         private val liner: Liner
 ) : ObjectLayouter<ConfiguredParagraph, LayoutParagraph> {
     companion object {
-        private val HYPHEN_STRING = LayoutChars.HYPHEN.toString()
+        private val HYPHEN_STRING = Chars.HYPHEN.toString()
     }
 
     override fun layout(obj: ConfiguredParagraph, space: LayoutSpace): LayoutParagraph {
@@ -188,7 +188,7 @@ class ParagraphLayouter(
                 private fun prelayoutObject(runIndex: Int, run: Run.Object) {
                     val layoutObj = childrenLayouter.layout(run.obj, childrenSpace)
 
-                    plainTextBuilder.append(LayoutChars.OBJECT_REPLACEMENT_CHARACTER)
+                    plainTextBuilder.append(Chars.OBJECT_REPLACEMENT)
                     plainIndexToRunIndex.add(runIndex)
                     addAdvance(layoutObj.width)
 
@@ -263,7 +263,7 @@ class ParagraphLayouter(
                                     baseline = baseline,
                                     charOffsets = computeCharOffsets(beginIndex, endIndex, scaleX),
                                     style = run.style,
-                                    range = run.subrange(beginOfRunText, endOfRunText)
+                                    range = run.charRange(beginOfRunText, endOfRunText)
                             ),
                             baseline,
                             leading
@@ -294,7 +294,7 @@ class ParagraphLayouter(
                                     baseline = baseline,
                                     charOffsets = computeCharOffsets(beginIndex, endIndex, 1F),
                                     style = run.style,
-                                    range = run.subrange(beginOfRunText, endOfRunText)
+                                    range = run.charRange(beginOfRunText, endOfRunText)
                             ),
                             baseline,
                             leading
@@ -327,7 +327,7 @@ class ParagraphLayouter(
                                         baseline = baseline,
                                         charOffsets = floatArrayOf(0F),
                                         style = run.style,
-                                        range = run.subrange(indexOfHyphen, indexOfHyphen)
+                                        range = run.charRange(indexOfHyphen, indexOfHyphen)
                                 ),
                                 baseline,
                                 leading
