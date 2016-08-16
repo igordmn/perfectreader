@@ -1,9 +1,7 @@
 package com.dmi.perfectreader.fragment.book.content.obj
 
 import com.dmi.perfectreader.fragment.book.content.obj.param.*
-import com.dmi.perfectreader.fragment.book.location.LocationRange
-import com.dmi.perfectreader.fragment.book.location.textSubLocation
-import com.dmi.perfectreader.fragment.book.location.textSubRange
+import com.dmi.perfectreader.fragment.book.location.*
 import com.dmi.util.graphic.Color
 import java.util.*
 
@@ -64,6 +62,7 @@ class ContentParagraph(
 
             fun charRange(beginIndex: Int, endIndex: Int) = textSubRange(text, range, beginIndex, endIndex)
             fun charLocation(index: Int) = textSubLocation(text, range, index)
+            fun charIndex(location: Location) = textIndexAt(text, range, location)
         }
     }
 }

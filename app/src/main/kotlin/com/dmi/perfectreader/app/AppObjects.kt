@@ -41,6 +41,7 @@ import com.dmi.perfectreader.fragment.reader.Reader
 import com.dmi.perfectreader.fragment.reader.ReaderView
 import com.dmi.perfectreader.fragment.selection.Selection
 import com.dmi.perfectreader.fragment.selection.SelectionView
+import com.dmi.util.android.system.copyPlainText
 import com.dmi.util.graphic.Size
 import com.dmi.util.graphic.SizeF
 
@@ -49,6 +50,7 @@ class AppObjects(applicationContext: Context) {
     val userData = UserData(databases.user)
     val userSettings = UserSettings(databases.user)
     val dip2px = { value: Float -> value * applicationContext.resources.displayMetrics.density }
+    val copyPlainText = { text: String -> applicationContext.copyPlainText(text) }
 
     val createMain = { activity: AppActivity ->
         val intent = activity.intent
@@ -89,7 +91,7 @@ class AppObjects(applicationContext: Context) {
                 Book(createAnimated, bookData, bitmapDecoder, locationConverter)
             }
 
-            val createControl = { reader: Reader -> Control(userSettings, reader.book, reader, closeApp, dip2px) }
+            val createControl = { reader: Reader -> Control(userSettings, reader.book, reader, closeApp, copyPlainText, dip2px) }
             val createSelection = { reader: Reader -> Selection(reader.book, userSettings) }
             val createMenu = { reader: Reader, close: () -> Unit ->
                 Menu(reader.book, close)

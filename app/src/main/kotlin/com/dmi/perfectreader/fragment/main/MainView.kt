@@ -12,9 +12,10 @@ import com.dmi.perfectreader.fragment.reader.Reader
 import com.dmi.perfectreader.fragment.reader.ReaderView
 import com.dmi.util.android.base.BaseView
 import com.dmi.util.android.base.find
+import com.dmi.util.android.base.string
 
 class MainView(
-        private val context: Context,
+        context: Context,
         private val model: Main,
         private val createReader: (Reader) -> ReaderView
 ) : BaseView(context, R.layout.fragment_main) {
@@ -33,7 +34,7 @@ class MainView(
         subscribe(model.loadErrorObservable) {
             fun showError(strId: Int) {
                 error.visibility = View.VISIBLE
-                error.text = context.getString(strId)
+                error.text = string(strId)
             }
 
             when (it) {

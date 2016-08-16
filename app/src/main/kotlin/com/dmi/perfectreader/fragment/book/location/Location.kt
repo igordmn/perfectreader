@@ -9,3 +9,8 @@ data class Location(val offset: Double) : Comparable<Location>, Serializable {
 
 fun min(a: Location, b: Location) = if (a < b) a else b
 fun max(a: Location, b: Location) = if (a > b) a else b
+fun clamp(a: Location, range: LocationRange) = when {
+    a < range.begin -> range.begin
+    a > range.end -> range.end
+    else -> a
+}

@@ -17,12 +17,16 @@ import com.dmi.util.lang.returnValue
 import com.dmi.util.refWatcher
 import org.jetbrains.anko.collections.forEachReversed
 import org.jetbrains.anko.find
+import org.jetbrains.anko.longToast
+import org.jetbrains.anko.toast
 import rx.Observable
 import rx.subscriptions.CompositeSubscription
 import java.util.*
 
 abstract class BaseView(val widget: ViewGroup) {
     constructor(context: Context, layoutId: Int) : this(context.inflate(layoutId))
+
+    protected val context: Context = widget.context
 
     private val subscriptions = CompositeSubscription()
     private val children = LinkedList<BaseView>()
@@ -104,3 +108,6 @@ fun BaseView.drawable(resID: Int): Drawable = DrawableCompat.wrap(VectorDrawable
 fun BaseView.drawable(resID: Int, tintColor: Int): Drawable = drawable(resID).apply {
     DrawableCompat.setTint(this, tintColor)
 }
+fun BaseView.string(resID: Int): String = widget.context.getString(resID)
+fun BaseView.toast(text: String) = widget.context.toast(text)
+fun BaseView.longToast(text: String) = widget.context.longToast(text)

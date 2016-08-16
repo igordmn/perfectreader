@@ -11,4 +11,5 @@
     <string name="bookMenuAutoScroll">Включить автопрокрутку</string>
     <string name="bookMenuTextToSpeech">Читать вслух</string>
     <string name="bookMenuAddBookmark">Добавить закладку</string>
+    <string name="controlSelectionCopiedToClipboard">Текст скопирован в буфер обмена</string>
 </resources>
