@@ -1,9 +1,7 @@
 package com.dmi.perfectreader.fragment.control
 
 import com.dmi.perfectreader.fragment.book.Book
-import com.dmi.perfectreader.fragment.book.location.Location
-import com.dmi.perfectreader.fragment.book.location.LocationRange
-import com.dmi.perfectreader.fragment.book.selection.selectionCaretNearestTo
+import com.dmi.perfectreader.fragment.book.selection.selectionInitialRange
 import com.dmi.perfectreader.fragment.control.entity.Action
 import com.dmi.perfectreader.fragment.control.entity.ControlMode
 import com.dmi.perfectreader.fragment.control.entity.HardKey
@@ -147,12 +145,9 @@ class Control(
     private fun startSelection(x: Float, y: Float) {
         val currentPage = book.pageAt(0)
         if (currentPage != null) {
-            val nearestSelectionCaret = selectionCharNearestTo(currentPage, x, y)
-            if (nearestSelectionCaret != null) {
-                val begin = nearestSelectionCaret.obj.charLocation(nearestSelectionCaret.charIndex)
-                val end = nearestSelectionCaret.obj.charLocation(nearestSelectionCaret.charIndex + 1)
-                book.selectionRange = LocationRange(begin, end)
-
+            val selectionRange = selectionInitialRange(book.content, currentPage, x, y)
+            if (selectionRange != null) {
+                book.selectionRange =  selectionRange
                 reader.toggleSelection()
                 mode = ControlMode.SELECTION
             }

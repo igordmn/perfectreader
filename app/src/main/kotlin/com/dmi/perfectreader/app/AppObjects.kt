@@ -90,7 +90,7 @@ class AppObjects(applicationContext: Context) {
             }
 
             val createControl = { reader: Reader -> Control(userSettings, reader.book, reader, closeApp, dip2px) }
-            val createSelection = { reader: Reader -> Selection(reader.book) }
+            val createSelection = { reader: Reader -> Selection(reader.book, userSettings) }
             val createMenu = { reader: Reader, close: () -> Unit ->
                 Menu(reader.book, close)
             }

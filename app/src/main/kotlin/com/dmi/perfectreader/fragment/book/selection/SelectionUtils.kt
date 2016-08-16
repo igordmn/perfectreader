@@ -1,22 +1,100 @@
 package com.dmi.perfectreader.fragment.book.selection
 
+import com.dmi.perfectreader.fragment.book.content.Content
+import com.dmi.perfectreader.fragment.book.content.wordBeginBefore
+import com.dmi.perfectreader.fragment.book.content.wordEndAfter
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutObject
+import com.dmi.perfectreader.fragment.book.layout.obj.LayoutSpaceText
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutText
 import com.dmi.perfectreader.fragment.book.location.Location
+import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.graphic.sqrDistanceToRect
+
+fun selectionInitialRange(content: Content, page: Page, x: Float, y: Float): LocationRange? {
+    val caret = selectionCaretOfCharNearestTo(page, x, y)
+    if (caret != null) {
+        val range = LocationRange(caret.obj.charLocation(caret.charIndex), caret.obj.charLocation(caret.charIndex + 1))
+        return selectionAlignToWords(content, range)
+    } else {
+        return null
+    }
+}
+
+fun selectionCaretOfCharNearestTo(page: Page, x: Float, y: Float): LayoutCaret? {
+    var nearestObj: LayoutText? = null
+    var nearestCharIndex = -1
+    var nearestXDistance = Float.MAX_VALUE
+    var nearestYDistance = Float.MAX_VALUE
+    iterateSelectableObjects(page, excludeSpaces = true) { objLeft, objTop, obj ->
+        for (i in 0..obj.charCount - 1) {
+            val charLeft = objLeft + obj.charOffset(i)
+            val charRight = objLeft + obj.charOffset(i + 1)
+            val charTop = objTop
+            val charBottom = objTop + obj.height
+            val xDistance = when {
+                x < charLeft -> charLeft - x
+                x > charRight -> x - charRight
+                else -> 0F
+            }
+            val yDistance = when {
+                y < charTop -> charTop - y
+                y > charBottom -> y - charBottom
+                else -> 0F
+            }
+            if (yDistance < nearestYDistance || yDistance == nearestYDistance && xDistance <= nearestXDistance) {
+                nearestObj = obj
+                nearestCharIndex = i
+                nearestXDistance = xDistance
+                nearestYDistance = yDistance
+            }
+        }
+    }
+    return if (nearestObj != null) LayoutCaret(nearestObj!!, nearestCharIndex) else null
+}
+
+
+fun newSelection(content: Content, page: Page, oldRange: LocationRange, isLeftHandle: Boolean, touchPosition: PositionF, selectWords: Boolean): NewSelectionResult {
+    val result = newSelectionSelectChars(page, oldRange, isLeftHandle, touchPosition, selectWords)
+    return if (selectWords) NewSelectionResult(selectionAlignToWords(content, result.range), result.isLeftHandle) else result
+}
+
+fun newSelectionSelectChars(page: Page, oldRange: LocationRange, isLeftHandle: Boolean, touchPosition: PositionF, excludeSpaces: Boolean): NewSelectionResult {
+    val oppositeLocation = if (isLeftHandle) oldRange.end else oldRange.begin
+    val selectionChar = selectionCaretNearestTo(page, touchPosition.x, touchPosition.y, oppositeLocation, excludeSpaces)
+    return if (selectionChar != null) {
+        val selectionLocation = selectionChar.obj.charLocation(selectionChar.charIndex)
+        if (isLeftHandle) {
+            if (selectionLocation <= oldRange.end) {
+                NewSelectionResult(LocationRange(selectionLocation, oldRange.end), true)
+            } else {
+                NewSelectionResult(LocationRange(oldRange.end, selectionLocation), false)
+            }
+        } else {
+            if (selectionLocation >= oldRange.begin) {
+                NewSelectionResult(LocationRange(oldRange.begin, selectionLocation), false)
+            } else {
+                NewSelectionResult(LocationRange(selectionLocation, oldRange.begin), true)
+            }
+        }
+    } else {
+        NewSelectionResult(oldRange, isLeftHandle)
+    }
+}
+
+data class NewSelectionResult(val range: LocationRange, val isLeftHandle: Boolean)
 
 /**
  * Поиск каретки с ближайшей нижней половиной по y, либо по x (если y одинаков)
  * @param oppositeLocation сюда передается selectionRange.begin, если ищется selectionRange.end, и наоборот
  */
-fun selectionCaretNearestTo(page: Page, x: Float, y: Float, oppositeLocation: Location): LayoutCaret? {
+fun selectionCaretNearestTo(page: Page, x: Float, y: Float, oppositeLocation: Location, excludeSpaces: Boolean): LayoutCaret? {
     var nearestObj: LayoutText? = null
     var nearestCharIndex = -1
     var nearestXDistance = Float.MAX_VALUE
     var nearestYDistance = Float.MAX_VALUE
-    iterateSelectableObjects(page) { objLeft, objTop, obj ->
+    iterateSelectableObjects(page, excludeSpaces) { objLeft, objTop, obj ->
         for (i in 0..obj.charCount) {
             val oppositeCharIndex = when {
                 oppositeLocation < obj.range.begin -> 0
@@ -45,44 +123,12 @@ fun selectionCaretNearestTo(page: Page, x: Float, y: Float, oppositeLocation: Lo
     return if (nearestObj != null) LayoutCaret(nearestObj!!, nearestCharIndex) else null
 }
 
-fun selectionCharNearestTo(page: Page, x: Float, y: Float): LayoutCaret? {
-    var nearestObj: LayoutText? = null
-    var nearestCharIndex = -1
-    var nearestXDistance = Float.MAX_VALUE
-    var nearestYDistance = Float.MAX_VALUE
-    iterateSelectableObjects(page) { objLeft, objTop, obj ->
-        for (i in 0..obj.charCount - 1) {
-            val charLeft = objLeft + obj.charOffset(i)
-            val charRight = objLeft + obj.charOffset(i + 1)
-            val charTop = objTop
-            val charBottom = objTop + obj.height
-            val xDistance = when {
-                x < charLeft -> charLeft - x
-                x > charRight -> x - charRight
-                else -> 0F
-            }
-            val yDistance = when {
-                y < charTop -> charTop - y
-                y > charBottom -> y - charBottom
-                else -> 0F
-            }
-            if (yDistance < nearestYDistance || yDistance == nearestYDistance && xDistance <= nearestXDistance) {
-                nearestObj = obj
-                nearestCharIndex = i
-                nearestXDistance = xDistance
-                nearestYDistance = yDistance
-            }
-        }
-    }
-    return if (nearestObj != null) LayoutCaret(nearestObj!!, nearestCharIndex) else null
-}
-
 fun selectionCaretAtLeft(page: Page, location: Location): LayoutCaret? {
     var nearestObj: LayoutText? = null
     var nearestCharIndex = -1
     var lastObj: LayoutText? = null
 
-    iterateSelectableObjects(page) { objLeft, objTop, obj ->
+    iterateSelectableObjects(page, excludeSpaces = false) { objLeft, objTop, obj ->
         if (nearestObj == null) {
             when {
                 location < obj.range.begin -> {
@@ -115,7 +161,7 @@ fun selectionCaretAtRight(page: Page, location: Location): LayoutCaret? {
     var nearestCharIndex = -1
     var firstObj: LayoutText? = null
 
-    iterateSelectableObjects(page) { objLeft, objTop, obj ->
+    iterateSelectableObjects(page, excludeSpaces = false) { objLeft, objTop, obj ->
         if (firstObj == null)
             firstObj = obj
 
@@ -166,12 +212,32 @@ fun selectionCaretAtEnd(page: Page): LayoutCaret? {
 
 private fun iterateSelectableObjects(
         page: Page,
+        excludeSpaces: Boolean,
         action: (objLeft: Float, objTop: Float, obj: LayoutText) -> Unit
 ) {
     page.forEachChildRecursive(0F, 0F) { objLeft, objTop, obj ->
         if (obj is LayoutText && isSelectable(obj)) {
-            action(objLeft, objTop, obj)
+            if (!excludeSpaces || excludeSpaces && obj !is LayoutSpaceText) {
+                action(objLeft, objTop, obj)
+            }
         }
+    }
+}
+
+/**
+ * если в range нету слов, то возвращает range
+ * если есть, то смещаем левую границу к началу первого слова, правую границу к концу последнего слова
+ * (границы могут сместить как влево, так и вправо, если range содержит слово не целиком)
+ */
+fun selectionAlignToWords(content: Content, range: LocationRange): LocationRange {
+    val firstWordEnd = content.wordEndAfter(range.begin)
+    val lastWordBegin = content.wordBeginBefore(range.end)
+    val firstWordBegin = if (firstWordEnd != null) content.wordBeginBefore(firstWordEnd) else null
+    val lastWordEnd = if (lastWordBegin != null) content.wordEndAfter(lastWordBegin) else null
+    if (firstWordBegin != null && lastWordEnd != null && lastWordEnd > firstWordBegin) {
+        return LocationRange(firstWordBegin, lastWordEnd)
+    } else {
+        return range
     }
 }
 
