@@ -7,6 +7,8 @@ import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.column.LayoutColumn
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.pagination.part.LayoutPart
+import com.dmi.perfectreader.location
+import com.dmi.perfectreader.range
 import com.dmi.test.shouldEqual
 import com.dmi.util.graphic.SizeF
 import org.junit.Test
@@ -336,9 +338,6 @@ class SelectionUtilsTest {
     )
 
     fun textString(length: Int) = (1..length).map { 'a' }.joinToString("")
-
-    fun location(offset: Int) = Location(offset.toDouble())
-    fun range(begin: Int, end: Int) = LocationRange(location(begin), location(end))
 
     fun page(obj: LayoutObject): Page {
         val part = LayoutPart(obj, LayoutPart.Edge(listOf(0), 0F), LayoutPart.Edge(listOf(obj.children.size - 1), obj.height), obj.range)

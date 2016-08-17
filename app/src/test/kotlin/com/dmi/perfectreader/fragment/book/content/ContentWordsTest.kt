@@ -6,7 +6,8 @@ import com.dmi.perfectreader.fragment.book.content.obj.param.ContentConfig
 import com.dmi.perfectreader.fragment.book.content.obj.param.ContentFontStyle
 import com.dmi.perfectreader.fragment.book.content.obj.param.StyleType
 import com.dmi.perfectreader.fragment.book.location.Location
-import com.dmi.perfectreader.fragment.book.location.LocationRange
+import com.dmi.perfectreader.location
+import com.dmi.perfectreader.range
 import com.dmi.test.shouldEqual
 import org.junit.Test
 
@@ -156,7 +157,4 @@ class ContentWordsTest {
         override val length = 0.0
         override fun configure(config: ContentConfig) = throw UnsupportedOperationException()
     })
-
-    fun range(beginIndex: Int, endIndex: Int) = LocationRange(location(beginIndex), location(endIndex))
-    fun location(index: Int) = Location(index.toDouble())
 }

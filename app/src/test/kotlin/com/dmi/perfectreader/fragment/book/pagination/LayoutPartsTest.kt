@@ -2,10 +2,9 @@ package com.dmi.perfectreader.fragment.book.pagination
 
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutChild
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutObject
-import com.dmi.perfectreader.fragment.book.location.Location
-import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.part.LayoutPart
 import com.dmi.perfectreader.fragment.book.pagination.part.splitIntoParts
+import com.dmi.perfectreader.range
 import com.dmi.test.shouldEqual
 import org.junit.Test
 import java.util.*
@@ -175,10 +174,6 @@ class LayoutPartsTest {
             y += childObj.height
         }
     }
-
-    fun range(intRange: IntRange) = LocationRange(
-            Location(intRange.start.toDouble()), Location(intRange.last.toDouble())
-    )
 
     fun objectsOf(parts: List<LayoutPart>) = parts.map { it.obj }
     fun rangesOf(parts: List<LayoutPart>) = parts.map { it.range }

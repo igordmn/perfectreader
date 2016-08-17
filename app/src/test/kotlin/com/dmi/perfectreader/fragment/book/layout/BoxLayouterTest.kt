@@ -7,8 +7,8 @@ import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredSize
 import com.dmi.perfectreader.fragment.book.content.obj.param.Length.Absolute
 import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutObject
-import com.dmi.perfectreader.fragment.book.location.Location
-import com.dmi.perfectreader.fragment.book.location.LocationRange
+import com.dmi.perfectreader.layoutObj
+import com.dmi.perfectreader.range
 import com.dmi.test.shouldEqual
 import org.junit.Test
 
@@ -316,8 +316,6 @@ class BoxLayouterTest {
             LayoutSpace.Dimension(0F, LayoutSpace.Area.WrapContent(maxHeight))
     )
 
-    fun layoutObj(width: Float, height: Float) = object : LayoutObject(width, height, emptyList(), range()) {}
-
     val LayoutObject.childWidths: List<Float>
         get() = children.map { it.obj.width }
 
@@ -329,8 +327,6 @@ class BoxLayouterTest {
 
     val LayoutObject.childYs: List<Float>
         get() = children.map { it.y }
-
-    fun range() = LocationRange(Location(0.0), Location(0.0))
 
     inner class FixedObject(val width: Float, val height: Float) : ConfiguredObject(range())
     inner class FillObject() : ConfiguredObject(range())
