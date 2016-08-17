@@ -3,26 +3,34 @@ package com.dmi.perfectreader.fragment.selection
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import com.dmi.perfectreader.R
-import com.dmi.util.android.base.BaseView
-import com.dmi.util.android.base.color
-import com.dmi.util.android.base.dip2Px
-import com.dmi.util.android.base.drawable
+import com.dmi.util.android.base.*
+import com.dmi.util.android.widget.addHintOnLongClick
+import com.dmi.util.android.widget.fadeTransition
+import com.dmi.util.android.widget.onSizeChange
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.graphic.RectF
 import com.dmi.util.graphic.distanceToRect
+import org.jetbrains.anko.onClick
 import org.jetbrains.anko.onTouch
 import java.lang.Math.round
 
 class SelectionView(
         context: Context,
         private val model: Selection
-) : BaseView(FrameLayout(context)) {
+) : BaseView(context, R.layout.fragment_selection) {
     private val HANDLE_WIDTH = round(dip2Px(24F))
     private val ADDITIONAL_TOUCH_RADIUS = round(dip2Px(24F))
+
+    private val handlesContainer = find<FrameLayout>(R.id.handlesContainer)
+    private val actionsContainer = find<FrameLayout>(R.id.actionsContainer)
+    private val actions = find<View>(R.id.actions)
+    private val copyTextButton = find<ImageButton>(R.id.copyTextButton)
 
     private val leftHandle = HandleView(
             drawable(R.drawable.selection_handle_left, color(R.color.primary)).apply {
@@ -44,7 +52,7 @@ class SelectionView(
                 rightHandle.draw(canvas)
             }
         }
-        widget.addView(handlesView)
+        handlesContainer.addView(handlesView)
 
         subscribe(model.leftHandleObservable) {
             updateHandle(leftHandle, it)
@@ -54,7 +62,41 @@ class SelectionView(
             updateHandle(rightHandle, it)
             handlesView.invalidate()
         }
-        widget.onTouch { view, motionEvent -> onTouch(motionEvent) }
+        handlesView.onTouch { view, motionEvent -> onTouch(motionEvent) }
+
+        initActions()
+
+        subscribe(model.onSelectionCopiedToClipboard) {
+            toast(string(R.string.selectionCopiedToClipboard))
+        }
+    }
+
+    private fun initActions() {
+        subscribe(model.actionsIsVisibleObservable) {
+            actions.visibility = if (it) View.VISIBLE else View.GONE
+        }
+        subscribe(model.actionsPositionObservable) {
+            val layoutParams = actions.layoutParams as FrameLayout.LayoutParams
+            layoutParams.leftMargin = it.x
+            layoutParams.topMargin = it.y
+            actions.layoutParams = layoutParams
+        }
+
+        actionsContainer.layoutTransition = fadeTransition(200)
+        actionsContainer.onSizeChange { size, oldSize ->
+            model.actionsContainerSize = size
+        }
+
+        actions.onSizeChange { size, oldSize ->
+            model.actionsSize = size
+        }
+
+        DrawableCompat.setTint(copyTextButton.drawable, color(R.color.icon_dark))
+        addHintOnLongClick(copyTextButton)
+
+        copyTextButton.onClick {
+            model.copySelectedText()
+        }
     }
 
     private fun updateHandle(view: HandleView, model: Selection.Handle) {
@@ -64,12 +106,12 @@ class SelectionView(
             }
             is Selection.Handle.Visible -> {
                 view.isVisible = true
-                view.position = model.position
+                view.position = model.bottom
                 view.alpha = 255
             }
             is Selection.Handle.NotOnPage -> {
                 view.isVisible = true
-                view.position = model.position
+                view.position = model.bottom
                 view.alpha = 127
             }
         }
@@ -84,6 +126,7 @@ class SelectionView(
         return when (event.action) {
             MotionEvent.ACTION_DOWN -> onTouchDown(touchPosition, touchRadius)
             MotionEvent.ACTION_MOVE -> onTouchMove(touchPosition)
+            MotionEvent.ACTION_UP -> onTouchUp()
             else -> false
         }
     }
@@ -100,6 +143,17 @@ class SelectionView(
         } else {
             null
         }
+
+        if (touchedHandleInfo != null)
+            model.isSelecting = true
+
+        return touchedHandleInfo != null
+    }
+
+
+    private fun onTouchUp(): Boolean {
+        if (touchedHandleInfo != null)
+            model.isSelecting = false
 
         return touchedHandleInfo != null
     }

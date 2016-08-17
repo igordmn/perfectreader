@@ -12,7 +12,7 @@ import rx.lang.kotlin.BehaviorSubject
 class Reader(
         createBook: () -> Book,
         createControl: (Reader) -> Control,
-        private val createSelection: (Reader) -> Selection,
+        private val createSelection: (Reader, close: () -> Unit) -> Selection,
         private val createMenu: (Reader, close: () -> Unit) -> Menu
 ) : BaseViewModel() {
     val selectionObservable = BehaviorSubject<Selection?>()
@@ -44,11 +44,16 @@ class Reader(
         menuIsOpened = menu != null
     }
 
+    private val closeSelection = {
+        require(selectionIsOpened)
+        toggleSelection()
+    }
+
     private val closeMenu = {
         require(menuIsOpened)
         toggleMenu()
     }
 
-    private val initSelection = { createSelection(this) }
+    private val initSelection = { createSelection(this, closeSelection) }
     private val initMenu = { createMenu(this, closeMenu) }
 }

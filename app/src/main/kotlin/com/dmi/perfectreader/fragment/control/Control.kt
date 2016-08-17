@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.fragment.control
 
 import com.dmi.perfectreader.fragment.book.Book
-import com.dmi.perfectreader.fragment.book.content.plainText
 import com.dmi.perfectreader.fragment.book.selection.selectionInitialRange
 import com.dmi.perfectreader.fragment.control.entity.Action
 import com.dmi.perfectreader.fragment.control.entity.ControlMode
@@ -11,7 +10,6 @@ import com.dmi.perfectreader.fragment.reader.Reader
 import com.dmi.util.android.base.BaseViewModel
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.setting.Settings
-import rx.lang.kotlin.PublishSubject
 import com.dmi.perfectreader.data.UserSettingKeys.Control as ControlKeys
 import com.dmi.perfectreader.data.UserSettingKeys.Format as FormatKeys
 
@@ -20,7 +18,6 @@ class Control(
         private val book: Book,
         private val reader: Reader,
         private val closeApp: () -> Unit,
-        private val copyPlainText: (String) -> Unit,
         dip2px: (Float) -> Float
 ) : BaseViewModel() {
     private val TOUCH_SENSITIVITY = dip2px(8F)
@@ -38,8 +35,6 @@ class Control(
     private var touchDownY = 0F
     private var oldApplySlideActionTouchY = 0F
     private var nowIsSlideByLeftSide = false
-
-    val onSelectionCopiedToClipboard = PublishSubject<Unit>()
 
     fun resize(size: SizeF) = run { this.size = size }
 
@@ -160,19 +155,9 @@ class Control(
     }
 
     private fun cancelSelection() {
-        copySelectionText()
         reader.toggleSelection()
         book.selectionRange = null
         mode = ControlMode.NORMAL
 
-    }
-
-    private fun copySelectionText() {
-        val selectionRange = book.selectionRange
-        if (selectionRange != null) {
-            val plainText = book.content.plainText(selectionRange)
-            copyPlainText(plainText)
-            onSelectionCopiedToClipboard.onNext(Unit)
-        }
     }
 }

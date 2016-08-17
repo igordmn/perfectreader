@@ -91,8 +91,8 @@ class AppObjects(applicationContext: Context) {
                 Book(createAnimated, bookData, bitmapDecoder, locationConverter)
             }
 
-            val createControl = { reader: Reader -> Control(userSettings, reader.book, reader, closeApp, copyPlainText, dip2px) }
-            val createSelection = { reader: Reader -> Selection(reader.book, userSettings) }
+            val createControl = { reader: Reader -> Control(userSettings, reader.book, reader, closeApp, dip2px) }
+            val createSelection = { reader: Reader, close: () -> Unit -> Selection(reader.book, userSettings, copyPlainText, close, dip2px) }
             val createMenu = { reader: Reader, close: () -> Unit ->
                 Menu(reader.book, close)
             }

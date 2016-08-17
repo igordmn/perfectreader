@@ -5,12 +5,9 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import com.dmi.perfectreader.R
 import com.dmi.perfectreader.fragment.control.entity.HardKey
 import com.dmi.perfectreader.fragment.control.entity.TouchInfo
 import com.dmi.util.android.base.BaseView
-import com.dmi.util.android.base.string
-import com.dmi.util.android.base.toast
 import com.dmi.util.android.widget.onSizeChange
 
 open class ControlView(
@@ -23,9 +20,6 @@ open class ControlView(
         widget.setOnTouchListener(this)
         widget.onSizeChange { size, oldSize ->
             model.resize(size.toFloat())
-        }
-        subscribe(model.onSelectionCopiedToClipboard) {
-            toast(string(R.string.controlSelectionCopiedToClipboard))
         }
     }
 

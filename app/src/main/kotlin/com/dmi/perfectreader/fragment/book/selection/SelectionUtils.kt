@@ -285,9 +285,10 @@ fun clickableObjectAt(page: Page, x: Float, y: Float, radius: Float): LayoutObje
     return nearestObj
 }
 
-fun positionOf(page: Page, caret: LayoutCaret) = positionOf(page, caret.obj) + PositionF(caret.obj.charOffset(caret.charIndex), caret.obj.height)
+fun topOf(page: Page, caret: LayoutCaret) = topOf(page, caret.obj) + PositionF(caret.obj.charOffset(caret.charIndex), 0F)
+fun bottomOf(page: Page, caret: LayoutCaret) = topOf(page, caret.obj) + PositionF(caret.obj.charOffset(caret.charIndex), caret.obj.height)
 
-fun positionOf(page: Page, obj: LayoutObject): PositionF {
+fun topOf(page: Page, obj: LayoutObject): PositionF {
     var objLeft = 0F
     var objTop = 0F
     var found = false

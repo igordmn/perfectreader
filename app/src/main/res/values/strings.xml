@@ -11,5 +11,6 @@
     <string name="bookMenuAutoScroll">Включить автопрокрутку</string>
     <string name="bookMenuTextToSpeech">Читать вслух</string>
     <string name="bookMenuAddBookmark">Добавить закладку</string>
-    <string name="controlSelectionCopiedToClipboard">Текст скопирован в буфер обмена</string>
+    <string name="selectionCopiedToClipboard">Текст скопирован в буфер обмена</string>
+    <string name="selectionCopyText">Скопировать текст</string>
 </resources>
