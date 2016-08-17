@@ -3,12 +3,14 @@ package com.dmi.util.android.widget
 import android.graphics.Rect
 import android.text.TextUtils
 import android.view.Gravity
+import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
+import com.dmi.util.graphic.Size
 import org.jetbrains.anko.dip
 
 fun addHintOnLongClick(button: ImageButton) {
-    button.setOnLongClickListener{
+    button.setOnLongClickListener {
         val contentDesc = button.contentDescription.toString()
         if (!TextUtils.isEmpty(contentDesc)) {
             val OFFSET = button.dip(32f)
@@ -33,3 +35,5 @@ fun addHintOnLongClick(button: ImageButton) {
         true
     }
 }
+
+val View.size: Size get() = Size(width, height)

@@ -23,8 +23,10 @@ class Reader(
     var selection: Selection?  by rxObservable(null, selectionObservable)
     var menu: Menu? by rxObservable(null, menuObservable)
 
-    private var selectionIsOpened: Boolean by saveState(false)
-    private var menuIsOpened: Boolean by saveState(false)
+    var selectionIsOpened: Boolean by saveState(false)
+        private set
+    var menuIsOpened: Boolean by saveState(false)
+        private set
 
     override fun restore(state: Bundle) {
         super.restore(state)

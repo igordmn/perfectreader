@@ -27,7 +27,6 @@ class Selection(
     val leftHandleObservable = BehaviorSubject<Handle>()
     val rightHandleObservable = BehaviorSubject<Handle>()
     val actionsIsVisibleObservable = BehaviorSubject<Boolean>()
-    val actionsPositionObservable = BehaviorSubject<Position>()
     val onSelectionCopiedToClipboard = PublishSubject<Unit>()
 
     var leftHandle: Handle by rxObservable(Handle.Invisible, leftHandleObservable)
@@ -35,21 +34,7 @@ class Selection(
     var rightHandle: Handle by rxObservable(Handle.Invisible, rightHandleObservable)
         private set
 
-    var actionsContainerSize: Size = Size(0, 0)
-        set(value) {
-            field = value
-            updateActions()
-        }
-
-    var actionsSize: Size = Size(0, 0)
-        set(value) {
-            field = value
-            updateActions()
-        }
-
     var actionsIsVisible: Boolean by rxObservable(false, actionsIsVisibleObservable)
-        private set
-    var actionsPosition: Position by rxObservable(Position(0, 0), actionsPositionObservable)
         private set
 
     var isSelecting: Boolean = false
@@ -132,21 +117,27 @@ class Selection(
     }
 
     private fun updateActions() {
-        val leftHandle = leftHandle
-        val rightHandle = rightHandle
-        actionsPosition = when {
-            leftHandle is Handle.Positioned && rightHandle is Handle.Positioned -> {
-                actionsPosition(leftHandle, rightHandle)
-            }
-            leftHandle is Handle.Positioned -> actionsPosition(leftHandle, leftHandle)
-            rightHandle is Handle.Positioned -> actionsPosition(rightHandle, rightHandle)
-            else -> actionsPosition
-        }
-
         actionsIsVisible = !isSelecting && (leftHandle is Handle.Positioned || rightHandle is Handle.Positioned)
     }
 
-    private fun actionsPosition(firstHandle: Handle.Positioned, secondHandle: Handle.Positioned): Position {
+    fun actionsPosition(actionsContainerSize: Size, actionsSize: Size): Position {
+        val leftHandle = leftHandle
+        val rightHandle = rightHandle
+
+        return when {
+            leftHandle is Handle.Positioned && rightHandle is Handle.Positioned -> {
+                actionsPosition(actionsContainerSize, actionsSize, leftHandle, rightHandle)
+            }
+            leftHandle is Handle.Positioned -> actionsPosition(actionsContainerSize, actionsSize, leftHandle, leftHandle)
+            rightHandle is Handle.Positioned -> actionsPosition(actionsContainerSize, actionsSize, rightHandle, rightHandle)
+            else -> Position(0, 0)
+        }
+    }
+
+    private fun actionsPosition(
+            actionsContainerSize: Size, actionsSize: Size,
+            firstHandle: Handle.Positioned, secondHandle: Handle.Positioned
+    ): Position {
         val topY = min(firstHandle.top.y, secondHandle.top.y)
         val bottomY = max(firstHandle.bottom.y, secondHandle.bottom.y)
         val leftX = min(firstHandle.bottom.x, secondHandle.bottom.x)
@@ -202,6 +193,4 @@ class Selection(
         class Visible(top: PositionF, bottom: PositionF) : Positioned(top, bottom)
         class NotOnPage(top: PositionF, bottom: PositionF) : Positioned(top, bottom)
     }
-
-    class Actions(val position: Position, val isVisible: Boolean)
 }

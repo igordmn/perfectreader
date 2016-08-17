@@ -13,6 +13,7 @@ import com.dmi.util.android.base.*
 import com.dmi.util.android.widget.addHintOnLongClick
 import com.dmi.util.android.widget.fadeTransition
 import com.dmi.util.android.widget.onSizeChange
+import com.dmi.util.android.widget.size
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.graphic.RectF
 import com.dmi.util.graphic.distanceToRect
@@ -57,10 +58,12 @@ class SelectionView(
         subscribe(model.leftHandleObservable) {
             updateHandle(leftHandle, it)
             handlesView.invalidate()
+            updateActions()
         }
         subscribe(model.rightHandleObservable) {
             updateHandle(rightHandle, it)
             handlesView.invalidate()
+            updateActions()
         }
         handlesView.onTouch { view, motionEvent -> onTouch(motionEvent) }
 
@@ -73,22 +76,16 @@ class SelectionView(
 
     private fun initActions() {
         subscribe(model.actionsIsVisibleObservable) {
-            actions.visibility = if (it) View.VISIBLE else View.GONE
-        }
-        subscribe(model.actionsPositionObservable) {
-            val layoutParams = actions.layoutParams as FrameLayout.LayoutParams
-            layoutParams.leftMargin = it.x
-            layoutParams.topMargin = it.y
-            actions.layoutParams = layoutParams
+            updateActions()
         }
 
         actionsContainer.layoutTransition = fadeTransition(200)
         actionsContainer.onSizeChange { size, oldSize ->
-            model.actionsContainerSize = size
+            updateActions()
         }
 
         actions.onSizeChange { size, oldSize ->
-            model.actionsSize = size
+            updateActions()
         }
 
         DrawableCompat.setTint(copyTextButton.drawable, color(R.color.icon_dark))
@@ -115,6 +112,16 @@ class SelectionView(
                 view.alpha = 127
             }
         }
+    }
+
+    private fun updateActions() {
+        actions.visibility = if (model.actionsIsVisible) View.VISIBLE else View.GONE
+
+        val position = model.actionsPosition(actionsContainer.size, actions.size)
+        val layoutParams = actions.layoutParams as FrameLayout.LayoutParams
+        layoutParams.leftMargin = position.x
+        layoutParams.topMargin = position.y
+        actions.layoutParams = layoutParams
     }
 
     private var touchedHandleInfo: TouchedHandleInfo? = null

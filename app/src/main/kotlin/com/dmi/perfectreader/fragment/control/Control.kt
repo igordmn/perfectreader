@@ -3,7 +3,6 @@ package com.dmi.perfectreader.fragment.control
 import com.dmi.perfectreader.fragment.book.Book
 import com.dmi.perfectreader.fragment.book.selection.selectionInitialRange
 import com.dmi.perfectreader.fragment.control.entity.Action
-import com.dmi.perfectreader.fragment.control.entity.ControlMode
 import com.dmi.perfectreader.fragment.control.entity.HardKey
 import com.dmi.perfectreader.fragment.control.entity.TouchInfo
 import com.dmi.perfectreader.fragment.reader.Reader
@@ -30,7 +29,6 @@ class Control(
 
     private lateinit var size: SizeF
 
-    private var mode: ControlMode by saveState(ControlMode.NORMAL)
     private var touchDownX = 0F
     private var touchDownY = 0F
     private var oldApplySlideActionTouchY = 0F
@@ -41,14 +39,14 @@ class Control(
     fun onTouchDown(touchInfo: TouchInfo) {
         touchDownX = touchInfo.x
         touchDownY = touchInfo.y
-        if (mode == ControlMode.NORMAL) {
+        if (!reader.selectionIsOpened) {
             oldApplySlideActionTouchY = touchDownY
             nowIsSlideByLeftSide = false
         }
     }
 
     fun onTouchMove(touchInfo: TouchInfo) {
-        if (mode == ControlMode.NORMAL) {
+        if (!reader.selectionIsOpened) {
             val y = touchInfo.y
             val onLeftSide = touchDownX <= LEFT_SIDE_WIDTH_FOR_SLIDE
             val isTouchedFar = Math.abs(y - touchDownY) >= TOUCH_SENSITIVITY
@@ -78,7 +76,7 @@ class Control(
     fun onTouchUp(touchInfo: TouchInfo) {
         val x = touchInfo.x
         val y = touchInfo.y
-        if (mode == ControlMode.NORMAL) {
+        if (!reader.selectionIsOpened) {
             val radius = touchInfo.radius
             if (!nowIsSlideByLeftSide) {
                 val touchOffsetX = x - touchDownX
@@ -111,7 +109,7 @@ class Control(
             val isTap = touchOffset <= TOUCH_SENSITIVITY
             if (isTap) {
                 cancelSelection()
-            }else {
+            } else {
                 val swipeLeft = touchOffsetX <= -TOUCH_SENSITIVITY
                 val swipeRight = touchOffsetX >= TOUCH_SENSITIVITY
                 if (swipeLeft) {
@@ -147,9 +145,8 @@ class Control(
         if (currentPage != null) {
             val selectionRange = selectionInitialRange(book.content, currentPage, x, y)
             if (selectionRange != null) {
-                book.selectionRange =  selectionRange
+                book.selectionRange = selectionRange
                 reader.toggleSelection()
-                mode = ControlMode.SELECTION
             }
         }
     }
@@ -157,7 +154,5 @@ class Control(
     private fun cancelSelection() {
         reader.toggleSelection()
         book.selectionRange = null
-        mode = ControlMode.NORMAL
-
     }
 }
