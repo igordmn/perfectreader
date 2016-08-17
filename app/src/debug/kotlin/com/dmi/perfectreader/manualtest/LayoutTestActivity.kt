@@ -64,17 +64,15 @@ class LayoutTestActivity : AppCompatActivity() {
         )
 
 
-        val textRenderConfig = TextRenderConfig(true, true, true, false)
-        val selectionConfig = SelectionConfig(Color(255, 180, 213, 254))
         val hangingConfig = DefaultHangingConfig
 
         val testParagraph = ConfiguredParagraph(
                 Locale.US,
                 listOf(
-                        Run.Text("This is text. This is text. This is te", ConfiguredFontStyle(25F, Color.RED, textRenderConfig, selectionConfig), range(0, 1000)),
-                        Run.Text("xt. This is text.             This is text", ConfiguredFontStyle(15F, Color.BLUE, textRenderConfig, selectionConfig), range(1200, 1300)),
-                        Run.Text(" texttextextetetxetextxtextx", ConfiguredFontStyle(15F, Color.BLACK, textRenderConfig, selectionConfig), range(1300, 1400)),
-                        Run.Text("-text-text-text-exte-tet-xete-xtxt-extx,hhh,jj,,kk,llh,hh", ConfiguredFontStyle(15F, Color.BLACK, textRenderConfig, selectionConfig), range(1400, 1500))
+                        Run.Text("This is text. This is text. This is te", fontStyle(25F, Color.RED), range(0, 1000)),
+                        Run.Text("xt. This is text.             This is text", fontStyle(15F, Color.BLUE), range(1200, 1300)),
+                        Run.Text(" texttextextetetxetextxtextx", fontStyle(15F, Color.BLACK), range(1300, 1400)),
+                        Run.Text("-text-text-text-exte-tet-xete-xtxt-extx,hhh,jj,,kk,llh,hh", fontStyle(15F, Color.BLACK), range(1400, 1500))
                 ),
                 0F,
                 TextAlign.JUSTIFY,
@@ -108,7 +106,7 @@ class LayoutTestActivity : AppCompatActivity() {
             val range = range(1600 + i * 100, 1600 + (i + 1) * 100)
             ConfiguredParagraph(
                     Locale("ru", "RU"),
-                    listOf(Run.Text(it, ConfiguredFontStyle(10F, Color.BLACK, textRenderConfig, selectionConfig), range)),
+                    listOf(Run.Text(it, fontStyle(10F, Color.BLACK), range)),
                     0F,
                     TextAlign.JUSTIFY,
                     true,
@@ -172,6 +170,24 @@ class LayoutTestActivity : AppCompatActivity() {
 
         setContentView(view)
     }
+
+    fun fontStyle(size: Float, color: Color) = ConfiguredFontStyle(
+            size = size,
+            scaleX = 1.0F,
+            skewX = 0F,
+            strokeWidth = 0F,
+            color = color,
+            antialiasing = true,
+            hinting = true,
+            subpixelPositioning = true,
+            textShadowEnabled = false,
+            shadowOffsetX = 0F,
+            shadowOffsetY = 0F,
+            shadowStrokeWidth = 0F,
+            shadowBlurRadius = 0F,
+            shadowColor = Color.BLACK,
+            selectionColor = Color.RED
+    )
 
     fun testFrame(obj: ConfiguredObject) = ConfiguredFrame(
             ConfiguredFrame.Margins(

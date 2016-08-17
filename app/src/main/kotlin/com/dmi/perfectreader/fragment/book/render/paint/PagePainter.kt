@@ -33,6 +33,7 @@ class PagePainter(private val objectPainter: UniversalObjectPainter) {
         paintObjects(canvas, context, renderPage.objects, PaintLayer.FRAME)
         paintObjects(canvas, context, renderPage.objects, PaintLayer.IMAGE)
         paintObjects(canvas, context, renderPage.objects, PaintLayer.SELECTION)
+        paintObjects(canvas, context, renderPage.objects, PaintLayer.TEXT_SHADOW)
         paintObjects(canvas, context, renderPage.objects, PaintLayer.TEXT)
     }
 

@@ -9,24 +9,26 @@ import com.dmi.util.lang.ReusableFloatArray
 class PaintTextMetrics : TextMetrics {
     @Reusable
     override fun charAdvances(text: CharSequence, style: ConfiguredFontStyle): FloatArray {
-        val textPaint = Reusables.textPaint
+        val paint = Reusables.paint
+        paint.textSize = style.size
+        paint.textScaleX = style.scaleX
+        paint.textSkewX = style.skewX
+        paint.strokeWidth = style.strokeWidth
+        paint.style = if (style.strokeWidth == 0F) Paint.Style.FILL else Paint.Style.FILL_AND_STROKE
+        paint.color = style.color.value
+        paint.isAntiAlias = style.antialiasing
+        paint.isSubpixelText = style.subpixelPositioning
+        paint.hinting = if (style.hinting) Paint.HINTING_ON else Paint.HINTING_OFF
+        paint.isLinearText = false
+
         val charWidths = Reusables.charWidths(text.length)
-
-        with (textPaint) {
-            isAntiAlias = style.renderConfig.antialias
-            isSubpixelText = style.renderConfig.subpixel
-            hinting = if (style.renderConfig.hinting) Paint.HINTING_ON else Paint.HINTING_OFF
-            isLinearText = style.renderConfig.linearScaling
-            textSize = style.size
-            getTextWidths(text, 0, text.length, charWidths)
-        }
-
+        paint.getTextWidths(text, 0, text.length, charWidths)
         return charWidths
     }
 
     @Reusable
     override fun verticalMetrics(style: ConfiguredFontStyle): TextMetrics.VerticalMetrics {
-        val textPaint = Reusables.textPaint
+        val textPaint = Reusables.paint
         val verticalMetrics = Reusables.verticalMetrics
         val paintFontMetrics = Reusables.paintFontMetrics
 
@@ -43,7 +45,7 @@ class PaintTextMetrics : TextMetrics {
     }
 
     private object Reusables {
-        val textPaint = TextPaint()
+        val paint = TextPaint()
         val paintFontMetrics = Paint.FontMetrics()
         val verticalMetrics = TextMetrics.VerticalMetrics()
         val charWidths = ReusableFloatArray()

@@ -2,7 +2,6 @@ package com.dmi.perfectreader.fragment.book.content.obj
 
 import com.dmi.perfectreader.fragment.book.content.obj.param.*
 import com.dmi.perfectreader.fragment.book.location.*
-import com.dmi.util.graphic.Color
 import java.util.*
 
 private val fontStyleCache = FontStyleCache()
@@ -104,8 +103,21 @@ private class FontStyleCache {
 }
 
 private fun ContentFontStyle.configure(config: ContentConfig) = ConfiguredFontStyle(
-        (size ?: ContentParagraph.DEFAULT_FONT_SIZE) * config.density * config.fontSizeMultiplier,
-        color ?: Color.BLACK,
-        config.textRenderConfig,
-        config.selectionConfig
+        (size ?: ContentParagraph.DEFAULT_FONT_SIZE) * config.density * config.textSizeMultiplier,
+        config.textScaleX,
+        config.textSkewX,
+        config.textStrokeWidth,
+        color ?: config.textColor,
+        config.textAntialiasing,
+        config.textHinting,
+        config.textSubpixelPositioning,
+
+        config.textShadowEnabled,
+        config.textShadowOffsetX,
+        config.textShadowOffsetY,
+        config.textShadowStrokeWidth,
+        config.textShadowBlurRadius,
+        config.textShadowColor,
+
+        config.selectionColor
 )

@@ -65,10 +65,10 @@ class Control(
     }
 
     private fun changeFontSize(count: Int) {
-        val fontSize = userSettings[FormatKeys.fontSizeMultiplier]
+        val fontSize = userSettings[FormatKeys.textSizeMultiplier]
         val newFontSize = Math.max(FONT_SIZE_MIN, Math.min(FONT_SIZE_MAX, fontSize + count * FONT_SIZE_DELTA))
         if (newFontSize != fontSize) {
-            userSettings[FormatKeys.fontSizeMultiplier] = newFontSize
+            userSettings[FormatKeys.textSizeMultiplier] = newFontSize
             book.reformat()
         }
     }

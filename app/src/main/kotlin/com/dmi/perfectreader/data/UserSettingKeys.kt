@@ -19,11 +19,29 @@ object UserSettingKeys : Keys() {
     object Format : Keys(this) {
         val firstLineIndent by key(20F)
         val textAlign by key(TextAlign.JUSTIFY)
-        val fontSizeMultiplier by key(1F)
         val lineHeightMultiplier by key(1F)
         val paragraphVerticalMarginMultiplier by key(1F)
         val hangingPunctuation by key(true)
         val hyphenation by key(true)
+
+        val textFontFamily by key("serif")
+        val textIsBold by key(false)
+        val textIsItalic by key(false)
+        val textSizeMultiplier by key(1F)
+        val textScaleX by key(1.0F)
+        val textSkewX by key(0.0F)
+        val textStrokeWidth by key(0.0F)
+        val textColor by key(Color.BLACK.value)
+        val textAntialiasing by key(true)
+        val textHinting by key(true)
+        val textSubpixelPositioning by key(true)
+
+        val textShadowEnabled by key(false)
+        val textShadowOffsetX by key(0F)
+        val textShadowOffsetY by key(0F)
+        val textShadowStrokeWidth by key(0F)
+        val textShadowBlurRadius by key(1F)
+        val textShadowColor by key(Color.GRAY.value)
 
         val pageMarginLeft by key(20F)
         val pageMarginRight by key(20F)
@@ -200,7 +218,7 @@ object UserSettingKeys : Keys() {
     }
 
     object UI : Keys(this) {
-        val selectionBackgroundColor by key(Color(255, 174, 223, 240).value)
+        val selectionColor by key(Color(255, 174, 223, 240).value)
         val selectionSelectWords by key(false)
     }
 }

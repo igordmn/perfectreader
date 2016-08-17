@@ -1,8 +1,6 @@
 package com.dmi.perfectreader.fragment.book.selection
 
-import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredFontStyle
-import com.dmi.perfectreader.fragment.book.content.obj.param.SelectionConfig
-import com.dmi.perfectreader.fragment.book.content.obj.param.TextRenderConfig
+import com.dmi.perfectreader.fontStyle
 import com.dmi.perfectreader.fragment.book.layout.obj.*
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
@@ -10,7 +8,6 @@ import com.dmi.perfectreader.fragment.book.pagination.column.LayoutColumn
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.pagination.part.LayoutPart
 import com.dmi.test.shouldEqual
-import com.dmi.util.graphic.Color
 import com.dmi.util.graphic.SizeF
 import org.junit.Test
 import java.util.*
@@ -335,12 +332,10 @@ class SelectionUtilsTest {
     }
 
     fun text(width: Float, height: Float, charOffsets: FloatArray, range: LocationRange) = LayoutText(
-            width, height, textString(charOffsets.size), Locale.US, 4F, charOffsets, style(), range
+            width, height, textString(charOffsets.size), Locale.US, 4F, charOffsets, fontStyle(), range
     )
 
     fun textString(length: Int) = (1..length).map { 'a' }.joinToString("")
-
-    fun style() = ConfiguredFontStyle(12F, Color.RED, TextRenderConfig(true, true, true, true), SelectionConfig(Color.BLACK))
 
     fun location(offset: Int) = Location(offset.toDouble())
     fun range(begin: Int, end: Int) = LocationRange(location(begin), location(end))

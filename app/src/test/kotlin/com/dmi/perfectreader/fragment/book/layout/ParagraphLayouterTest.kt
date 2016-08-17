@@ -3,8 +3,10 @@ package com.dmi.perfectreader.fragment.book.layout
 import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredObject
 import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredParagraph
 import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredParagraph.Run
-import com.dmi.perfectreader.fragment.book.content.obj.param.*
-import com.dmi.util.text.Chars
+import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredFontStyle
+import com.dmi.perfectreader.fragment.book.content.obj.param.DefaultHangingConfig
+import com.dmi.perfectreader.fragment.book.content.obj.param.HangingConfig
+import com.dmi.perfectreader.fragment.book.content.obj.param.TextAlign
 import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace.Area
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutLine
@@ -16,9 +18,10 @@ import com.dmi.perfectreader.fragment.book.layout.paragraph.liner.Liner
 import com.dmi.perfectreader.fragment.book.layout.paragraph.metrics.TextMetrics
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
+import com.dmi.perfectreader.fontStyle
 import com.dmi.test.shouldEqual
-import com.dmi.util.graphic.Color
 import com.dmi.util.graphic.SizeF
+import com.dmi.util.text.Chars
 import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 import java.util.*
@@ -53,7 +56,7 @@ class ParagraphLayouterTest {
                 ConfiguredParagraph(
                         Locale.US,
                         listOf(
-                                Run.Text("text", style(), runRange(0))
+                                Run.Text("text", fontStyle(), runRange(0))
                         ),
                         20F, TextAlign.LEFT, true,
                         hangingConfig, rootRange()
@@ -76,12 +79,12 @@ class ParagraphLayouterTest {
         val LETTER_WIDTH1 = 10F
         val SPACE_WIDTH1 = 5F
         val HYPHEN_WIDTH1 = 5F
-        val style1 = style()
+        val style1 = fontStyle()
 
         val LETTER_WIDTH2 = 15F
         val SPACE_WIDTH2 = 10F
         val HYPHEN_WIDTH2 = 10F
-        val style2 = style()
+        val style2 = fontStyle()
 
         val liner = object : Liner {
             lateinit var measuredText: Liner.MeasuredText
@@ -158,7 +161,7 @@ class ParagraphLayouterTest {
                         Locale.US,
                         listOf(
                                 Run.Object(object1),
-                                Run.Text("text", style(), runRange(1)),
+                                Run.Text("text", fontStyle(), runRange(1)),
                                 Run.Object(object2)
                         ),
                         20F, TextAlign.LEFT, true,
@@ -229,7 +232,7 @@ class ParagraphLayouterTest {
         val ASCENT1 = -8F
         val DESCENT1 = 5F
         val LEADING1 = 1F
-        val style1 = style()
+        val style1 = fontStyle()
 
         val LETTER_WIDTH2 = 15F
         val SPACE_WIDTH2 = 10F
@@ -237,7 +240,7 @@ class ParagraphLayouterTest {
         val ASCENT2 = -16F
         val DESCENT2 = 10F
         val LEADING2 = 4F
-        val style2 = style()
+        val style2 = fontStyle()
 
         val runs = listOf(
                 Run.Text("some t", style1, runRange(0)),
@@ -405,7 +408,7 @@ class ParagraphLayouterTest {
         val CHAR_WIDTH = 10F
         val ASCENT = -20F
         val DESCENT = 6F
-        val style = style()
+        val style = fontStyle()
 
         val object1 = configuredObj()
         val object2 = configuredObj()
@@ -472,13 +475,13 @@ class ParagraphLayouterTest {
         val HYPHEN_WIDTH1 = 5F
         val ASCENT1 = -8F
         val DESCENT1 = 5F
-        val style1 = style()
+        val style1 = fontStyle()
 
         val CHAR_WIDTH2 = 20F
         val HYPHEN_WIDTH2 = 15F
         val ASCENT2 = -16F
         val DESCENT2 = 10F
-        val style2 = style()
+        val style2 = fontStyle()
 
         val object1 = configuredObj()
         val layoutObj1 = layoutObj(50F, 10F)
@@ -618,7 +621,7 @@ class ParagraphLayouterTest {
         // given
         val LETTER_WIDTH = 10F
         val SPACE_WIDTH = 5F
-        val style = style()
+        val style = fontStyle()
 
         val runs = listOf(
                 Run.Text(" text1   text2   text3 text4", style, runRange(0))
@@ -699,7 +702,7 @@ class ParagraphLayouterTest {
         // given
         val LETTER_WIDTH = 10F
         val SPACE_WIDTH = 5F
-        val style = style()
+        val style = fontStyle()
 
         val runs = listOf(
                 Run.Text(" text1   text2   text3 text4", style, runRange(0))
@@ -780,7 +783,7 @@ class ParagraphLayouterTest {
         // given
         val LETTER_WIDTH = 10F
         val SPACE_WIDTH = 5F
-        val style = style()
+        val style = fontStyle()
 
         val runs = listOf(
                 Run.Text(" text1   t ext2   text3 text4  text5 ", style, runRange(0))
@@ -921,7 +924,7 @@ class ParagraphLayouterTest {
     fun `compute width when wraps content`() {
         // given
         val runs = listOf(
-                Run.Text("texttexttext", style(), runRange(0))
+                Run.Text("texttexttext", fontStyle(), runRange(0))
         )
         val lines = listOf(
                 TestLine(left = 30F, width = 100F, text = "text"),
@@ -987,13 +990,6 @@ class ParagraphLayouterTest {
 
     fun layoutObj(width: Float = 0F, height: Float = 0F) =
             object : LayoutObject(width, height, emptyList(), rootRange()) {}
-
-    fun style() = ConfiguredFontStyle(
-            0F,
-            Color.TRANSPARENT,
-            TextRenderConfig(false, false, false, false),
-            SelectionConfig(Color.TRANSPARENT)
-    )
 
     fun textMetrics() =
             object : TextMetrics {

@@ -10,7 +10,20 @@ class ContentFontStyle(
 
 class ConfiguredFontStyle(
         val size: Float,
+        val scaleX: Float,
+        val skewX: Float,
+        val strokeWidth: Float,
         val color: Color,
-        val renderConfig: TextRenderConfig,
-        val selectionConfig: SelectionConfig
+        val antialiasing: Boolean,
+        val hinting: Boolean,
+        val subpixelPositioning: Boolean,
+
+        val textShadowEnabled: Boolean,
+        val shadowOffsetX: Float,
+        val shadowOffsetY: Float,
+        val shadowStrokeWidth: Float,
+        val shadowBlurRadius: Float,
+        val shadowColor: Color,
+
+        val selectionColor: Color
 )
