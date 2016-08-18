@@ -57,7 +57,7 @@ class AppObjects(applicationContext: Context) {
         val closeApp = { activity.finish() }
 
         val parseConfig = settingsParseConfig(userSettings)
-        val bookContentParserFactory = BookContentParserFactory(parseConfig, applicationContext)
+        val bookContentParserFactory = BookContentParserFactory(parseConfig)
         val patternsSource = TeXPatternsSource(applicationContext)
         val hyphenatorResolver = CachedHyphenatorResolver(TeXHyphenatorResolver(patternsSource))
 
