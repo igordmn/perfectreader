@@ -1,5 +1,7 @@
 package com.dmi.util.graphic
 
+import com.dmi.util.lang.intCeil
+
 data class Size(val width: Int, val height: Int) {
     fun toFloat() = SizeF(width.toFloat(), height.toFloat())
     operator fun times(multiplier: Float) = SizeF(width * multiplier, height * multiplier)

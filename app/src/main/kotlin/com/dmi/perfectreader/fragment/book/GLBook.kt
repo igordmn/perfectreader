@@ -10,8 +10,7 @@ import com.dmi.perfectreader.fragment.book.page.GLPage
 import com.dmi.perfectreader.fragment.book.page.GLPageBackground
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
-import com.dmi.perfectreader.fragment.book.render.paint.PagePainter
-import com.dmi.perfectreader.fragment.book.render.render.PageRenderer
+import com.dmi.perfectreader.fragment.book.render.factory.PageRenderer
 import com.dmi.util.android.opengl.GLColorPlane
 import com.dmi.util.android.opengl.GLTexture
 import com.dmi.util.android.opengl.GLTexturePlane
@@ -31,8 +30,7 @@ class GLBook(
         context: Context,
         size: Size,
         private val model: Book,
-        private val pageRenderer: PageRenderer,
-        private val pagePainter: PagePainter
+        private val pageRenderer: PageRenderer
 ) : NotifiableRenderer {
     private val sizeF = size.toFloat()
     private val bookFrame = BookFrame()
@@ -117,7 +115,7 @@ class GLBook(
                         page, pageContext,
                         pagesTexturePool, pageTexturePlane,
                         pageBackground, bitmapBufferPool,
-                        pageRenderer, pagePainter
+                        pageRenderer
                 )
                 glPage.onChanged.subscribe(onChanged)
                 pageToGLPage[page] = glPage

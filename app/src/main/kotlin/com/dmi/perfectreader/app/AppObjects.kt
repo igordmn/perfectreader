@@ -27,10 +27,10 @@ import com.dmi.perfectreader.fragment.book.pagination.page.settingsPageConfig
 import com.dmi.perfectreader.fragment.book.pagination.part.LayoutPartSequence
 import com.dmi.perfectreader.fragment.book.parse.BookContentParserFactory
 import com.dmi.perfectreader.fragment.book.parse.settingsParseConfig
-import com.dmi.perfectreader.fragment.book.render.paint.*
-import com.dmi.perfectreader.fragment.book.render.render.ImageRenderer
-import com.dmi.perfectreader.fragment.book.render.render.PageRenderer
-import com.dmi.perfectreader.fragment.book.render.render.UniversalObjectRenderer
+import com.dmi.perfectreader.fragment.book.render.factory.FramePainter
+import com.dmi.perfectreader.fragment.book.render.factory.ImagePainter
+import com.dmi.perfectreader.fragment.book.render.factory.PageRenderer
+import com.dmi.perfectreader.fragment.book.render.factory.TextPainter
 import com.dmi.perfectreader.fragment.control.Control
 import com.dmi.perfectreader.fragment.control.ControlView
 import com.dmi.perfectreader.fragment.main.Main
@@ -111,18 +111,9 @@ class AppObjects(applicationContext: Context) {
             val createBookView = { model: Book ->
                 val bitmapDecoder = model.bitmapDecoder
                 val createGLBook = { size: Size ->
-                    val objectPainter = UniversalObjectPainter(
-                            FramePainter(),
-                            ImagePainter(),
-                            TextPainter()
-                    )
-                    val objectRenderer = UniversalObjectRenderer(
-                            ImageRenderer(bitmapDecoder)
-                    )
-                    val pageRenderer = PageRenderer(objectRenderer)
-                    val pagePainter = PagePainter(objectPainter)
+                    val pageRenderer = PageRenderer(FramePainter(), ImagePainter(bitmapDecoder), TextPainter())
 
-                    GLBook(context, size, model, pageRenderer, pagePainter)
+                    GLBook(context, size, model, pageRenderer)
                 }
 
                 BookView(context, model, createGLBook, lifeCycle)

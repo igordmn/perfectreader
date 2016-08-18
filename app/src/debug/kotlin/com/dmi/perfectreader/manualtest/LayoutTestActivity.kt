@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.manualtest
 
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -28,12 +29,11 @@ import com.dmi.perfectreader.fragment.book.pagination.column.merge
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.perfectreader.fragment.book.pagination.part.splitIntoParts
-import com.dmi.perfectreader.fragment.book.render.paint.*
-import com.dmi.perfectreader.fragment.book.render.render.ImageRenderer
-import com.dmi.perfectreader.fragment.book.render.render.PageRenderer
-import com.dmi.perfectreader.fragment.book.render.render.UniversalObjectRenderer
+import com.dmi.perfectreader.fragment.book.render.factory.FramePainter
+import com.dmi.perfectreader.fragment.book.render.factory.ImagePainter
+import com.dmi.perfectreader.fragment.book.render.factory.PageRenderer
+import com.dmi.perfectreader.fragment.book.render.factory.TextPainter
 import com.dmi.util.graphic.Color
-import com.dmi.util.graphic.Rect
 import com.dmi.util.graphic.SizeF
 import java.util.*
 
@@ -147,8 +147,7 @@ class LayoutTestActivity : AppCompatActivity() {
             column = column merge part
         }
 
-        val pageRenderer = PageRenderer(UniversalObjectRenderer(ImageRenderer(bitmapDecoder)))
-        val pagePainter = PagePainter(UniversalObjectPainter(FramePainter(), ImagePainter(), TextPainter()))
+        val pageRenderer = PageRenderer(FramePainter(), ImagePainter(bitmapDecoder), TextPainter())
 
         val page = Page(column, SizeF(720F, 1280F), Page.Margins(0F, 0F, 0F, 0F))
         val renderPage = pageRenderer.render(page)
@@ -162,11 +161,11 @@ class LayoutTestActivity : AppCompatActivity() {
 
         val view = object : View(this) {
             override fun onDraw(canvas: Canvas) {
-                canvas.save()
                 canvas.drawColor(Color.WHITE.value)
-                pagePainter.paint(renderPage, context, canvas, Rect(0, 1, 0, 1))
+                renderPage.paint(canvas, context)
             }
         }
+        view.setLayerType(View.LAYER_TYPE_SOFTWARE, Paint())
 
         setContentView(view)
     }
@@ -186,7 +185,7 @@ class LayoutTestActivity : AppCompatActivity() {
             shadowStrokeWidth = 0F,
             shadowBlurRadius = 0F,
             shadowColor = Color.BLACK,
-            selectionColor = Color.RED
+            selectionColor = Color.GRAY
     )
 
     fun testFrame(obj: ConfiguredObject) = ConfiguredFrame(
