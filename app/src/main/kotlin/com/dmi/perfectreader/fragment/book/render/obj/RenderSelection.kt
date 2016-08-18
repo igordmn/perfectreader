@@ -8,35 +8,44 @@ import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.perfectreader.fragment.book.selection.beginIndexOfSelectedChar
 import com.dmi.perfectreader.fragment.book.selection.endIndexOfSelectedChar
 import com.dmi.util.graphic.Rect
+import com.dmi.util.graphic.union
+import com.dmi.util.lang.intCeil
+import com.dmi.util.lang.intFloor
 
 class RenderSelection(private val infoList: List<TextInfo>) : RenderObject() {
     private val selectionPaint = Paint()
 
-    // todo правильно вычислять dirty rect
-    override fun dirtyRect(oldContext: PageContext, newContext: PageContext): Rect {
-        for (info in infoList) {
-            if (isChanged(info.obj, oldContext, newContext))
-                return Rect(0, 0, 10000, 10000)
-        }
-        return Rect.ZERO
-    }
-
-    private fun isChanged(obj: LayoutText, oldContext: PageContext, newContext: PageContext): Boolean {
+    override fun dirtyRect(oldContext: PageContext, newContext: PageContext): Rect? {
         val oldSelectionRange = oldContext.selectionRange
         val newSelectionRange = newContext.selectionRange
-        return when {
-            oldSelectionRange != null && newSelectionRange != null -> isChanged(obj, oldSelectionRange, newSelectionRange)
-            oldSelectionRange == null && newSelectionRange == null -> false
-            else -> true
+        if (oldSelectionRange != null || newSelectionRange != null) {
+            var dirtyRect: Rect? = null
+            for (info in infoList) {
+                dirtyRect = dirtyRect union dirtyRect(info, oldSelectionRange, newSelectionRange)
+            }
+            return dirtyRect
+        } else {
+            return null
         }
     }
 
-    private fun isChanged(obj: LayoutText, oldSelectionRange: LocationRange, newSelectionRange: LocationRange): Boolean {
-        val oldSelectionBeginIndex = beginIndexOfSelectedChar(obj, oldSelectionRange.begin)
-        val oldSelectionEndIndex = endIndexOfSelectedChar(obj, oldSelectionRange.end)
-        val newSelectionBeginIndex = beginIndexOfSelectedChar(obj, newSelectionRange.begin)
-        val newSelectionEndIndex = endIndexOfSelectedChar(obj, newSelectionRange.end)
-        return newSelectionBeginIndex != oldSelectionBeginIndex || newSelectionEndIndex != oldSelectionEndIndex
+    private fun dirtyRect(info: TextInfo, oldSelectionRange: LocationRange?, newSelectionRange: LocationRange?): Rect? {
+        val obj = info.obj
+
+        val oldSelectionBeginIndex = if (oldSelectionRange != null) beginIndexOfSelectedChar(obj, oldSelectionRange.begin) else 0
+        val oldSelectionEndIndex = if (oldSelectionRange != null) endIndexOfSelectedChar(obj, oldSelectionRange.end) else 0
+        val newSelectionBeginIndex = if (newSelectionRange != null) beginIndexOfSelectedChar(obj, newSelectionRange.begin) else 0
+        val newSelectionEndIndex = if (newSelectionRange != null) endIndexOfSelectedChar(obj, newSelectionRange.end) else 0
+
+        val oldIsNotSelected = oldSelectionBeginIndex == oldSelectionEndIndex
+        val newIsNotSelected = newSelectionBeginIndex == newSelectionEndIndex
+        val newEqualsOld = oldSelectionBeginIndex == newSelectionBeginIndex && oldSelectionEndIndex == newSelectionEndIndex
+
+        return if (oldIsNotSelected && newIsNotSelected || newEqualsOld) {
+            null
+        } else {
+            Rect(intFloor(info.x), intFloor(info.y), intCeil(info.x + obj.width), intCeil(info.y + obj.height))
+        }
     }
 
     override fun paint(canvas: Canvas, context: PageContext) {

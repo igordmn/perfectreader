@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.fragment.book.page
 
+import android.graphics.Canvas
 import android.graphics.PorterDuff
 import com.dmi.perfectreader.app.glBackgroundScheduler
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
@@ -60,19 +61,13 @@ class GLPage(
                 }
         this.renderedPageContext = context
 
-        return if (dirtyRect.isEmpty) {
-            RenderResult(null, dirtyRect)
+        return if (dirtyRect == null) {
+            RenderResult.NotRendered()
         } else {
             val buffer = bitmapBufferPool.acquire()
             val canvas = buffer.canvas
-
-            canvas.drawColor(Color.TRANSPARENT.value, PorterDuff.Mode.CLEAR)
-            canvas.save()
-            canvas.clipRect(dirtyRect.left, dirtyRect.top, dirtyRect.right, dirtyRect.bottom)
-            renderPage.paint(canvas, context)
-            canvas.restore()
-
-            RenderResult(buffer, dirtyRect)
+            paintPage(renderPage, canvas, context, dirtyRect)
+            RenderResult.Rendered(buffer, dirtyRect)
         }
     }
 
@@ -82,9 +77,17 @@ class GLPage(
         return renderPage!!
     }
 
-    private fun releaseBuffer(renderResult: RenderResult) {
-        renderResult.buffer?.let {
-            bitmapBufferPool.release(it)
+    private fun paintPage(renderPage: RenderPage, canvas: Canvas, context: PageContext, dirtyRect: Rect) {
+        canvas.save()
+        canvas.clipRect(dirtyRect.left, dirtyRect.top, dirtyRect.right, dirtyRect.bottom)
+        canvas.drawColor(Color.TRANSPARENT.value, PorterDuff.Mode.CLEAR)
+        renderPage.paint(canvas, context)
+        canvas.restore()
+    }
+
+    private fun releaseBuffer(result: RenderResult) {
+        if (result is RenderResult.Rendered) {
+            bitmapBufferPool.release(result.buffer)
         }
     }
 
@@ -95,7 +98,7 @@ class GLPage(
 
     fun refresh() {
         bitmapLoader.completeIfReady { result ->
-            if (result.buffer != null) {
+            if (result is RenderResult.Rendered) {
                 texture.refreshBy(result.buffer.bitmap, result.dirtyRect)
                 refreshed = true
             }
@@ -109,5 +112,8 @@ class GLPage(
             texturePlane.draw(matrix, texture)
     }
 
-    private class RenderResult(val buffer: BitmapBuffer?, val dirtyRect: Rect)
+    private sealed class RenderResult {
+        class Rendered(val buffer: BitmapBuffer, val dirtyRect: Rect) : RenderResult()
+        class NotRendered : RenderResult()
+    }
 }

@@ -3,6 +3,7 @@ package com.dmi.util.android.opengl
 import android.graphics.Bitmap
 import android.opengl.GLES20.*
 import android.opengl.GLUtils.texSubImage2D
+import com.dmi.util.android.opengl.OpenGL.texSubImage2D
 import com.dmi.util.graphic.Rect
 import com.dmi.util.graphic.Size
 
@@ -19,10 +20,14 @@ class GLTexture(size: Size) {
         glBindTexture(GL_TEXTURE_2D, 0)
     }
 
-    // todo задействовать rect
     fun refreshBy(bitmap: Bitmap, rect: Rect) {
         glBindTexture(GL_TEXTURE_2D, id)
-        texSubImage2D(GL_TEXTURE_2D, 0, 0, 0, bitmap)
+        if (rect.left == 0 && rect.top == 0 && rect.width == bitmap.width && rect.height == bitmap.height) {
+            // это быстрее в два раза для полной текстуры
+            texSubImage2D(GL_TEXTURE_2D, 0, 0, 0, bitmap)
+        } else {
+            texSubImage2D(GL_TEXTURE_2D, 0, rect.left, rect.top, bitmap, rect.left, rect.top, rect.width, rect.height)
+        }
         glBindTexture(GL_TEXTURE_2D, 0)
     }
 
