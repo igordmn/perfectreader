@@ -1,5 +1,4 @@
 -dontpreverify
--dontobfuscate
 -dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses
 -verbose
@@ -71,25 +70,29 @@
 -dontwarn com.google.j2objc.annotations.Weak
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
+# RxJava
+-dontwarn sun.misc.**
+
+-keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
+   long producerIndex;
+   long consumerIndex;
+}
+
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode producerNode;
+}
+
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode consumerNode;
+}
+
 # Test
 -dontwarn org.mockito.**
 -dontwarn android.test.**
 -dontwarn org.junit.**
 
-# PerfectReader
--keep class com.dmi.util.android.opengl.GLSurfaceViewExt$RendererExt
--keep @interface com.dmi.util.android.jni.UsedByNative
--keep @com.dmi.util.android.jni.UsedByNative class *
--keepclassmembers class ** {
-    @com.dmi.util.android.jni.UsedByNative *;
-}
-
 # BlockCanary
 -dontwarn com.github.moduth.**
 
-# Test
--dontwarn android.test.**
--keep class com.dmi.util.android.test.PaintUtilsTestJNI
--keepclassmembers class com.dmi.util.android.test.PaintUtilsTestJNI {
-    *;
-}
+# PerfectReader
+-keep class com.dmi.util.android.opengl.GLSurfaceViewExt$RendererExt

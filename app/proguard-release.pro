@@ -1,3 +1,3 @@
--optimizations !code/simplification/cast,!field/*,!class/merging/*,!code/allocation/variable
--optimizationpasses 5
+-optimizations !class/merging/horizontal
+-optimizationpasses 7
 -allowaccessmodification
