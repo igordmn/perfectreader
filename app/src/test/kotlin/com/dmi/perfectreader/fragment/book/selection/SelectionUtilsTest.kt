@@ -342,6 +342,6 @@ class SelectionUtilsTest {
     fun page(obj: LayoutObject): Page {
         val part = LayoutPart(obj, LayoutPart.Edge(listOf(0), 0F), LayoutPart.Edge(listOf(obj.children.size - 1), obj.height), obj.range)
         val column = LayoutColumn(listOf(part), obj.height, obj.range)
-        return Page(column, SizeF(obj.width, obj.height), Page.Margins(0F, 0F, 0F, 0F), 1F)
+        return Page(column, SizeF(obj.width, obj.height), Page.Paddings(0F, 0F, 0F, 0F), 1F)
     }
 }

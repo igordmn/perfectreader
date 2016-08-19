@@ -149,7 +149,7 @@ class LayoutTestActivity : AppCompatActivity() {
 
         val pageRenderer = PageRenderer(FramePainter(), ImagePainter(bitmapDecoder), TextPainter())
 
-        val page = Page(column, SizeF(720F, 1280F), Page.Margins(0F, 0F, 0F, 0F), 1F)
+        val page = Page(column, SizeF(720F, 1280F), Page.Paddings(0F, 0F, 0F, 0F), 1F)
         val renderPage = pageRenderer.render(page)
 
         val selectionRange = run {

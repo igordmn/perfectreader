@@ -8,17 +8,17 @@ import com.dmi.util.graphic.SizeF
 class Page(
         val column: LayoutColumn,
         val size: SizeF,
-        val margins: Margins,
+        val paddings: Paddings,
         val textGammaCorrection: Float
 ) {
     val range: LocationRange get() = column.range
 
-    class Margins(val left: Float, val right: Float, val top: Float, val bottom: Float) {
-        operator fun times(value: Float) = Margins(left * value, right * value, top * value, bottom * value)
+    class Paddings(val left: Float, val right: Float, val top: Float, val bottom: Float) {
+        operator fun times(value: Float) = Paddings(left * value, right * value, top * value, bottom * value)
     }
 
     fun forEachChildRecursive(x: Float, y: Float, action: (x: Float, y: Float, obj: LayoutObject) -> Unit) {
-        column.forEachChildRecursive(x + margins.left, y + margins.top, action)
+        column.forEachChildRecursive(x + paddings.left, y + paddings.top, action)
     }
 
     override fun toString() = column.toString()

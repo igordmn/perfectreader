@@ -46,10 +46,10 @@ object UserSettingKeys : Keys() {
         val textShadowColor by key(Color.GRAY.value)
 
         val pageTextGammaCorrection by key(1F)
-        val pageMarginLeftDip by key(20F)
-        val pageMarginRightDip by key(20F)
-        val pageMarginTopDip by key(20F)
-        val pageMarginBottomDip by key(20F)
+        val pagePaddingLeftDip by key(20F)
+        val pagePaddingRightDip by key(20F)
+        val pagePaddingTopDip by key(20F)
+        val pagePaddingBottomDip by key(20F)
     }
 
     object Image : Keys(this) {

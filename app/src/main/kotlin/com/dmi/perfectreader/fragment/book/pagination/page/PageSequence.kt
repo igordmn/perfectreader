@@ -11,11 +11,11 @@ fun PageSequence(
         createColumnSequence: (contentSize: SizeF) -> LocatedSequence<LayoutColumn>,
         pageConfig: PageConfig
 ) : LocatedSequence<Page> {
-    val margins = pageConfig.marginsDip * pageConfig.density
-    val contentSize = pageConfig.size.shrink(margins.left + margins.right, margins.top + margins.bottom)
+    val paddings = pageConfig.paddingsDip * pageConfig.density
+    val contentSize = pageConfig.size.shrink(paddings.left + paddings.right, paddings.top + paddings.bottom)
     val columnSequence = createColumnSequence(contentSize)
     return columnSequence.map {
-        Page(it, pageConfig.size, margins, pageConfig.pageTextGammaCorrection)
+        Page(it, pageConfig.size, paddings, pageConfig.pageTextGammaCorrection)
     }
 }
 
