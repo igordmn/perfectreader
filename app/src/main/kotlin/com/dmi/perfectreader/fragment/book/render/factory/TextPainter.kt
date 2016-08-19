@@ -63,7 +63,7 @@ open class TextPainter {
                     shadowPaint.textScaleX = style.scaleX
                     shadowPaint.textSkewX = style.skewX
                     shadowPaint.strokeWidth = style.strokeWidth + style.shadowStrokeWidth
-                    shadowPaint.style = if (style.strokeWidth == 0F) Paint.Style.FILL else Paint.Style.FILL_AND_STROKE
+                    shadowPaint.style = if (style.strokeWidth + style.shadowStrokeWidth == 0F) Paint.Style.FILL else Paint.Style.FILL_AND_STROKE
                     shadowPaint.color = style.shadowColor.value
                     shadowPaint.isAntiAlias = style.antialiasing
                     shadowPaint.isSubpixelText = style.subpixelPositioning
