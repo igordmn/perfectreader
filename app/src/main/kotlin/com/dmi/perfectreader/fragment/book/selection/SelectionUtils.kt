@@ -27,7 +27,7 @@ fun selectionCaretOfCharNearestTo(page: Page, x: Float, y: Float): LayoutCaret? 
     var nearestCharIndex = -1
     var nearestXDistance = Float.MAX_VALUE
     var nearestYDistance = Float.MAX_VALUE
-    iterateSelectableObjects(page, excludeSpaces = true) { objLeft, objTop, obj ->
+    iterateSelectableObjects(page) { objLeft, objTop, obj ->
         for (i in 0..obj.charCount - 1) {
             val charLeft = objLeft + obj.charOffset(i)
             val charRight = objLeft + obj.charOffset(i + 1)
@@ -62,7 +62,7 @@ fun newSelection(content: Content, page: Page, oldRange: LocationRange, isLeftHa
 
 fun newSelectionSelectChars(page: Page, oldRange: LocationRange, isLeftHandle: Boolean, touchPosition: PositionF, excludeSpaces: Boolean): NewSelectionResult {
     val oppositeLocation = if (isLeftHandle) oldRange.end else oldRange.begin
-    val selectionChar = selectionCaretNearestTo(page, touchPosition.x, touchPosition.y, oppositeLocation, excludeSpaces)
+    val selectionChar = selectionCaretNearestTo(page, touchPosition.x, touchPosition.y, oppositeLocation)
     return if (selectionChar != null) {
         val selectionLocation = selectionChar.obj.charLocation(selectionChar.charIndex)
         if (isLeftHandle) {
@@ -89,12 +89,12 @@ data class NewSelectionResult(val range: LocationRange, val isLeftHandle: Boolea
  * Поиск каретки с ближайшей нижней половиной по y, либо по x (если y одинаков)
  * @param oppositeLocation сюда передается selectionRange.begin, если ищется selectionRange.end, и наоборот
  */
-fun selectionCaretNearestTo(page: Page, x: Float, y: Float, oppositeLocation: Location, excludeSpaces: Boolean): LayoutCaret? {
+fun selectionCaretNearestTo(page: Page, x: Float, y: Float, oppositeLocation: Location): LayoutCaret? {
     var nearestObj: LayoutText? = null
     var nearestCharIndex = -1
     var nearestXDistance = Float.MAX_VALUE
     var nearestYDistance = Float.MAX_VALUE
-    iterateSelectableObjects(page, excludeSpaces) { objLeft, objTop, obj ->
+    iterateSelectableObjects(page) { objLeft, objTop, obj ->
         for (i in 0..obj.charCount) {
             val oppositeCharIndex = when {
                 oppositeLocation < obj.range.begin -> 0
@@ -128,7 +128,7 @@ fun selectionCaretAtLeft(page: Page, location: Location): LayoutCaret? {
     var nearestCharIndex = -1
     var lastObj: LayoutText? = null
 
-    iterateSelectableObjects(page, excludeSpaces = false) { objLeft, objTop, obj ->
+    iterateSelectableObjects(page) { objLeft, objTop, obj ->
         if (nearestObj == null) {
             when {
                 location < obj.range.begin -> {
@@ -161,7 +161,7 @@ fun selectionCaretAtRight(page: Page, location: Location): LayoutCaret? {
     var nearestCharIndex = -1
     var firstObj: LayoutText? = null
 
-    iterateSelectableObjects(page, excludeSpaces = false) { objLeft, objTop, obj ->
+    iterateSelectableObjects(page) { objLeft, objTop, obj ->
         if (firstObj == null)
             firstObj = obj
 
@@ -212,14 +212,11 @@ fun selectionCaretAtEnd(page: Page): LayoutCaret? {
 
 private fun iterateSelectableObjects(
         page: Page,
-        excludeSpaces: Boolean,
         action: (objLeft: Float, objTop: Float, obj: LayoutText) -> Unit
 ) {
     page.forEachChildRecursive(0F, 0F) { objLeft, objTop, obj ->
-        if (obj is LayoutText && isSelectable(obj)) {
-            if (!excludeSpaces || excludeSpaces && obj !is LayoutSpaceText) {
-                action(objLeft, objTop, obj)
-            }
+        if (obj is LayoutText && isSelectable(obj) && obj !is LayoutSpaceText) {
+            action(objLeft, objTop, obj)
         }
     }
 }
