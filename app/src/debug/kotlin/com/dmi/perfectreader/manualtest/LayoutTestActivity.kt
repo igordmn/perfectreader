@@ -172,6 +172,7 @@ class LayoutTestActivity : AppCompatActivity() {
 
     fun fontStyle(size: Float, color: Color) = ConfiguredFontStyle(
             size = size,
+            letterSpacing = 0F,
             scaleX = 1.0F,
             skewX = 0F,
             strokeWidth = 0F,

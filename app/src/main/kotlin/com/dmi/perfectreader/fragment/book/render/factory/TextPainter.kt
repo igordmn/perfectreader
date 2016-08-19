@@ -2,11 +2,12 @@ package com.dmi.perfectreader.fragment.book.render.factory
 
 import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
-import android.graphics.Paint
 import android.text.TextPaint
 import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredFontStyle
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutSpaceText
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutText
+import com.dmi.perfectreader.fragment.book.layout.paragraph.metrics.configureTextPaint
+import com.dmi.perfectreader.fragment.book.layout.paragraph.metrics.configureTextShadowPaint
 
 open class TextPainter {
     private val textPaintCache = PaintCache()
@@ -47,29 +48,11 @@ open class TextPainter {
 
         private fun setStyle(style: ConfiguredFontStyle) {
             if (lastStyle !== style) {
-                paint.textSize = style.size
-                paint.textScaleX = style.scaleX
-                paint.textSkewX = style.skewX
-                paint.strokeWidth = style.strokeWidth
-                paint.style = if (style.strokeWidth == 0F) Paint.Style.FILL else Paint.Style.FILL_AND_STROKE
-                paint.color = style.color.value
-                paint.isAntiAlias = style.antialiasing
-                paint.isSubpixelText = style.subpixelPositioning
-                paint.hinting = if (style.hinting) Paint.HINTING_ON else Paint.HINTING_OFF
-                paint.isLinearText = false
+                configureTextPaint(paint, style)
 
                 if (style.textShadowEnabled) {
-                    shadowPaint.textSize = style.size
-                    shadowPaint.textScaleX = style.scaleX
-                    shadowPaint.textSkewX = style.skewX
-                    shadowPaint.strokeWidth = style.strokeWidth + style.shadowStrokeWidth
-                    shadowPaint.style = if (style.strokeWidth + style.shadowStrokeWidth == 0F) Paint.Style.FILL else Paint.Style.FILL_AND_STROKE
-                    shadowPaint.color = style.shadowColor.value
-                    shadowPaint.isAntiAlias = style.antialiasing
-                    shadowPaint.isSubpixelText = style.subpixelPositioning
-                    shadowPaint.hinting = if (style.hinting) Paint.HINTING_ON else Paint.HINTING_OFF
-                    shadowPaint.isLinearText = false
-                    shadowPaint.maskFilter = if (style.shadowBlurRadius > 0) blurMaskFilter(style.shadowBlurRadius) else null
+                    configureTextShadowPaint(paint, style)
+                    paint.maskFilter = if (style.shadowBlurRadius > 0) blurMaskFilter(style.shadowBlurRadius) else null
                 }
 
                 lastStyle = style

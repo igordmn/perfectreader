@@ -21,6 +21,7 @@ object UserSettingKeys : Keys() {
         val textAlign by key(TextAlign.JUSTIFY)
         val lineHeightMultiplier by key(1F)
         val paragraphVerticalMarginMultiplier by key(1F)
+        val letterSpacing by key(0F)
         val hangingPunctuation by key(true)
         val hyphenation by key(true)
 

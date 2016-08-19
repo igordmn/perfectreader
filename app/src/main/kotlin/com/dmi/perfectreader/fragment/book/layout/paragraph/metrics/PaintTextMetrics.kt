@@ -10,16 +10,7 @@ class PaintTextMetrics : TextMetrics {
     @Reusable
     override fun charAdvances(text: CharSequence, style: ConfiguredFontStyle): FloatArray {
         val paint = Reusables.paint
-        paint.textSize = style.size
-        paint.textScaleX = style.scaleX
-        paint.textSkewX = style.skewX
-        paint.strokeWidth = style.strokeWidth
-        paint.style = if (style.strokeWidth == 0F) Paint.Style.FILL else Paint.Style.FILL_AND_STROKE
-        paint.color = style.color.value
-        paint.isAntiAlias = style.antialiasing
-        paint.isSubpixelText = style.subpixelPositioning
-        paint.hinting = if (style.hinting) Paint.HINTING_ON else Paint.HINTING_OFF
-        paint.isLinearText = false
+        configureTextPaint(paint, style)
 
         val charWidths = Reusables.charWidths(text.length)
         paint.getTextWidths(text, 0, text.length, charWidths)

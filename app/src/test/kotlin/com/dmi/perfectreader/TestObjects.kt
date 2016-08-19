@@ -8,6 +8,7 @@ import com.dmi.util.graphic.Color
 
 fun fontStyle() = ConfiguredFontStyle(
         size = 12F,
+        letterSpacing = 0F,
         scaleX = 1.0F,
         skewX = 0F,
         strokeWidth = 0F,

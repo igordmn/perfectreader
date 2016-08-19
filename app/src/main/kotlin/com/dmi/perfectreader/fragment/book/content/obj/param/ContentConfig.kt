@@ -27,6 +27,7 @@ class ContentConfig(
         val textIsBold: Boolean,
         val textIsItalic: Boolean,
         val textSizeMultiplier: Float,
+        val letterSpacing: Float,
         val textScaleX: Float,
         val textSkewX: Float,
         val textStrokeWidth: Float,
@@ -60,6 +61,7 @@ fun settingsLayoutConfig(context: Context, settings: UserSettings) = ContentConf
         paragraphVerticalMarginMultiplier = settings[FormatKeys.paragraphVerticalMarginMultiplier],
         hangingConfig = if (settings[FormatKeys.hangingPunctuation]) DefaultHangingConfig else NoneHangingConfig,
         hyphenation = settings[FormatKeys.hyphenation],
+        letterSpacing = settings[FormatKeys.letterSpacing],
 
         textFontFamily = settings[FormatKeys.textFontFamily],
         textIsBold = settings[FormatKeys.textIsBold],

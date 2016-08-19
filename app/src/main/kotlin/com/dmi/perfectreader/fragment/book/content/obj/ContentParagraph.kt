@@ -104,6 +104,7 @@ private class FontStyleCache {
 
 private fun ContentFontStyle.configure(config: ContentConfig) = ConfiguredFontStyle(
         (size ?: ContentParagraph.DEFAULT_FONT_SIZE) * config.density * config.textSizeMultiplier,
+        config.letterSpacing,
         config.textScaleX,
         config.textSkewX,
         config.textStrokeWidth,
