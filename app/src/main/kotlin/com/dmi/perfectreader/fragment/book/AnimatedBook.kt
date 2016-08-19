@@ -94,7 +94,7 @@ class AnimatedBook(size: SizeF, private val staticBook: StaticBook) {
      * Может вызываться из другого потока
      */
     fun takeFrame(frame: BookFrame) = synchronized(frameMutex) {
-        frame.loadedPages.retainAll(loadedPages)
+        frame.loadedPages.clear()
         frame.loadedPages.addAll(loadedPages)
         frame.visibleSlides.clear()
         frame.visibleSlides.addAll(visibleSlides)
