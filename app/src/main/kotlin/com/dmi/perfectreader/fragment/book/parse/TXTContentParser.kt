@@ -42,5 +42,5 @@ class TXTContentParser(
 
     private val border = ContentFrame.Border(null, null)
 
-    private fun textRun(text: String, style: ContentFontStyle, range: LocationRange) = ContentParagraph.Run.Text(text, style, range)
+    private fun textRun(text: String, style: ContentFontStyle, range: LocationRange) = ContentParagraph.Run.Text(text, style, null, range)
 }

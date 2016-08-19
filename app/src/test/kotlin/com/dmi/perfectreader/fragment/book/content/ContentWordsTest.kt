@@ -151,10 +151,10 @@ class ContentWordsTest {
             ContentParagraph(StyleType.NORMAL, null, runs.toList(), 0F, null, range(0, 1000))
 
     fun textRun(text: String, begin: Int, end: Int) =
-            ContentParagraph.Run.Text(text, ContentFontStyle(null, null), range(begin, end))
+            ContentParagraph.Run.Text(text, ContentFontStyle(null, null), 1F, range(begin, end))
 
     fun objectRun(begin: Int, end: Int) = ContentParagraph.Run.Object(object : ContentObject(range(begin, end)) {
         override val length = 0.0
         override fun configure(config: ContentConfig) = throw UnsupportedOperationException()
-    })
+    }, 1F)
 }

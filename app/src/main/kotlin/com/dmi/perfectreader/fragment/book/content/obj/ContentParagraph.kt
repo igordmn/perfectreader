@@ -34,21 +34,27 @@ class ContentParagraph(
             range
     )
 
-    sealed class Run {
+    sealed class Run(val lineHeightMultiplier: Float?) {
         abstract val range: LocationRange
         abstract val length: Double
         abstract fun configure(config: ContentConfig): ConfiguredParagraph.Run
 
-        class Object(val obj: ContentObject) : Run() {
+        class Object(val obj: ContentObject, lineHeightMultiplier: Float?) : Run(lineHeightMultiplier) {
             override val length = obj.length
             override val range = obj.range
 
             override fun configure(config: ContentConfig) = ConfiguredParagraph.Run.Object(
-                    obj.configure(config)
+                    obj.configure(config),
+                    lineHeightMultiplier ?: config.lineHeightMultiplier
             )
         }
 
-        class Text(val text: String, val style: ContentFontStyle, override val range: LocationRange) : Run() {
+        class Text(
+                val text: String,
+                val style: ContentFontStyle,
+                lineHeightMultiplier: Float?,
+                override val range: LocationRange
+        ) : Run(lineHeightMultiplier) {
             init {
                 require(text.length > 0)
             }
@@ -56,7 +62,10 @@ class ContentParagraph(
             override val length = text.length.toDouble()
 
             override fun configure(config: ContentConfig) = ConfiguredParagraph.Run.Text(
-                    text, fontStyleCache.configure(style, config), range
+                    text,
+                    fontStyleCache.configure(style, config),
+                    lineHeightMultiplier ?: config.lineHeightMultiplier,
+                    range
             )
 
             fun charRange(beginIndex: Int, endIndex: Int) = textSubRange(text, range, beginIndex, endIndex)
@@ -75,9 +84,14 @@ class ConfiguredParagraph(
         val hangingConfig: HangingConfig,
         range: LocationRange
 ) : ConfiguredObject(range) {
-    sealed class Run {
-        class Object(val obj: ConfiguredObject) : Run()
-        class Text(val text: String, val style: ConfiguredFontStyle, val range: LocationRange) : Run() {
+    sealed class Run(val lineHeightMultiplier: Float) {
+        class Object(val obj: ConfiguredObject, lineHeightMultiplier: Float) : Run(lineHeightMultiplier)
+        class Text(
+                val text: String,
+                val style: ConfiguredFontStyle,
+                lineHeightMultiplier: Float,
+                val range: LocationRange
+        ) : Run(lineHeightMultiplier) {
             fun charRange(beginIndex: Int, endIndex: Int) = textSubRange(text, range, beginIndex, endIndex)
             fun charLocation(index: Int) = textSubLocation(text, range, index)
         }

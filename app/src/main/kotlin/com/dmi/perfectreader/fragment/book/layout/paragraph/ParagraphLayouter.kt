@@ -271,7 +271,8 @@ class ParagraphLayouter(
                                     range = run.charRange(beginOfRunText, endOfRunText)
                             ),
                             baseline,
-                            leading
+                            leading,
+                            run.lineHeightMultiplier
                     )
                 }
 
@@ -302,15 +303,18 @@ class ParagraphLayouter(
                                     range = run.charRange(beginOfRunText, endOfRunText)
                             ),
                             baseline,
-                            leading
+                            leading,
+                            run.lineHeightMultiplier
                     )
                 }
 
                 private fun layoutObjectRun(runIndex: Int, line: LineBuilder) {
+                    val run = runs[runIndex]
                     line.addObject(
                             runIndexToObject[runIndex]!!,
                             runIndexToBaseline[runIndex],
-                            runIndexToLeading[runIndex]
+                            runIndexToLeading[runIndex],
+                            run.lineHeightMultiplier
                     )
                 }
 
@@ -335,7 +339,8 @@ class ParagraphLayouter(
                                         range = run.charRange(indexOfHyphen, indexOfHyphen)
                                 ),
                                 baseline,
-                                leading
+                                leading,
+                                run.lineHeightMultiplier
                         )
                     }
                 }
@@ -374,10 +379,10 @@ class ParagraphLayouter(
             this.offset += offset
         }
 
-        fun addObject(obj: LayoutObject, baseline: Float, leading: Float) {
+        fun addObject(obj: LayoutObject, baseline: Float, leading: Float, lineHeightMultiplier: Float) {
             objects.add(obj)
             baselines.add(baseline)
-            leadings.add(leading)
+            leadings.add(max(-obj.height, (obj.height + leading) * lineHeightMultiplier - obj.height))
             lefts.add(offset)
             offset += obj.width
         }
@@ -385,8 +390,8 @@ class ParagraphLayouter(
         fun build(): LayoutLine {
             val children = ArrayList<LayoutChild>()
 
-            var lineBaseline = 0F
-            for (i in 0..objects.size - 1) {
+            var lineBaseline = leadings[0] / 2 + baselines[0]
+            for (i in 1..objects.size - 1) {
                 val baseline = leadings[i] / 2 + baselines[i]
                 if (baseline > lineBaseline)
                     lineBaseline = baseline
@@ -399,16 +404,15 @@ class ParagraphLayouter(
                 children.add(LayoutChild(x, y, obj))
             }
 
-            var lineHeight = 0F
-            for (i in 0..objects.size - 1) {
-                val child = children[i]
-                val objLineHeight = child.y + child.obj.height + leadings[i] / 2
+            var lineHeight = children[0].y + children[0].obj.height + leadings[0] / 2
+            for (i in 1..objects.size - 1) {
+                val objLineHeight = children[i].y + children[i].obj.height + leadings[i] / 2
                 if (objLineHeight > lineHeight)
                     lineHeight = objLineHeight
             }
 
             var minFactLeading = lineHeight - objects[0].height
-            for (i in 0..objects.size - 1) {
+            for (i in 1..objects.size - 1) {
                 val factLeading = lineHeight - objects[i].height
                 if (factLeading < minFactLeading)
                     minFactLeading = factLeading
@@ -419,7 +423,7 @@ class ParagraphLayouter(
                     objects.last().range.end
             )
 
-            return LayoutLine(width, lineHeight, minFactLeading / 2, children, range)
+            return LayoutLine(width, lineHeight, max(0F, minFactLeading / 2), children, range)
         }
     }
 

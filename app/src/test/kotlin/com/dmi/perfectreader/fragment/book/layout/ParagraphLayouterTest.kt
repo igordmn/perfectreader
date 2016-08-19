@@ -56,7 +56,7 @@ class ParagraphLayouterTest {
                 ConfiguredParagraph(
                         Locale.US,
                         listOf(
-                                Run.Text("text", fontStyle(), runRange(0))
+                                Run.Text("text", fontStyle(), 1F, runRange(0))
                         ),
                         20F, TextAlign.LEFT, true,
                         hangingConfig, rootRange()
@@ -108,8 +108,8 @@ class ParagraphLayouterTest {
                 ConfiguredParagraph(
                         Locale.US,
                         listOf(
-                                Run.Text("some ", style1, runRange(0)),
-                                Run.Text("text", style2, runRange(1))
+                                Run.Text("some ", style1, 1F, runRange(0)),
+                                Run.Text("text", style2, 1F, runRange(1))
                         ),
                         20F, TextAlign.LEFT, true,
                         DefaultHangingConfig, rootRange()
@@ -160,9 +160,9 @@ class ParagraphLayouterTest {
                 ConfiguredParagraph(
                         Locale.US,
                         listOf(
-                                Run.Object(object1),
-                                Run.Text("text", fontStyle(), runRange(1)),
-                                Run.Object(object2)
+                                Run.Object(object1, 1F),
+                                Run.Text("text", fontStyle(), 1F, runRange(1)),
+                                Run.Object(object2, 1F)
                         ),
                         20F, TextAlign.LEFT, true,
                         DefaultHangingConfig, rootRange()
@@ -203,7 +203,7 @@ class ParagraphLayouterTest {
         layouter.layout(
                 ConfiguredParagraph(
                         Locale.US,
-                        listOf(Run.Object(obj)),
+                        listOf(Run.Object(obj, 1F)),
                         20F, TextAlign.LEFT, true,
                         DefaultHangingConfig, rootRange()
                 ),
@@ -243,9 +243,9 @@ class ParagraphLayouterTest {
         val style2 = fontStyle()
 
         val runs = listOf(
-                Run.Text("some t", style1, runRange(0)),
-                Run.Text("ext words ", style2, runRange(1)),
-                Run.Text(" qwerty", style1, runRange(2))
+                Run.Text("some t", style1, 1F, runRange(0)),
+                Run.Text("ext words ", style2, 1F, runRange(1)),
+                Run.Text(" qwerty", style1, 1F, runRange(2))
         )
         val obj = ConfiguredParagraph(Locale.US, runs, 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange())
 
@@ -416,9 +416,9 @@ class ParagraphLayouterTest {
         val layoutObj2 = layoutObj(70F, 70F)
 
         val runs = listOf(
-                Run.Object(object1),
-                Run.Text("text", style, runRange(1)),
-                Run.Object(object2)
+                Run.Object(object1, 1F),
+                Run.Text("text", style, 1F, runRange(1)),
+                Run.Object(object2, 1F)
         )
         val lines = listOf(
                 TestLine(left = 0F, width = 100F, text = "\uFFFCtext\uFFFC")
@@ -487,10 +487,10 @@ class ParagraphLayouterTest {
         val layoutObj1 = layoutObj(50F, 10F)
 
         val runs = listOf(
-                Run.Text("text", style1, runRange(0)),
-                Run.Object(object1),
-                Run.Text("t", style1, runRange(2)),
-                Run.Text("ext2", style2, runRange(3))
+                Run.Text("text", style1, 1F, runRange(0)),
+                Run.Object(object1, 1F),
+                Run.Text("t", style1, 1F, runRange(2)),
+                Run.Text("ext2", style2, 1F, runRange(3))
         )
         val run0 = runs[0] as Run.Text
         val run2 = runs[2] as Run.Text
@@ -624,7 +624,7 @@ class ParagraphLayouterTest {
         val style = fontStyle()
 
         val runs = listOf(
-                Run.Text(" text1   text2   text3 text4", style, runRange(0))
+                Run.Text(" text1   text2   text3 text4", style, 1F, runRange(0))
         )
         val lines = listOf(
                 TestLine(left = -10F, width = 180F, text = " text1   text2 "),
@@ -705,7 +705,7 @@ class ParagraphLayouterTest {
         val style = fontStyle()
 
         val runs = listOf(
-                Run.Text(" text1   text2   text3 text4", style, runRange(0))
+                Run.Text(" text1   text2   text3 text4", style, 1F, runRange(0))
         )
         val lines = listOf(
                 TestLine(left = -10F, width = 180F, text = " text1   text2 "),
@@ -786,7 +786,7 @@ class ParagraphLayouterTest {
         val style = fontStyle()
 
         val runs = listOf(
-                Run.Text(" text1   t ext2   text3 text4  text5 ", style, runRange(0))
+                Run.Text(" text1   t ext2   text3 text4  text5 ", style, 1F, runRange(0))
         )
         val lines = listOf(
                 TestLine(left = -10F, width = 180F, text = " text1   t ext2 "),
@@ -924,7 +924,7 @@ class ParagraphLayouterTest {
     fun `compute width when wraps content`() {
         // given
         val runs = listOf(
-                Run.Text("texttexttext", fontStyle(), runRange(0))
+                Run.Text("texttexttext", fontStyle(), 1F, runRange(0))
         )
         val lines = listOf(
                 TestLine(left = 30F, width = 100F, text = "text"),
@@ -1016,8 +1016,8 @@ class ParagraphLayouterTest {
                 ConfiguredParagraph(
                         Locale.US,
                         listOf(
-                                Run.Text("some ", style1, runRange(0)),
-                                Run.Text("text ", style2, runRange(1))
+                                Run.Text("some ", style1, 1F, runRange(0)),
+                                Run.Text("text ", style2, 1F, runRange(1))
                         ),
                         20F, TextAlign.LEFT, true,
                         DefaultHangingConfig, rootRange()
@@ -1029,6 +1029,85 @@ class ParagraphLayouterTest {
         with (liner.measuredText) {
             advanceOf(4) shouldEqual SPACE_WIDTH1 * WORD_SPACING1
             advanceOf(9) shouldEqual SPACE_WIDTH2 * WORD_SPACING2
+        }
+    }
+
+    @Test
+    fun `apply line height multiplier`() {
+        // given
+        val LETTER_WIDTH1 = 10F
+        val SPACE_WIDTH1 = 5F
+        val HYPHEN_WIDTH1 = 5F
+        val ASCENT1 = -8F
+        val DESCENT1 = 5F
+        val LEADING1 = 1F
+        val LINE_HEIGHT_MULTIPLIER1 = 0.5F
+        val style1 = fontStyle()
+
+        val LETTER_WIDTH2 = 15F
+        val SPACE_WIDTH2 = 10F
+        val HYPHEN_WIDTH2 = 10F
+        val ASCENT2 = -16F
+        val DESCENT2 = 10F
+        val LEADING2 = 4F
+        val LINE_HEIGHT_MULTIPLIER2 = 1.5F
+        val style2 = fontStyle()
+
+        val runs = listOf(
+                Run.Text("some t", style1, LINE_HEIGHT_MULTIPLIER1, runRange(0)),
+                Run.Text("ext words ", style2, LINE_HEIGHT_MULTIPLIER2, runRange(1))
+        )
+        val obj = ConfiguredParagraph(Locale.US, runs, 20F, TextAlign.LEFT, true, DefaultHangingConfig, rootRange())
+
+        val lines = listOf(
+                TestLine(left = 20F, width = 100F, text = "some "),
+                TestLine(left = -5F, width = 150F, text = "text words")
+        )
+
+        val layouter = ParagraphLayouter(
+                childLayouter(),
+                textMetrics(mapOf(
+                        style1 to TestMetrics(LETTER_WIDTH1, SPACE_WIDTH1, HYPHEN_WIDTH1, ASCENT1, DESCENT1, LEADING1),
+                        style2 to TestMetrics(LETTER_WIDTH2, SPACE_WIDTH2, HYPHEN_WIDTH2, ASCENT2, DESCENT2, LEADING2)
+                )),
+                liner(lines)
+        )
+
+        // when
+        val layoutObj = layouter.layout(obj, rootSpace(200F, 200F))
+
+        // then
+        with (layoutObj) {
+            val HEIGHT1 = -ASCENT1 + DESCENT1
+            val HEIGHT2 = -ASCENT2 + DESCENT2
+            val LINE_HEIGHT1 = (HEIGHT1 + LEADING1) * LINE_HEIGHT_MULTIPLIER1
+            val LINE_HEIGHT2 = (HEIGHT2 + LEADING2) * LINE_HEIGHT_MULTIPLIER2
+            val FACT_LEADING1 = LINE_HEIGHT1 - HEIGHT1
+            val FACT_LEADING2 = LINE_HEIGHT2 - HEIGHT2
+
+            with (children[0].obj as LayoutLine) {
+                childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
+                childHeights shouldEqual listOf(HEIGHT1, HEIGHT1)
+                childYs shouldEqual listOf(FACT_LEADING1 / 2, FACT_LEADING1 / 2)
+            }
+
+            with (children[1].obj as LayoutLine) {
+                childBaselines shouldEqual listOf(-ASCENT1, -ASCENT2, -ASCENT2, -ASCENT2)
+                childHeights shouldEqual listOf(HEIGHT1, HEIGHT2, HEIGHT2, HEIGHT2)
+                childYs shouldEqual listOf(FACT_LEADING2 / 2 - ASCENT2 + ASCENT1, FACT_LEADING2 / 2, FACT_LEADING2 / 2, FACT_LEADING2 / 2)
+            }
+
+            height shouldEqual LINE_HEIGHT1 + LINE_HEIGHT2
+            childHeights shouldEqual listOf(LINE_HEIGHT1, LINE_HEIGHT2)
+            childYs shouldEqual listOf(0F, LINE_HEIGHT1)
+            blankVerticalMargins shouldEqual listOf(0F, FACT_LEADING2 / 2)
+        }
+
+        layoutObj.children.map { it.obj }.forEach {
+            (it as LayoutLine).children.map { it.obj }.forEach {
+                it as LayoutText
+                it.locale shouldEqual Locale.US
+            }
         }
     }
 

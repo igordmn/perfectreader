@@ -69,10 +69,10 @@ class LayoutTestActivity : AppCompatActivity() {
         val testParagraph = ConfiguredParagraph(
                 Locale.US,
                 listOf(
-                        Run.Text("This is text. This is text. This is te", fontStyle(25F, Color.RED), range(0, 1000)),
-                        Run.Text("xt. This is text.             This is text", fontStyle(15F, Color.BLUE), range(1200, 1300)),
-                        Run.Text(" texttextextetetxetextxtextx", fontStyle(15F, Color.BLACK), range(1300, 1400)),
-                        Run.Text("-text-text-text-exte-tet-xete-xtxt-extx,hhh,jj,,kk,llh,hh", fontStyle(15F, Color.BLACK), range(1400, 1500))
+                        Run.Text("This is text. This is text. This is te", fontStyle(25F, Color.RED), 1F, range(0, 1000)),
+                        Run.Text("xt. This is text.             This is text", fontStyle(15F, Color.BLUE), 1F, range(1200, 1300)),
+                        Run.Text(" texttextextetetxetextxtextx", fontStyle(15F, Color.BLACK), 1F, range(1300, 1400)),
+                        Run.Text("-text-text-text-exte-tet-xete-xtxt-extx,hhh,jj,,kk,llh,hh", fontStyle(15F, Color.BLACK), 1F, range(1400, 1500))
                 ),
                 0F,
                 TextAlign.JUSTIFY,
@@ -106,7 +106,7 @@ class LayoutTestActivity : AppCompatActivity() {
             val range = range(1600 + i * 100, 1600 + (i + 1) * 100)
             ConfiguredParagraph(
                     Locale("ru", "RU"),
-                    listOf(Run.Text(it, fontStyle(10F, Color.BLACK), range)),
+                    listOf(Run.Text(it, fontStyle(10F, Color.BLACK), 1F, range)),
                     0F,
                     TextAlign.JUSTIFY,
                     true,
