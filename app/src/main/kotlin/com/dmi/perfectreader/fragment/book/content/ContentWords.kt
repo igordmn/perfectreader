@@ -85,9 +85,9 @@ private fun ContentParagraph.isWordBegin(run: ContentParagraph.Run.Text, runInde
     }
     val rightCharType = typeOf(run.text[charIndex])
 
-    return (rightCharType == CharType.LETTER || rightCharType == CharType.OTHER) && leftCharType == CharType.SPACE ||
-           leftCharType == CharType.LETTER && rightCharType == CharType.OTHER ||
-           leftCharType == CharType.OTHER && rightCharType == CharType.LETTER
+    return (rightCharType == CharType.LETTER_OR_DIGIT || rightCharType == CharType.OTHER) && leftCharType == CharType.SPACE ||
+           leftCharType == CharType.LETTER_OR_DIGIT && rightCharType == CharType.OTHER ||
+           leftCharType == CharType.OTHER && rightCharType == CharType.LETTER_OR_DIGIT
 }
 
 private fun ContentParagraph.isWordEnd(run: ContentParagraph.Run.Text, runIndex: Int, charIndex: Int): Boolean {
@@ -107,15 +107,15 @@ private fun ContentParagraph.isWordEnd(run: ContentParagraph.Run.Text, runIndex:
         CharType.SPACE
     }
 
-    return (leftCharType == CharType.LETTER || leftCharType == CharType.OTHER) && rightCharType == CharType.SPACE ||
-           leftCharType == CharType.LETTER && rightCharType == CharType.OTHER ||
-           leftCharType == CharType.OTHER && rightCharType == CharType.LETTER
+    return (leftCharType == CharType.LETTER_OR_DIGIT || leftCharType == CharType.OTHER) && rightCharType == CharType.SPACE ||
+           leftCharType == CharType.LETTER_OR_DIGIT && rightCharType == CharType.OTHER ||
+           leftCharType == CharType.OTHER && rightCharType == CharType.LETTER_OR_DIGIT
 }
 
-private enum class CharType { SPACE, LETTER, OTHER }
+private enum class CharType { SPACE, LETTER_OR_DIGIT, OTHER }
 
 private fun typeOf(ch: Char) = when {
     isSpaceChar(ch) || isWhitespace(ch) -> CharType.SPACE
-    isLetter(ch) -> CharType.LETTER
+    isLetter(ch) || isDigit(ch) -> CharType.LETTER_OR_DIGIT
     else -> CharType.OTHER
 }

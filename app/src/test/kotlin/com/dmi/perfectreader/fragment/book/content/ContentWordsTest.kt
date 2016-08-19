@@ -34,7 +34,7 @@ class ContentWordsTest {
     fun `find word bounds in multiple-word-single-run-paragraph`() {
         val par = paragraph(
                 //       0123456789012
-                textRun("aaa, bbb ccc-", 0, 13)
+                textRun("aa1, bbb ccc-", 0, 13)
         )
 
         par.wordBeginBefore(location(0)) shouldEqual null
