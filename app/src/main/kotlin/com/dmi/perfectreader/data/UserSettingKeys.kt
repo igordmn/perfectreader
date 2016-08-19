@@ -43,6 +43,7 @@ object UserSettingKeys : Keys() {
         val textShadowBlurRadius by key(1F)
         val textShadowColor by key(Color.GRAY.value)
 
+        val pageTextGammaCorrection by key(1F)
         val pageMarginLeft by key(20F)
         val pageMarginRight by key(20F)
         val pageMarginTop by key(20F)

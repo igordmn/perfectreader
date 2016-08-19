@@ -8,7 +8,8 @@ import com.dmi.perfectreader.data.UserSettingKeys.Format as FormatKeys
 
 class PageConfig(
         val contentSize: SizeF,
-        val margins: Margins
+        val margins: Margins,
+        val pageTextGammaCorrection: Float
 )
 
 fun settingsPageConfig(pageSize: SizeF, settings: UserSettings): PageConfig {
@@ -20,7 +21,8 @@ fun settingsPageConfig(pageSize: SizeF, settings: UserSettings): PageConfig {
     val marginTotalVertical = marginTop + marginBottom
     return PageConfig(
             contentSize = pageSize.shrink(marginTotalHorizontal, marginTotalVertical),
-            margins = Margins(marginLeft, marginRight, marginTop, marginBottom)
+            margins = Margins(marginLeft, marginRight, marginTop, marginBottom),
+            pageTextGammaCorrection = settings[FormatKeys.pageTextGammaCorrection]
     )
 }
 

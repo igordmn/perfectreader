@@ -8,7 +8,8 @@ import com.dmi.util.graphic.SizeF
 class Page(
         val column: LayoutColumn,
         val contentSize: SizeF,
-        val margins: Margins
+        val margins: Margins,
+        val textGammaCorrection: Float
 ) {
     val size = SizeF(contentSize.width + margins.left + margins.right, contentSize.height + margins.top + margins.bottom)
     val range: LocationRange get() = column.range

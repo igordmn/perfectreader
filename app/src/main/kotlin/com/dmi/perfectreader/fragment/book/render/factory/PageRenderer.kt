@@ -52,7 +52,7 @@ class PageRenderer(
                 RenderPicture(imagePicture),
                 RenderSelection(textInfoList),
                 RenderPicture(textShadowPicture),
-                RenderPicture(textPicture)
+                RenderPicture(textPicture, page.textGammaCorrection)
         ), Rect(0, 0, intCeil(page.size.width), intCeil(page.size.height)))
     }
 
