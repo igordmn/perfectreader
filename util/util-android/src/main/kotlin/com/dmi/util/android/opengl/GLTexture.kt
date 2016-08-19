@@ -30,7 +30,7 @@ class GLTexture(size: Size) {
         val bottom = clamp(rect.bottom, 0, bitmap.height)
 
         if (left == 0 && top == 0 && right == bitmap.width && bottom == bitmap.height) {
-            // это быстрее в два раза для полной текстуры
+            // это быстрее в 2-5 раз для полной текстуры
             texSubImage2D(GL_TEXTURE_2D, 0, 0, 0, bitmap)
         } else {
             texSubImage2D(GL_TEXTURE_2D, 0, left, top, bitmap, left, top, right - left, bottom - top)

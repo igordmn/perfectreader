@@ -17,11 +17,17 @@ Java_com_dmi_util_android_opengl_OpenGL_texSubImage2D(
     CHECKE(AndroidBitmap_lockPixels(env, bitmap, &pixels));
     uint32_t stride = info.stride / 4;
 
-    uint32_t *subPixels = (uint32_t *) pixels + (stride * bitmapY + bitmapX);
+    uint32_t *subPixels = new uint32_t[bitmapWidth * bitmapHeight];
+    uint32_t *p = (uint32_t *) pixels + (stride * bitmapY + bitmapX);
+    uint32_t *s = subPixels;
     for (int y = 0; y < bitmapHeight; y++) {
-        glTexSubImage2D((GLenum) target, level, xoffset, yoffset + y, bitmapWidth, 1, GL_RGBA, GL_UNSIGNED_BYTE, subPixels);
-        subPixels += stride;
+        std::memcpy(s, p, (size_t) bitmapWidth * 4);
+        p += stride;
+        s += bitmapWidth;
     }
 
+    glTexSubImage2D((GLenum) target, level, xoffset, yoffset, bitmapWidth, bitmapHeight, GL_RGBA, GL_UNSIGNED_BYTE, subPixels);
+
+    delete [] subPixels;
     CHECKE(AndroidBitmap_unlockPixels(env, bitmap));
 }
