@@ -18,6 +18,8 @@ class ContentConfig(
 
         val firstLineIndentDip: Float,
         val textAlign: TextAlign,
+        val letterSpacingEm: Float,
+        val wordSpacingMultiplier: Float,
         val lineHeightMultiplier: Float,
         val paragraphVerticalMarginMultiplier: Float,
         val hangingConfig: HangingConfig,
@@ -27,7 +29,6 @@ class ContentConfig(
         val textIsBold: Boolean,
         val textIsItalic: Boolean,
         val textSizeMultiplier: Float,
-        val letterSpacingEm: Float,
         val textScaleX: Float,
         val textSkewX: Float,
         val textStrokeWidthDip: Float,
@@ -57,11 +58,12 @@ fun settingsLayoutConfig(context: Context, settings: UserSettings) = ContentConf
 
         firstLineIndentDip = settings[FormatKeys.firstLineIndentDip],
         textAlign = settings[FormatKeys.textAlign],
+        letterSpacingEm = settings[FormatKeys.letterSpacingEm],
+        wordSpacingMultiplier = settings[FormatKeys.wordSpacingMultiplier],
         lineHeightMultiplier = settings[FormatKeys.lineHeightMultiplier],
         paragraphVerticalMarginMultiplier = settings[FormatKeys.paragraphVerticalMarginMultiplier],
         hangingConfig = if (settings[FormatKeys.hangingPunctuation]) DefaultHangingConfig else NoneHangingConfig,
         hyphenation = settings[FormatKeys.hyphenation],
-        letterSpacingEm = settings[FormatKeys.letterSpacingEm],
 
         textFontFamily = settings[FormatKeys.textFontFamily],
         textIsBold = settings[FormatKeys.textIsBold],

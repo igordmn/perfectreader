@@ -19,9 +19,10 @@ object UserSettingKeys : Keys() {
     object Format : Keys(this) {
         val firstLineIndentDip by key(20F)
         val textAlign by key(TextAlign.JUSTIFY)
+        val letterSpacingEm by key(0F)
+        val wordSpacingMultiplier by key(1F)
         val lineHeightMultiplier by key(1F)
         val paragraphVerticalMarginMultiplier by key(1F)
-        val letterSpacingEm by key(0F)
         val hangingPunctuation by key(true)
         val hyphenation by key(true)
 

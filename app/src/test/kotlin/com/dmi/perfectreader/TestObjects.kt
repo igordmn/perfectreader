@@ -6,9 +6,10 @@ import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.util.graphic.Color
 
-fun fontStyle() = ConfiguredFontStyle(
+fun fontStyle(wordSpacingMultiplier: Float = 1F) = ConfiguredFontStyle(
         size = 12F,
-        letterSpacing = 0F,
+        letterSpacingEm = 0F,
+        wordSpacingMultiplier = wordSpacingMultiplier,
         scaleX = 1.0F,
         skewX = 0F,
         strokeWidth = 0F,

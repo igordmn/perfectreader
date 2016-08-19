@@ -6,7 +6,6 @@ import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredParagraph
 import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredParagraph.Run
 import com.dmi.perfectreader.fragment.book.content.obj.param.TextAlign
 import com.dmi.perfectreader.fragment.book.layout.ObjectLayouter
-import com.dmi.util.text.Chars
 import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.fragment.book.layout.common.LayoutSpace.Area
 import com.dmi.perfectreader.fragment.book.layout.obj.*
@@ -17,6 +16,7 @@ import com.dmi.util.lang.ReusableArrayList
 import com.dmi.util.lang.ReusableFloatArrayList
 import com.dmi.util.lang.ReusableIntArrayList
 import com.dmi.util.lang.ReusableStringBuilder
+import com.dmi.util.text.Chars
 import java.lang.Math.max
 import java.util.*
 
@@ -67,7 +67,6 @@ class ParagraphLayouter(
                     build()
                 }
             }
-
 
             fun maxLineWidth(lines: List<Liner.Line>): Float {
                 var width = 0F
@@ -170,7 +169,13 @@ class ParagraphLayouter(
                     val charAdvances = textMetrics.charAdvances(text, run.style)
                     for (i in 0..text.length - 1) {
                         plainIndexToRunIndex.add(runIndex)
-                        addAdvance(charAdvances[i])
+                        addAdvance(
+                                if (isSpaceWordSeparator(text[i])) {
+                                    charAdvances[i] * run.style.wordSpacingMultiplier
+                                } else {
+                                    charAdvances[i]
+                                }
+                        )
                     }
 
                     runIndexToPlainBeginIndex.add(plainTextBuilder.length - text.length)
@@ -342,6 +347,12 @@ class ParagraphLayouter(
             }
         }.layout()
     }
+
+    /**
+     * См. https://drafts.csswg.org/css-text-3/#word-separator
+     * Поддерживаем только пробелы, т.к. они легко поддаются растягиванию
+     */
+    private fun isSpaceWordSeparator(ch: Char) = ch == '\u0020' || ch == '\u00A0'
 
     private class LineBuilder {
         private var width = 0F

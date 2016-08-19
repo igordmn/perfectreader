@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.fragment.book.layout
 
+import com.dmi.perfectreader.fontStyle
 import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredObject
 import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredParagraph
 import com.dmi.perfectreader.fragment.book.content.obj.ConfiguredParagraph.Run
@@ -18,7 +19,6 @@ import com.dmi.perfectreader.fragment.book.layout.paragraph.liner.Liner
 import com.dmi.perfectreader.fragment.book.layout.paragraph.metrics.TextMetrics
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
-import com.dmi.perfectreader.fontStyle
 import com.dmi.test.shouldEqual
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.text.Chars
@@ -979,6 +979,57 @@ class ParagraphLayouterTest {
         layoutObj.children[0].obj.childXs shouldEqual listOf(30F + (170 - 30 - 100) / 2)
         layoutObj.children[1].obj.childXs shouldEqual listOf(-10F + (170 + 10 - 180) / 2)
         layoutObj.children[2].obj.childXs shouldEqual listOf(0F + (170 + 0 - 50) / 2)
+    }
+
+    @Test
+    fun `apply word spacing`() {
+        // given
+        val WORD_SPACING1 = 1.5F
+        val LETTER_WIDTH1 = 10F
+        val SPACE_WIDTH1 = 5F
+        val style1 = fontStyle(wordSpacingMultiplier = WORD_SPACING1)
+
+        val WORD_SPACING2 = 1.5F
+        val LETTER_WIDTH2 = 15F
+        val SPACE_WIDTH2 = 10F
+        val style2 = fontStyle(wordSpacingMultiplier = WORD_SPACING2)
+
+        val liner = object : Liner {
+            lateinit var measuredText: Liner.MeasuredText
+
+            override fun makeLines(measuredText: Liner.MeasuredText, config: Liner.Config): List<Liner.Line> {
+                this.measuredText = measuredText
+                return emptyList()
+            }
+        }
+        val layouter = ParagraphLayouter(
+                childLayouter(),
+                textMetrics(mapOf(
+                        style1 to TestMetrics(LETTER_WIDTH1, SPACE_WIDTH1),
+                        style2 to TestMetrics(LETTER_WIDTH2, SPACE_WIDTH2)
+                )),
+                liner
+        )
+
+        // when
+        layouter.layout(
+                ConfiguredParagraph(
+                        Locale.US,
+                        listOf(
+                                Run.Text("some ", style1, runRange(0)),
+                                Run.Text("text ", style2, runRange(1))
+                        ),
+                        20F, TextAlign.LEFT, true,
+                        DefaultHangingConfig, rootRange()
+                ),
+                rootSpace(200F, 200F)
+        )
+
+        // then
+        with (liner.measuredText) {
+            advanceOf(4) shouldEqual SPACE_WIDTH1 * WORD_SPACING1
+            advanceOf(9) shouldEqual SPACE_WIDTH2 * WORD_SPACING2
+        }
     }
 
     fun childLayouter(configuredToLayoutObject: Map<ConfiguredObject, LayoutObject> = emptyMap()) =

@@ -10,7 +10,8 @@ class ContentFontStyle(
 
 class ConfiguredFontStyle(
         val size: Float,
-        val letterSpacing: Float,
+        val letterSpacingEm: Float,
+        val wordSpacingMultiplier: Float,
         val scaleX: Float,
         val skewX: Float,
         val strokeWidth: Float,
