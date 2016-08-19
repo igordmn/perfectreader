@@ -73,12 +73,14 @@ class AppObjects(applicationContext: Context) {
                     val createPages = { Pages(bookData.location) }
                     val createPagesLoader = { pages: Pages ->
                         val layoutConfig = settingsLayoutConfig(applicationContext, userSettings)
-                        val pageConfig = settingsPageConfig(size, userSettings)
+                        val pageConfig = settingsPageConfig(applicationContext, size, userSettings)
                         val configuredSequence = ConfiguredSequence(bookData.content.sequence, layoutConfig)
-                        val layoutSequence = LayoutSequence(configuredSequence, layouter, pageConfig.contentSize)
-                        val layoutPartSequence = LayoutPartSequence(layoutSequence)
-                        val layoutColumnSequence = LayoutColumnSequence(layoutPartSequence, pageConfig.contentSize.height)
-                        val pageSequence = PageSequence(layoutColumnSequence, pageConfig)
+                        val createColumnSequence = { contentSize: SizeF ->
+                            val layoutSequence = LayoutSequence(configuredSequence, layouter, contentSize)
+                            val partSequence = LayoutPartSequence(layoutSequence)
+                            LayoutColumnSequence(partSequence, contentSize.height)
+                        }
+                        val pageSequence = PageSequence(createColumnSequence, pageConfig)
                         PagesLoader(pages, pageSequence)
                     }
                     val staticBook = StaticBook(createPages, createPagesLoader)

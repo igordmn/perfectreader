@@ -27,7 +27,7 @@ class ContentParagraph(
     override fun configure(config: ContentConfig) = ConfiguredParagraph(
             if (config.ignoreDeclaredLocale) config.defaultLocale else locale ?: config.defaultLocale,
             runs.map { it.configure(config) },
-            (firstLineIndent ?: config.firstLineIndent) * config.density,
+            (firstLineIndent ?: config.firstLineIndentDip) * config.density,
             textAlign ?: config.textAlign,
             config.hyphenation,
             config.hangingConfig,
@@ -104,20 +104,20 @@ private class FontStyleCache {
 
 private fun ContentFontStyle.configure(config: ContentConfig) = ConfiguredFontStyle(
         (size ?: ContentParagraph.DEFAULT_FONT_SIZE) * config.density * config.textSizeMultiplier,
-        config.letterSpacing,
+        config.letterSpacingEm,
         config.textScaleX,
         config.textSkewX,
-        config.textStrokeWidth,
+        config.textStrokeWidthDip * config.density,
         color ?: config.textColor,
         config.textAntialiasing,
         config.textHinting,
         config.textSubpixelPositioning,
 
         config.textShadowEnabled,
-        config.textShadowOffsetX,
-        config.textShadowOffsetY,
-        config.textShadowStrokeWidth,
-        config.textShadowBlurRadius,
+        config.textShadowOffsetXDip * config.density,
+        config.textShadowOffsetYDip * config.density,
+        config.textShadowStrokeWidthDip * config.density,
+        config.textShadowBlurRadiusDip * config.density,
         config.textShadowColor,
 
         config.selectionColor

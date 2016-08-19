@@ -17,11 +17,11 @@ object UserSettingKeys : Keys() {
     }
 
     object Format : Keys(this) {
-        val firstLineIndent by key(20F)
+        val firstLineIndentDip by key(20F)
         val textAlign by key(TextAlign.JUSTIFY)
         val lineHeightMultiplier by key(1F)
         val paragraphVerticalMarginMultiplier by key(1F)
-        val letterSpacing by key(0F)
+        val letterSpacingEm by key(0F)
         val hangingPunctuation by key(true)
         val hyphenation by key(true)
 
@@ -31,24 +31,24 @@ object UserSettingKeys : Keys() {
         val textSizeMultiplier by key(1F)
         val textScaleX by key(1.0F)
         val textSkewX by key(0.0F)
-        val textStrokeWidth by key(0.0F)
+        val textStrokeWidthDip by key(0.0F)
         val textColor by key(Color.BLACK.value)
         val textAntialiasing by key(true)
         val textHinting by key(true)
         val textSubpixelPositioning by key(true)
 
         val textShadowEnabled by key(false)
-        val textShadowOffsetX by key(0F)
-        val textShadowOffsetY by key(0F)
-        val textShadowStrokeWidth by key(0F)
-        val textShadowBlurRadius by key(1F)
+        val textShadowOffsetXDip by key(0F)
+        val textShadowOffsetYDip by key(0F)
+        val textShadowStrokeWidthDip by key(0F)
+        val textShadowBlurRadiusDip by key(1F)
         val textShadowColor by key(Color.GRAY.value)
 
         val pageTextGammaCorrection by key(1F)
-        val pageMarginLeft by key(20F)
-        val pageMarginRight by key(20F)
-        val pageMarginTop by key(20F)
-        val pageMarginBottom by key(20F)
+        val pageMarginLeftDip by key(20F)
+        val pageMarginRightDip by key(20F)
+        val pageMarginTopDip by key(20F)
+        val pageMarginBottomDip by key(20F)
     }
 
     object Image : Keys(this) {
