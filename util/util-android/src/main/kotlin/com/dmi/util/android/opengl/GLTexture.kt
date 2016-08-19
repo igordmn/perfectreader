@@ -6,6 +6,7 @@ import android.opengl.GLUtils.texSubImage2D
 import com.dmi.util.android.opengl.OpenGL.texSubImage2D
 import com.dmi.util.graphic.Rect
 import com.dmi.util.graphic.Size
+import com.dmi.util.lang.clamp
 
 class GLTexture(size: Size) {
     val id = Graphics.glGenTexture()
@@ -22,12 +23,19 @@ class GLTexture(size: Size) {
 
     fun refreshBy(bitmap: Bitmap, rect: Rect) {
         glBindTexture(GL_TEXTURE_2D, id)
-        if (rect.left == 0 && rect.top == 0 && rect.width == bitmap.width && rect.height == bitmap.height) {
+
+        val left = clamp(rect.left, 0, bitmap.width)
+        val top = clamp(rect.top, 0, bitmap.height)
+        val right = clamp(rect.right, 0, bitmap.width)
+        val bottom = clamp(rect.bottom, 0, bitmap.height)
+
+        if (left == 0 && top == 0 && right == bitmap.width && bottom == bitmap.height) {
             // это быстрее в два раза для полной текстуры
             texSubImage2D(GL_TEXTURE_2D, 0, 0, 0, bitmap)
         } else {
-            texSubImage2D(GL_TEXTURE_2D, 0, rect.left, rect.top, bitmap, rect.left, rect.top, rect.width, rect.height)
+            texSubImage2D(GL_TEXTURE_2D, 0, left, top, bitmap, left, top, right - left, bottom - top)
         }
+
         glBindTexture(GL_TEXTURE_2D, 0)
     }
 

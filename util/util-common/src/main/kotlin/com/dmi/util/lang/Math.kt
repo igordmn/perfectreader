@@ -8,9 +8,8 @@ infix fun Int.modPositive(n: Int): Int {
     return result
 }
 
-fun clamp(value: Float, min: Float, max: Float): Float {
-    return Math.max(min, Math.min(max, value))
-}
+fun clamp(value: Float, min: Float, max: Float) = Math.max(min, Math.min(max, value))
+fun clamp(value: Int, min: Int, max: Int) = Math.max(min, Math.min(max, value))
 
 fun floor(value: Float) = Math.floor(value.toDouble()).toFloat()
 fun ceil(value: Float) = Math.ceil(value.toDouble()).toFloat()
