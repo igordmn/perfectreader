@@ -5,8 +5,8 @@ import java.io.Serializable
 interface Length : Serializable {
     fun compute(percentBase: Float): Float
 
-    fun configure(config: ContentConfig) = when (this) {
-        is Length.Absolute -> Length.Absolute(value * config.density)
+    fun configure(config: ContentConfig, multiplier: Float = 1F) = when (this) {
+        is Length.Absolute -> Length.Absolute(value * config.density * multiplier)
         else -> this
     }
 
@@ -24,13 +24,5 @@ interface Length : Serializable {
         }
 
         override fun compute(percentBase: Float) = percent * percentBase
-    }
-
-    data class Multiplier(val other: Length, val value: Float) : Length {
-        init {
-            require(value >= 0F)
-        }
-
-        override fun compute(percentBase: Float) = other.compute(percentBase) * value
     }
 }

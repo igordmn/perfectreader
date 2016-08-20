@@ -8,8 +8,9 @@ class ContentBox(
         val size: ContentSize,
         val contentAlign: Align?,
         val children: List<ContentObject>,
+        textSize: Float?,
         range: LocationRange
-) : ContentObject(range) {
+) : ContentObject(range, textSize) {
     override val length = children.sumByDouble { it.length }
 
     override fun configure(config: ContentConfig) = ConfiguredBox(

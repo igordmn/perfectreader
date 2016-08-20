@@ -17,7 +17,7 @@ fun configureTextPaint(paint: TextPaint, style: ConfiguredFontStyle) {
     paint.hinting = if (style.hinting) Paint.HINTING_ON else Paint.HINTING_OFF
     paint.isLinearText = false
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        paint.letterSpacing = style.letterSpacingEm
+        paint.letterSpacing = style.letterSpacing / style.size
     }
 }
 
@@ -33,6 +33,6 @@ fun configureTextShadowPaint(paint: TextPaint, style: ConfiguredFontStyle) {
     paint.hinting = if (style.hinting) Paint.HINTING_ON else Paint.HINTING_OFF
     paint.isLinearText = false
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        paint.letterSpacing = style.letterSpacingEm
+        paint.letterSpacing = style.letterSpacing / style.size
     }
 }

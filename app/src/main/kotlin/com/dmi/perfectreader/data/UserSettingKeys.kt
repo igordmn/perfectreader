@@ -17,19 +17,19 @@ object UserSettingKeys : Keys() {
     }
 
     object Format : Keys(this) {
-        val firstLineIndentDip by key(20F)
+        val firstLineIndentEm by key(1F)
         val textAlign by key(TextAlign.JUSTIFY)
         val letterSpacingEm by key(0F)
         val wordSpacingMultiplier by key(1F)
         val lineHeightMultiplier by key(1F)
-        val paragraphVerticalMarginMultiplier by key(1F)
+        val paragraphVerticalMarginEm by key(0.5F)
         val hangingPunctuation by key(true)
         val hyphenation by key(true)
 
         val textFontFamily by key("serif")
         val textIsBold by key(false)
         val textIsItalic by key(false)
-        val textSizeMultiplier by key(1F)
+        val textSizeDip by key(20F)
         val textScaleX by key(1.0F)
         val textSkewX by key(0.0F)
         val textStrokeWidthDip by key(0.0F)

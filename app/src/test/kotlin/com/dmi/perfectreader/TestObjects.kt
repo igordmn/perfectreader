@@ -10,7 +10,7 @@ fun fontStyle(
         wordSpacingMultiplier: Float = 1F
 ) = ConfiguredFontStyle(
         size = 12F,
-        letterSpacingEm = 0F,
+        letterSpacing = 0F,
         wordSpacingMultiplier = wordSpacingMultiplier,
         scaleX = 1.0F,
         skewX = 0F,

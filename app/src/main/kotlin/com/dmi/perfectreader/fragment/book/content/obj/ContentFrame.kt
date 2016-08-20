@@ -13,16 +13,17 @@ class ContentFrame(
         val borders: Borders,
         val background: Background,
         val child: ContentObject,
+        textSize: Float?,
         range: LocationRange
-) : ContentObject(range) {
+) : ContentObject(range, textSize) {
     companion object {
-        private val DEFAULT_PARAGRAPH_VERTICAL_MARGIN = 8F
+        private val DEFAULT_PARAGRAPH_VERTICAL_MARGIN_EM = 0.5F
     }
 
     override val length = child.length
 
     override fun configure(config: ContentConfig) = ConfiguredFrame(
-            margins.configure(config, styleType),
+            margins.configure(config, styleType, textSize),
             paddings.configure(config),
             borders.configure(config),
             background.configure(),
@@ -35,15 +36,16 @@ class ContentFrame(
     }
 
     class Margins(val left: Length?, val right: Length?, val top: Length?, val bottom: Length?) {
-        fun configure(config: ContentConfig, styleType: StyleType): ConfiguredFrame.Margins {
+        fun configure(config: ContentConfig, styleType: StyleType, textSize: Float?): ConfiguredFrame.Margins {
             return if (styleType == StyleType.PARAGRAPH) {
-                val top = (top ?: Length.Absolute(DEFAULT_PARAGRAPH_VERTICAL_MARGIN)).configure(config)
-                val bottom = (bottom ?: Length.Absolute(DEFAULT_PARAGRAPH_VERTICAL_MARGIN)).configure(config)
+                val verticalMarginMultiplier = config.paragraphVerticalMarginEm / DEFAULT_PARAGRAPH_VERTICAL_MARGIN_EM
+                val defaultVerticalMarginDip = DEFAULT_PARAGRAPH_VERTICAL_MARGIN_EM * (textSize ?: config.textSizeDip)
+
                 ConfiguredFrame.Margins(
                         (left ?: Length.Absolute(0F)).configure(config),
                         (right ?: Length.Absolute(0F)).configure(config),
-                        Length.Multiplier(top, config.paragraphVerticalMarginMultiplier),
-                        Length.Multiplier(bottom, config.paragraphVerticalMarginMultiplier)
+                        (top ?: Length.Absolute(defaultVerticalMarginDip)).configure(config, verticalMarginMultiplier),
+                        (bottom ?: Length.Absolute(defaultVerticalMarginDip)).configure(config, verticalMarginMultiplier)
                 )
             } else {
                 ConfiguredFrame.Margins(

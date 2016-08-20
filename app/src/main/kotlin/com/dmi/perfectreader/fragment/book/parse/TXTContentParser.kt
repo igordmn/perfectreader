@@ -36,7 +36,8 @@ class TXTContentParser(
             ContentFrame.Paddings(null, null, null, null),
             ContentFrame.Borders(border, border, border, border),
             ContentFrame.Background(null),
-            ContentParagraph(StyleType.PARAGRAPH, null, listOf(textRun(text, style, range)), null, null, range),
+            ContentParagraph(StyleType.PARAGRAPH, null, listOf(textRun(text, style, range)), null, null, null, range),
+            null,
             range
     )
 

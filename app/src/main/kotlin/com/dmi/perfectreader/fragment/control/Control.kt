@@ -23,9 +23,9 @@ class Control(
     private val LEFT_SIDE_WIDTH_FOR_SLIDE = dip2px(40F)
     private val SLIDE_SENSITIVITY = dip2px(20F)
 
-    private val FONT_SIZE_MAX = 4F
-    private val FONT_SIZE_MIN = 0.2F
-    private val FONT_SIZE_DELTA = 0.05F
+    private val FONT_SIZE_MAX = 80F
+    private val FONT_SIZE_MIN = 4F
+    private val FONT_SIZE_DELTA = 1F
 
     private lateinit var size: SizeF
 
@@ -65,10 +65,10 @@ class Control(
     }
 
     private fun changeFontSize(count: Int) {
-        val fontSize = userSettings[FormatKeys.textSizeMultiplier]
+        val fontSize = userSettings[FormatKeys.textSizeDip]
         val newFontSize = Math.max(FONT_SIZE_MIN, Math.min(FONT_SIZE_MAX, fontSize + count * FONT_SIZE_DELTA))
         if (newFontSize != fontSize) {
-            userSettings[FormatKeys.textSizeMultiplier] = newFontSize
+            userSettings[FormatKeys.textSizeDip] = newFontSize
             book.reformat()
         }
     }

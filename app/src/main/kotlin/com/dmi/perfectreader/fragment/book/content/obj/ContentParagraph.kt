@@ -12,27 +12,32 @@ class ContentParagraph(
         val runs: List<Run>,
         val firstLineIndent: Float?,
         val textAlign: TextAlign?,
+        textSize: Float?,
         range: LocationRange
-) : ContentObject(range) {
-    override val length = runs.sumByDouble { it.length }
-
+) : ContentObject(range, textSize) {
     companion object {
-        val DEFAULT_FONT_SIZE = 20F
+        val DEFAULT_TEXT_SIZE_DIP = 16F
     }
+
+    override val length = runs.sumByDouble { it.length }
 
     init {
         require(runs.size > 0)
     }
 
-    override fun configure(config: ContentConfig) = ConfiguredParagraph(
-            if (config.ignoreDeclaredLocale) config.defaultLocale else locale ?: config.defaultLocale,
-            runs.map { it.configure(config) },
-            (firstLineIndent ?: config.firstLineIndentDip) * config.density,
-            textAlign ?: config.textAlign,
-            config.hyphenation,
-            config.hangingConfig,
-            range
-    )
+    override fun configure(config: ContentConfig): ConfiguredParagraph {
+        val firstLineIndentDip = emToDip(config.firstLineIndentEm, config) + (firstLineIndent ?: 0F)
+
+        return ConfiguredParagraph(
+                if (config.ignoreDeclaredLocale) config.defaultLocale else locale ?: config.defaultLocale,
+                runs.map { it.configure(config) },
+                firstLineIndentDip * config.density,
+                textAlign ?: config.textAlign,
+                config.hyphenation,
+                config.hangingConfig,
+                range
+        )
+    }
 
     sealed class Run(val lineHeightMultiplier: Float?) {
         abstract val range: LocationRange
@@ -116,24 +121,28 @@ private class FontStyleCache {
     }
 }
 
-private fun ContentFontStyle.configure(config: ContentConfig) = ConfiguredFontStyle(
-        (size ?: ContentParagraph.DEFAULT_FONT_SIZE) * config.density * config.textSizeMultiplier,
-        config.letterSpacingEm,
-        config.wordSpacingMultiplier,
-        config.textScaleX,
-        config.textSkewX,
-        config.textStrokeWidthDip * config.density,
-        color ?: config.textColor,
-        config.textAntialiasing,
-        config.textHinting,
-        config.textSubpixelPositioning,
+private fun ContentFontStyle.configure(config: ContentConfig): ConfiguredFontStyle {
+    val textSizeMultiplier = config.textSizeDip / ContentParagraph.DEFAULT_TEXT_SIZE_DIP
+    val textSize = (size ?: ContentParagraph.DEFAULT_TEXT_SIZE_DIP) * textSizeMultiplier * config.density
+    return ConfiguredFontStyle(
+            textSize,
+            config.letterSpacingEm * textSize,
+            config.wordSpacingMultiplier,
+            config.textScaleX,
+            config.textSkewX,
+            config.textStrokeWidthDip * config.density,
+            color ?: config.textColor,
+            config.textAntialiasing,
+            config.textHinting,
+            config.textSubpixelPositioning,
 
-        config.textShadowEnabled,
-        config.textShadowOffsetXDip * config.density,
-        config.textShadowOffsetYDip * config.density,
-        config.textShadowStrokeWidthDip * config.density,
-        config.textShadowBlurRadiusDip * config.density,
-        config.textShadowColor,
+            config.textShadowEnabled,
+            config.textShadowOffsetXDip * config.density,
+            config.textShadowOffsetYDip * config.density,
+            config.textShadowStrokeWidthDip * config.density,
+            config.textShadowBlurRadiusDip * config.density,
+            config.textShadowColor,
 
-        config.selectionColor
-)
+            config.selectionColor
+    )
+}

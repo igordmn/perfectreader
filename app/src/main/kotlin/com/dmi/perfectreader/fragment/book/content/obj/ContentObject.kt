@@ -4,7 +4,10 @@ import com.dmi.perfectreader.fragment.book.content.obj.param.ContentConfig
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import java.io.Serializable
 
-abstract class ContentObject(val range: LocationRange) : Serializable {
+abstract class ContentObject(
+        val range: LocationRange,
+        val textSize: Float?    // используется для вычисления EM единиц (http://www.w3schools.com/cssref/css_units.asp)
+) : Serializable {
     /**
      * Используется для определения положения в процентах
      *
@@ -22,6 +25,8 @@ abstract class ContentObject(val range: LocationRange) : Serializable {
      * - преобразование dip (device independent pixels) в px
      */
     abstract fun configure(config: ContentConfig): ConfiguredObject
+
+    protected fun emToDip(value: Float, config: ContentConfig) = (textSize ?: config.textSizeDip) * value
 }
 
 abstract class ConfiguredObject(val range: LocationRange)
