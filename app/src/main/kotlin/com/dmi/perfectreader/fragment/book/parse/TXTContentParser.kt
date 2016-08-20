@@ -21,10 +21,12 @@ class TXTContentParser(
 
         var begin = 0.0
         source.openBufferedStream().reader(charset).forEachLine() { text ->
-            val end = begin + text.length
-            val range = LocationRange(Location(begin), Location(end))
-            contentBuilder.addObject(toContentObject(text, style, range))
-            begin = end
+            if (text.length > 0) {
+                val end = begin + text.length
+                val range = LocationRange(Location(begin), Location(end))
+                contentBuilder.addObject(toContentObject(text, style, range))
+                begin = end
+            }
         }
 
         return contentBuilder.build()
