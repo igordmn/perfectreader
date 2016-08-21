@@ -72,9 +72,9 @@ class AppObjects(applicationContext: Context) {
                 val createAnimated = { size: SizeF ->
                     val createPages = { Pages(bookData.location) }
                     val createPagesLoader = { pages: Pages ->
-                        val layoutConfig = settingsLayoutConfig(applicationContext, userSettings)
+                        val contentConfig = settingsContentConfig(applicationContext, userSettings)
                         val pageConfig = settingsPageConfig(applicationContext, size, userSettings)
-                        val configuredSequence = ConfiguredSequence(bookData.content.sequence, layoutConfig)
+                        val configuredSequence = ConfiguredSequence(bookData.content.sequence, contentConfig)
                         val createColumnSequence = { contentSize: SizeF ->
                             val layoutSequence = LayoutSequence(configuredSequence, layouter, contentSize)
                             val partSequence = LayoutPartSequence(layoutSequence)

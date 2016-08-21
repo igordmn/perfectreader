@@ -50,7 +50,7 @@ class ContentConfig(
         val imageScaleFiltered: Boolean
 )
 
-fun settingsLayoutConfig(context: Context, settings: UserSettings) = ContentConfig(
+fun settingsContentConfig(context: Context, settings: UserSettings) = ContentConfig(
         context.displayMetrics.density,
 
         defaultLocale = defaultLocale(context, settings),
