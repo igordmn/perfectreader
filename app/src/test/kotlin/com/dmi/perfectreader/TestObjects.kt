@@ -4,11 +4,15 @@ import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredFontStyle
 import com.dmi.perfectreader.fragment.book.layout.obj.LayoutObject
 import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.location.LocationRange
+import com.dmi.util.font.Font
+import com.dmi.util.font.StyledFont
 import com.dmi.util.graphic.Color
 
 fun fontStyle(
         wordSpacingMultiplier: Float = 1F
 ) = ConfiguredFontStyle(
+        styledFont = StyledFont(testFont(), isFakeBold = false, isFakeItalic = false),
+
         size = 12F,
         letterSpacing = 0F,
         wordSpacingMultiplier = wordSpacingMultiplier,
@@ -28,6 +32,7 @@ fun fontStyle(
         selectionColor = Color.RED
 )
 
+fun testFont() = object : Font {}
 
 fun range(intRange: IntRange) = range(intRange.first, intRange.last)
 fun range(beginIndex: Int = 0, endIndex: Int = 0) = LocationRange(location(beginIndex), location(endIndex))

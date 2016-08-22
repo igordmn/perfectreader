@@ -7,7 +7,7 @@ import com.dmi.perfectreader.fragment.book.*
 import com.dmi.perfectreader.fragment.book.bitmap.AndroidBitmapDecoder
 import com.dmi.perfectreader.fragment.book.bitmap.CachedBitmapDecoder
 import com.dmi.perfectreader.fragment.book.content.ConfiguredSequence
-import com.dmi.perfectreader.fragment.book.content.obj.param.settingsLayoutConfig
+import com.dmi.perfectreader.fragment.book.content.obj.param.appContentConfig
 import com.dmi.perfectreader.fragment.book.layout.LayoutSequence
 import com.dmi.perfectreader.fragment.book.layout.UniversalObjectLayouter
 import com.dmi.perfectreader.fragment.book.layout.paragraph.breaker.CompositeBreaker
@@ -41,6 +41,7 @@ import com.dmi.perfectreader.fragment.reader.Reader
 import com.dmi.perfectreader.fragment.reader.ReaderView
 import com.dmi.perfectreader.fragment.selection.Selection
 import com.dmi.perfectreader.fragment.selection.SelectionView
+import com.dmi.util.android.font.androidFontCollectionCache
 import com.dmi.util.android.system.copyPlainText
 import com.dmi.util.graphic.Size
 import com.dmi.util.graphic.SizeF
@@ -49,6 +50,8 @@ class AppObjects(applicationContext: Context) {
     val databases = AppDatabases(applicationContext)
     val userData = UserData(databases.user)
     val userSettings = UserSettings(databases.user)
+    val protocols = AppProtocols()
+    val fontCollectionCache = androidFontCollectionCache()
     val dip2px = { value: Float -> value * applicationContext.resources.displayMetrics.density }
     val copyPlainText = { text: String -> applicationContext.copyPlainText(text) }
 
@@ -72,7 +75,9 @@ class AppObjects(applicationContext: Context) {
                 val createAnimated = { size: SizeF ->
                     val createPages = { Pages(bookData.location) }
                     val createPagesLoader = { pages: Pages ->
-                        val contentConfig = settingsContentConfig(applicationContext, userSettings)
+                        val userFontsDirectory = userFontsDirectory(protocols, userSettings)
+                        val fontCollection = fontCollectionCache.collectionFor(userFontsDirectory)
+                        val contentConfig = appContentConfig(applicationContext, userSettings, fontCollection)
                         val pageConfig = settingsPageConfig(applicationContext, size, userSettings)
                         val configuredSequence = ConfiguredSequence(bookData.content.sequence, contentConfig)
                         val createColumnSequence = { contentSize: SizeF ->

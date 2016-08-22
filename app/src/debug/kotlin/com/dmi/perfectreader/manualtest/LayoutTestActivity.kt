@@ -2,6 +2,7 @@ package com.dmi.perfectreader.manualtest
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -33,6 +34,8 @@ import com.dmi.perfectreader.fragment.book.render.factory.FramePainter
 import com.dmi.perfectreader.fragment.book.render.factory.ImagePainter
 import com.dmi.perfectreader.fragment.book.render.factory.PageRenderer
 import com.dmi.perfectreader.fragment.book.render.factory.TextPainter
+import com.dmi.util.android.font.AndroidFont
+import com.dmi.util.font.StyledFont
 import com.dmi.util.graphic.Color
 import com.dmi.util.graphic.SizeF
 import java.util.*
@@ -171,6 +174,8 @@ class LayoutTestActivity : AppCompatActivity() {
     }
 
     fun fontStyle(size: Float, color: Color) = ConfiguredFontStyle(
+            styledFont = StyledFont(AndroidFont (Typeface.DEFAULT), isFakeBold = false, isFakeItalic = false),
+
             size = size,
             letterSpacing = 0F,
             wordSpacingMultiplier = 1F,

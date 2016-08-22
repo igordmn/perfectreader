@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.fragment.book.content.obj.param
 
+import com.dmi.util.font.StyledFont
 import com.dmi.util.graphic.Color
 import java.io.Serializable
 
@@ -9,6 +10,8 @@ class ContentFontStyle(
 ) : Serializable
 
 class ConfiguredFontStyle(
+        val styledFont: StyledFont,
+
         val size: Float,
         val letterSpacing: Float,
         val wordSpacingMultiplier: Float,

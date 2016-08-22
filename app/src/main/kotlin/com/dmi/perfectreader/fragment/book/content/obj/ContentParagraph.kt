@@ -1,7 +1,9 @@
 package com.dmi.perfectreader.fragment.book.content.obj
 
+import android.graphics.Typeface
 import com.dmi.perfectreader.fragment.book.content.obj.param.*
 import com.dmi.perfectreader.fragment.book.location.*
+import com.dmi.util.android.font.AndroidFont
 import java.util.*
 
 private val fontStyleCache = FontStyleCache()
@@ -124,7 +126,10 @@ private class FontStyleCache {
 private fun ContentFontStyle.configure(config: ContentConfig): ConfiguredFontStyle {
     val textSizeMultiplier = config.textSizeDip / ContentParagraph.DEFAULT_TEXT_SIZE_DIP
     val textSize = (size ?: ContentParagraph.DEFAULT_TEXT_SIZE_DIP) * textSizeMultiplier * config.density
+
     return ConfiguredFontStyle(
+            config.fontCollection.loadFont(config.textFontFamily, config.textFontStyle),
+
             textSize,
             config.letterSpacingEm * textSize,
             config.wordSpacingMultiplier,

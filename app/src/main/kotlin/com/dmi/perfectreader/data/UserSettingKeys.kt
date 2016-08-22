@@ -26,9 +26,8 @@ object UserSettingKeys : Keys() {
         val hangingPunctuation by key(true)
         val hyphenation by key(true)
 
-        val textFontFamily by key("serif")
-        val textIsBold by key(false)
-        val textIsItalic by key(false)
+        val textFontFamily by key("")
+        val textFontStyle by key("Regular")
         val textSizeDip by key(20F)
         val textScaleX by key(1.0F)
         val textSkewX by key(0.0F)
@@ -50,6 +49,10 @@ object UserSettingKeys : Keys() {
         val pagePaddingRightDip by key(20F)
         val pagePaddingTopDip by key(20F)
         val pagePaddingBottomDip by key(20F)
+    }
+
+    object System : Keys(this) {
+        val fontsPath by key("externalStorage://Fonts")
     }
 
     object Image : Keys(this) {

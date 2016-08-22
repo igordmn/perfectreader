@@ -2,6 +2,7 @@ package com.dmi.perfectreader.fragment.book.content.obj.param
 
 import android.content.Context
 import com.dmi.perfectreader.data.UserSettings
+import com.dmi.util.font.FontCollection
 import com.dmi.util.graphic.Color
 import org.jetbrains.anko.displayMetrics
 import java.util.*
@@ -26,8 +27,7 @@ class ContentConfig(
         val hyphenation: Boolean,
 
         val textFontFamily: String,
-        val textIsBold: Boolean,
-        val textIsItalic: Boolean,
+        val textFontStyle: String,
         val textSizeDip: Float,
         val textScaleX: Float,
         val textSkewX: Float,
@@ -47,10 +47,12 @@ class ContentConfig(
         val selectionColor: Color,
 
         val imageSourceScale: Float,
-        val imageScaleFiltered: Boolean
+        val imageScaleFiltered: Boolean,
+
+        val fontCollection: FontCollection
 )
 
-fun settingsContentConfig(context: Context, settings: UserSettings) = ContentConfig(
+fun appContentConfig(context: Context, settings: UserSettings, fontCollection: FontCollection) = ContentConfig(
         context.displayMetrics.density,
 
         defaultLocale = defaultLocale(context, settings),
@@ -66,8 +68,8 @@ fun settingsContentConfig(context: Context, settings: UserSettings) = ContentCon
         hyphenation = settings[FormatKeys.hyphenation],
 
         textFontFamily = settings[FormatKeys.textFontFamily],
-        textIsBold = settings[FormatKeys.textIsBold],
-        textIsItalic = settings[FormatKeys.textIsItalic],
+        textFontStyle = settings[FormatKeys.textFontStyle],
+
         textSizeDip = settings[FormatKeys.textSizeDip],
         textScaleX = settings[FormatKeys.textScaleX],
         textSkewX = settings[FormatKeys.textSkewX],
@@ -87,7 +89,9 @@ fun settingsContentConfig(context: Context, settings: UserSettings) = ContentCon
         selectionColor = Color(settings[UIKeys.selectionColor]),
 
         imageSourceScale = if (settings[ImageKeys.sourceScaleByDpi]) context.displayMetrics.density else settings[ImageKeys.sourceScale],
-        imageScaleFiltered = settings[ImageKeys.scaleFiltered]
+        imageScaleFiltered = settings[ImageKeys.scaleFiltered],
+
+        fontCollection = fontCollection
 )
 
 private fun defaultLocale(context: Context, settings: UserSettings) =
