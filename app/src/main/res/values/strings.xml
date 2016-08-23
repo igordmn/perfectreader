@@ -12,5 +12,5 @@
     <string name="bookMenuTextToSpeech">Читать вслух</string>
     <string name="bookMenuAddBookmark">Добавить закладку</string>
     <string name="selectionCopiedToClipboard">Текст скопирован в буфер обмена</string>
-    <string name="selectionCopyText">Скопировать текст</string>
+    <string name="selectionCopyText">Копировать</string>
 </resources>
