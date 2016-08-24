@@ -30,8 +30,8 @@ class Pages(
 
     private val currentEntries = DuplexBuffer<SequenceEntry<Page>>(MAX_RELATIVE_INDEX)
 
-    fun canGoNextPage() = currentEntries[1] != null
-    fun canGoPreviousPage() = currentEntries[-1] != null
+    fun canGoNextPage() = rightLoadedCount > 0 && currentEntries[1] != null
+    fun canGoPreviousPage() = leftLoadedCount > 0 && currentEntries[-1] != null
 
     fun goLocation(location: Location) {
         this.location = location
@@ -68,10 +68,13 @@ class Pages(
         return current == null || next == null || current.range.end == next.range.begin
     }
 
-    fun fixPages() {
-        for (i in 1..MAX_RELATIVE_INDEX) {
-            currentEntries[i] = null
-        }
+    fun needReloadAll() {
+        isCurrentLoaded = false
+        leftLoadedCount = 0
+        rightLoadedCount = 0
+    }
+
+    fun needReloadRight() {
         rightLoadedCount = 0
     }
 
@@ -94,10 +97,4 @@ class Pages(
     }
 
     operator fun get(relativeIndex: Int): Page? = currentEntries[relativeIndex]?.item
-
-    fun forEachIndexed(action: (index: Int, page: Page?) -> Unit) {
-        for (i in -MAX_RELATIVE_INDEX..MAX_RELATIVE_INDEX) {
-            action(i, get(i))
-        }
-    }
 }

@@ -7,24 +7,22 @@ import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import rx.lang.kotlin.PublishSubject
 
 class StaticBook(
-        private val createPages: () -> Pages,
+        createPages: () -> Pages,
         private val createPagesLoader: (Pages) -> PagesLoader
 ) {
-    private lateinit var pages: Pages
-    private lateinit var pagesLoader: PagesLoader
+    private var pages: Pages = createPages()
+    private var pagesLoader: PagesLoader = initPagesLoader()
 
     val location: Location get() = pages.location
-
     val onPagesChanged = PublishSubject<Unit>()
 
-    init {
-        initPages()
+    private fun initPagesLoader() = createPagesLoader(pages).apply {
+        onLoad.subscribe {
+            onPagesChanged.onNext(Unit)
+        }
     }
 
-    private fun initPages() {
-        pages = createPages()
-        pagesLoader = createPagesLoader(pages)
-        pagesLoader.onLoad.subscribe(onPagesChanged)
+    init {
         pagesLoader.check()
     }
 
@@ -33,9 +31,10 @@ class StaticBook(
     }
 
     fun reformat() {
+        pages.needReloadAll()
         pagesLoader.destroy()
-        initPages()
-        onPagesChanged.onNext(Unit)
+        pagesLoader = initPagesLoader()
+        pagesLoader.check()
     }
 
     fun goLocation(location: Location) {
@@ -63,9 +62,8 @@ class StaticBook(
 
     fun checkNextPageIsValid() {
         if (!pages.isNextPagesValid()) {
-            pages.fixPages()
+            pages.needReloadRight()
             pagesLoader.check()
-            onPagesChanged.onNext(Unit)
         }
     }
 
