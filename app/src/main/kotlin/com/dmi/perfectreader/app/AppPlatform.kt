@@ -8,6 +8,7 @@ import com.dmi.util.android.system.setPriority
 import com.dmi.util.debug.DisabledRefWatcher
 import com.dmi.util.ext.async
 import com.dmi.util.initPlatform
+import com.dmi.util.lang.NoStackTraceThrowable
 import com.dmi.util.log
 import com.dmi.util.log.DebugLog
 import com.dmi.util.log.ReleaseLog
@@ -15,15 +16,16 @@ import com.github.moduth.blockcanary.BlockCanary
 import com.github.moduth.blockcanary.BlockCanaryContext
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
+import rx.Scheduler
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.util.concurrent.Executors.newSingleThreadExecutor
 import java.util.concurrent.ThreadFactory
 
-val dataAccessScheduler = singleThreadScheduler("dataAccess", ThreadPriority.BACKGROUND)
-val bookLoadScheduler = singleThreadScheduler("bookLoad", ThreadPriority.BACKGROUND)
-val glBackgroundScheduler = singleThreadScheduler("pagePaint", ThreadPriority.BACKGROUND)
-val pageLoadScheduler = singleThreadScheduler("pageLoad", ThreadPriority.BACKGROUND)
+val dataAccessScheduler: Scheduler = singleThreadScheduler("dataAccess", ThreadPriority.BACKGROUND)
+val bookLoadScheduler: Scheduler = singleThreadScheduler("bookLoad", ThreadPriority.BACKGROUND)
+val glBackgroundScheduler: Scheduler = singleThreadScheduler("pagePaint", ThreadPriority.BACKGROUND)
+val pageLoadScheduler: Scheduler = singleThreadScheduler("pageLoad", ThreadPriority.BACKGROUND)
 
 fun dataAccessAsync(run: () -> Unit) = async(dataAccessScheduler, run)
 
@@ -59,7 +61,7 @@ fun initMainExceptionCatcher() {
     val oldHandler = Thread.getDefaultUncaughtExceptionHandler()
     Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
         log.e(throwable, "Exception in thread \"${thread.name}\":")
-        oldHandler.uncaughtException(thread, Throwable("See stacktrace above"))
+        oldHandler.uncaughtException(thread, NoStackTraceThrowable("See stacktrace above"))
     }
 }
 

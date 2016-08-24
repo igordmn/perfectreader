@@ -14,3 +14,6 @@ dependencies {
     compile 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
     testCompile project(':util:util-testCommon')
 }
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
