@@ -9,7 +9,7 @@
         <item name="colorAccent">@color/accent</item>
     </style>
 
-    <style name="AppTheme.Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+    <style name="AppTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="titleTextAppearance">@style/AppTheme.Toolbar.Title.Appearance</item>
         <item name="subtitleTextAppearance">@style/AppTheme.Toolbar.Subtitle.Appearance</item>
     </style>

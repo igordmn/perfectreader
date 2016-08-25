@@ -42,13 +42,13 @@ class MenuView(
     }
 
     private fun initTopBar() {
-        DrawableCompat.setTint(toolbar.navigationIcon!!, color(R.color.icon_light))
+        DrawableCompat.setTint(toolbar.navigationIcon!!, color(R.color.icon_dark))
 
         toolbar.title = "Alice's Adventures in Wonderland"
         toolbar.subtitle = "Lewis Carroll"
         toolbar.menu.add(R.string.bookMenuSettings).apply {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-            icon = drawable(R.drawable.ic_settings, color(R.color.icon_light))
+            icon = drawable(R.drawable.ic_settings, color(R.color.icon_dark))
             onClick {
                 model.showSettings()
             }

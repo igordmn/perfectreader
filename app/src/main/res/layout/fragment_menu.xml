@@ -10,6 +10,7 @@
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/gray100"
         android:clickable="true"
         android:orientation="vertical">
 
@@ -18,15 +19,13 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/primary"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:navigationIcon="@drawable/ic_arrow_back"
             app:popupTheme="@style/Theme.AppCompat.Light"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@color/primary"
             android:orientation="horizontal"
             android:paddingLeft="16dp"
             android:paddingRight="16dp">
@@ -39,7 +38,7 @@
                 android:layout_toLeftOf="@+id/currentPageText"
                 android:contentDescription="@string/bookMenuBookmarks"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/text_primary_light"
+                android:textColor="@color/text_primary_dark"
                 android:textStyle="italic"
                 tools:ignore="RtlHardcoded"
                 tools:text="X — Alice's evidence"/>
@@ -53,7 +52,7 @@
                 android:contentDescription="@string/bookMenuGoto"
                 android:gravity="end"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/text_primary_light"
+                android:textColor="@color/text_primary_dark"
                 tools:ignore="RtlHardcoded"
                 tools:text="302 / 2031"/>
 
@@ -63,7 +62,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="5dp"
+        android:layout_height="6dp"
         android:layout_below="@id/topBar"
         android:background="@drawable/shadow_bottom"/>
 
@@ -78,7 +77,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="5dp"
+        android:layout_height="6dp"
         android:layout_above="@id/bottomBar"
         android:background="@drawable/shadow_top"/>
 
@@ -87,31 +86,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/white"
+        android:background="@color/gray100"
         android:clickable="true"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+            android:id="@+id/locationSlider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dp"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
-            android:layout_marginTop="4dp">
-
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
-                android:id="@+id/locationSlider"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                app:dsb_indicatorColor="@color/accent"
-                app:dsb_indicatorFormatter="%d%%"
-                app:dsb_max="50"
-                app:dsb_min="0"
-                app:dsb_progressColor="@color/accent"
-                app:dsb_thumbSize="20dp"/>
-
-        </RelativeLayout>
+            android:layout_marginTop="4dp"
+            app:dsb_indicatorColor="@color/accent"
+            app:dsb_indicatorFormatter="%d%%"
+            app:dsb_max="100"
+            app:dsb_min="0"
+            app:dsb_progressColor="@color/accent"
+            app:dsb_thumbSize="20dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
