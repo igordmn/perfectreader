@@ -6,13 +6,13 @@ buildscript {
 
         projectVersions = [
                 kotlin        : '1.0.3',
-                buildTools    : '24',
+                buildTools    : '24.0.2',
                 androidPlugin : '2.2.0-beta1',
                 androidExperimentalPlugin : '0.8.0-beta1',
-                minSdk        : 16,
+                minSdk        : 21,
                 targetSdk     : 23,
                 compileSdk    : 23,
-                supportLibrary: '24.0.0',
+                supportLibrary: '24.2.0',
         ]
 
         projectRepositories = {
