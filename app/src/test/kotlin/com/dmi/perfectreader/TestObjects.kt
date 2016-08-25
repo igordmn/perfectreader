@@ -23,7 +23,7 @@ fun fontStyle(
         antialiasing = true,
         hinting = true,
         subpixelPositioning = true,
-        textShadowEnabled = false,
+        shadowEnabled = false,
         shadowOffsetX = 0F,
         shadowOffsetY = 0F,
         shadowStrokeWidth = 0F,

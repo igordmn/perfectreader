@@ -23,7 +23,7 @@ class ConfiguredFontStyle(
         val hinting: Boolean,
         val subpixelPositioning: Boolean,
 
-        val textShadowEnabled: Boolean,
+        val shadowEnabled: Boolean,
         val shadowOffsetX: Float,
         val shadowOffsetY: Float,
         val shadowStrokeWidth: Float,

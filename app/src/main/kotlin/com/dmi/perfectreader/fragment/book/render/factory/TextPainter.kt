@@ -13,7 +13,7 @@ open class TextPainter {
     private val textPaintCache = PaintCache()
 
     fun paintTextShadow(x: Float, y: Float, obj: LayoutText, canvas: Canvas) {
-        if (obj.style.textShadowEnabled && obj !is LayoutSpaceText) {
+        if (obj.style.shadowEnabled && obj !is LayoutSpaceText) {
             val paint = textPaintCache.forShadow(obj.style)
             val shadowX = obj.style.shadowOffsetX
             val shadowY = obj.style.shadowOffsetY
@@ -50,7 +50,7 @@ open class TextPainter {
             if (lastStyle !== style) {
                 configureTextPaint(paint, style)
 
-                if (style.textShadowEnabled) {
+                if (style.shadowEnabled) {
                     configureTextShadowPaint(paint, style)
                     paint.maskFilter = if (style.shadowBlurRadius > 0) blurMaskFilter(style.shadowBlurRadius) else null
                 }
