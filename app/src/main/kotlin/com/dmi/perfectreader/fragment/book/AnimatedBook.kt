@@ -21,8 +21,6 @@ class AnimatedBook(size: SizeF, private val staticBook: StaticBook) {
     val location: Location get() = staticBook.location
     var isAnimating: Boolean by rxObservable(false, onIsAnimatingChanged)
         private set
-    val loadedPages = LinkedHashSet<Page>()
-    val visibleSlides = ArrayList<Slide>()
     val onNewFrame = PublishSubject<Unit>()
     val onPagesChanged = staticBook.onPagesChanged
 
@@ -35,116 +33,81 @@ class AnimatedBook(size: SizeF, private val staticBook: StaticBook) {
         }
     }
 
-    fun destroy() {
+    fun destroy() = synchronized(frameMutex) {
         staticBook.destroy()
         Choreographer.getInstance().removeFrameCallback(frameCallback)
     }
 
-    fun reformat() {
+    fun reformat() = synchronized(frameMutex) {
         staticBook.reformat()
         scheduleFrameUpdate()
     }
 
-    fun goLocation(location: Location) {
+    fun goLocation(location: Location) = synchronized(frameMutex) {
         staticBook.goLocation(location)
         animation.goPage()
         isAnimating = animation.isAnimating
         scheduleFrameUpdate()
     }
 
-    fun goNextPage() {
+    fun goNextPage() = synchronized(frameMutex) {
         if (canGoNextPage()) {
             staticBook.goNextPage()
             animation.goNextPage()
             isAnimating = animation.isAnimating
-            scheduleFrameUpdate()
             checkNextPageIsValid()
+            scheduleFrameUpdate()
         }
     }
 
-    fun goPreviousPage() {
+    fun goPreviousPage() = synchronized(frameMutex) {
         if (canGoPreviousPage()) {
             staticBook.goPreviousPage()
             animation.goPreviousPage()
             isAnimating = animation.isAnimating
-            scheduleFrameUpdate()
             checkNextPageIsValid()
+            scheduleFrameUpdate()
         }
     }
 
-    private fun canGoNextPage(): Boolean {
+    private fun canGoNextPage(): Boolean = synchronized(frameMutex) {
         val slideNotTooFar = animation.hasSlides && animation.firstSlideIndex >= -Pages.MAX_RELATIVE_INDEX
         return slideNotTooFar && staticBook.canGoNextPage()
     }
 
-    private fun canGoPreviousPage(): Boolean {
+    private fun canGoPreviousPage(): Boolean = synchronized(frameMutex) {
         val slideNotTooFar = animation.hasSlides && animation.lastSlideIndex <= Pages.MAX_RELATIVE_INDEX
         return slideNotTooFar && staticBook.canGoPreviousPage()
     }
 
     fun pageAt(relativeIndex: Int) = staticBook.pageAt(relativeIndex)
 
-    private var updateScheduled = false
-    private val frameCallback = Choreographer.FrameCallback {
-        updateScheduled = false
-        updateFrame()
-    }
-
     /**
      * Может вызываться из другого потока
      */
     fun takeFrame(frame: BookFrame) = synchronized(frameMutex) {
-        frame.loadedPages.clear()
-        frame.loadedPages.addAll(loadedPages)
-        frame.visibleSlides.clear()
-        frame.visibleSlides.addAll(visibleSlides)
-    }
-
-    private fun scheduleFrameUpdate() {
-        if (!updateScheduled) {
-            updateScheduled = true
-            Choreographer.getInstance().postFrameCallback(frameCallback)
-        }
-    }
-
-    private fun updateFrame() = synchronized(frameMutex) {
         animation.update()
-        isAnimating = animation.isAnimating
-        updatePagesAndSlides()
-        checkNextPageIsValid()
 
-        onNewFrame.onNext(Unit)
-
-        if (animation.isAnimating)
-            scheduleFrameUpdate()
-    }
-
-    private fun checkNextPageIsValid() {
-        if (!animation.isAnimating)
-            staticBook.checkNextPageIsValid()
-    }
-
-    private fun updatePagesAndSlides() {
-        loadedPages.clear()
-        visibleSlides.clear()
+        frame.loadedPages.clear()
+        frame.visibleSlides.clear()
 
         animation.slides.forEach { slide ->
-            val page = addPage(slide.relativeIndex)
-            visibleSlides.add(Slide(page, slide.offsetX))
+            val page = addLoadedPage(slide.relativeIndex, frame.loadedPages)
+            frame.visibleSlides.add(Slide(page, slide.offsetX))
         }
 
         if (animation.hasSlides) {
             if (!animation.isAnimating || animation.isGoingNext) {
-                addPage(animation.lastSlideIndex + 1)
-                addPage(animation.firstSlideIndex - 1)
+                addLoadedPage(animation.lastSlideIndex + 1, frame.loadedPages)
+                addLoadedPage(animation.firstSlideIndex - 1, frame.loadedPages)
             } else {
-                addPage(animation.firstSlideIndex - 1)
-                addPage(animation.lastSlideIndex + 1)
+                addLoadedPage(animation.firstSlideIndex - 1, frame.loadedPages)
+                addLoadedPage(animation.lastSlideIndex + 1, frame.loadedPages)
             }
         }
     }
 
-    private fun addPage(relativeIndex: Int): Page? {
+    private fun addLoadedPage(relativeIndex: Int, loadedPages: LinkedHashSet<Page>): Page? {
         if (loadedPages.size < MAX_LOADED_PAGES && Math.abs(relativeIndex) <= Pages.MAX_RELATIVE_INDEX) {
             val page = staticBook.pageAt(relativeIndex)
             if (page != null) {
@@ -153,6 +116,35 @@ class AnimatedBook(size: SizeF, private val staticBook: StaticBook) {
             }
         }
         return null
+    }
+
+    private var frameUpdateScheduled = false
+    private val frameCallback = Choreographer.FrameCallback {
+        frameUpdateScheduled = false
+        updateFrame()
+    }
+
+    private fun scheduleFrameUpdate() {
+        if (!frameUpdateScheduled) {
+            frameUpdateScheduled = true
+            Choreographer.getInstance().postFrameCallback(frameCallback)
+        }
+    }
+
+    private fun updateFrame() = synchronized(frameMutex) {
+        animation.update()
+        isAnimating = animation.isAnimating
+        checkNextPageIsValid()
+
+        onNewFrame.onNext(Unit)
+
+        if (animation.isAnimating)
+            scheduleFrameUpdate()
+    }
+
+    private fun checkNextPageIsValid() = synchronized(frameMutex)  {
+        if (!animation.isAnimating)
+            staticBook.checkNextPageIsValid()
     }
 
     class Slide(val page: Page?, val offsetX: Float)
