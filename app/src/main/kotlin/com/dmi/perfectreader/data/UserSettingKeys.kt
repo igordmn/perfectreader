@@ -176,8 +176,8 @@ object UserSettingKeys : Keys() {
 
             object ShortPress : Keys(this) {
                 object Actions : Keys(this), KeyActions {
-                    override val volumeUp by key(Action.GO_PREVIOUS_PAGE)
-                    override val volumeDown by key(Action.GO_NEXT_PAGE)
+                    override val volumeUp by key(Action.GO_PREVIOUS_PAGE_10)
+                    override val volumeDown by key(Action.GO_NEXT_PAGE_10)
                     override val menu by key(Action.TOGGLE_MENU)
                     override val back by key(Action.EXIT_APP)
                     override val search by key(Action.NONE)

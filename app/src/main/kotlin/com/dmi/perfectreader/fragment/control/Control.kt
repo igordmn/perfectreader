@@ -137,6 +137,8 @@ class Control(
         Action.EXIT_APP -> closeApp()
         Action.GO_NEXT_PAGE -> book.goNextPage()
         Action.GO_PREVIOUS_PAGE -> book.goPreviousPage()
+        Action.GO_NEXT_PAGE_10 -> book.goNextPages(10)
+        Action.GO_PREVIOUS_PAGE_10 -> book.goPreviousPages(10)
         else -> throw IllegalStateException("Action didn't handle")
     }
 

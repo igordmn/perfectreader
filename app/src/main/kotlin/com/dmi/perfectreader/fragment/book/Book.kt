@@ -10,6 +10,8 @@ import com.dmi.util.graphic.SizeF
 import com.dmi.util.lang.afterSet
 import com.dmi.util.lang.returnUnit
 import rx.lang.kotlin.PublishSubject
+import java.lang.Math.max
+import java.lang.Math.min
 
 class Book(
         private val createAnimated: (SizeF) -> AnimatedBook,
@@ -26,6 +28,10 @@ class Book(
         pageContext = PageContext(value)
         onNewFrame.onNext(Unit)
     }
+
+    val location: Location get() = animated!!.location
+    val pageNumber: Int get() = locationConverter.locationToPageNumber(animated!!.location)
+    val numberOfPages: Int get() = locationConverter.numberOfPages
 
     var pageContext: PageContext = PageContext(null)
         private set
@@ -78,6 +84,17 @@ class Book(
         animated?.let {
             it.goPreviousPage()
             data.location = it.location
+        }
+    }
+
+    fun goNextPages(increment: Int) = goPageNumber(min(pageNumber + increment, numberOfPages))
+    fun goPreviousPages(decrement: Int) = goPageNumber(max(pageNumber - decrement, 1))
+
+    fun goPageNumber(pageNumber: Int) {
+        if (this.pageNumber != pageNumber) {
+            val newLocation = locationConverter.pageNumberToLocation(pageNumber)
+            data.location = newLocation
+            animated!!.goLocation(newLocation)
         }
     }
 
