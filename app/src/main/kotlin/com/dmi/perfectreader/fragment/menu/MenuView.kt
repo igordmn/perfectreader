@@ -54,7 +54,9 @@ class MenuView(
             }
         }
         currentChapterText.text = "X — Alice's evidence"
-        currentPageText.text = "302 / 2031"
+        subscribe(model.pageNumberObservable) { pageNumber ->
+            currentPageText.text = "$pageNumber / ${model.numberOfPages}"
+        }
     }
 
     private fun initBottomBar() {

@@ -19,6 +19,7 @@ class AnimatedBook(size: SizeF, private val staticBook: StaticBook) {
     val onIsAnimatingChanged = PublishSubject<Boolean>()
 
     val location: Location get() = staticBook.location
+    val locationConverter: LocationConverter get() = staticBook.locationConverter
     var isAnimating: Boolean by rxObservable(false, onIsAnimatingChanged)
         private set
     val onNewFrame = PublishSubject<Unit>()

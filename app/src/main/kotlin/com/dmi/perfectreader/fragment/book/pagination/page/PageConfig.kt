@@ -10,18 +10,25 @@ import com.dmi.perfectreader.data.UserSettingKeys.Format as FormatKeys
 class PageConfig(
         val density: Float,
         val size: SizeF,
-        val paddingsDip: Paddings,
+        val paddings: Paddings,
         val pageTextGammaCorrection: Float
-)
+) {
+        val contentSize = size.shrink(paddings.left + paddings.right, paddings.top + paddings.bottom)
+}
 
 fun settingsPageConfig(context: Context, size: SizeF, settings: UserSettings) = PageConfig(
         density = context.displayMetrics.density,
         size = size,
-        paddingsDip = Paddings(
+        paddings = Paddings(
                 settings[FormatKeys.pagePaddingLeftDip],
                 settings[FormatKeys.pagePaddingRightDip],
                 settings[FormatKeys.pagePaddingTopDip],
                 settings[FormatKeys.pagePaddingBottomDip]
-        ),
+        ) * context.displayMetrics.density,
         pageTextGammaCorrection = settings[FormatKeys.pageTextGammaCorrection]
+)
+
+private fun SizeF.shrink(width: Float, height: Float) = SizeF(
+        Math.max(0F, this.width - width),
+        Math.max(0F, this.height - height)
 )

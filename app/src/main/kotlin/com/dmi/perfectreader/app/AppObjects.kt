@@ -22,6 +22,7 @@ import com.dmi.perfectreader.fragment.book.layout.paragraph.metrics.PaintTextMet
 import com.dmi.perfectreader.fragment.book.page.Pages
 import com.dmi.perfectreader.fragment.book.page.PagesLoader
 import com.dmi.perfectreader.fragment.book.pagination.column.LayoutColumnSequence
+import com.dmi.perfectreader.fragment.book.pagination.page.PageConfig
 import com.dmi.perfectreader.fragment.book.pagination.page.PageSequence
 import com.dmi.perfectreader.fragment.book.pagination.page.settingsPageConfig
 import com.dmi.perfectreader.fragment.book.pagination.part.LayoutPartSequence
@@ -74,11 +75,11 @@ class AppObjects(applicationContext: Context) {
 
                 val createAnimated = { size: SizeF ->
                     val createPages = { Pages(bookData.location) }
-                    val createPagesLoader = { pages: Pages ->
+                    val createPageConfig = { settingsPageConfig(applicationContext, size, userSettings) }
+                    val createPagesLoader = { pages: Pages, pageConfig: PageConfig ->
                         val userFontsDirectory = userFontsDirectory(protocols, userSettings)
                         val fontCollection = fontCollectionCache.collectionFor(userFontsDirectory)
                         val contentConfig = appContentConfig(applicationContext, userSettings, fontCollection)
-                        val pageConfig = settingsPageConfig(applicationContext, size, userSettings)
                         val configuredSequence = ConfiguredSequence(bookData.content.sequence, contentConfig)
                         val createColumnSequence = { contentSize: SizeF ->
                             val layoutSequence = LayoutSequence(configuredSequence, layouter, contentSize)
@@ -88,14 +89,15 @@ class AppObjects(applicationContext: Context) {
                         val pageSequence = PageSequence(createColumnSequence, pageConfig)
                         PagesLoader(pages, pageSequence)
                     }
-                    val staticBook = StaticBook(createPages, createPagesLoader)
+                    val createLocationConverter = { pageConfig: PageConfig ->
+                        LocationConverter(bookData.content, pageConfig, userSettings)
+                    }
+                    val staticBook = StaticBook(createPages, createPageConfig, createPagesLoader, createLocationConverter)
 
                     AnimatedBook(size, staticBook)
                 }
 
-                val locationConverter = bookData.content.locationConverter
-
-                Book(createAnimated, bookData, bitmapDecoder, locationConverter)
+                Book(createAnimated, bookData, bitmapDecoder)
             }
 
             val createControl = { reader: Reader -> Control(userSettings, reader.book, reader, closeApp, dip2px) }

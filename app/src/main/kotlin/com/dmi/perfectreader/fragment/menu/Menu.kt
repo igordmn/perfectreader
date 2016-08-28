@@ -1,20 +1,20 @@
 package com.dmi.perfectreader.fragment.menu
 
 import com.dmi.perfectreader.fragment.book.Book
-import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.util.android.base.BaseViewModel
+import rx.Observable
 
 class Menu(
         private val book: Book,
         private val closeAction: () -> Unit
 ) : BaseViewModel() {
-    val percentObservable = book.locationObservable.map { locationToPercent(it) }
+    val percentObservable: Observable<Double> = book.locationObservable.map { book.locationConverter.locationToPercent(it) }
+    val pageNumberObservable: Observable<Int> = book.locationObservable.map { book.locationConverter.locationToPageNumber(it) }
+
+    val numberOfPages: Int get() = book.locationConverter.numberOfPages
 
     fun close() = closeAction()
     fun showSettings() = close()
-    fun goPercent(percent: Double) = book.goLocation(percentToLocation(percent))
-
-
-    private fun locationToPercent(location: Location) = book.locationConverter.locationToPercent(location)
-    private fun percentToLocation(percent: Double) = book.locationConverter.percentToLocation(percent)
+    fun goPercent(percent: Double) = book.goLocation(book.locationConverter.percentToLocation(percent))
+    fun goPageNumber(pageNumber: Int) = book.goLocation(book.locationConverter.pageNumberToLocation(pageNumber))
 }

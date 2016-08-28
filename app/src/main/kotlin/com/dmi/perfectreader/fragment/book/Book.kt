@@ -3,7 +3,6 @@ package com.dmi.perfectreader.fragment.book
 import android.os.Bundle
 import com.dmi.perfectreader.fragment.book.bitmap.BitmapDecoder
 import com.dmi.perfectreader.fragment.book.location.Location
-import com.dmi.perfectreader.fragment.book.location.LocationConverter
 import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.util.android.base.BaseViewModel
@@ -15,8 +14,7 @@ import rx.lang.kotlin.PublishSubject
 class Book(
         private val createAnimated: (SizeF) -> AnimatedBook,
         private val data: BookData,
-        val bitmapDecoder: BitmapDecoder,
-        val locationConverter: LocationConverter
+        val bitmapDecoder: BitmapDecoder
 ) : BaseViewModel() {
     val locationObservable = data.locationObservable
     val onIsAnimatingChanged = PublishSubject<Boolean>()
@@ -34,6 +32,8 @@ class Book(
     val isAnimating: Boolean get() = animated?.isAnimating ?: false
 
     private var animated: AnimatedBook? = null
+
+    val locationConverter: LocationConverter get() = animated!!.locationConverter
 
     fun resize(size: SizeF) {
         animated?.destroy()

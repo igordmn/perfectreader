@@ -51,6 +51,11 @@ object UserSettingKeys : Keys() {
         val pagePaddingBottomDip by key(20F)
     }
 
+    object Navigation : Keys(this) {
+        val pageSymbolCount by key(1024)
+        val pageSymbolCountIsAuto by key(true)
+    }
+
     object System : Keys(this) {
         val fontsPath by key("externalStorage://Fonts")
     }
