@@ -68,10 +68,4 @@ abstract class BaseActivity<V : BaseView, VM : BaseViewModel> protected construc
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent) =
             view.onKeyUp(keyCode, event) || super.onKeyUp(keyCode, event)
-
-    override fun onKeyLongPress(keyCode: Int, event: KeyEvent) =
-            view.onKeyLongPress(keyCode, event) || super.onKeyLongPress(keyCode, event)
-
-    override fun onKeyMultiple(keyCode: Int, repeatCount: Int, event: KeyEvent) =
-            view.onKeyMultiple(keyCode, repeatCount, event) || super.onKeyMultiple(keyCode, repeatCount, event)
 }

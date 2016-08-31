@@ -166,11 +166,11 @@ object UserSettingKeys : Keys() {
                     HardKey.BACK -> back
                     HardKey.SEARCH -> search
                     HardKey.CAMERA -> camera
-                    HardKey.TRACKBALL_PRESS -> trackballPress
-                    HardKey.TRACKBALL_LEFT -> trackballLeft
-                    HardKey.TRACKBALL_RIGHT -> trackballRight
-                    HardKey.TRACKBALL_UP -> trackballUp
-                    HardKey.TRACKBALL_DOWN -> trackballDown
+                    HardKey.DPAD_CENTER -> trackballPress
+                    HardKey.DPAD_LEFT -> trackballLeft
+                    HardKey.DPAD_RIGHT -> trackballRight
+                    HardKey.DPAD_UP -> trackballUp
+                    HardKey.DPAD_DOWN -> trackballDown
                 }
             }
 

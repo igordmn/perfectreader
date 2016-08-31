@@ -7,9 +7,9 @@ enum class HardKey {
     BACK,
     SEARCH,
     CAMERA,
-    TRACKBALL_PRESS,
-    TRACKBALL_LEFT,
-    TRACKBALL_RIGHT,
-    TRACKBALL_UP,
-    TRACKBALL_DOWN
+    DPAD_CENTER,
+    DPAD_LEFT,
+    DPAD_RIGHT,
+    DPAD_UP,
+    DPAD_DOWN
 }

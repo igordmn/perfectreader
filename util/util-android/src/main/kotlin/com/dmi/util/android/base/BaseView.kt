@@ -15,7 +15,6 @@ import com.dmi.util.android.ext.px2dip
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.lang.returnValue
 import com.dmi.util.refWatcher
-import org.jetbrains.anko.collections.forEachReversed
 import org.jetbrains.anko.find
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.toast
@@ -70,29 +69,8 @@ abstract class BaseView(val widget: ViewGroup) {
     protected fun <T> subscribe(observable: Observable<T>, onNext: (T) -> Unit) =
             subscriptions.add(observable.subscribe(onNext))
 
-    open fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean = childrenHandleKey {
-        it.onKeyDown(keyCode, event)
-    }
-
-    open fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean = childrenHandleKey {
-        it.onKeyUp(keyCode, event)
-    }
-
-    open fun onKeyLongPress(keyCode: Int, event: KeyEvent): Boolean = childrenHandleKey {
-        it.onKeyLongPress(keyCode, event)
-    }
-
-    open fun onKeyMultiple(keyCode: Int, repeatCount: Int, event: KeyEvent): Boolean = childrenHandleKey {
-        it.onKeyMultiple(keyCode, repeatCount, event)
-    }
-
-    private inline fun childrenHandleKey(action: (child: BaseView) -> Boolean): Boolean {
-        children.forEachReversed {
-            if (action(it))
-                return true
-        }
-        return false
-    }
+    open fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean = children.firstOrNull()?.onKeyDown(keyCode, event) ?: false
+    open fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean = children.firstOrNull()?.onKeyUp(keyCode, event) ?: false
 }
 
 inline fun <reified T : View> BaseView.find(id: Int): T = widget.find(id)
@@ -108,6 +86,7 @@ fun BaseView.drawable(resID: Int): Drawable = DrawableCompat.wrap(VectorDrawable
 fun BaseView.drawable(resID: Int, tintColor: Int): Drawable = drawable(resID).apply {
     DrawableCompat.setTint(this, tintColor)
 }
+
 fun BaseView.string(resID: Int): String = widget.context.getString(resID)
 fun BaseView.toast(text: String) = widget.context.toast(text)
 fun BaseView.longToast(text: String) = widget.context.longToast(text)

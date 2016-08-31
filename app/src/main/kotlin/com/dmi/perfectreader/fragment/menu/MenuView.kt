@@ -99,9 +99,7 @@ class MenuView(
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU) {
             model.close()
-            return true
-        } else {
-            return super.onKeyDown(keyCode, event)
         }
+        return true
     }
 }
