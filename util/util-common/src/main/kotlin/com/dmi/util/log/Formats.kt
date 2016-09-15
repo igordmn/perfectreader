@@ -4,6 +4,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.regex.Pattern
 
+private val MAX_STACKTRACE_LENGTH = 40000
 private val STACK_TRACE_INDEX = 5
 private val ANONYMOUS_CLASS = Pattern.compile("(\\$\\d+)+$")
 
@@ -33,9 +34,9 @@ fun logFullMessage(t: Throwable?, message: String) =
 
 // Don't replace by Log.getStackTraceString(). It hides UnknownHostException
 private fun getStackTraceString(t: Throwable): String {
-    val sw = StringWriter(256)
+    val sw = StringWriter(MAX_STACKTRACE_LENGTH)
     val pw = PrintWriter(sw, false)
     t.printStackTrace(pw)
     pw.flush()
-    return sw.toString()
+    return sw.toString().substring(0, MAX_STACKTRACE_LENGTH)
 }

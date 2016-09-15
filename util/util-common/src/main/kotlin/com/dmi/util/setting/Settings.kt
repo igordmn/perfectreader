@@ -46,7 +46,7 @@ interface Settings {
     operator fun <T : Enum<T>> set(key: EnumKey<T>, value: T)
     operator fun <T : Enum<T>> get(key: EnumKey<T>): T
 
-    abstract class Key<T>(val name: String, val default: T)
+    abstract class Key<out T>(val name: String, val default: T)
     class ShortKey(name: String, default: Short) : Key<Short>(name, default)
     class IntKey(name: String, default: Int) : Key<Int>(name, default)
     class LongKey(name: String, default: Long) : Key<Long>(name, default)

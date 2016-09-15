@@ -45,3 +45,21 @@ fun <T: Comparable<T>> List<T>.binarySearchGreater(value: T, fromIndex: Int = 0,
 
     return index
 }
+
+fun FloatArray.binarySearchLower(value: Float, fromIndex: Int = 0, toIndex: Int = size): Int {
+    val index = binarySearch(value, fromIndex, toIndex)
+    return when {
+        index == fromIndex -> -1
+        index > 0 -> index - 1
+        else -> -index - 2
+    }
+}
+
+fun FloatArray.binarySearchGreater(value: Float, fromIndex: Int = 0, toIndex: Int = size): Int {
+    val index = binarySearch(value, fromIndex, toIndex)
+    return when {
+        index == toIndex - 1 -> size
+        index >= 0 -> index + 1
+        else -> -index - 1
+    }
+}

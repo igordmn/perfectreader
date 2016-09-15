@@ -48,7 +48,7 @@ class LocationConverter(
 
     private fun approximatePageLength(settings: UserSettings): Int {
         val textHeight = settings[UserSettingKeys.Format.textSizeDip] * pageConfig.density
-        val letterSpacing = settings[UserSettingKeys.Format.letterSpacingEm] * textHeight
+        val letterSpacing = max(-0.6F, settings[UserSettingKeys.Format.letterSpacingEm]) * textHeight
         val wordSpacingMultiplier = settings[UserSettingKeys.Format.wordSpacingMultiplier]
         val lineHeightMultiplier = settings[UserSettingKeys.Format.lineHeightMultiplier]
         val paragraphVerticalMargin = settings[UserSettingKeys.Format.paragraphVerticalMarginEm] * textHeight
@@ -69,6 +69,6 @@ class LocationConverter(
         val paragraphHeight = paragraphLineCount * lineHeight + paragraphSpacing
         val paragraphCountFractional: Float = pageConfig.contentSize.height / paragraphHeight
 
-        return round(paragraphCountFractional * paragraphLength)
+        return max(1, round(paragraphCountFractional * paragraphLength))
     }
 }

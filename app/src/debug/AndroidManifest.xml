@@ -3,12 +3,6 @@
           package="com.dmi.perfectreader">
 
     <application>
-        <activity
-            android:name=".manualtest.LayoutTestActivity"
-            android:exported="true"/>
-        <activity
-            android:name=".manualtest.CanvasTestActivity"
-            android:exported="true"/>
     </application>
 
 </manifest> 

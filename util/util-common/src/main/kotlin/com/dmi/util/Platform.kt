@@ -1,8 +1,12 @@
 package com.dmi.util
 
+import com.dmi.util.debug.DisabledRefWatcher
 import com.dmi.util.debug.RefWatcher
+import com.dmi.util.log.ConsoleLog
 import com.dmi.util.log.Log
 import rx.Scheduler
+import rx.schedulers.Schedulers
+import java.util.concurrent.Executors
 
 private var _mainScheduler: Scheduler? = null
 private var _log: Log? = null
@@ -23,4 +27,9 @@ fun initPlatform(
     _log = log
     _mainScheduler = mainScheduler
     _refWatcher = refWatcher
+}
+
+fun initTestPlatform() {
+    val mainScheduler = Schedulers.from(Executors.newSingleThreadExecutor())
+    initPlatform(ConsoleLog, mainScheduler, DisabledRefWatcher)
 }
