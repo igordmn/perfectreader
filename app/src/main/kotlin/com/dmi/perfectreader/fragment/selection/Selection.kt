@@ -19,7 +19,6 @@ class Selection(
         private val book: Book,
         private val settings: UserSettings,
         private val copyPlainText: (String) -> Unit,
-        private val close: () -> Unit,
         dip2px: (Float) -> Float
 ) : BaseViewModel() {
     private val BOTTOM_ACTIONS_OFFSET = dip2px(24F)
@@ -181,7 +180,6 @@ class Selection(
             copyPlainText(plainText)
             onSelectionCopiedToClipboard.onNext(Unit)
             book.selectionRange = null
-            close()
         }
     }
 

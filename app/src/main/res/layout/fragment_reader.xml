@@ -25,4 +25,12 @@
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"/>
 
+    <RelativeLayout
+        android:id="@+id/actionPopupContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:gravity="center_horizontal"
+        android:padding="48dp"/>
+
 </FrameLayout>

@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.fragment.control.entity
+package com.dmi.util.input
 
 enum class HardKey {
     VOLUME_UP,

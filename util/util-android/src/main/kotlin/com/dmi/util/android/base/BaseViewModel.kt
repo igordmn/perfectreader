@@ -35,6 +35,18 @@ abstract class BaseViewModel {
         children.remove(child)
     }
 
+    protected fun <T : BaseViewModel> addOrRemoveChild(condition: Boolean, current: T?, create: () -> T): T? {
+        if (condition && current == null)
+            return addChild(create())
+
+        if (!condition && current != null) {
+            removeChild(current)
+            return null
+        }
+
+        return current
+    }
+
     protected fun <T : BaseViewModel> BaseViewModel.toggleChild(current: T?, create: () -> T) =
             if (current == null) {
                 addChild(create())

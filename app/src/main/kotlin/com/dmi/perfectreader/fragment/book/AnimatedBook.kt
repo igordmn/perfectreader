@@ -10,7 +10,7 @@ import com.dmi.util.rx.rxObservable
 import rx.lang.kotlin.PublishSubject
 import java.util.*
 
-class AnimatedBook(size: SizeF, private val staticBook: StaticBook) {
+class AnimatedBook(val size: SizeF, private val staticBook: StaticBook) {
     companion object {
         private val SINGLE_SLIDE_SECONDS = 0.4F
         val MAX_LOADED_PAGES = 3

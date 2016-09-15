@@ -34,33 +34,39 @@ import com.dmi.perfectreader.fragment.book.render.factory.PageRenderer
 import com.dmi.perfectreader.fragment.book.render.factory.TextPainter
 import com.dmi.perfectreader.fragment.control.Control
 import com.dmi.perfectreader.fragment.control.ControlView
+import com.dmi.perfectreader.fragment.control.ReaderActionProvider
+import com.dmi.perfectreader.fragment.control.settingsGestureDetector
 import com.dmi.perfectreader.fragment.main.Main
 import com.dmi.perfectreader.fragment.main.MainView
 import com.dmi.perfectreader.fragment.menu.Menu
 import com.dmi.perfectreader.fragment.menu.MenuView
 import com.dmi.perfectreader.fragment.reader.Reader
 import com.dmi.perfectreader.fragment.reader.ReaderView
+import com.dmi.perfectreader.fragment.reader.action.ReaderActions
 import com.dmi.perfectreader.fragment.selection.Selection
 import com.dmi.perfectreader.fragment.selection.SelectionView
+import com.dmi.util.action.TouchActionPerformer
 import com.dmi.util.android.font.androidFontCollectionCache
 import com.dmi.util.android.system.copyPlainText
 import com.dmi.util.graphic.Size
 import com.dmi.util.graphic.SizeF
+import org.jetbrains.anko.displayMetrics
 
 class AppObjects(applicationContext: Context) {
     val databases = AppDatabases(applicationContext)
     val userData = UserData(databases.user)
-    val userSettings = UserSettings(databases.user)
+    val settings = UserSettings(databases.user)
     val protocols = AppProtocols()
     val fontCollectionCache = androidFontCollectionCache()
-    val dip2px = { value: Float -> value * applicationContext.resources.displayMetrics.density }
+    val density = applicationContext.displayMetrics.density
+    val dip2px = { value: Float -> value * density }
     val copyPlainText = { text: String -> applicationContext.copyPlainText(text) }
 
     val createMain = { activity: AppActivity ->
         val intent = activity.intent
         val closeApp = { activity.finish() }
 
-        val parseConfig = settingsParseConfig(userSettings)
+        val parseConfig = settingsParseConfig(settings)
         val bookContentParserFactory = BookContentParserFactory(parseConfig)
         val patternsSource = TeXPatternsSource(applicationContext)
         val hyphenatorResolver = CachedHyphenatorResolver(TeXHyphenatorResolver(patternsSource))
@@ -75,11 +81,11 @@ class AppObjects(applicationContext: Context) {
 
                 val createAnimated = { size: SizeF ->
                     val createPages = { Pages(bookData.location) }
-                    val createPageConfig = { settingsPageConfig(applicationContext, size, userSettings) }
+                    val createPageConfig = { settingsPageConfig(applicationContext, size, settings) }
                     val createPagesLoader = { pages: Pages, pageConfig: PageConfig ->
-                        val userFontsDirectory = userFontsDirectory(protocols, userSettings)
+                        val userFontsDirectory = userFontsDirectory(protocols, settings)
                         val fontCollection = fontCollectionCache.collectionFor(userFontsDirectory)
-                        val contentConfig = appContentConfig(applicationContext, userSettings, fontCollection)
+                        val contentConfig = appContentConfig(applicationContext, settings, fontCollection)
                         val configuredSequence = ConfiguredSequence(bookData.content.sequence, contentConfig)
                         val createColumnSequence = { contentSize: SizeF ->
                             val layoutSequence = LayoutSequence(configuredSequence, layouter, contentSize)
@@ -90,7 +96,7 @@ class AppObjects(applicationContext: Context) {
                         PagesLoader(pages, pageSequence)
                     }
                     val createLocationConverter = { pageConfig: PageConfig ->
-                        LocationConverter(bookData.content, pageConfig, userSettings)
+                        LocationConverter(bookData.content, pageConfig, settings)
                     }
                     val staticBook = StaticBook(createPages, createPageConfig, createPagesLoader, createLocationConverter)
 
@@ -100,13 +106,20 @@ class AppObjects(applicationContext: Context) {
                 Book(createAnimated, bookData, bitmapDecoder)
             }
 
-            val createControl = { reader: Reader -> Control(userSettings, reader.book, reader, closeApp, dip2px) }
-            val createSelection = { reader: Reader, close: () -> Unit -> Selection(reader.book, userSettings, copyPlainText, close, dip2px) }
+            val createControl = { reader: Reader ->
+                val createGestureDetector = { size: SizeF ->
+                    val actionProvider = ReaderActionProvider(size, density, settings, reader)
+                    val listener = TouchActionPerformer(actionProvider)
+                    settingsGestureDetector(density, settings, listener)
+                }
+                Control(settings, createGestureDetector, reader.actions)
+            }
+            val createSelection = { reader: Reader -> Selection(reader.book, settings, copyPlainText, dip2px) }
             val createMenu = { reader: Reader, close: () -> Unit ->
                 Menu(reader.book, close)
             }
-
-            Reader(createBook, createControl, createSelection, createMenu)
+            val createActions = { reader: Reader -> ReaderActions(density, activity, settings, reader) }
+            Reader(createBook, createControl, createSelection, createMenu, createActions)
         }
 
         Main(intent, bookContentParserFactory, userData, createReader, closeApp)

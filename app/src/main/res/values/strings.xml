@@ -13,4 +13,83 @@
     <string name="bookMenuAddBookmark">Добавить закладку</string>
     <string name="selectionCopiedToClipboard">Текст скопирован в буфер обмена</string>
     <string name="selectionCopyText">Копировать</string>
+
+    <string name="settingPageMargins">Поля страницы</string>
+    <string name="settingTextSize">Размер текста</string>
+    <string name="settingTextLineHeight">Межстрочное расстояние</string>
+    <string name="settingTextGamma">Гамма прозрачности текста</string>
+    <string name="settingTextColorGamma">Гамма цвета текста</string>
+    <string name="settingTextColorContrast">Контрасность цвета текста</string>
+    <string name="settingTextColorBrightness">Яркость цвета текста</string>
+    <string name="settingTextStrokeWidth">Утолщение текста</string>
+    <string name="settingTextScaleX">Ширина текста</string>
+    <string name="settingTextLetterSpacing">Межбуквенное расстояние</string>
+    <string name="settingScreenBrightness">Яркость подсветки</string>
+
+    <string name="actionSettingIncrease">увеличение</string>
+    <string name="actionSettingDecrease">уменьшение</string>
+
+    <string name="actionNone">Нет действия</string>
+    <string name="actionToggleMenu">Меню</string>
+    <string name="actionExitActivity">Выход</string>
+    <string name="actionGoToLibraryLast">Последние книги</string>
+    <string name="actionGoToLibraryFavourite">Избранные книги</string>
+    <string name="actionGoToLibraryFiles">Папка с книгами</string>
+    <string name="actionGoToLibraryOpds">OPDS каталоги</string>
+    <string name="actionGoToSettings">Настройки</string>
+    <string name="actionGoToTableOfContents">Содержание</string>
+    <string name="actionGoToBookmarks">Закладки</string>
+    <string name="actionGoToNotes">Заметки</string>
+    <string name="actionGoToMarks">Пометки</string>
+    <string name="actionGoToNextBookInHistory">Следующая книга</string>
+    <string name="actionGoToPreviousBookInHistory">Предыдущая книга</string>
+    <string name="actionShowFastSettings">Быстрые настройки</string>
+    <string name="actionShowSearch">Поиск</string>
+    <string name="actionShowGoPage">Переход на страницу</string>
+    <string name="actionShowBookInfo">Информация о книге</string>
+    <string name="actionToggleAutoscroll">Автопрокрутка</string>
+    <string name="actionToggleTextSpeech">Озвучивание текста</string>
+    <string name="actionAddBookmark">Добавить закладку</string>
+    <string name="actionAddBookToFavourite">Добавить книгу в избранное</string>
+
+    <string name="actionScrollNextPage">Следующая страница</string>
+    <string name="actionScrollPreviousPage">Предыдущая страница</string>
+    <string name="actionScrollDown">Следующая страница / сдвинуть вверх</string>
+    <string name="actionScrollUp">Предыдущая страница / сдвинуть вверх</string>
+    <string name="actionGoNextPage">Следующая страница</string>
+    <string name="actionGoPreviousPage">Предыдущая страница</string>
+    <string name="actionGoNextPageWithoutAnimation">Следующая страница (без анимации)</string>
+    <string name="actionGoPreviousPageWithoutAnimation">Предыдущая страница (без анимации)</string>
+    <string name="actionGoNextPage10">На 10 страниц вперед</string>
+    <string name="actionGoPreviousPage10">На 10 страниц назад</string>
+    <string name="actionGoBookBegin">В начало книги</string>
+    <string name="actionGoBookEnd">В конец книги</string>
+    <string name="actionGoNextChapter">В начало главы</string>
+    <string name="actionGoPreviousChapter">В конец главы</string>
+    <string name="actionGoBackByHistory">Прошлая страница (в истории преходов)</string>
+    <string name="actionGoForwardByHistory">Будущая страница (в истории преходов)</string>
+
+    <string name="actionSelectWord">Выделеть слово</string>
+    <string name="actionSelectWordAtCenter">Выделеть слово</string>
+    <string name="actionTranslateWord">Перевести слово</string>
+    <string name="actionSearchWord">Найти слово в Google</string>
+    <string name="actionWikiWord">Найти слово в Wikipedia</string>
+
+    <string name="actionNextTheme">Следующая тема</string>
+    <string name="actionPreviousTheme">Предыдущая тема</string>
+    <string name="actionToggleFullScreen">Полноэкранны режим</string>
+    <string name="actionToggleOrientation">Ориентация экрана</string>
+    <string name="actionToggleBookCssEnabled">Включить встроенные стили книги</string>
+
+    <string name="actionChangePageMargins">Поля страницы</string>
+    <string name="actionChangeTextSize">Размер текста</string>
+    <string name="actionChangeTextLineHeight">Межстрочное расстояние</string>
+    <string name="actionChangeTextGamma">Гамма прозрачности текста</string>
+    <string name="actionChangeTextColorGamma">Гамма цвета текста</string>
+    <string name="actionChangeTextColorContrast">Контрасность цвета текста</string>
+    <string name="actionChangeTextColorBrightness">Яркость цвета текста</string>
+    <string name="actionChangeTextStrokeWidth">Утолщение текста</string>
+    <string name="actionChangeTextScaleX">Ширина текста</string>
+    <string name="actionChangeTextLetterSpacing">Межбуквенное расстояние</string>
+    <string name="actionChangeScreenBrightness">Яркость подсветки</string>
 </resources>

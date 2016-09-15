@@ -130,7 +130,7 @@ class SelectionView(
         val touchRadius = event.touchMajor / 2 + ADDITIONAL_TOUCH_RADIUS
         val touchPosition = PositionF(event.x, event.y)
 
-        return when (event.action) {
+        return when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> onTouchDown(touchPosition, touchRadius)
             MotionEvent.ACTION_MOVE -> onTouchMove(touchPosition)
             MotionEvent.ACTION_UP -> onTouchUp()

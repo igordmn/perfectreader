@@ -1,8 +1,12 @@
 package com.dmi.perfectreader.data
 
 import com.dmi.perfectreader.fragment.book.content.obj.param.TextAlign
-import com.dmi.perfectreader.fragment.control.entity.*
+import com.dmi.perfectreader.fragment.control.OpenTapMode
+import com.dmi.perfectreader.fragment.reader.action.ReaderActionID
+import com.dmi.util.action.TouchZone
+import com.dmi.util.action.TouchZoneConfiguration
 import com.dmi.util.graphic.Color
+import com.dmi.util.input.HardKey
 import com.dmi.util.setting.Settings.EnumKey
 import com.dmi.util.setting.Settings.Keys
 
@@ -67,97 +71,176 @@ object UserSettingKeys : Keys() {
     }
 
     object Control : Keys(this) {
-        object TapZones : Keys(this) {
-            interface TapZoneActions {
-                val center: EnumKey<Action>
-                val top: EnumKey<Action>
-                val bottom: EnumKey<Action>
-                val left: EnumKey<Action>
-                val right: EnumKey<Action>
-                val topLeft: EnumKey<Action>
-                val topRight: EnumKey<Action>
-                val bottomLeft: EnumKey<Action>
-                val bottomRight: EnumKey<Action>
+        object Touches : Keys(this) {
+            val linkOpenMode by key(OpenTapMode.SINGLE_TAP)
+            val imageOpenMode by key(OpenTapMode.SINGLE_TAP)
+            val doubleTapEnabled by key(false)
+            val tapMaxOffset by key(8F)
+            val longTapTimeout by key(500L)
+            val doubleTapTimeout by key(300L)
 
-                operator fun get(tapZone: TapZone) = when (tapZone) {
-                    TapZone.CENTER -> center
-                    TapZone.TOP -> top
-                    TapZone.BOTTOM -> bottom
-                    TapZone.LEFT -> left
-                    TapZone.RIGHT -> right
-                    TapZone.TOP_LEFT -> topLeft
-                    TapZone.TOP_RIGHT -> topRight
-                    TapZone.BOTTOM_LEFT -> bottomLeft
-                    TapZone.BOTTOM_RIGHT -> bottomRight
+            abstract class Taps(
+                    configuration: TouchZoneConfiguration,
+                    left: ReaderActionID,
+                    middle: ReaderActionID,
+                    right: ReaderActionID
+            ) : Keys(this) {
+                constructor(configuration: TouchZoneConfiguration, middle: ReaderActionID) : this(configuration, middle, middle, middle)
+                constructor(configuration: TouchZoneConfiguration) : this(configuration, ReaderActionID.NONE)
+
+                val configuration by key(configuration)
+
+                val topLeft by key(left)
+                val topMiddle1 by key(left)
+                val topMiddle2 by key(left)
+                val topRight by key(right)
+
+                val middle1Left by key(left)
+                val middle1Middle1 by key(middle)
+                val middle1Middle2 by key(middle)
+                val middle1Right by key(right)
+
+                val middle2Left by key(left)
+                val middle2Middle1 by key(middle)
+                val middle2Middle2 by key(middle)
+                val middle2Right by key(right)
+
+                val bottomLeft by key(left)
+                val bottomMiddle1 by key(right)
+                val bottomMiddle2 by key(right)
+                val bottomRight by key(right)
+
+                operator fun get(zone: TouchZone): EnumKey<ReaderActionID> = when (zone) {
+                    TouchZone.TOP_LEFT -> topLeft
+                    TouchZone.TOP_MIDDLE1 -> topMiddle1
+                    TouchZone.TOP_MIDDLE2 -> topMiddle2
+                    TouchZone.TOP_RIGHT -> topRight
+                    TouchZone.MIDDLE1_LEFT -> middle1Left
+                    TouchZone.MIDDLE1_MIDDLE1 -> middle1Middle1
+                    TouchZone.MIDDLE1_MIDDLE2 -> middle1Middle2
+                    TouchZone.MIDDLE1_RIGHT -> middle1Right
+                    TouchZone.MIDDLE2_LEFT -> middle2Left
+                    TouchZone.MIDDLE2_MIDDLE1 -> middle2Middle1
+                    TouchZone.MIDDLE2_MIDDLE2 -> middle2Middle2
+                    TouchZone.MIDDLE2_RIGHT -> middle2Right
+                    TouchZone.BOTTOM_LEFT -> bottomLeft
+                    TouchZone.BOTTOM_MIDDLE1 -> bottomMiddle1
+                    TouchZone.BOTTOM_MIDDLE2 -> bottomMiddle2
+                    TouchZone.BOTTOM_RIGHT -> bottomRight
                 }
             }
 
-            val interactiveClickMode by key(InteractiveClickMode.CLICK)
+            abstract class Scrolls(
+                    configuration: TouchZoneConfiguration,
+                    first: ReaderActionID,
+                    middle: ReaderActionID,
+                    last: ReaderActionID
+            ) : Keys(this) {
+                constructor(configuration: TouchZoneConfiguration, middle: ReaderActionID) : this(configuration, middle, middle, middle)
+                constructor(configuration: TouchZoneConfiguration) : this(configuration, ReaderActionID.NONE)
 
-            object ShortTaps : Keys(this) {
-                val configuration by key(TapZoneConfiguration.NINE)
+                val configuration by key(configuration)
 
-                object Actions : Keys(this), TapZoneActions {
-                    override val center by key(Action.TOGGLE_MENU)
-                    override val top by key(Action.TOGGLE_MENU)
-                    override val bottom by key(Action.TOGGLE_MENU)
-                    override val left by key(Action.GO_PREVIOUS_PAGE)
-                    override val right by key(Action.GO_NEXT_PAGE)
-                    override val topLeft by key(Action.GO_PREVIOUS_PAGE)
-                    override val topRight by key(Action.GO_NEXT_PAGE)
-                    override val bottomLeft by key(Action.GO_PREVIOUS_PAGE)
-                    override val bottomRight by key(Action.GO_NEXT_PAGE)
+                val first by key(first)
+                val middle1 by key(middle)
+                val middle2 by key(middle)
+                val last by key(last)
+
+                fun getVertical(zone: TouchZone): EnumKey<ReaderActionID> = when (zone) {
+                    TouchZone.TOP_LEFT -> first
+                    TouchZone.TOP_MIDDLE1 -> middle1
+                    TouchZone.TOP_MIDDLE2 -> middle2
+                    TouchZone.TOP_RIGHT -> last
+                    TouchZone.MIDDLE1_LEFT -> first
+                    TouchZone.MIDDLE1_MIDDLE1 -> middle1
+                    TouchZone.MIDDLE1_MIDDLE2 -> middle2
+                    TouchZone.MIDDLE1_RIGHT -> last
+                    TouchZone.MIDDLE2_LEFT -> first
+                    TouchZone.MIDDLE2_MIDDLE1 -> middle1
+                    TouchZone.MIDDLE2_MIDDLE2 -> middle2
+                    TouchZone.MIDDLE2_RIGHT -> last
+                    TouchZone.BOTTOM_LEFT -> first
+                    TouchZone.BOTTOM_MIDDLE1 -> middle1
+                    TouchZone.BOTTOM_MIDDLE2 -> middle2
+                    TouchZone.BOTTOM_RIGHT -> last
+                }
+
+                fun getHorizontal(zone: TouchZone): EnumKey<ReaderActionID> = when (zone) {
+                    TouchZone.TOP_LEFT -> first
+                    TouchZone.TOP_MIDDLE1 -> first
+                    TouchZone.TOP_MIDDLE2 -> first
+                    TouchZone.TOP_RIGHT -> first
+                    TouchZone.MIDDLE1_LEFT -> middle1
+                    TouchZone.MIDDLE1_MIDDLE1 -> middle1
+                    TouchZone.MIDDLE1_MIDDLE2 -> middle1
+                    TouchZone.MIDDLE1_RIGHT -> middle1
+                    TouchZone.MIDDLE2_LEFT -> middle2
+                    TouchZone.MIDDLE2_MIDDLE1 -> middle2
+                    TouchZone.MIDDLE2_MIDDLE2 -> middle2
+                    TouchZone.MIDDLE2_RIGHT -> middle2
+                    TouchZone.BOTTOM_LEFT -> last
+                    TouchZone.BOTTOM_MIDDLE1 -> last
+                    TouchZone.BOTTOM_MIDDLE2 -> last
+                    TouchZone.BOTTOM_RIGHT -> last
                 }
             }
 
-            object LongTaps : Keys(this) {
-                val configuration by key(TapZoneConfiguration.SINGLE)
-                val timeout by key(500L)
+            object SingleTaps : Taps(
+                    TouchZoneConfiguration.NINE,
+                    left = ReaderActionID.GO_PREVIOUS_PAGE,
+                    middle = ReaderActionID.TOGGLE_MENU,
+                    right = ReaderActionID.GO_NEXT_PAGE
+            )
 
-                object Actions : Keys(this), TapZoneActions {
-                    override val center by key(Action.SELECT_TEXT)
-                    override val top by key(Action.SELECT_TEXT)
-                    override val bottom by key(Action.SELECT_TEXT)
-                    override val left by key(Action.SELECT_TEXT)
-                    override val right by key(Action.SELECT_TEXT)
-                    override val topLeft by key(Action.SELECT_TEXT)
-                    override val topRight by key(Action.SELECT_TEXT)
-                    override val bottomLeft by key(Action.SELECT_TEXT)
-                    override val bottomRight by key(Action.SELECT_TEXT)
-                }
-            }
+            object LongTaps : Taps(TouchZoneConfiguration.SINGLE, ReaderActionID.SELECT_WORD)
+            object DoubleTaps : Taps(TouchZoneConfiguration.SINGLE, ReaderActionID.NONE)
+            object TwoFingersSingleTaps : Taps(TouchZoneConfiguration.SINGLE)
+            object TwoFingersLongTaps : Taps(TouchZoneConfiguration.SINGLE)
+            object TwoFingersDoubleTaps : Taps(TouchZoneConfiguration.SINGLE)
 
-            object DoubleTaps : Keys(this) {
-                val configuration by key(TapZoneConfiguration.SINGLE)
-                val timeout by key(300L)
+            object LeftScrolls : Scrolls(TouchZoneConfiguration.SINGLE, ReaderActionID.GO_NEXT_PAGE)
+            object RightScrolls : Scrolls(TouchZoneConfiguration.SINGLE, ReaderActionID.GO_PREVIOUS_PAGE)
 
-                object Actions : Keys(this), TapZoneActions {
-                    override val center by key(Action.NONE)
-                    override val top by key(Action.NONE)
-                    override val bottom by key(Action.NONE)
-                    override val left by key(Action.NONE)
-                    override val right by key(Action.NONE)
-                    override val topLeft by key(Action.NONE)
-                    override val topRight by key(Action.NONE)
-                    override val bottomLeft by key(Action.NONE)
-                    override val bottomRight by key(Action.NONE)
-                }
+            object UpScrolls : Scrolls(TouchZoneConfiguration.THREE_COLUMNS_FIXED,
+                    ReaderActionID.CHANGE_SCREEN_BRIGHTNESS,
+                    ReaderActionID.SCROLL_PREVIOUS_PAGE,
+                    ReaderActionID.SCROLL_PREVIOUS_PAGE
+            )
+
+            object DownScrolls : Scrolls(TouchZoneConfiguration.THREE_COLUMNS_FIXED,
+                    ReaderActionID.CHANGE_SCREEN_BRIGHTNESS,
+                    ReaderActionID.SCROLL_NEXT_PAGE,
+                    ReaderActionID.SCROLL_NEXT_PAGE
+            )
+
+            object TwoFingersLeftScrolls : Scrolls(TouchZoneConfiguration.SINGLE, ReaderActionID.GO_NEXT_PAGE_10)
+            object TwoFingersRightScrolls : Scrolls(TouchZoneConfiguration.SINGLE, ReaderActionID.GO_PREVIOUS_PAGE_10)
+            object TwoFingersUpScrolls : Scrolls(TouchZoneConfiguration.SINGLE, ReaderActionID.CHANGE_TEXT_LINE_HEIGHT)
+            object TwoFingersDownScrolls : Scrolls(TouchZoneConfiguration.SINGLE, ReaderActionID.CHANGE_TEXT_LINE_HEIGHT)
+
+            object TwoFingersPinches : Keys(this) {
+                val pinchIn by key(ReaderActionID.CHANGE_TEXT_SIZE)
+                val pinchOut by key(ReaderActionID.CHANGE_TEXT_SIZE)
             }
         }
 
         object HardKeys : Keys(this) {
-            interface KeyActions {
-                val volumeUp: EnumKey<Action>
-                val volumeDown: EnumKey<Action>
-                val menu: EnumKey<Action>
-                val back: EnumKey<Action>
-                val search: EnumKey<Action>
-                val camera: EnumKey<Action>
-                val trackballPress: EnumKey<Action>
-                val trackballLeft: EnumKey<Action>
-                val trackballRight: EnumKey<Action>
-                val trackballUp: EnumKey<Action>
-                val trackballDown: EnumKey<Action>
+            val doubleTapEnabled by key(false)
+            val longTapTimeout by key(500L)
+            val doubleTapTimeout by key(300L)
+
+            object SinglePress : Keys(this) {
+                val volumeUp by key(ReaderActionID.GO_PREVIOUS_PAGE)
+                val volumeDown by key(ReaderActionID.GO_NEXT_PAGE)
+                val menu by key(ReaderActionID.TOGGLE_MENU)
+                val back by key(ReaderActionID.EXIT_ACTIVITY)
+                val search by key(ReaderActionID.NONE)
+                val camera by key(ReaderActionID.NONE)
+                val dpadPress by key(ReaderActionID.NONE)
+                val dpadLeft by key(ReaderActionID.NONE)
+                val dpadRight by key(ReaderActionID.NONE)
+                val dpadUp by key(ReaderActionID.NONE)
+                val dpadDown by key(ReaderActionID.NONE)
 
                 operator fun get(hardKey: HardKey) = when (hardKey) {
                     HardKey.VOLUME_UP -> volumeUp
@@ -166,63 +249,11 @@ object UserSettingKeys : Keys() {
                     HardKey.BACK -> back
                     HardKey.SEARCH -> search
                     HardKey.CAMERA -> camera
-                    HardKey.DPAD_CENTER -> trackballPress
-                    HardKey.DPAD_LEFT -> trackballLeft
-                    HardKey.DPAD_RIGHT -> trackballRight
-                    HardKey.DPAD_UP -> trackballUp
-                    HardKey.DPAD_DOWN -> trackballDown
-                }
-            }
-
-            object ShortPress : Keys(this) {
-                object Actions : Keys(this), KeyActions {
-                    override val volumeUp by key(Action.GO_PREVIOUS_PAGE_10)
-                    override val volumeDown by key(Action.GO_NEXT_PAGE_10)
-                    override val menu by key(Action.TOGGLE_MENU)
-                    override val back by key(Action.EXIT_APP)
-                    override val search by key(Action.NONE)
-                    override val camera by key(Action.NONE)
-                    override val trackballPress by key(Action.NONE)
-                    override val trackballLeft by key(Action.NONE)
-                    override val trackballRight by key(Action.NONE)
-                    override val trackballUp by key(Action.NONE)
-                    override val trackballDown by key(Action.NONE)
-                }
-            }
-
-            object LongPress : Keys(this) {
-                val timeout by key(500L)
-
-                object Actions : Keys(this), KeyActions {
-                    override val volumeUp by key(Action.GO_PREVIOUS_PAGE)
-                    override val volumeDown by key(Action.GO_NEXT_PAGE)
-                    override val menu by key(Action.NONE)
-                    override val back by key(Action.NONE)
-                    override val search by key(Action.NONE)
-                    override val camera by key(Action.NONE)
-                    override val trackballPress by key(Action.NONE)
-                    override val trackballLeft by key(Action.NONE)
-                    override val trackballRight by key(Action.NONE)
-                    override val trackballUp by key(Action.NONE)
-                    override val trackballDown by key(Action.NONE)
-                }
-            }
-
-            object DoublePress : Keys(this) {
-                val timeout by key(300L)
-
-                object Actions : Keys(this), KeyActions {
-                    override val volumeUp by key(Action.NONE)
-                    override val volumeDown by key(Action.NONE)
-                    override val menu by key(Action.NONE)
-                    override val back by key(Action.NONE)
-                    override val search by key(Action.NONE)
-                    override val camera by key(Action.NONE)
-                    override val trackballPress by key(Action.NONE)
-                    override val trackballLeft by key(Action.NONE)
-                    override val trackballRight by key(Action.NONE)
-                    override val trackballUp by key(Action.NONE)
-                    override val trackballDown by key(Action.NONE)
+                    HardKey.DPAD_CENTER -> dpadPress
+                    HardKey.DPAD_LEFT -> dpadLeft
+                    HardKey.DPAD_RIGHT -> dpadRight
+                    HardKey.DPAD_UP -> dpadUp
+                    HardKey.DPAD_DOWN -> dpadDown
                 }
             }
         }

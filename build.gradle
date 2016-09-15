@@ -5,10 +5,10 @@ buildscript {
         config = loadProperties('.sign/sign.properties', 'workspace.properties')
 
         projectVersions = [
-                kotlin        : '1.0.3',
+                kotlin        : '1.0.4-eap-100',
                 buildTools    : '24.0.2',
-                androidPlugin : '2.2.0-beta3',
-                androidExperimentalPlugin : '0.8.0-beta3',
+                androidPlugin : '2.2.0-rc1',
+                androidExperimentalPlugin : '0.8.0-rc1',
                 minSdk        : 21,
                 targetSdk     : 23,
                 compileSdk    : 23,
@@ -19,6 +19,7 @@ buildscript {
             jcenter()
             maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
             maven { url 'https://dl.bintray.com/igordmn/maven' }
+            maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
             maven { url 'https://dl.bintray.com/nhaarman/maven' }
             maven { url 'https://clojars.org/repo' }
             maven { url 'https://jitpack.io' }

@@ -69,8 +69,8 @@ abstract class BaseView(val widget: ViewGroup) {
     protected fun <T> subscribe(observable: Observable<T>, onNext: (T) -> Unit) =
             subscriptions.add(observable.subscribe(onNext))
 
-    open fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean = children.firstOrNull()?.onKeyDown(keyCode, event) ?: false
-    open fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean = children.firstOrNull()?.onKeyUp(keyCode, event) ?: false
+    open fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean = children.lastOrNull()?.onKeyDown(keyCode, event) ?: false
+    open fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean = children.lastOrNull()?.onKeyUp(keyCode, event) ?: false
 }
 
 inline fun <reified T : View> BaseView.find(id: Int): T = widget.find(id)
