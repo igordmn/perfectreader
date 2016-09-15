@@ -5,16 +5,23 @@ import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.page.Pages
 import com.dmi.perfectreader.fragment.book.page.SlidePagesAnimation
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
+import com.dmi.util.graphic.PositionF
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.rx.rxObservable
 import rx.lang.kotlin.PublishSubject
 import java.util.*
 
-class AnimatedBook(val size: SizeF, private val staticBook: StaticBook) {
+class AnimatedBook(
+        val size: SizeF,
+        dip2px: (Float) -> Float,
+        val staticBook: StaticBook) {
     companion object {
         private val SINGLE_SLIDE_SECONDS = 0.4F
         val MAX_LOADED_PAGES = 3
     }
+
+    private val scrollSpeedToTurnPage = dip2px(50F)
+    private val scrollDistanceToTurnPage = dip2px(100F)
 
     val onIsAnimatingChanged = PublishSubject<Boolean>()
 
@@ -49,6 +56,20 @@ class AnimatedBook(val size: SizeF, private val staticBook: StaticBook) {
         animation.goPage()
         isAnimating = animation.isAnimating
         scheduleFrameUpdate()
+    }
+
+    fun scroll(startPosition: PositionF) = object : Scroller {
+        override fun scroll(delta: PositionF) {
+
+        }
+
+        override fun end(velocity: PositionF) {
+
+        }
+
+        override fun cancel() {
+
+        }
     }
 
     fun goNextPage() = synchronized(frameMutex) {
@@ -143,10 +164,16 @@ class AnimatedBook(val size: SizeF, private val staticBook: StaticBook) {
             scheduleFrameUpdate()
     }
 
-    private fun checkNextPageIsValid() = synchronized(frameMutex)  {
+    private fun checkNextPageIsValid() = synchronized(frameMutex) {
         if (!animation.isAnimating)
             staticBook.checkNextPageIsValid()
     }
 
     class Slide(val page: Page?, val offsetX: Float)
+
+    interface Scroller {
+        fun scroll(delta: PositionF)
+        fun end(velocity: PositionF)
+        fun cancel()
+    }
 }

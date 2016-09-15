@@ -27,10 +27,7 @@ fun actionName(context: Context, id: ReaderActionID): String = when (id) {
     ReaderActionID.ADD_BOOKMARK -> TODO()
     ReaderActionID.ADD_BOOK_TO_FAVOURITE -> TODO()
 
-    ReaderActionID.SCROLL_NEXT_PAGE -> TODO()
-    ReaderActionID.SCROLL_PREVIOUS_PAGE -> TODO()
-    ReaderActionID.SCROLL_DOWN -> TODO()
-    ReaderActionID.SCROLL_UP -> TODO()
+    ReaderActionID.SCROLL -> TODO()
     ReaderActionID.GO_NEXT_PAGE -> TODO()
     ReaderActionID.GO_PREVIOUS_PAGE -> TODO()
     ReaderActionID.GO_NEXT_PAGE_WITHOUT_ANIMATION -> TODO()

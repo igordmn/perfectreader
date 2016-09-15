@@ -198,19 +198,19 @@ object UserSettingKeys : Keys() {
             object TwoFingersLongTaps : Taps(TouchZoneConfiguration.SINGLE)
             object TwoFingersDoubleTaps : Taps(TouchZoneConfiguration.SINGLE)
 
-            object LeftScrolls : Scrolls(TouchZoneConfiguration.SINGLE, ReaderActionID.GO_NEXT_PAGE)
-            object RightScrolls : Scrolls(TouchZoneConfiguration.SINGLE, ReaderActionID.GO_PREVIOUS_PAGE)
+            object LeftScrolls : Scrolls(TouchZoneConfiguration.SINGLE, ReaderActionID.SCROLL)
+            object RightScrolls : Scrolls(TouchZoneConfiguration.SINGLE, ReaderActionID.SCROLL)
 
             object UpScrolls : Scrolls(TouchZoneConfiguration.THREE_COLUMNS_FIXED,
                     ReaderActionID.CHANGE_SCREEN_BRIGHTNESS,
-                    ReaderActionID.SCROLL_PREVIOUS_PAGE,
-                    ReaderActionID.SCROLL_PREVIOUS_PAGE
+                    ReaderActionID.SCROLL,
+                    ReaderActionID.SCROLL
             )
 
             object DownScrolls : Scrolls(TouchZoneConfiguration.THREE_COLUMNS_FIXED,
                     ReaderActionID.CHANGE_SCREEN_BRIGHTNESS,
-                    ReaderActionID.SCROLL_NEXT_PAGE,
-                    ReaderActionID.SCROLL_NEXT_PAGE
+                    ReaderActionID.SCROLL,
+                    ReaderActionID.SCROLL
             )
 
             object TwoFingersLeftScrolls : Scrolls(TouchZoneConfiguration.SINGLE, ReaderActionID.GO_NEXT_PAGE_10)

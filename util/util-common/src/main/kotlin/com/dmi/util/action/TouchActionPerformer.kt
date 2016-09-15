@@ -76,7 +76,7 @@ class TouchActionPerformer(private val provider: Provider) : GestureDetector.Lis
         init {
             action.perform()
             action.startChange()
-            action.startScroll()
+            action.startScroll(startArea)
         }
 
         override fun onScroll(delta: PositionF) {

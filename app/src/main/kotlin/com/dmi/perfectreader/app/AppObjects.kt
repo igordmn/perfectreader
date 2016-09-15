@@ -100,7 +100,7 @@ class AppObjects(applicationContext: Context) {
                     }
                     val staticBook = StaticBook(createPages, createPageConfig, createPagesLoader, createLocationConverter)
 
-                    AnimatedBook(size, staticBook)
+                    AnimatedBook(size, dip2px, staticBook)
                 }
 
                 Book(createAnimated, bookData, bitmapDecoder)

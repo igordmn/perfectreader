@@ -7,7 +7,7 @@ import rx.Scheduler
 import rx.Subscription
 
 interface Action {
-    fun startScroll() = Unit
+    fun startScroll(area: TouchArea) = Unit
     fun scroll(delta: PositionF) = Unit
     fun endScroll(velocity: PositionF) = Unit
     fun cancelScroll() = Unit

@@ -52,10 +52,7 @@
     <string name="actionAddBookmark">Добавить закладку</string>
     <string name="actionAddBookToFavourite">Добавить книгу в избранное</string>
 
-    <string name="actionScrollNextPage">Следующая страница</string>
-    <string name="actionScrollPreviousPage">Предыдущая страница</string>
-    <string name="actionScrollDown">Следующая страница / сдвинуть вверх</string>
-    <string name="actionScrollUp">Предыдущая страница / сдвинуть вверх</string>
+    <string name="actionScroll">Листание страницы / скроллирование свитка</string>
     <string name="actionGoNextPage">Следующая страница</string>
     <string name="actionGoPreviousPage">Предыдущая страница</string>
     <string name="actionGoNextPageWithoutAnimation">Следующая страница (без анимации)</string>

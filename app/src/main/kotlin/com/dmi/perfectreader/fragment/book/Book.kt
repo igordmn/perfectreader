@@ -7,6 +7,7 @@ import com.dmi.perfectreader.fragment.book.location.LocationRange
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.perfectreader.fragment.book.selection.selectionInitialRange
 import com.dmi.util.android.base.BaseViewModel
+import com.dmi.util.graphic.PositionF
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.lang.afterSet
 import com.dmi.util.lang.returnUnit
@@ -81,6 +82,8 @@ class Book(
         data.location = location
         animated?.goLocation(location)
     }
+
+    fun scroll(startPosition: PositionF) = animated!!.scroll(startPosition)
 
     fun goNextPage() {
         animated?.let {

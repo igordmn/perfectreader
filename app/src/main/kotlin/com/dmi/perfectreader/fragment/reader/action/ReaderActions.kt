@@ -5,9 +5,12 @@ import com.dmi.perfectreader.data.UserSettingKeys
 import com.dmi.perfectreader.data.UserSettingValues
 import com.dmi.perfectreader.data.UserSettings
 import com.dmi.perfectreader.data.scaleSettingValue
+import com.dmi.perfectreader.fragment.book.AnimatedBook
 import com.dmi.perfectreader.fragment.book.Book
 import com.dmi.perfectreader.fragment.reader.Reader
 import com.dmi.util.action.*
+import com.dmi.util.graphic.PositionF
+import com.dmi.util.input.TouchArea
 import com.dmi.util.mainScheduler
 import com.dmi.util.setting.Settings
 import java.lang.Math.abs
@@ -21,7 +24,7 @@ class ReaderActions(
 ) {
     private val book: Book get() = reader.book
 
-    operator fun get(id: ReaderActionID): Action = when(id) {
+    operator fun get(id: ReaderActionID): Action = when (id) {
         ReaderActionID.NONE -> NoneAction
         ReaderActionID.TOGGLE_MENU -> performAction { reader.toggleMenu() }
         ReaderActionID.EXIT_ACTIVITY -> performAction { activity.finish() }
@@ -45,10 +48,17 @@ class ReaderActions(
         ReaderActionID.ADD_BOOKMARK -> NoneAction
         ReaderActionID.ADD_BOOK_TO_FAVOURITE -> NoneAction
 
-        ReaderActionID.SCROLL_NEXT_PAGE -> NoneAction
-        ReaderActionID.SCROLL_PREVIOUS_PAGE -> NoneAction
-        ReaderActionID.SCROLL_DOWN -> NoneAction
-        ReaderActionID.SCROLL_UP -> NoneAction
+        ReaderActionID.SCROLL -> object : Action {
+            lateinit var scroller: AnimatedBook.Scroller
+
+            override fun startScroll(area: TouchArea) {
+                scroller = book.scroll(PositionF(area.x, area.y))
+            }
+
+            override fun scroll(delta: PositionF) = scroller.scroll(delta)
+            override fun endScroll(velocity: PositionF) = scroller.end(velocity)
+            override fun cancelScroll() = scroller.cancel()
+        }
         ReaderActionID.GO_NEXT_PAGE -> repeatAction { book.goNextPage() }
         ReaderActionID.GO_PREVIOUS_PAGE -> repeatAction { book.goPreviousPage() }
         ReaderActionID.GO_NEXT_PAGE_WITHOUT_ANIMATION -> repeatAction { book.goNextPage() }
@@ -111,7 +121,7 @@ class ReaderActions(
         ReaderActionID.DECREASE_SCREEN_BRIGHTNESS -> NoneAction
     }
 
-    private fun repeatAction(action: () -> Unit) = object : RepeatAction(mainScheduler, periodMillis = 200) {
+    private fun repeatAction(action: () -> Unit) = object : RepeatAction(mainScheduler, periodMillis = 400) {
         override fun perform() = action()
     }
 
