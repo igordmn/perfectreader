@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'hugo'
 
 android {
     compileSdkVersion projectVersions.compileSdk
@@ -80,6 +81,8 @@ dependencies {
     compile project(':util:util-common')
     debugCompile project(path: ':util:util-android', configuration: 'debug')
     releaseCompile project(path: ':util:util-android', configuration: 'release')
+
+    compile 'com.github.Turbo87.hugo:hugo-annotations:1.2.2'
 
     debugCompile 'com.github.moduth:blockcanary-android:1.2.1'
     releaseCompile 'com.github.moduth:blockcanary-no-op:1.2.1'
