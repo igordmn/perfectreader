@@ -1,15 +1,13 @@
 package com.dmi.perfectreader.fragment.book.page
 
-import com.dmi.util.android.opengl.GLColorPlane
-import com.dmi.util.graphic.Color
+import android.opengl.GLES20.*
 import rx.lang.kotlin.PublishSubject
 
-class GLPageBackground(
-        private val colorPlane: GLColorPlane
-) {
+class GLPageBackground {
     val onChanged = PublishSubject<Unit>()
 
-    fun draw(matrix: FloatArray) {
-        colorPlane.draw(matrix, Color.WHITE)
+    fun draw() {
+        glClearColor(1F, 1F, 1F, 1F)
+        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
     }
 }

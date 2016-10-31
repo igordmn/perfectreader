@@ -2,7 +2,7 @@ package com.dmi.util.android.opengl
 
 import android.content.Context
 import android.opengl.GLSurfaceView
-import com.dmi.util.android.opengl.Graphics.getEGLErrorString
+import com.dmi.util.android.opengl.GLUtils.getEGLErrorString
 import com.dmi.util.graphic.Size
 import com.dmi.util.log
 import javax.microedition.khronos.egl.EGL10

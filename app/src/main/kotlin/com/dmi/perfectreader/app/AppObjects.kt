@@ -4,6 +4,7 @@ import android.content.Context
 import com.dmi.perfectreader.data.UserData
 import com.dmi.perfectreader.data.UserSettings
 import com.dmi.perfectreader.fragment.book.*
+import com.dmi.perfectreader.fragment.book.animation.PagesAnimator
 import com.dmi.perfectreader.fragment.book.bitmap.AndroidBitmapDecoder
 import com.dmi.perfectreader.fragment.book.bitmap.CachedBitmapDecoder
 import com.dmi.perfectreader.fragment.book.content.ConfiguredSequence
@@ -47,9 +48,12 @@ import com.dmi.perfectreader.fragment.selection.Selection
 import com.dmi.perfectreader.fragment.selection.SelectionView
 import com.dmi.util.action.TouchActionPerformer
 import com.dmi.util.android.font.androidFontCollectionCache
+import com.dmi.util.android.io.AssetsURIHandler
 import com.dmi.util.android.system.copyPlainText
 import com.dmi.util.graphic.Size
 import com.dmi.util.graphic.SizeF
+import com.dmi.util.io.FileURIHandler
+import com.dmi.util.io.ProtocolURIHandler
 import org.jetbrains.anko.displayMetrics
 
 class AppObjects(applicationContext: Context) {
@@ -61,6 +65,10 @@ class AppObjects(applicationContext: Context) {
     val density = applicationContext.displayMetrics.density
     val dip2px = { value: Float -> value * density }
     val copyPlainText = { text: String -> applicationContext.copyPlainText(text) }
+    val uriHandler = ProtocolURIHandler(mapOf(
+        "file" to FileURIHandler(),
+        "assets" to AssetsURIHandler(applicationContext.assets)
+    ))
 
     val createMain = { activity: AppActivity ->
         val intent = activity.intent
@@ -99,8 +107,7 @@ class AppObjects(applicationContext: Context) {
                         LocationConverter(bookData.content, pageConfig, settings)
                     }
                     val staticBook = StaticBook(createPages, createPageConfig, createPagesLoader, createLocationConverter)
-
-                    AnimatedBook(size, dip2px, staticBook)
+                    AnimatedBook(size, staticBook, PagesAnimator.Config(singlePageNanoTime = 400L * 1000000), speedToTurnPage = dip2px(50F))
                 }
 
                 Book(createAnimated, bookData, bitmapDecoder)
@@ -135,7 +142,7 @@ class AppObjects(applicationContext: Context) {
                 val createGLBook = { size: Size ->
                     val pageRenderer = PageRenderer(FramePainter(), ImagePainter(bitmapDecoder), TextPainter())
 
-                    GLBook(context, size, model, pageRenderer)
+                    GLBook(context, size, model, pageRenderer, uriHandler)
                 }
 
                 BookView(context, model, createGLBook, lifeCycle)

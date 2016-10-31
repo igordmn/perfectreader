@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation version="1.0">
+
+    <vertex_shader><![CDATA[
+
+        precision mediump float;
+
+        struct CurvePoint { vec2 pos; vec2 normal; };
+
+        attribute vec2 pr_position;
+        attribute vec2 pr_texCoord;
+
+        uniform mat4 pr_projectionMatrix;
+        uniform float pr_progress;
+
+        varying vec2 v_texCoord;
+        varying float v_brightness;
+
+        const float curlRadius = 0.2;
+        const float additionalArcOnProgressEnd = 0.25;
+
+        const float PI = 3.141592653589793;
+        const float a = sqrt(curlRadius * curlRadius + 1.0);
+        const float g = 1.0 / a;
+        const float h = curlRadius * g;
+        const float beta = asin(g);
+        const float circleArc = 2.0 * curlRadius * (PI - beta);
+        const float maxArc = 2.0 + circleArc;
+
+        vec2 rotate(vec2 p, float cosA, float sinA) {
+            return vec2(p.x * cosA - p.y * sinA, p.x * sinA + p.y * cosA);
+        }
+
+        float cross(vec2 a, vec2 b) {
+            return a.x * b.y - a.y * b.x;
+        }
+
+        /**
+         * Return point on composite curve by arc length.
+         * Curves:
+         *   1. top tangent line from (0,0) to circle with length 1
+         *   2. circle with radius = r, x-center < -radius, y-center = 0
+         *   3. bottom tangent line from (0,0) to circle with length 1
+         *
+         * @param arc from 0 to maxArc
+         */
+        CurvePoint baseCurl(float arc) {
+            float is1 = step(arc, 1.0);
+            float is3 = step(maxArc - 1.0, arc);
+            float is2 = 1.0 - is1 - is3;
+
+            float t1 = arc;
+            float t2 = (arc - 1.0) / curlRadius;
+            float t3 = maxArc - arc;
+
+            vec2 p1 = vec2(-g * t1, h * t1);
+            vec2 p2 = vec2(-a + curlRadius * cos(beta + t2), curlRadius * sin(beta + t2));
+            vec2 p3 = vec2(-g * t3, -h * t3);
+
+            vec2 n1 = vec2(h, g);
+            vec2 n2 = vec2(p2.x + a, p2.y);
+            vec2 n3 = vec2(h, -g);
+
+            vec2 pos = p1 * is1 + p2 * is2 + p3 * is3;
+            vec2 normal = normalize(n1 * is1 + n2 * is2 + n3 * is3);
+
+            return CurvePoint(pos, normal);
+        }
+
+        /**
+         * @param x from 0 to 1
+         */
+        CurvePoint curl(float progress, float x) {
+            float originArc = mix(1.0, 1.0 + circleArc + additionalArcOnProgressEnd, progress);
+            float pointArc = originArc - x;
+            vec2 origin = baseCurl(originArc).pos;
+            CurvePoint point = baseCurl(pointArc);
+
+            // transform point to coordinate system with x-axis from origin to (0,0)
+            float d = 1.0 / length(origin);
+            float cosA = -origin.x * d;
+            float sinA = origin.y * d;
+            vec2 pos = rotate(point.pos - origin, cosA, sinA);
+            vec2 normal = rotate(point.normal, cosA, sinA);
+
+            return CurvePoint(pos, normal);
+        }
+
+        const float lightAngle = PI / 6.0;   // angle of directional light spread
+        const float ambientIntensity = 0.2;
+        const float diffuseIntensity = 0.8;
+
+        const vec2 rightRay = vec2(sin(lightAngle), cos(lightAngle));
+        const vec2 leftRay = vec2(-sin(lightAngle), cos(lightAngle));
+        const float sinLightAngle = sin(lightAngle);
+
+        float brightnessOf(float sinRightRayAngle, float sinLeftRayAngle) {
+            float diffuseBrightness = (sinLeftRayAngle - sinRightRayAngle) / (2.0 * sinLightAngle);
+            float brightness = ambientIntensity + diffuseIntensity * diffuseBrightness;
+            return sqrt(brightness);  // apply gamma 2.0 correction
+        }
+
+        float brightnessOf(vec2 normal) {
+            float cosR = dot(normal, rightRay);
+            float cosL = dot(normal, leftRay);
+            float sinR;
+            float sinL;
+            if (cosR < 0.0 && cosL < 0.0) {
+                sinR = 0.0;
+                sinL = 0.0;
+            } else if (cosR < 0.0) {
+                sinR = -1.0;
+                sinL = cross(normal, leftRay);
+            } else if (cosL < 0.0) {
+                sinR = cross(normal, rightRay);
+                sinL = 1.0;
+            } else {
+                sinR = cross(normal, rightRay);
+                sinL = cross(normal, leftRay);
+            }
+            return brightnessOf(sinR, sinL);
+        }
+
+        float brightnessOfBottomShadow(float progress, float x) {
+            vec2 edge = curl(progress, 1.0).pos;
+            vec2 toEdge = edge - vec2(x, 0.0);
+            float sinR = -sinLightAngle;
+            float sinL = clamp(-toEdge.x / length(toEdge), -sinLightAngle, sinLightAngle);
+            return brightnessOf(sinR, sinL);
+        }
+
+        void main() {
+            vec3 vertex;
+            float brightness;
+
+            if (pr_progress < 0.0) {
+                CurvePoint point = curl(-pr_progress, pr_position.x + 0.5);
+                vertex = vec3(point.pos.x - 0.5, pr_position.y, point.pos.y + 1E-4);
+                brightness = brightnessOf(point.normal);
+            } else if (pr_progress > 0.0) {
+                vertex = vec3(pr_position, 0.0);
+                brightness = 1.0;
+                brightness = brightnessOfBottomShadow(1.0 - pr_progress, pr_position.x + 0.5);
+            } else {
+                vertex = vec3(pr_position, 0.0);
+                brightness = 1.0;
+            }
+
+            gl_Position = pr_projectionMatrix * vec4(vertex, 1);
+            v_texCoord = pr_texCoord;
+            v_brightness = brightness;
+        }
+
+    ]]></vertex_shader>
+
+    <fragment_shader><![CDATA[
+    
+        precision mediump float;
+
+        uniform sampler2D pr_texture;
+
+        varying vec2 v_texCoord;
+        varying float v_brightness;
+
+        void main() {
+            gl_FragColor = texture2D(pr_texture, v_texCoord);
+            gl_FragColor.rgb *= v_brightness;
+        }
+    
+    ]]></fragment_shader>
+
+</animation>

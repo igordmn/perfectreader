@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation version="1.0">
+
+    <vertex_shader><![CDATA[
+
+        precision mediump float;
+
+        attribute vec2 pr_position;
+        attribute vec2 pr_texCoord;
+
+        uniform mat4 pr_projectionMatrix;
+        uniform float pr_progress;
+
+        varying vec2 v_texCoord;
+
+        void main() {
+            float z = pr_progress < 0.0 ? 1E-4 : 0.0;
+            vec2 pos = vec2(pr_position.x + pr_progress * step(0.0, -pr_progress), pr_position.y);
+            gl_Position = pr_projectionMatrix * vec4(pos, z, 1);
+            v_texCoord = pr_texCoord;
+        }
+
+    ]]></vertex_shader>
+
+    <fragment_shader><![CDATA[
+    
+        precision mediump float;
+
+        uniform sampler2D pr_texture;
+
+        varying vec2 v_texCoord;
+
+        void main() {
+            gl_FragColor = texture2D(pr_texture, v_texCoord);
+        }
+    
+    ]]></fragment_shader>
+
+</animation>

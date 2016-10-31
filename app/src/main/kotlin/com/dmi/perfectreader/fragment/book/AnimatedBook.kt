@@ -1,179 +1,203 @@
 package com.dmi.perfectreader.fragment.book
 
-import android.view.Choreographer
+import com.dmi.perfectreader.fragment.book.animation.PageScroller
+import com.dmi.perfectreader.fragment.book.animation.PagesAnimator
 import com.dmi.perfectreader.fragment.book.location.Location
-import com.dmi.perfectreader.fragment.book.page.Pages
-import com.dmi.perfectreader.fragment.book.page.SlidePagesAnimation
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
+import com.dmi.util.android.update.FrameUpdater
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.graphic.SizeF
+import com.dmi.util.lang.doubleRound
+import com.dmi.util.lang.longFloor
+import com.dmi.util.lang.modPositive
 import com.dmi.util.rx.rxObservable
 import rx.lang.kotlin.PublishSubject
-import java.util.*
+import rx.subjects.BehaviorSubject
+import java.lang.Math.*
+import java.lang.System.nanoTime
+import java.net.URI
 
 class AnimatedBook(
         val size: SizeF,
-        dip2px: (Float) -> Float,
-        val staticBook: StaticBook) {
-    companion object {
-        private val SINGLE_SLIDE_SECONDS = 0.4F
-        val MAX_LOADED_PAGES = 3
-    }
+        private val staticBook: StaticBook,
+        animatorConfig: PagesAnimator.Config,
+        private val speedToTurnPage: Float
+) {
 
-    private val scrollSpeedToTurnPage = dip2px(50F)
-    private val scrollDistanceToTurnPage = dip2px(100F)
-
+    val onNewFrame = PublishSubject<Unit>()
+    val onPagesChanged = staticBook.onPagesChanged
     val onIsAnimatingChanged = PublishSubject<Boolean>()
 
+    val locationObservable: BehaviorSubject<Location> get() = staticBook.locationObservable
     val location: Location get() = staticBook.location
     val locationConverter: LocationConverter get() = staticBook.locationConverter
     var isAnimating: Boolean by rxObservable(false, onIsAnimatingChanged)
         private set
-    val onNewFrame = PublishSubject<Unit>()
-    val onPagesChanged = staticBook.onPagesChanged
 
-    private val animation = SlidePagesAnimation(size.width, SINGLE_SLIDE_SECONDS)
-    private val frameMutex = Object()
+    var pages: AnimatedPages = AnimatedPages.NONE
+        private set
+
+    val animationUri = URI("assets:///resources/animations/curl.xml")
+    private var animator = PagesAnimator.zero(animatorConfig, nanoTime())
+    private var isScrolling = false
+    private var staticAnimatorIndex: Long = 0  // положение текущей страницы staticBook в пространстве индексов аниматора
 
     init {
         staticBook.onPagesChanged.subscribe {
-            scheduleFrameUpdate()
+            frameUpdater.scheduleUpdate()
         }
     }
 
-    fun destroy() = synchronized(frameMutex) {
+    fun destroy() {
         staticBook.destroy()
-        Choreographer.getInstance().removeFrameCallback(frameCallback)
+        frameUpdater.cancel()
     }
 
-    fun reformat() = synchronized(frameMutex) {
+    fun reformat() {
         staticBook.reformat()
-        scheduleFrameUpdate()
+        afterAnimate()
     }
 
-    fun goLocation(location: Location) = synchronized(frameMutex) {
+    fun goLocation(location: Location) {
+        if (location == this.location) return
+
+        animator = animator.reset()
         staticBook.goLocation(location)
-        animation.goPage()
-        isAnimating = animation.isAnimating
-        scheduleFrameUpdate()
+        staticAnimatorIndex = 0
+        afterAnimate()
     }
 
-    fun scroll(startPosition: PositionF) = object : Scroller {
+    fun goPage(relativeIndex: Int) {
+        if (relativeIndex == 0) return
+
+        animator = animator.reset()
+        staticBook.goPage(relativeIndex)
+        staticAnimatorIndex = 0
+        afterAnimate()
+    }
+
+    fun scroll(): PageScroller = object : PageScroller {
+        init {
+            isScrolling = true
+        }
+
         override fun scroll(delta: PositionF) {
+            val pageDeltaX = (-delta.x / size.width).toDouble()
+            val limitedDeltaX = if (pageDeltaX >= 0) {
+                limitedPageDelta(max(animator.currentPage, animator.targetPage), pageDeltaX)
+            } else {
+                limitedPageDelta(min(animator.currentPage, animator.targetPage), pageDeltaX)
+            }
 
+            animator = animator
+                    .update(nanoTime())
+                    .targetPage(animator.targetPage + limitedDeltaX)
+                    .currentPage(animator.currentPage + limitedDeltaX)
+            afterAnimate()
         }
 
-        override fun end(velocity: PositionF) {
-
+        override fun end(velocity: PositionF) = if (isEnoughSpeed(velocity)) {
+            isScrolling = false
+            val relativeIndex = if (isScrollLeft(velocity)) 1 else -1
+            animator = animator
+                    .update(nanoTime())
+                    .targetPage(shiftedPage(animator.targetPage, relativeIndex))
+                    .velocity(animator.velocity - velocity.x / size.width)
+            afterAnimate()
+        } else {
+            cancel()
         }
+
+        private fun isEnoughSpeed(velocity: PositionF) = abs(velocity.x) >= speedToTurnPage
+        private fun isScrollLeft(velocity: PositionF) = velocity.x <= 0
 
         override fun cancel() {
-
+            animator = animator
+                    .update(nanoTime())
+                    .targetPage(doubleRound(animator.targetPage))
+            isScrolling = false
+            afterAnimate()
         }
     }
 
-    fun goNextPage() = synchronized(frameMutex) {
-        if (canGoNextPage()) {
-            staticBook.goNextPage()
-            animation.goNextPage()
-            isAnimating = animation.isAnimating
-            checkNextPageIsValid()
-            scheduleFrameUpdate()
+    fun movePage(relativeIndex: Int) {
+        if (relativeIndex == 0) return
+
+        animator = animator
+                .update(nanoTime())
+                .targetPage(shiftedPage(animator.targetPage, relativeIndex))
+        afterAnimate()
+    }
+
+    private fun shiftedPage(animatorPage: Double, relativeIndex: Int): Double {
+        val limitedDelta = limitedPageDelta(animatorPage, relativeIndex.toDouble())
+        return if (limitedDelta >= 0) floor(animatorPage + limitedDelta) else ceil(animatorPage + limitedDelta)
+    }
+
+    private fun limitedPageDelta(animatorPage: Double, delta: Double): Double = when {
+        delta > 0.0 -> {
+            val maxAnimatorIndex = staticToAnimatorIndex(staticBook.maxGoRelativeIndex)
+            val maxDelta = maxAnimatorIndex - animatorPage
+            min(maxDelta, delta)
         }
-    }
-
-    fun goPreviousPage() = synchronized(frameMutex) {
-        if (canGoPreviousPage()) {
-            staticBook.goPreviousPage()
-            animation.goPreviousPage()
-            isAnimating = animation.isAnimating
-            checkNextPageIsValid()
-            scheduleFrameUpdate()
+        delta < 0.0 -> {
+            val minAnimatorIndex = staticToAnimatorIndex(staticBook.minGoRelativeIndex)
+            val minDelta = minAnimatorIndex - animatorPage
+            max(minDelta, delta)
         }
-    }
-
-    private fun canGoNextPage(): Boolean = synchronized(frameMutex) {
-        val slideNotTooFar = animation.hasSlides && animation.firstSlideIndex >= -Pages.MAX_RELATIVE_INDEX
-        return slideNotTooFar && staticBook.canGoNextPage()
-    }
-
-    private fun canGoPreviousPage(): Boolean = synchronized(frameMutex) {
-        val slideNotTooFar = animation.hasSlides && animation.lastSlideIndex <= Pages.MAX_RELATIVE_INDEX
-        return slideNotTooFar && staticBook.canGoPreviousPage()
+        else -> 0.0
     }
 
     fun pageAt(relativeIndex: Int) = staticBook.pageAt(relativeIndex)
 
-    /**
-     * Может вызываться из другого потока
-     */
-    fun takeFrame(frame: BookFrame) = synchronized(frameMutex) {
-        animation.update()
-
-        frame.loadedPages.clear()
-        frame.visibleSlides.clear()
-
-        animation.slides.forEach { slide ->
-            val page = addLoadedPage(slide.relativeIndex, frame.loadedPages)
-            frame.visibleSlides.add(Slide(page, slide.offsetX))
-        }
-
-        if (animation.hasSlides) {
-            if (!animation.isAnimating || animation.isGoingNext) {
-                addLoadedPage(animation.lastSlideIndex + 1, frame.loadedPages)
-                addLoadedPage(animation.firstSlideIndex - 1, frame.loadedPages)
-            } else {
-                addLoadedPage(animation.firstSlideIndex - 1, frame.loadedPages)
-                addLoadedPage(animation.lastSlideIndex + 1, frame.loadedPages)
-            }
+    private val frameUpdater: FrameUpdater = object : FrameUpdater() {
+        override fun update() {
+            animator = animator.update(nanoTime())
+            afterAnimate()
         }
     }
 
-    private fun addLoadedPage(relativeIndex: Int, loadedPages: LinkedHashSet<Page>): Page? {
-        if (loadedPages.size < MAX_LOADED_PAGES && Math.abs(relativeIndex) <= Pages.MAX_RELATIVE_INDEX) {
-            val page = staticBook.pageAt(relativeIndex)
-            if (page != null) {
-                loadedPages.add(page)
-                return page
-            }
-        }
-        return null
-    }
+    private fun afterAnimate() {
+        isAnimating = animator.willChange || isScrolling
 
-    private var frameUpdateScheduled = false
-    private val frameCallback = Choreographer.FrameCallback {
-        frameUpdateScheduled = false
-        updateFrame()
-    }
+        synchronizeStaticBook()
+        pages = snapshotPages()
 
-    private fun scheduleFrameUpdate() {
-        if (!frameUpdateScheduled) {
-            frameUpdateScheduled = true
-            Choreographer.getInstance().postFrameCallback(frameCallback)
-        }
-    }
-
-    private fun updateFrame() = synchronized(frameMutex) {
-        animation.update()
-        isAnimating = animation.isAnimating
-        checkNextPageIsValid()
+        if (animator.willChange)
+            frameUpdater.scheduleUpdate()
 
         onNewFrame.onNext(Unit)
-
-        if (animation.isAnimating)
-            scheduleFrameUpdate()
     }
 
-    private fun checkNextPageIsValid() = synchronized(frameMutex) {
-        if (!animation.isAnimating)
-            staticBook.checkNextPageIsValid()
+    private fun synchronizeStaticBook() {
+        val diff = (animator.currentPage - staticAnimatorIndex).toInt()
+        staticBook.goPage(diff)
+        staticAnimatorIndex += diff
     }
 
-    class Slide(val page: Page?, val offsetX: Float)
+    private fun animatorToStaticIndex(animatorIndex: Long): Int = (animatorIndex - staticAnimatorIndex).toInt()
+    private fun staticToAnimatorIndex(staticIndex: Int): Long = (staticIndex + staticAnimatorIndex).toLong()
 
-    interface Scroller {
-        fun scroll(delta: PositionF)
-        fun end(velocity: PositionF)
-        fun cancel()
+    private fun snapshotPages(): AnimatedPages {
+        val leftIndex = longFloor(animator.currentPage)
+        val rightIndex = leftIndex + 1
+        val futureIndex = if (animator.targetPage - leftIndex >= 0.5) rightIndex + 1 else leftIndex - 1
+
+        val leftPage = staticBook.pageAt(animatorToStaticIndex(leftIndex))
+        val rightPage = staticBook.pageAt(animatorToStaticIndex(rightIndex))
+        val futurePage = staticBook.pageAt(animatorToStaticIndex(futureIndex))
+
+        val animationX = (animator.currentPage modPositive 1.0).toFloat()
+        val leftProgress = -animationX
+        val rightProgress = 1 - animationX
+
+        return AnimatedPages(leftPage, rightPage, futurePage, leftProgress, rightProgress)
+    }
+
+    class AnimatedPages(val left: Page?, val right: Page?, val future: Page?, val leftProgress: Float, val rightProgress: Float) {
+        companion object {
+            val MAX_PAGES = 3
+            val NONE = AnimatedPages(null, null, null, 0F, 1F)
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.dmi.util.log
 
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.lang.Math.min
 import java.util.regex.Pattern
 
 private val MAX_STACKTRACE_LENGTH = 40000
@@ -38,5 +39,6 @@ private fun getStackTraceString(t: Throwable): String {
     val pw = PrintWriter(sw, false)
     t.printStackTrace(pw)
     pw.flush()
-    return sw.toString().substring(0, MAX_STACKTRACE_LENGTH)
+    val fullMsg = sw.toString()
+    return fullMsg.substring(0, min(fullMsg.length, MAX_STACKTRACE_LENGTH))
 }

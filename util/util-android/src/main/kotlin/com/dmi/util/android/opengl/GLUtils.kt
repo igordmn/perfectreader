@@ -6,17 +6,24 @@ import com.google.common.io.CharStreams.toString
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
+import java.nio.ShortBuffer
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGL11
 
-object Graphics {
+object GLUtils {
     val BYTES_PER_FLOAT = 4
-    val BYTES_PER_INT = 4
+    val BYTES_PER_SHORT = 2
 
-    fun floatBufferOf(vararg items: Float): FloatBuffer = ByteBuffer
+    fun floatBufferOf(items: FloatArray): FloatBuffer = ByteBuffer
             .allocateDirect(items.size * BYTES_PER_FLOAT)
             .order(ByteOrder.nativeOrder())
             .asFloatBuffer()
+            .apply { put(items).position(0) }
+
+    fun shortBufferOf(items: ShortArray): ShortBuffer = ByteBuffer
+            .allocateDirect(items.size * BYTES_PER_SHORT)
+            .order(ByteOrder.nativeOrder())
+            .asShortBuffer()
             .apply { put(items).position(0) }
 
     fun compileShader(strSource: String, type: Int): Int {
@@ -25,8 +32,11 @@ object Graphics {
         glShaderSource(shader, strSource)
         glCompileShader(shader)
         glGetShaderiv(shader, GL_COMPILE_STATUS, ids, 0)
-        if (ids[0] == 0)
-            throw RuntimeException("Compile shader failed: ${glGetShaderInfoLog(shader)}")
+        if (ids[0] == 0) {
+            val typeStr = if (type == GL_VERTEX_SHADER) "vertex" else "fragment"
+            val msg = glGetShaderInfoLog(shader)
+            throw RuntimeException("Compile $typeStr shader failed: $msg")
+        }
         return shader
     }
 
@@ -59,13 +69,28 @@ object Graphics {
         val ids = IntArray(1)
         glLinkProgram(progId)
         glGetProgramiv(progId, GL_LINK_STATUS, ids, 0)
-        if (ids[0] <= 0)
-            throw RuntimeException("Linking shader failed")
+        if (ids[0] <= 0) {
+            glGetProgramiv(progId, GL_INFO_LOG_LENGTH, ids, 0)
+            val msg = glGetProgramInfoLog(progId)
+            throw RuntimeException("Linking shader failed: " + msg)
+        }
     }
 
     fun glGenTexture(): Int {
         val ids = IntArray(1)
         glGenTextures(1, ids, 0)
+        return ids[0]
+    }
+
+    fun glGenFrameBuffer(): Int {
+        val ids = IntArray(1)
+        glGenFramebuffers(1, ids, 0)
+        return ids[0]
+    }
+
+    fun glGenBuffer(): Int {
+        val ids = IntArray(1)
+        glGenBuffers(1, ids, 0)
         return ids[0]
     }
 

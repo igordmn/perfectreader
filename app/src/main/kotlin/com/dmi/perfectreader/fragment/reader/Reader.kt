@@ -60,7 +60,7 @@ class Reader(
     }
 
     private val closeMenu = {
-        require(menuIsOpened)
+        require(menuIsOpened)  // todo срабатывает exception
         toggleMenu()
     }
 

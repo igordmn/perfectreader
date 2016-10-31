@@ -61,10 +61,10 @@ private inline fun MotionEvent.newTouchAreas(createFor: (index: Int) -> TouchAre
 
     var originalIndex = 0
     return Array(fingerCount) {
-        val area = createFor(originalIndex)
-        originalIndex++
         if (originalIndex == ignoredIndex)
             originalIndex++
+        val area = createFor(originalIndex)
+        originalIndex++
         area
     }
 }

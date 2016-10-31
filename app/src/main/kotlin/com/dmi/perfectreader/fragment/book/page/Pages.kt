@@ -4,13 +4,13 @@ import com.dmi.perfectreader.fragment.book.location.Location
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.util.collection.DuplexBuffer
 import com.dmi.util.collection.SequenceEntry
-import java.lang.Math.min
+import com.dmi.util.lang.clamp
 
 class Pages(
         initialLocation: Location
 ) {
     companion object {
-        val MAX_RELATIVE_INDEX = 5
+        val MAX_RELATIVE_INDEX = 10
     }
 
     var location: Location = initialLocation
@@ -28,10 +28,10 @@ class Pages(
     val lastLoadedEntry: SequenceEntry<Page>? get() = currentEntries[rightLoadedCount]
     val firstLoadedEntry: SequenceEntry<Page>? get() = currentEntries[-leftLoadedCount]
 
-    private val currentEntries = DuplexBuffer<SequenceEntry<Page>>(MAX_RELATIVE_INDEX)
+    var minGoRelativeIndex = 0
+    var maxGoRelativeIndex = 0
 
-    fun canGoNextPage() = rightLoadedCount > 0 && currentEntries[1] != null
-    fun canGoPreviousPage() = leftLoadedCount > 0 && currentEntries[-1] != null
+    private val currentEntries = DuplexBuffer<SequenceEntry<Page>>(MAX_RELATIVE_INDEX)
 
     fun goLocation(location: Location) {
         this.location = location
@@ -40,26 +40,20 @@ class Pages(
         isCurrentLoaded = false
         leftLoadedCount = 0
         rightLoadedCount = 0
+        minGoRelativeIndex = 0
+        maxGoRelativeIndex = 0
     }
 
-    fun goNextPage() {
-        require(canGoNextPage())
-        currentEntries.shiftLeft()
+    fun goPage(relativeIndex: Int) {
+        require(relativeIndex >= minGoRelativeIndex && relativeIndex <= maxGoRelativeIndex)
+        if (relativeIndex == 0) return
+
+        currentEntries.shift(-relativeIndex)
+        leftLoadedCount = clamp(leftLoadedCount + relativeIndex, 0, MAX_RELATIVE_INDEX)
+        rightLoadedCount = clamp(rightLoadedCount - relativeIndex, 0, MAX_RELATIVE_INDEX)
+        minGoRelativeIndex = clamp(minGoRelativeIndex - relativeIndex, -MAX_RELATIVE_INDEX, MAX_RELATIVE_INDEX)
+        maxGoRelativeIndex = clamp(maxGoRelativeIndex - relativeIndex, -MAX_RELATIVE_INDEX, MAX_RELATIVE_INDEX)
         location = get(0)!!.range.begin
-
-        require(rightLoadedCount > 0)
-        leftLoadedCount = min(leftLoadedCount + 1, MAX_RELATIVE_INDEX)
-        rightLoadedCount--
-    }
-
-    fun goPreviousPage() {
-        require(canGoPreviousPage())
-        currentEntries.shiftRight()
-        location = get(0)!!.range.begin
-
-        require(leftLoadedCount > 0)
-        leftLoadedCount--
-        rightLoadedCount = min(rightLoadedCount + 1, MAX_RELATIVE_INDEX)
     }
 
     fun isNextPagesValid(): Boolean {
@@ -68,14 +62,9 @@ class Pages(
         return current == null || next == null || current.range.end == next.range.begin
     }
 
-    fun needReloadAll() {
-        isCurrentLoaded = false
-        leftLoadedCount = 0
-        rightLoadedCount = 0
-    }
-
     fun needReloadRight() {
         rightLoadedCount = 0
+        maxGoRelativeIndex = 0
     }
 
     fun setLoadedCurrent(pageEntry: SequenceEntry<Page>?) {
@@ -88,12 +77,16 @@ class Pages(
         require(!isRightLoaded)
         rightLoadedCount++
         currentEntries[rightLoadedCount] = pageEntry
+        if (pageEntry != null)
+            maxGoRelativeIndex++
     }
 
     fun addLoadedLeft(pageEntry: SequenceEntry<Page>?) {
         require(!isLeftLoaded)
         leftLoadedCount++
         currentEntries[-leftLoadedCount] = pageEntry
+        if (pageEntry != null)
+            minGoRelativeIndex--
     }
 
     operator fun get(relativeIndex: Int): Page? = currentEntries[relativeIndex]?.item

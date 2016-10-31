@@ -5,8 +5,8 @@ import com.dmi.perfectreader.data.UserSettingKeys
 import com.dmi.perfectreader.data.UserSettingValues
 import com.dmi.perfectreader.data.UserSettings
 import com.dmi.perfectreader.data.scaleSettingValue
-import com.dmi.perfectreader.fragment.book.AnimatedBook
 import com.dmi.perfectreader.fragment.book.Book
+import com.dmi.perfectreader.fragment.book.animation.PageScroller
 import com.dmi.perfectreader.fragment.reader.Reader
 import com.dmi.util.action.*
 import com.dmi.util.graphic.PositionF
@@ -49,22 +49,19 @@ class ReaderActions(
         ReaderActionID.ADD_BOOK_TO_FAVOURITE -> NoneAction
 
         ReaderActionID.SCROLL -> object : Action {
-            lateinit var scroller: AnimatedBook.Scroller
+            lateinit var scroller: PageScroller
 
-            override fun startScroll(area: TouchArea) {
-                scroller = book.scroll(PositionF(area.x, area.y))
-            }
-
+            override fun startScroll(area: TouchArea) = run { scroller = book.scroll() }
             override fun scroll(delta: PositionF) = scroller.scroll(delta)
             override fun endScroll(velocity: PositionF) = scroller.end(velocity)
             override fun cancelScroll() = scroller.cancel()
         }
-        ReaderActionID.GO_NEXT_PAGE -> repeatAction { book.goNextPage() }
-        ReaderActionID.GO_PREVIOUS_PAGE -> repeatAction { book.goPreviousPage() }
-        ReaderActionID.GO_NEXT_PAGE_WITHOUT_ANIMATION -> repeatAction { book.goNextPage() }
-        ReaderActionID.GO_PREVIOUS_PAGE_WITHOUT_ANIMATION -> repeatAction { book.goNextPage() }
-        ReaderActionID.GO_NEXT_PAGE_10 -> performAction { book.goNextPages(10) }
-        ReaderActionID.GO_PREVIOUS_PAGE_10 -> performAction { book.goPreviousPages(10) }
+        ReaderActionID.GO_NEXT_PAGE -> repeatAction { book.movePage(1) }
+        ReaderActionID.GO_PREVIOUS_PAGE -> repeatAction { book.movePage(-1) }
+        ReaderActionID.GO_NEXT_PAGE_WITHOUT_ANIMATION -> repeatAction { book.goPage(1) }
+        ReaderActionID.GO_PREVIOUS_PAGE_WITHOUT_ANIMATION -> repeatAction { book.goPage(-1) }
+        ReaderActionID.GO_NEXT_PAGE_10 -> performAction { book.movePage(10) }
+        ReaderActionID.GO_PREVIOUS_PAGE_10 -> performAction { book.movePage(-10) }
         ReaderActionID.GO_BOOK_BEGIN -> NoneAction
         ReaderActionID.GO_BOOK_END -> NoneAction
         ReaderActionID.GO_NEXT_CHAPTER -> NoneAction

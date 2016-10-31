@@ -2,13 +2,13 @@ package com.dmi.perfectreader.fragment.book.page
 
 import android.graphics.Canvas
 import android.graphics.PorterDuff
-import com.dmi.perfectreader.app.glBackgroundScheduler
+import com.dmi.perfectreader.app.pagePaintScheduler
 import com.dmi.perfectreader.fragment.book.pagination.page.Page
 import com.dmi.perfectreader.fragment.book.pagination.page.PageContext
 import com.dmi.perfectreader.fragment.book.render.factory.PageRenderer
 import com.dmi.perfectreader.fragment.book.render.obj.RenderPage
 import com.dmi.util.android.opengl.GLTexture
-import com.dmi.util.android.opengl.GLTexturePlane
+import com.dmi.util.android.opengl.GLTextureBackground
 import com.dmi.util.collection.Pool
 import com.dmi.util.concurrent.SingleResourceLoader
 import com.dmi.util.graphic.Color
@@ -18,7 +18,7 @@ class GLPage(
         val page: Page,
         pageContext: PageContext,
         private val texturePool: Pool<GLTexture>,
-        private val texturePlane: GLTexturePlane,
+        private val textureBackground: GLTextureBackground,
         private val background: GLPageBackground,
         private val bitmapBufferPool: Pool<BitmapBuffer>,
         private val pageRenderer: PageRenderer
@@ -26,7 +26,7 @@ class GLPage(
     private var texture = texturePool.acquire()
     private var refreshed = false
 
-    private val bitmapLoader = SingleResourceLoader<RenderResult>(glBackgroundScheduler, destroyResult = { releaseBuffer(it) })
+    private val bitmapLoader = SingleResourceLoader<RenderResult>(pagePaintScheduler, destroyResult = { releaseBuffer(it) })
     private var renderPage: RenderPage? = null
     private var renderedPageContext: PageContext? = null
 
@@ -105,11 +105,11 @@ class GLPage(
         }
     }
 
-    fun draw(matrix: FloatArray) {
-        background.draw(matrix)
+    fun draw() {
+        background.draw()
 
         if (refreshed)
-            texturePlane.draw(matrix, texture)
+            textureBackground.draw(texture)
     }
 
     private sealed class RenderResult {

@@ -24,7 +24,7 @@ import java.util.concurrent.ThreadFactory
 
 val dataAccessScheduler: Scheduler = singleThreadScheduler("dataAccess", ThreadPriority.BACKGROUND)
 val bookLoadScheduler: Scheduler = singleThreadScheduler("bookLoad", ThreadPriority.BACKGROUND)
-val glBackgroundScheduler: Scheduler = singleThreadScheduler("pagePaint", ThreadPriority.BACKGROUND)
+val pagePaintScheduler: Scheduler = singleThreadScheduler("pagePaint", ThreadPriority.BACKGROUND)
 val pageLoadScheduler: Scheduler = singleThreadScheduler("pageLoad", ThreadPriority.BACKGROUND)
 
 fun dataAccessAsync(run: () -> Unit) = async(dataAccessScheduler, run)
