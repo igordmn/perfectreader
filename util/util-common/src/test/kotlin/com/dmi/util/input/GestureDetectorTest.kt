@@ -384,7 +384,7 @@ class GestureDetectorTest {
         touchMove(2, area(40, 13, 1)) leadsTo OnScroll(20, 2)
         touchMove(3, area(70, 16, 1)) leadsTo OnScroll(30, 3)
         touchMove(4, area(110, 20, 1)) leadsTo OnScroll(40, 4)
-        touchUp(6) leadsTo OnScrollEnd(70, 7)
+        touchUp(6) leadsTo OnScrollEnd(45, 5)
     }
 
     @Test
@@ -397,7 +397,7 @@ class GestureDetectorTest {
         touchMove(3, area(42, 10, 1)) leadsTo OnScroll(10, 0)
         touchMove(4, area(52, 10, 1)) leadsTo OnScroll(10, 0)
         touchMove(5, area(62, 10, 1)) leadsTo OnScroll(10, 0)
-        touchUp(6) leadsTo OnScrollEnd(14, 0)
+        touchUp(6) leadsTo OnScrollEnd(10, 0)
     }
 
 
@@ -493,7 +493,7 @@ class GestureDetectorTest {
         touchMove(6, area(36, 10, 1), area(36, 100, 1)) leadsTo OnScroll(10, 0)
         touchUp(6, area(36, 10, 1)) leadsTo nothing
         touchMove(7, area(46, 10, 1)) leadsTo OnScroll(10, 0)
-        touchUp(7) leadsTo OnScrollEnd(11, 0)
+        touchUp(7) leadsTo OnScrollEnd(10, 0)
     }
 
 

@@ -45,30 +45,14 @@ class GestureDetector(
             field = value
         }
     private val stateSubscriptions = CompositeSubscription()
-    private val velocityApproximator = VelocityApproximator()
-    private var lastEvent: TouchEvent? = null
+    private val velocityTracker = VelocityTracker()
+    private var velocityTrackerFingerCount = 0
 
     fun onTouchEvent(event: TouchEvent) {
         val state = state
         val touchState = event.state
         val action = event.action
         val fingerCount = touchState.fingerCount
-
-        val lastEvent = lastEvent
-        if (lastEvent != null && event.state.fingerCount == lastEvent.state.fingerCount) {
-            val lastCenter = touchCenter(lastEvent.state)
-            val currentCenter = touchCenter(event.state)
-            val lastSeconds = lastEvent.timeMillis / 1000.0
-            val currentSeconds = event.timeMillis / 1000.0
-            val deltaX = currentCenter.x - lastCenter.x
-            val deltaY = currentCenter.y - lastCenter.y
-            val timeDelta = (currentSeconds - lastSeconds).toFloat()
-            if (timeDelta > 0) {
-                val velocityX = deltaX / timeDelta
-                val velocityY = deltaY / timeDelta
-                velocityApproximator.add(velocityX, velocityY, lastSeconds)
-            }
-        }
 
         @Suppress("IntroduceWhenSubject")
         when (state) {
@@ -100,7 +84,7 @@ class GestureDetector(
                 fingerCount == 0 -> endTapRepeat(state)
             }
             is State.Scroll -> when {
-                fingerCount == 0 -> endScroll(state, velocityApproximator.approximateAt(event.timeMillis / 1000.0))
+                fingerCount == 0 -> endScroll(state, velocityTracker.currentVelocity())
                 fingerCount != state.lastState.fingerCount -> state.lastState = touchState
                 else -> scroll(state, touchState)
             }
@@ -111,12 +95,16 @@ class GestureDetector(
             }
         }
 
-        if (fingerCount > 0) {
-            this.lastEvent = event
-        } else {
-            this.lastEvent = null
-            velocityApproximator.clear()
+        if (touchState.fingerCount != velocityTrackerFingerCount) {
+            velocityTracker.clear()
         }
+        if (touchState.fingerCount > 0) {
+            val center = touchCenter(touchState)
+            val seconds = event.timeMillis / 1000.0
+
+            velocityTracker.addMovement(center.x.toDouble(), center.y.toDouble(), seconds)
+        }
+        velocityTrackerFingerCount = event.state.fingerCount
     }
 
     private fun awaitLongTap(lastDownState: TouchState, maxDownState: TouchState) {
@@ -235,8 +223,8 @@ class GestureDetector(
             is State.Pinch -> state.listener.onCancel()
         }
         this.state = State.None
-        this.lastEvent = null
-        velocityApproximator.clear()
+        velocityTrackerFingerCount = 0
+        velocityTracker.clear()
     }
 
     private fun isInOneDirection(oldState: TouchState, newState: TouchState): Boolean {
