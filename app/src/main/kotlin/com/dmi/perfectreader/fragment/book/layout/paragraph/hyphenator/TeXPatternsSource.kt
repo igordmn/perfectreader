@@ -8,8 +8,8 @@ import java.util.*
 
 class TeXPatternsSource(private val context: Context) {
     companion object {
-        private val PATTERN_FORMAT = "hyphenation/hyph-%s.pat.txt"
-        private val EXCEPTION_FORMAT = "hyphenation/hyph-%s.hyp.txt"
+        private val PATTERN_FORMAT = "resources/hyphenations/hyph-%s.pat.txt"
+        private val EXCEPTION_FORMAT = "resources/hyphenations/hyph-%s.hyp.txt"
         private val LANGUAGE_ALIASES = mapOf(
                 "de" to "de-1996",
                 "el" to "el-monoton",
