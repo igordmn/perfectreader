@@ -1,8 +1,8 @@
 package com.dmi.perfectreader.data
 
-import com.dmi.perfectreader.fragment.book.content.obj.param.TextAlign
-import com.dmi.perfectreader.fragment.control.OpenTapMode
-import com.dmi.perfectreader.fragment.reader.action.ReaderActionID
+import com.dmi.perfectreader.book.content.obj.param.TextAlign
+import com.dmi.perfectreader.control.OpenTapMode
+import com.dmi.perfectreader.reader.action.ReaderActionID
 import com.dmi.util.action.TouchZone
 import com.dmi.util.action.TouchZoneConfiguration
 import com.dmi.util.graphic.Color

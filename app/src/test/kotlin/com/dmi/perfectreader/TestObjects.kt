@@ -1,9 +1,9 @@
 package com.dmi.perfectreader
 
-import com.dmi.perfectreader.fragment.book.content.obj.param.ConfiguredFontStyle
-import com.dmi.perfectreader.fragment.book.layout.obj.LayoutObject
-import com.dmi.perfectreader.fragment.book.location.Location
-import com.dmi.perfectreader.fragment.book.location.LocationRange
+import com.dmi.perfectreader.book.content.obj.param.ConfiguredFontStyle
+import com.dmi.perfectreader.book.layout.obj.LayoutObject
+import com.dmi.perfectreader.book.location.Location
+import com.dmi.perfectreader.book.location.LocationRange
 import com.dmi.util.font.Font
 import com.dmi.util.font.StyledFont
 import com.dmi.util.graphic.Color

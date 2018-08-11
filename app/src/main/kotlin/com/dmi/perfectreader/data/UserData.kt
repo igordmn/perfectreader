@@ -2,7 +2,7 @@ package com.dmi.perfectreader.data
 
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
-import com.dmi.perfectreader.fragment.book.location.Location
+import com.dmi.perfectreader.book.location.Location
 import com.dmi.util.android.ext.execQuery
 import com.dmi.util.lang.returnUnit
 import org.jetbrains.anko.db.DoubleParser

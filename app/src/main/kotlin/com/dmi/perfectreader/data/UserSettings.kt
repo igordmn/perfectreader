@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.data
 
 import android.database.sqlite.SQLiteDatabase
-import com.dmi.perfectreader.app.dataAccessScheduler
+import com.dmi.perfectreader.dataAccessScheduler
 import com.dmi.util.android.setting.DBSettings
 import com.dmi.util.android.setting.DBSettings.Columns
 import com.dmi.util.android.setting.DBSettings.Schema
