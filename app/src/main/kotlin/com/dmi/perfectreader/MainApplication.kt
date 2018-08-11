@@ -3,7 +3,6 @@ package com.dmi.perfectreader
 import android.app.Application
 import android.content.Context
 import android.os.StrictMode
-import com.dmi.perfectreader.Main
 import com.dmi.util.android.log.AndroidLog
 import com.dmi.util.coroutine.initThreadContext
 import com.dmi.util.lang.NoStackTraceThrowable
