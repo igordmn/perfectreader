@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.book.content.obj
 
 import com.dmi.perfectreader.book.content.obj.param.*
-import com.dmi.perfectreader.book.location.LocationRange
+import com.dmi.perfectreader.book.content.location.LocationRange
 
 class ContentBox(
         val styleType: StyleType,
@@ -13,7 +13,7 @@ class ContentBox(
 ) : ContentObject(range, textSize) {
     override val length = children.sumByDouble { it.length }
 
-    override fun configure(config: ContentConfig) = ConfiguredBox(
+    override fun configure(config: FormatConfig) = ConfiguredBox(
             size.configure(config),
             contentAlign ?: Align.LEFT,
             children.map { it.configure(config) },

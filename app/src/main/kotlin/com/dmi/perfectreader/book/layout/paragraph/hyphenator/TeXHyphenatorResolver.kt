@@ -1,10 +1,13 @@
 package com.dmi.perfectreader.book.layout.paragraph.hyphenator
 
-import com.dmi.util.log
+import com.dmi.util.log.Log
 import java.io.IOException
 import java.util.*
 
-class TeXHyphenatorResolver(private val patternsSource: TeXPatternsSource) : HyphenatorResolver {
+class TeXHyphenatorResolver(
+        private val log: Log,
+        private val patternsSource: TeXPatternsSource
+) : HyphenatorResolver {
     override fun hyphenatorFor(locale: Locale): TeXHyphenator {
         val builder = TeXHyphenator.Builder()
 

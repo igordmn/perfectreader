@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.menu
 
-import android.content.Context
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.Toolbar
 import android.view.KeyEvent
@@ -9,6 +8,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
 import com.dmi.perfectreader.R
+import com.dmi.perfectreader.ViewContext
 import com.dmi.util.android.base.BaseView
 import com.dmi.util.android.base.color
 import com.dmi.util.android.base.drawable
@@ -20,9 +20,9 @@ import org.jetbrains.anko.onClick
 import java.lang.Math.round
 
 class MenuView(
-        context: Context,
+        viewContext: ViewContext,
         private val model: Menu
-) : BaseView(context, R.layout.fragment_menu) {
+) : BaseView(viewContext.android, R.layout.fragment_menu) {
     private val toolbar = find<Toolbar>(R.id.toolbar)
     private val currentChapterText = find<TextView>(R.id.currentChapterText)
     private val currentPageText = find<TextView>(R.id.currentPageText)
@@ -54,8 +54,8 @@ class MenuView(
             }
         }
         currentChapterText.text = "X — Alice's evidence"
-        subscribe(model.pageNumberObservable) { pageNumber ->
-            currentPageText.text = "$pageNumber / ${model.numberOfPages}"
+        autorun {
+            currentPageText.text = "${model.pageNumber} / ${model.numberOfPages}"
         }
     }
 
@@ -72,8 +72,8 @@ class MenuView(
         addHintOnLongClick(textToSpeechButton)
         addHintOnLongClick(addBookmarkButton)
 
-        subscribe(model.percentObservable) {
-            locationSlider.progress = round(it * locationSlider.max).toInt()
+        autorun {
+            locationSlider.progress = round(model.percent * locationSlider.max).toInt()
         }
         locationSlider.numericTransformer = object: DiscreteSeekBar.NumericTransformer() {
             override fun transform(value: Int): Int {

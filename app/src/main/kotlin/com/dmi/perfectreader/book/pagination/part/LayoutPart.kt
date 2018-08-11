@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.book.pagination.part
 
+import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
-import com.dmi.perfectreader.book.location.LocationRange
 
 class LayoutPart(
         val obj: LayoutObject,
@@ -37,7 +37,7 @@ class LayoutPart(
         action(x, y, obj)
 
         val children = obj.children
-        if (children.size > 0) {
+        if (children.isNotEmpty()) {
             val firstChildIndex = top.childIndex(level, isFirstBranch, 0)
             val lastChildIndex = bottom.childIndex(level, isLastBranch, children.size - 1)
 
@@ -56,7 +56,7 @@ class LayoutPart(
         }
     }
 
-    override fun toString() = childObject(obj, top.childIndices, 0).toString()
+    override fun toString() = if (obj.children.isNotEmpty()) childObject(obj, top.childIndices, 0).toString() else "-"
 
     private fun childObject(obj: LayoutObject, childIndices: List<Int>, level: Int): LayoutObject {
         val child = obj.children[childIndices[level]].obj

@@ -11,7 +11,6 @@ import com.dmi.perfectreader.book.layout.common.LayoutSpace.Area
 import com.dmi.perfectreader.book.layout.obj.*
 import com.dmi.perfectreader.book.layout.paragraph.liner.Liner
 import com.dmi.perfectreader.book.layout.paragraph.metrics.TextMetrics
-import com.dmi.perfectreader.book.location.LocationRange
 import com.dmi.util.lang.ReusableArrayList
 import com.dmi.util.lang.ReusableFloatArrayList
 import com.dmi.util.lang.ReusableIntArrayList
@@ -147,7 +146,7 @@ class ParagraphLayouter(
                         )
                 )
 
-                override lateinit var plainText: String
+                override var plainText: String
                 override val locale: Locale = locale
 
                 init {
@@ -167,7 +166,7 @@ class ParagraphLayouter(
                     plainTextBuilder.append(text)
 
                     val charAdvances = textMetrics.charAdvances(text, run.style)
-                    for (i in 0..text.length - 1) {
+                    for (i in 0 until text.length) {
                         plainIndexToRunIndex.add(runIndex)
                         addAdvance(
                                 if (isSpaceWordSeparator(text[i])) {
@@ -391,13 +390,13 @@ class ParagraphLayouter(
             val children = ArrayList<LayoutChild>()
 
             var lineBaseline = leadings[0] / 2 + baselines[0]
-            for (i in 1..objects.size - 1) {
+            for (i in 1 until objects.size) {
                 val baseline = leadings[i] / 2 + baselines[i]
                 if (baseline > lineBaseline)
                     lineBaseline = baseline
             }
 
-            for (i in 0..objects.size - 1) {
+            for (i in 0 until objects.size) {
                 val x = lefts[i]
                 val y = lineBaseline - baselines[i]
                 val obj = objects[i]
@@ -405,23 +404,20 @@ class ParagraphLayouter(
             }
 
             var lineHeight = children[0].y + children[0].obj.height + leadings[0] / 2
-            for (i in 1..objects.size - 1) {
+            for (i in 1 until objects.size) {
                 val objLineHeight = children[i].y + children[i].obj.height + leadings[i] / 2
                 if (objLineHeight > lineHeight)
                     lineHeight = objLineHeight
             }
 
             var minFactLeading = lineHeight - objects[0].height
-            for (i in 1..objects.size - 1) {
+            for (i in 1 until objects.size) {
                 val factLeading = lineHeight - objects[i].height
                 if (factLeading < minFactLeading)
                     minFactLeading = factLeading
             }
 
-            val range = LocationRange(
-                    objects.first().range.begin,
-                    objects.last().range.end
-            )
+            val range = objects.first().range.start..objects.last().range.endInclusive
 
             return LayoutLine(width, lineHeight, max(0F, minFactLeading / 2), children, range)
         }

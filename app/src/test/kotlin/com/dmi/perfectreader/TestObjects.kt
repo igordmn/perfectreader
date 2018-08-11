@@ -1,9 +1,8 @@
 package com.dmi.perfectreader
 
+import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.content.obj.param.ConfiguredFontStyle
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
-import com.dmi.perfectreader.book.location.Location
-import com.dmi.perfectreader.book.location.LocationRange
 import com.dmi.util.font.Font
 import com.dmi.util.font.StyledFont
 import com.dmi.util.graphic.Color
@@ -35,7 +34,7 @@ fun fontStyle(
 fun testFont() = object : Font {}
 
 fun range(intRange: IntRange) = range(intRange.first, intRange.last)
-fun range(beginIndex: Int = 0, endIndex: Int = 0) = LocationRange(location(beginIndex), location(endIndex))
+fun range(beginIndex: Int = 0, endIndex: Int = 0) = location(beginIndex)..location(endIndex)
 fun location(index: Int = 0) = Location(index.toDouble())
 
 fun layoutObj(width: Float = 0F, height: Float= 0F) = object : LayoutObject(width, height, emptyList(), range()) {}

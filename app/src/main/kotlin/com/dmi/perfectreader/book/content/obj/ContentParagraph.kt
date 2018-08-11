@@ -1,9 +1,7 @@
 package com.dmi.perfectreader.book.content.obj
 
-import android.graphics.Typeface
 import com.dmi.perfectreader.book.content.obj.param.*
-import com.dmi.perfectreader.book.location.*
-import com.dmi.util.android.font.AndroidFont
+import com.dmi.perfectreader.book.content.location.*
 import java.util.*
 
 private val fontStyleCache = FontStyleCache()
@@ -24,10 +22,10 @@ class ContentParagraph(
     override val length = runs.sumByDouble { it.length }
 
     init {
-        require(runs.size > 0)
+        require(runs.isNotEmpty())
     }
 
-    override fun configure(config: ContentConfig): ConfiguredParagraph {
+    override fun configure(config: FormatConfig): ConfiguredParagraph {
         val firstLineIndentDip = emToDip(config.firstLineIndentEm, config) + (firstLineIndent ?: 0F)
 
         return ConfiguredParagraph(
@@ -44,13 +42,13 @@ class ContentParagraph(
     sealed class Run(val lineHeightMultiplier: Float?) {
         abstract val range: LocationRange
         abstract val length: Double
-        abstract fun configure(config: ContentConfig): ConfiguredParagraph.Run
+        abstract fun configure(config: FormatConfig): ConfiguredParagraph.Run
 
         class Object(val obj: ContentObject, lineHeightMultiplier: Float?) : Run(lineHeightMultiplier) {
             override val length = obj.length
             override val range = obj.range
 
-            override fun configure(config: ContentConfig) = ConfiguredParagraph.Run.Object(
+            override fun configure(config: FormatConfig) = ConfiguredParagraph.Run.Object(
                     obj.configure(config),
                     lineHeightMultiplier ?: config.lineHeightMultiplier
             )
@@ -68,7 +66,7 @@ class ContentParagraph(
 
             override val length = text.length.toDouble()
 
-            override fun configure(config: ContentConfig) = ConfiguredParagraph.Run.Text(
+            override fun configure(config: FormatConfig) = ConfiguredParagraph.Run.Text(
                     text,
                     fontStyleCache.configure(style, config),
                     lineHeightMultiplier ?: config.lineHeightMultiplier,
@@ -107,9 +105,9 @@ class ConfiguredParagraph(
 
 private class FontStyleCache {
     private val lastConfigured = WeakHashMap<ContentFontStyle, ConfiguredFontStyle>()
-    private val lastConfigs = WeakHashMap<ContentFontStyle, ContentConfig>()
+    private val lastConfigs = WeakHashMap<ContentFontStyle, FormatConfig>()
 
-    fun configure(style: ContentFontStyle, config: ContentConfig): ConfiguredFontStyle {
+    fun configure(style: ContentFontStyle, config: FormatConfig): ConfiguredFontStyle {
         val lastConfigured = lastConfigured[style]
         val lastConfig = lastConfigs[style]
         if (lastConfigured != null && lastConfig === config) {
@@ -123,7 +121,7 @@ private class FontStyleCache {
     }
 }
 
-private fun ContentFontStyle.configure(config: ContentConfig): ConfiguredFontStyle {
+private fun ContentFontStyle.configure(config: FormatConfig): ConfiguredFontStyle {
     val textSizeMultiplier = config.textSizeDip / ContentParagraph.DEFAULT_TEXT_SIZE_DIP
     val textSize = (size ?: ContentParagraph.DEFAULT_TEXT_SIZE_DIP) * textSizeMultiplier * config.density
 

@@ -7,9 +7,9 @@ sourceSets {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$projectVersions.kotlin"
-    compile 'com.google.guava:guava:19.0'
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$projectVersions.coroutines"
+    compile 'com.google.guava:guava:25.0-android'
     compile 'com.carrotsearch:hppc:0.7.1'
-    compile 'io.reactivex:rxkotlin:0.60.0'
     compile 'com.github.kittinunf.result:result:1.0.2'
     compile 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
     testCompile project(':util:util-testCommon')
@@ -17,3 +17,9 @@ dependencies {
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}

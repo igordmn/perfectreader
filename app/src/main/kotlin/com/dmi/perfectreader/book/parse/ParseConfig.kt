@@ -1,8 +1,6 @@
 package com.dmi.perfectreader.book.parse
 
-import com.dmi.perfectreader.data.UserSettingKeys
-import com.dmi.util.setting.Settings
-import com.dmi.perfectreader.data.UserSettingKeys.Analyze as AnalyzeKeys
+import com.dmi.perfectreader.settings.Settings
 
 class ParseConfig(
         val defaultCharset: Charset,
@@ -16,11 +14,11 @@ class ParseConfig(
 
 fun settingsParseConfig(settings: Settings) = ParseConfig(
         defaultCharset(settings),
-        settings[UserSettingKeys.Analyze.ignoreDeclaredCharset]
+        settings.analyze.ignoreDeclaredCharset
 )
 
-private fun defaultCharset(settings: Settings) = if (settings[AnalyzeKeys.defaultCharsetIsAuto]) {
+private fun defaultCharset(settings: Settings) = if (settings.analyze.defaultCharsetIsAuto) {
     ParseConfig.Charset.Auto
 } else {
-    ParseConfig.Charset.Fixed(settings[AnalyzeKeys.defaultCharset])
+    ParseConfig.Charset.Fixed(settings.analyze.defaultCharset)
 }

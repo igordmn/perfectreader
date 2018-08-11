@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.book.render.obj
 
 import android.graphics.*
-import com.dmi.perfectreader.book.pagination.page.PageContext
 import com.dmi.util.android.graphics.CorrectGamma.correctAlphaGamma
 import java.lang.ref.WeakReference
 
@@ -27,9 +26,9 @@ class RenderPicture(
         private val picture: Picture,
         private val alphaGamma: Float = 1F
 ) : RenderObject() {
-    override fun dirtyRect(oldContext: PageContext, newContext: PageContext) = null
+    override fun dirtyRect(oldContext: Context, newContext: Context) = null
 
-    override fun paint(canvas: Canvas, context: PageContext) {
+    override fun paint(canvas: Canvas, context: Context) {
         if (alphaGamma == 1F) {
             canvas.drawPicture(picture)
         } else {

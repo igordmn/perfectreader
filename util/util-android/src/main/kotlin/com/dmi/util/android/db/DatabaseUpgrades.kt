@@ -48,11 +48,11 @@ private fun findNewScripts(context: Context, currentVersion: Int, scriptsAssetsP
 }
 
 private fun applyScripts(context: Context, database: SQLiteDatabase, scriptPaths: List<String>) {
-    for (scriptPath in scriptPaths) {
-        for (sqlCommand in readSQLCommands(context, scriptPath)) {
-            database.execSQL(sqlCommand)
-        }
-    }
+    fun readSQLCommands(scriptPath: String) = readSQLCommands(context, scriptPath)
+
+    scriptPaths
+            .flatMap(::readSQLCommands)
+            .forEach(database::execSQL)
 }
 
 private fun readSQLCommands(context: Context, scriptPath: String): List<String> {

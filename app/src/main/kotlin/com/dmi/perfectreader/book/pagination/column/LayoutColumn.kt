@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.book.pagination.column
 
+import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
-import com.dmi.perfectreader.book.location.LocationRange
 import com.dmi.perfectreader.book.pagination.part.LayoutPart
 
 class LayoutColumn(
@@ -17,5 +17,5 @@ class LayoutColumn(
         }
     }
 
-    override fun toString() = if (parts.size > 0) parts[0].toString() else ""
+    override fun toString() = if (parts.isNotEmpty()) parts[0].toString() else ""
 }

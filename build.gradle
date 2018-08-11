@@ -5,21 +5,23 @@ buildscript {
         config = loadProperties('.sign/sign.properties', 'workspace.properties')
 
         projectVersions = [
-                kotlin        : '1.1-M02',
-                buildTools    : '24.0.2',
-                androidPlugin : '2.2.0',
-                androidExperimentalPlugin : '0.8.0',
-                minSdk        : 21,
-                targetSdk     : 23,
-                compileSdk    : 23,
-                supportLibrary: '24.2.0',
+                kotlin                   : '1.2.51',
+                buildTools               : '28-rc1',
+                androidPlugin            : '3.0.0',
+                androidExperimentalPlugin: '0.11.0',
+                minSdk                   : 21,
+                targetSdk                : 27,
+                compileSdk               : 27,
+                supportLibrary           : '27.0.0',
+                coroutines               : '0.23.4',
         ]
 
         projectRepositories = {
             jcenter()
+            google()
             maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
             maven { url 'https://dl.bintray.com/igordmn/maven' }
-            maven { url 'https://dl.bintray.com/kotlin/kotlin-eap-1.1' }
+            maven { url 'https://dl.bintray.com/kotlin/kotlin-eap-1.2' }
             maven { url 'https://dl.bintray.com/nhaarman/maven' }
             maven { url 'https://clojars.org/repo' }
             maven { url 'https://jitpack.io' }
@@ -44,7 +46,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.sonarqube' version '1.2'
+    id 'org.sonarqube' version '2.5'
 }
 
 subprojects {

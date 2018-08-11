@@ -6,7 +6,7 @@ import com.dmi.perfectreader.R
 fun actionName(context: Context, id: ReaderActionID): String = when (id) {
     ReaderActionID.NONE -> TODO()
     ReaderActionID.TOGGLE_MENU -> TODO()
-    ReaderActionID.EXIT_ACTIVITY -> TODO()
+    ReaderActionID.CLOSE_APPLICATION_WINDOW -> TODO()
     ReaderActionID.GO_TO_LIBRARY_LAST -> TODO()
     ReaderActionID.GO_TO_LIBRARY_FAVOURITE -> TODO()
     ReaderActionID.GO_TO_LIBRARY_FILES -> TODO()

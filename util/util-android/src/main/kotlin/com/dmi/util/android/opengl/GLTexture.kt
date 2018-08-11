@@ -3,13 +3,12 @@ package com.dmi.util.android.opengl
 import android.graphics.Bitmap
 import android.opengl.GLES20.*
 import android.opengl.GLUtils.texSubImage2D
-import com.dmi.util.android.opengl.GLUtils.glGenTexture
 import com.dmi.util.android.opengl.OpenGL.texSubImage2D
 import com.dmi.util.graphic.Rect
 import com.dmi.util.graphic.Size
 import com.dmi.util.lang.clamp
 
-class GLTexture(size: Size): GLResource {
+class GLTexture(size: Size) : GLResource {
     val id = glGenTexture()
 
     init {
@@ -20,6 +19,10 @@ class GLTexture(size: Size): GLResource {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         glBindTexture(GL_TEXTURE_2D, 0)
+    }
+
+    override fun dispose() {
+        glDelTexture(id)
     }
 
     fun refreshBy(bitmap: Bitmap, rect: Rect) {

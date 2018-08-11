@@ -62,15 +62,9 @@ class VelocityTracker {
     private fun quadraticRegressionBCoeff(x: DoubleRingBuffer, y: DoubleRingBuffer, size: Int): Double {
         require(size >= 2)
 
-        val pow0 = { x: Double -> 1.0 }
-        val pow1 = { x: Double -> x }
-        val pow2 = { x: Double -> x * x }
-        val pow3 = { x: Double -> x * x * x }
-        val pow4 = { x: Double -> x * x * x * x }
-
         fun powerSum(x: DoubleRingBuffer, pow: (Double) -> Double): Double {
             var sum = 0.0
-            for (i in 0..size - 1) {
+            for (i in 0 until size) {
                 sum += pow(x[i])
             }
             return sum
@@ -78,7 +72,7 @@ class VelocityTracker {
 
         fun powerSumDot(x: DoubleRingBuffer, pow: (Double) -> Double, y: DoubleRingBuffer): Double {
             var sum = 0.0
-            for (i in 0..size - 1) {
+            for (i in 0 until size) {
                 sum += pow(x[i]) * y[i]
             }
             return sum
@@ -109,4 +103,10 @@ class VelocityTracker {
 
         fun ages() = ages.apply { clear() }
     }
+
+    private val pow0 = { _: Double -> 1.0 }
+    private val pow1 = { x: Double -> x }
+    private val pow2 = { x: Double -> x * x }
+    private val pow3 = { x: Double -> x * x * x }
+    private val pow4 = { x: Double -> x * x * x * x }
 }

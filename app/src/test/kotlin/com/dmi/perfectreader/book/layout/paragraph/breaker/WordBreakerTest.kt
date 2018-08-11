@@ -3,7 +3,7 @@ package com.dmi.perfectreader.book.layout.paragraph.breaker
 import com.dmi.perfectreader.book.layout.paragraph.hyphenator.Hyphenator
 import com.dmi.perfectreader.book.layout.paragraph.hyphenator.HyphenatorResolver
 import com.dmi.perfectreader.book.layout.paragraph.hyphenator.Hyphens
-import com.dmi.test.shouldEqual
+import com.dmi.test.shouldBe
 import org.junit.Test
 import java.util.*
 
@@ -29,8 +29,8 @@ class WordBreakerTest {
         val breaks = breaker.breakText(text, Locale.US, Breaker.Config(true))
 
         // then
-        breakIndicesOf(breaks, text) shouldEqual listOf(3, 20, 26, 29, 37, 43)
-        hyphenIndicesOf(breaks, text) shouldEqual listOf(3, 20, 26, 29, 37, 43)
+        breakIndicesOf(breaks, text) shouldBe listOf(3, 20, 26, 29, 37, 43)
+        hyphenIndicesOf(breaks, text) shouldBe listOf(3, 20, 26, 29, 37, 43)
     }
 
     @Test
@@ -48,8 +48,8 @@ class WordBreakerTest {
         val breaks = breaker.breakText(text, Locale.US, Breaker.Config(false))
 
         // then
-        breakIndicesOf(breaks, text) shouldEqual emptyList()
-        hyphenIndicesOf(breaks, text) shouldEqual emptyList()
+        breakIndicesOf(breaks, text) shouldBe emptyList()
+        hyphenIndicesOf(breaks, text) shouldBe emptyList()
     }
 
     @Test
@@ -62,8 +62,8 @@ class WordBreakerTest {
         val breaks = breaker.breakText(text, Locale.US, Breaker.Config(true))
 
         // then
-        breakIndicesOf(breaks, text) shouldEqual emptyList<Int>()
-        hyphenIndicesOf(breaks, text) shouldEqual emptyList<Int>()
+        breakIndicesOf(breaks, text) shouldBe emptyList<Int>()
+        hyphenIndicesOf(breaks, text) shouldBe emptyList<Int>()
     }
 
     @Test
@@ -98,8 +98,8 @@ class WordBreakerTest {
         val breaks = breaker.breakText(text, Locale.US, Breaker.Config(true))
 
         // then
-        breakIndicesOf(breaks, text) shouldEqual listOf(2, 2 + 5, 7 + 5, 12 + 5, 17 + 6, 23 + 5, 28 + 7, 35 + 7, 42 + 5)
-        hyphenIndicesOf(breaks, text) shouldEqual listOf(2, 23, 28, 35)
+        breakIndicesOf(breaks, text) shouldBe listOf(2, 2 + 5, 7 + 5, 12 + 5, 17 + 6, 23 + 5, 28 + 7, 35 + 7, 42 + 5)
+        hyphenIndicesOf(breaks, text) shouldBe listOf(2, 23, 28, 35)
     }
 
     fun hyphenatorResolver(wordToBreakIndices: Map<String, List<Int>> = emptyMap()) = object : HyphenatorResolver {

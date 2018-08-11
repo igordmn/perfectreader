@@ -5,7 +5,7 @@ import com.dmi.perfectreader.book.layout.obj.LayoutObject
 import com.dmi.perfectreader.book.pagination.part.LayoutPart
 import com.dmi.perfectreader.book.pagination.part.splitIntoParts
 import com.dmi.perfectreader.range
-import com.dmi.test.shouldEqual
+import com.dmi.test.shouldBe
 import org.junit.Test
 import java.util.*
 
@@ -48,7 +48,7 @@ class LayoutPartsTest {
         val parts = splitIntoParts(rootObj)
 
         // then
-        objectsOf(parts) shouldEqual listOf(
+        objectsOf(parts) shouldBe listOf(
                 rootObj,
                 rootObj,
                 rootObj,
@@ -59,7 +59,7 @@ class LayoutPartsTest {
                 rootObj,
                 rootObj
         )
-        topChildIndicesOf(parts) shouldEqual listOf(
+        topChildIndicesOf(parts) shouldBe listOf(
                 listOf(0, 0),
                 listOf(0, 1, 0),
                 listOf(0, 1, 1),
@@ -70,9 +70,9 @@ class LayoutPartsTest {
                 listOf(1),
                 listOf(2, 0, 0, 0)
         )
-        bottomChildIndicesOf(parts) shouldEqual topChildIndicesOf(parts)
+        bottomChildIndicesOf(parts) shouldBe topChildIndicesOf(parts)
 
-        topsOf(parts) shouldEqual listOf(
+        topsOf(parts) shouldBe listOf(
                 absoluteTopOf("root") + 10F,
                 absoluteTopOf("child_0_1") + 13F,
                 absoluteTopOf("!child_0_1_1") + 16F,
@@ -83,7 +83,7 @@ class LayoutPartsTest {
                 absoluteTopOf("!child_1") + 22F,
                 absoluteTopOf("child_2") + 23F
         )
-        bottomsOf(parts) shouldEqual listOf(
+        bottomsOf(parts) shouldBe listOf(
                 absoluteBottomOf("!child_0_0") - 38F,
                 absoluteBottomOf("!child_0_1_0") - 36F,
                 absoluteBottomOf("!child_0_1_1") - 34F,
@@ -95,7 +95,7 @@ class LayoutPartsTest {
                 absoluteBottomOf("root") - 40F
         )
 
-        rangesOf(parts) shouldEqual listOf(
+        rangesOf(parts) shouldBe listOf(
                 range(0..120), //   root           .. !child_0_0
                 range(130..200), // child_0_1      .. !child_0_1_0
                 range(210..220), // !child_0_1_1   .. !child_0_1_1
@@ -123,12 +123,12 @@ class LayoutPartsTest {
         val parts = splitIntoParts(obj)
 
         // then
-        objectsOf(parts) shouldEqual listOf(obj)
-        topsOf(parts) shouldEqual listOf(10F)
-        bottomsOf(parts) shouldEqual listOf(100F - 20F)
-        topChildIndicesOf(parts) shouldEqual listOf(emptyList())
-        bottomChildIndicesOf(parts) shouldEqual listOf(emptyList())
-        rangesOf(parts) shouldEqual listOf(range(0..1000))
+        objectsOf(parts) shouldBe listOf(obj)
+        topsOf(parts) shouldBe listOf(10F)
+        bottomsOf(parts) shouldBe listOf(100F - 20F)
+        topChildIndicesOf(parts) shouldBe listOf(emptyList())
+        bottomChildIndicesOf(parts) shouldBe listOf(emptyList())
+        rangesOf(parts) shouldBe listOf(range(0..1000))
     }
 
     @Test
@@ -140,12 +140,12 @@ class LayoutPartsTest {
         val parts = splitIntoParts(obj)
 
         // then
-        objectsOf(parts) shouldEqual listOf(obj)
-        topsOf(parts) shouldEqual listOf(10F)
-        bottomsOf(parts) shouldEqual listOf(100F - 20F)
-        topChildIndicesOf(parts) shouldEqual listOf(emptyList())
-        bottomChildIndicesOf(parts) shouldEqual listOf(emptyList())
-        rangesOf(parts) shouldEqual listOf(range(0..1000))
+        objectsOf(parts) shouldBe listOf(obj)
+        topsOf(parts) shouldBe listOf(10F)
+        bottomsOf(parts) shouldBe listOf(100F - 20F)
+        topChildIndicesOf(parts) shouldBe listOf(emptyList())
+        bottomChildIndicesOf(parts) shouldBe listOf(emptyList())
+        rangesOf(parts) shouldBe listOf(range(0..1000))
     }
 
     inner class TestObject(

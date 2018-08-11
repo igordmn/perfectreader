@@ -1,17 +1,19 @@
 package com.dmi.util.android.opengl
 
-interface GLResource {
+import com.dmi.util.scope.Disposable
+
+interface GLResource: Disposable {
     fun bind()
     fun unbind()
 }
 
-inline fun GLResource.use(action: () -> Unit) {
+inline fun GLResource.bind(action: () -> Unit) {
     bind()
     action()
     unbind()
 }
 
-inline fun use(res1: GLResource, res2: GLResource, action: () -> Unit) {
+inline fun bind(res1: GLResource, res2: GLResource, action: () -> Unit) {
     res1.bind()
     res2.bind()
     action()

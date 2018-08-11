@@ -1,55 +1,64 @@
 package com.dmi.perfectreader.book
 
-import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.opengl.GLSurfaceView
 import android.widget.FrameLayout
-import com.dmi.perfectreader.BuildConfig.DEBUG_SHOWRENDERFREEZES
+import com.dmi.perfectreader.ViewContext
+import com.dmi.perfectreader.book.gl.GLBook
+import com.dmi.perfectreader.book.gl.GLBookModel
+import com.dmi.perfectreader.book.render.factory.FramePainter
+import com.dmi.perfectreader.book.render.factory.ImagePainter
+import com.dmi.perfectreader.book.render.factory.PageRenderer
+import com.dmi.perfectreader.book.render.factory.TextPainter
+import com.dmi.perfectreader.reader.Reader
 import com.dmi.util.android.base.BaseView
-import com.dmi.util.android.opengl.DebuggableRenderer
-import com.dmi.util.android.opengl.GLSurfaceViewExt
-import com.dmi.util.android.opengl.setNotifiableRenderer
-import com.dmi.util.android.system.ActivityLifeCycle
+import com.dmi.util.android.opengl.GLSurfaceScopedView
 import com.dmi.util.android.widget.onSizeChange
 import com.dmi.util.graphic.Size
+import com.dmi.util.log.Log
+import com.dmi.util.system.ApplicationWindow
 
 class BookView(
-        context: Context,
-        private val model: Book,
-        private val createGLBook: (Size) -> GLBook,
-        activityLifeCycle: ActivityLifeCycle
-) : BaseView(FrameLayout(context)) {
-    private val glSurface = GLSurfaceViewExt(context)
+        viewContext: ViewContext,
+        private val reader: Reader,
+        log: Log = viewContext.main.log,
+        window: ApplicationWindow = viewContext.window
+) : BaseView(FrameLayout(viewContext.android)) {
+    private val glSurface = GLSurfaceScopedView(viewContext.android, log) {
+        val model = GLBookModel(it, viewContext.main.settings, reader, reader.book)
+        val bitmapDecoder = reader.book.bitmapDecoder
+        val pageRenderer = PageRenderer(FramePainter(), ImagePainter(bitmapDecoder), TextPainter())
+        val context = viewContext.android
+        val uriHandler = viewContext.main.uriHandler
 
-    init {
-        /*
-         * Фикс бага с анимацией.
-         * Без этого не работает анимация исчезновения меню.
-         * Решение найдено здесь:
-         * http://stackoverflow.com/questions/14925060/ugly-fragment-transition-to-surfaceview-with-overlay
-         */
-        glSurface.background = ColorDrawable(Color.TRANSPARENT)
+        val createRenderer = { size: Size ->
+            val glBook = GLBook(model, context, pageRenderer, size, uriHandler)
 
-        widget.addView(glSurface)
-        widget.keepScreenOn = true
-        glSurface.setNotifiableRenderer { size ->
-            if (DEBUG_SHOWRENDERFREEZES) {
-                DebuggableRenderer(thresholdMillis = 40, renderer = createGLBook(size))
-            } else {
-                createGLBook(size)
+            object : GLSurfaceScopedView.Renderer {
+                override fun dispose() = glBook.dispose()
+                override fun draw() = glBook.draw()
             }
         }
-        glSurface.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
-        glSurface.onSizeChange { size, oldSize ->
-            model.resize(size.toFloat())
+        createRenderer
+    }
+
+    init {
+        widget.addView(glSurface)
+        widget.keepScreenOn = true
+
+        glSurface.onSizeChange { size, _ ->
+            reader.book.size = size.toFloat()
         }
-        subscribe(activityLifeCycle.isResumedObservable) {
-            if (it) {
+
+        autorun {
+            if (window.isActive) {
                 glSurface.onResume()
             } else {
                 glSurface.onPause()
             }
         }
+    }
+
+    override fun dispose() {
+        glSurface.dispose()
+        super.dispose()
     }
 }

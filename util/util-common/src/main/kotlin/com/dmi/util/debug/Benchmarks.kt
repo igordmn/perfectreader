@@ -1,6 +1,5 @@
 package com.dmi.util.debug
 
-import com.dmi.util.log
 import java.lang.System.nanoTime
 
 fun benchmark(name: String = "", iterations: Int = 10, run: () -> Unit) {
@@ -12,9 +11,9 @@ fun benchmark(name: String = "", iterations: Int = 10, run: () -> Unit) {
     val time = ((t2 - t1) / 1.0E6) / iterations
 
     if (name != "") {
-        log.i("$name time: $time")
+        println("$name time: $time")
     } else {
-        log.i("time: $time")
+        println("time: $time")
     }
 }
 
@@ -25,9 +24,9 @@ fun <T> measureTime(name: String = "", run: () -> T): T {
     val time = (t2 - t1) / 1.0E6
 
     if (name != "") {
-        log.i("$name time: $time")
+        println("$name time: $time")
     } else {
-        log.i("time: $time")
+        println("time: $time")
     }
 
     return result

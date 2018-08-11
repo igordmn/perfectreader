@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.book.pagination.page
 
+import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
-import com.dmi.perfectreader.book.location.LocationRange
 import com.dmi.perfectreader.book.pagination.column.LayoutColumn
 import com.dmi.util.graphic.SizeF
 

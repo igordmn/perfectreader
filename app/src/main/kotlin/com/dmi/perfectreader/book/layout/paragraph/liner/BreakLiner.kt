@@ -43,7 +43,7 @@ class BreakLiner(private val breaker: Breaker) : Liner {
             }
 
             fun iteratePotentialEnds(action: (end: Int) -> Int) {
-                if (text.length > 0) {
+                if (text.isNotEmpty()) {
                     var end = min(PROCESS_CHARS_STEP, text.length)
                     while (end < text.length)
                         end = action(end) + PROCESS_CHARS_STEP
@@ -109,7 +109,7 @@ class BreakLiner(private val breaker: Breaker) : Liner {
             }
 
             fun addTokensInto(tokens: MutableList<Token>, beginIndex: Int, endIndex: Int) {
-                for (begin in beginIndex..endIndex - 1) {
+                for (begin in beginIndex until endIndex) {
                     val ch = text[begin]
                     val isSpace = isSpace(ch)
                     val end = begin + 1
@@ -178,15 +178,15 @@ class BreakLiner(private val breaker: Breaker) : Liner {
 
                 private fun rightHang(beginIndex: Int, trailingSpacesBegin: Int, hyphenWidth: Float, hasHyphenAfter: Boolean): Float {
                     val lastIndex = trailingSpacesBegin - 1
-                    if (lastIndex >= beginIndex) {
+                    return if (lastIndex >= beginIndex) {
                         if (hasHyphenAfter) {
-                            return config.rightHangFactor(Chars.HYPHEN) * hyphenWidth
+                            config.rightHangFactor(Chars.HYPHEN) * hyphenWidth
                         } else {
                             val lastChar = text[lastIndex]
-                            return config.rightHangFactor(lastChar) * measuredText.advanceOf(lastIndex)
+                            config.rightHangFactor(lastChar) * measuredText.advanceOf(lastIndex)
                         }
                     } else {
-                        return 0F
+                        0F
                     }
                 }
             }

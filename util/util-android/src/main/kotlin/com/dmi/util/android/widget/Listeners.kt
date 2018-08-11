@@ -5,7 +5,7 @@ import com.dmi.util.graphic.Size
 import org.jetbrains.anko.onLayoutChange
 
 fun View.onSizeChange(listener: (size: Size, oldSize: Size) -> Unit) =
-        onLayoutChange { view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+        onLayoutChange { _, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
             val width = right - left
             val height = bottom - top
             val oldWidth = oldRight - oldLeft

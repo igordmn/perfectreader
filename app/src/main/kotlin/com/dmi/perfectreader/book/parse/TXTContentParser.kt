@@ -1,12 +1,12 @@
 package com.dmi.perfectreader.book.parse
 
 import com.dmi.perfectreader.book.content.Content
+import com.dmi.perfectreader.book.content.location.Location
+import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.content.obj.ContentFrame
 import com.dmi.perfectreader.book.content.obj.ContentParagraph
 import com.dmi.perfectreader.book.content.obj.param.ContentFontStyle
 import com.dmi.perfectreader.book.content.obj.param.StyleType
-import com.dmi.perfectreader.book.location.Location
-import com.dmi.perfectreader.book.location.LocationRange
 import com.google.common.io.ByteSource
 
 class TXTContentParser(
@@ -21,10 +21,10 @@ class TXTContentParser(
 
         var begin = 0.0
         source.openBufferedStream().reader(charset).forEachLine() { text ->
-            if (text.length > 0) {
+            if (text.isNotEmpty()) {
                 val end = begin + text.length
-                val range = LocationRange(Location(begin), Location(end))
-                contentBuilder.addObject(toContentObject(text, style, range))
+                val range = Location(begin)..Location(end)
+                contentBuilder.add(toContentObject(text, style, range))
                 begin = end
             }
         }

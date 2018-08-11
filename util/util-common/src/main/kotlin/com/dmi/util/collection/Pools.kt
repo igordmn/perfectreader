@@ -1,39 +1,40 @@
 package com.dmi.util.collection
 
-import com.dmi.util.lang.returnUnit
+import com.dmi.util.scope.Disposable
 import java.util.*
-import java.util.concurrent.Semaphore
+import kotlin.collections.LinkedHashSet
 
 interface Pool<T> {
     fun acquire(): T
     fun release(obj: T)
 }
 
-class ImmediatelyCreatePool<T>(val size: Int, create: () -> T) : Pool<T> {
+fun <T: Disposable> ImmediatelyCreatePool(size: Int, create: () -> T) = ImmediatelyCreatePool(size, create, dispose = { it.dispose() })
+
+class ImmediatelyCreatePool<T>(val size: Int, create: () -> T, private val dispose: (T) -> Unit = {}) : Pool<T>, Disposable {
+    private val all = LinkedHashSet<T>()
     private val free = Stack<T>()
 
-    init {
-        repeat(size) {
-            free.add(create())
+    override fun dispose() {
+        all.forEach {
+            dispose(it)
         }
     }
 
-    fun hasFree() = free.size > 0
-    override fun acquire() = require(hasFree()).run { free.pop() }
-    override fun release(obj: T) = free.add(obj).returnUnit()
-}
-
-class SingleBlockingPool<T>(create: () -> T) : Pool<T> {
-    private val value = create()
-    private val semaphore = Semaphore(1)
+    init {
+        repeat(size) {
+            val element = create()
+            all.add(element)
+            free.add(element)
+        }
+    }
 
     override fun acquire(): T {
-        semaphore.acquire()
-        return value
+        return free.pop()
     }
 
     override fun release(obj: T) {
-        require(obj === value)
-        semaphore.release()
+        require(all.contains(obj))
+        free.add(obj)
     }
 }

@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.book.layout.obj
 
-import com.dmi.perfectreader.book.location.LocationRange
+import com.dmi.perfectreader.book.content.location.LocationRange
 
 abstract class LayoutObject(
         val width: Float,
@@ -33,13 +33,9 @@ abstract class LayoutObject(
     override fun toString() = childLineOrNull(this)?.toString() ?: "[obj]"
 
     private fun childLineOrNull(obj: LayoutObject): LayoutLine? {
-        return if (obj.children.size > 0) {
+        return if (obj.children.isNotEmpty()) {
             val child = obj.children[0].obj
-            return if (child is LayoutLine) {
-                child
-            } else {
-                childLineOrNull(child)
-            }
+            return child as? LayoutLine ?: childLineOrNull(child)
         } else {
             null
         }

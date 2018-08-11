@@ -1,20 +1,18 @@
 package com.dmi.perfectreader.menu
 
 import com.dmi.perfectreader.book.Book
-import com.dmi.util.android.base.BaseViewModel
-import rx.Observable
+import com.dmi.util.scope.Scoped
 
 class Menu(
         private val book: Book,
-        private val closeAction: () -> Unit
-) : BaseViewModel() {
-    val percentObservable: Observable<Double> = book.locationObservable.map { book.locationConverter.locationToPercent(it) }
-    val pageNumberObservable: Observable<Int> = book.locationObservable.map { book.locationConverter.locationToPageNumber(it) }
+        val close: () -> Unit
+)  : Scoped by Scoped.Impl() {
+    val percent: Double by scope.cached { book.locations.locationToPercent(book.location) }
+    val pageNumber: Int by scope.cached {  book.locations.locationToPageNumber(book.location) }
+    val numberOfPages: Int by scope.cached { book.locations.numberOfPages }
 
-    val numberOfPages: Int get() = book.locationConverter.numberOfPages
-
-    fun close() = closeAction()
     fun showSettings() = close()
-    fun goPercent(percent: Double) = book.goLocation(book.locationConverter.percentToLocation(percent))
-    fun goPageNumber(pageNumber: Int) = book.goLocation(book.locationConverter.pageNumberToLocation(pageNumber))
+
+    fun goPercent(percent: Double) = book.goLocation(book.locations.percentToLocation(percent))
+    fun goPageNumber(pageNumber: Int) = book.goLocation(book.locations.pageNumberToLocation(pageNumber))
 }

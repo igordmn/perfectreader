@@ -1,108 +1,151 @@
 package com.dmi.perfectreader.book
 
-import android.os.Bundle
+import android.net.Uri
+import com.dmi.perfectreader.Main
+import com.dmi.perfectreader.book.bitmap.AndroidBitmapDecoder
 import com.dmi.perfectreader.book.bitmap.BitmapDecoder
-import com.dmi.perfectreader.book.location.Location
-import com.dmi.perfectreader.book.location.LocationRange
-import com.dmi.perfectreader.book.pagination.page.PageContext
-import com.dmi.perfectreader.book.selection.selectionInitialRange
-import com.dmi.util.android.base.BaseViewModel
+import com.dmi.perfectreader.book.bitmap.CachedBitmapDecoder
+import com.dmi.perfectreader.book.content.Content
+import com.dmi.perfectreader.book.content.ContentText
+import com.dmi.perfectreader.book.content.configure
+import com.dmi.perfectreader.book.content.location.Location
+import com.dmi.perfectreader.book.content.obj.param.appFormatConfig
+import com.dmi.perfectreader.book.layout.UniversalObjectLayouter
+import com.dmi.perfectreader.book.layout.layout
+import com.dmi.perfectreader.book.layout.paragraph.breaker.CompositeBreaker
+import com.dmi.perfectreader.book.layout.paragraph.breaker.LineBreaker
+import com.dmi.perfectreader.book.layout.paragraph.breaker.ObjectBreaker
+import com.dmi.perfectreader.book.layout.paragraph.breaker.WordBreaker
+import com.dmi.perfectreader.book.layout.paragraph.hyphenator.CachedHyphenatorResolver
+import com.dmi.perfectreader.book.layout.paragraph.hyphenator.TeXHyphenatorResolver
+import com.dmi.perfectreader.book.layout.paragraph.hyphenator.TeXPatternsSource
+import com.dmi.perfectreader.book.layout.paragraph.liner.BreakLiner
+import com.dmi.perfectreader.book.layout.paragraph.metrics.PaintTextMetrics
+import com.dmi.perfectreader.book.page.AnimatedPages
+import com.dmi.perfectreader.book.page.LoadingPages
+import com.dmi.perfectreader.book.page.SmoothPageAnimator
+import com.dmi.perfectreader.book.page.VisiblePages
+import com.dmi.perfectreader.book.pagination.column.columns
+import com.dmi.perfectreader.book.pagination.page.pages
+import com.dmi.perfectreader.book.pagination.part.parts
+import com.dmi.perfectreader.book.parse.BookContentParserFactory
+import com.dmi.perfectreader.book.parse.settingsParseConfig
+import com.dmi.perfectreader.book.selection.BookSelections
+import com.dmi.perfectreader.common.UserData
+import com.dmi.util.coroutine.IOPool
 import com.dmi.util.graphic.SizeF
-import com.dmi.util.lang.afterSet
-import com.dmi.util.lang.returnUnit
-import com.dmi.util.rx.rxObservable
-import rx.lang.kotlin.BehaviorSubject
-import rx.lang.kotlin.PublishSubject
-import java.net.URI
+import com.dmi.util.graphic.shrink
+import com.dmi.util.scope.Disposable
+import com.dmi.util.scope.Scope.Companion.onchange
+import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.and
+import com.dmi.util.system.seconds
+import kotlinx.coroutines.experimental.withContext
 
-// todo устранить дублирование с StaticBook, AnimatedBook. мб data перенести в StaticBook
+suspend fun book(main: Main, uri: Uri): Book {
+    val log = main.log
+    val settings = main.settings
+    val userData: UserData = main.userData
+    val parseConfig = settingsParseConfig(settings)
+    val bookContentParserFactory = BookContentParserFactory(log, parseConfig)
+    val content: Content = withContext(IOPool) {
+        bookContentParserFactory.parserFor(uri).parse()
+    }
+    val userBook: UserBook = userBook(userData, uri)   // todo need dispose if coroutine cancelled?
+    val bitmapDecoder = CachedBitmapDecoder(AndroidBitmapDecoder(content.openResource))
+    val text = ContentText(content)
+    return Book(main, text, userBook, content, bitmapDecoder)
+}
+
 class Book(
-        private val createAnimated: (SizeF) -> AnimatedBook,
-        private val data: BookData,
+        private val main: Main,
+        val text: ContentText,
+        userBook: UserBook,
+        private val content: Content,
         val bitmapDecoder: BitmapDecoder
-) : BaseViewModel() {
-    val locationObservable = BehaviorSubject(data.location)
-    val isSelectedObservable = BehaviorSubject<Boolean>()
-    val onIsAnimatingChanged = PublishSubject<Boolean>()
-    val onNewFrame = PublishSubject<Unit>()
-    val onPagesChanged = PublishSubject<Unit>()
+) : Scoped by Scoped.Impl() {
+    var size by scope.value(SizeF(100F, 100F))
 
-    val content = data.content
-    var selectionRange: LocationRange? by saveState<LocationRange?>(null) afterSet { value ->
-        pageContext = PageContext(value)
-        isSelected = value != null
-        onNewFrame.onNext(Unit)
+    private val userBook: UserBook by scope.disposable(userBook)
+
+    private val layouter = UniversalObjectLayouter(
+            PaintTextMetrics(),
+            BreakLiner(CompositeBreaker(
+                    LineBreaker(),
+                    ObjectBreaker(),
+                    WordBreaker(
+                            CachedHyphenatorResolver(
+                                    TeXHyphenatorResolver(main.log,
+                                            TeXPatternsSource(main.applicationContext)
+                                    )
+                            )
+                    )
+            )),
+            bitmapDecoder
+    )
+
+    private val formatConfig by scope.cached {
+        val userDirectory = main.protocols.fileFor(main.settings.system.fontsPath)
+        val fontCollection = main.fontCollectionCache.collectionFor(userDirectory)
+        appFormatConfig(main.applicationContext, main.settings, fontCollection)
     }
 
-    val location: Location get() = animated!!.location
-
-    var pageContext: PageContext = PageContext(null)
-        private set
-
-    var isSelected: Boolean by rxObservable(false, isSelectedObservable)
-        private set
-    val isAnimating: Boolean get() = animated?.isAnimating ?: false
-
-    val animationUri: URI get() = animated!!.animationUri
-    val animatedPages: AnimatedBook.AnimatedPages get() = animated!!.pages
-    private var animated: AnimatedBook? = null
-
-    val locationConverter: LocationConverter get() = animated!!.locationConverter
-
-    override fun restore(state: Bundle) {
-        super.restore(state)
-        pageContext = PageContext(selectionRange)
-        isSelected = selectionRange != null
+    private val sized: Sized by scope.cachedDisposable(recache = onchange { size; formatConfig }) {
+        val settings = main.settings
+        val dip2px = main.dip2px
+        val paddings = formatConfig.pagePaddingsDip * formatConfig.density
+        val contentSize = size.shrink(paddings.left + paddings.right, paddings.top + paddings.bottom)
+        val sequence = content.sequence
+                .configure(formatConfig)
+                .layout(layouter, contentSize)
+                .parts()
+                .columns(contentSize.height)
+                .pages(size, formatConfig)
+        val locations = Locations(content, contentSize, formatConfig, settings)
+        val loadingPages = LoadingPages(LoadingPages.pages(sequence, locations, userBook))
+        val animatedPages = AnimatedPages(
+                size,
+                AnimatedPages.pages(loadingPages),
+                main.display,
+                speedToTurnPage = dip2px(50F),
+                animator = SmoothPageAnimator(seconds(0.4))
+        )
+        Sized(locations, loadingPages, animatedPages)
     }
 
-    override fun destroy() {
-        animated?.destroy()
-        super.destroy()
-    }
+    val locations: Locations get() = sized.locations
+    private val loadingPages: LoadingPages get() = sized.loadingPages
+    private val animatedPages: AnimatedPages get() = sized.animatedPages
 
-    fun resize(size: SizeF) {
-        animated?.destroy()
-        val animated = createAnimated(size)
-        animated.onIsAnimatingChanged.subscribe {
-            onIsAnimatingChanged.onNext(it)
-        }
-        animated.onNewFrame.subscribe {
-            onNewFrame.onNext(Unit)
-        }
-        animated.onPagesChanged.subscribe {
-            onPagesChanged.onNext(Unit)
-        }
-        animated.locationObservable.subscribe {
-            if (locationObservable.value != it) {
-                locationObservable.onNext(it)
-                data.location = it
-            }
-        }
-        this.animated = animated
-    }
-
-    fun reformat() = animated?.reformat().returnUnit()
-
-    fun scroll() = animated!!.scroll()
-    fun goLocation(location: Location) = animated?.goLocation(location)
-    fun goPage(relativeIndex: Int) = animated?.goPage(relativeIndex)
-    fun movePage(relativeIndex: Int) = animated?.movePage(relativeIndex)
-
-    fun pageAt(relativeIndex: Int) = animated?.pageAt(relativeIndex)
-
-    fun startSelectionAtCenter() {
-        animated?.let {
-            startSelection(it.size.width / 2, it.size.height / 2)
+    val selections: BookSelections? by scope.cached {
+        val page = animatedPages.visible.left
+        if (page != null) {
+            BookSelections(page, text)
+        } else {
+            null
         }
     }
 
-    fun startSelection(x: Float, y: Float) {
-        val currentPage = pageAt(0)
-        if (currentPage != null)
-            selectionRange = selectionInitialRange(content, currentPage, x, y)
+    val location: Location get() = userBook.location
+    val isMoving: Boolean get() = animatedPages.isMoving
+    val pages: VisiblePages get() = animatedPages.visible
+
+    fun goLocation(location: Location) {
+        loadingPages.goLocation(location)
+        animatedPages.reset()
     }
 
-    fun cancelSelection() {
-        selectionRange = null
+    fun goRelative(relativeIndex: Int) {
+        loadingPages.goRelative(relativeIndex)
+        animatedPages.reset()
     }
+
+    fun animateRelative(relativeIndex: Int) = animatedPages.animateRelative(relativeIndex)
+    fun scroll() = animatedPages.scroll()
+
+    private class Sized(
+            val locations: Locations,
+            val loadingPages: LoadingPages,
+            val animatedPages: AnimatedPages
+    ) : Disposable by loadingPages and animatedPages
 }

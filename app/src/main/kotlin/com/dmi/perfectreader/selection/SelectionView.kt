@@ -9,6 +9,8 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import com.dmi.perfectreader.R
+import com.dmi.perfectreader.ViewContext
+import com.dmi.perfectreader.book.selection.BookSelections
 import com.dmi.util.android.base.*
 import com.dmi.util.android.widget.addHintOnLongClick
 import com.dmi.util.android.widget.fadeTransition
@@ -22,11 +24,11 @@ import org.jetbrains.anko.onTouch
 import java.lang.Math.round
 
 class SelectionView(
-        context: Context,
+        viewContext: ViewContext,
         private val model: Selection
-) : BaseView(context, R.layout.fragment_selection) {
-    private val HANDLE_WIDTH = round(dip2Px(24F))
-    private val ADDITIONAL_TOUCH_RADIUS = round(dip2Px(24F))
+) : BaseView(viewContext.android, R.layout.fragment_selection) {
+    private val handleWidth = round(dip2Px(24F))
+    private val additionalTouchRadius = round(dip2Px(24F))
 
     private val handlesContainer = find<FrameLayout>(R.id.handlesContainer)
     private val actionsContainer = find<FrameLayout>(R.id.actionsContainer)
@@ -35,17 +37,26 @@ class SelectionView(
 
     private val leftHandle = HandleView(
             drawable(R.drawable.selection_handle_left, color(R.color.primary)).apply {
-                setBounds(-HANDLE_WIDTH, 0, 0, HANDLE_WIDTH)
+                setBounds(-handleWidth, 0, 0, handleWidth)
             }
     )
 
     private val rightHandle = HandleView(
             drawable(R.drawable.selection_handle_right, color(R.color.primary)).apply {
-                setBounds(0, 0, HANDLE_WIDTH, HANDLE_WIDTH)
+                setBounds(0, 0, handleWidth, handleWidth)
             }
     )
 
     init {
+        initHandles(context)
+        initActions()
+
+        subscribe(model.onSelectionCopiedToClipboard) {
+            toast(string(R.string.selectionCopiedToClipboard))
+        }
+    }
+
+    private fun initHandles(context: Context) {
         val handlesView = object : View(context) {
             override fun onDraw(canvas: Canvas) {
                 super.onDraw(canvas)
@@ -55,36 +66,22 @@ class SelectionView(
         }
         handlesContainer.addView(handlesView)
 
-        subscribe(model.leftHandleObservable) {
-            updateHandle(leftHandle, it)
-            handlesView.invalidate()
-            updateActions()
-        }
-        subscribe(model.rightHandleObservable) {
-            updateHandle(rightHandle, it)
-            handlesView.invalidate()
-            updateActions()
-        }
-        handlesView.onTouch { view, motionEvent -> onTouch(motionEvent) }
+        handlesView.onTouch { _, motionEvent -> onTouch(motionEvent) }
 
-        initActions()
-
-        subscribe(model.onSelectionCopiedToClipboard) {
-            toast(string(R.string.selectionCopiedToClipboard))
+        autorun {
+            updateHandle(leftHandle, model.handles.left)
+            updateHandle(rightHandle, model.handles.right)
+            handlesView.invalidate()
         }
     }
 
     private fun initActions() {
-        subscribe(model.actionsIsVisibleObservable) {
-            updateActions()
-        }
-
         actionsContainer.layoutTransition = fadeTransition(200)
-        actionsContainer.onSizeChange { size, oldSize ->
+        actionsContainer.onSizeChange { _, _ ->
             updateActions()
         }
 
-        actions.onSizeChange { size, oldSize ->
+        actions.onSizeChange { _, _ ->
             updateActions()
         }
 
@@ -94,19 +91,23 @@ class SelectionView(
         copyTextButton.onClick {
             model.copySelectedText()
         }
+
+        autorun {
+            updateActions()
+        }
     }
 
-    private fun updateHandle(view: HandleView, model: Selection.Handle) {
+    private fun updateHandle(view: HandleView, model: BookSelections.Handle) {
         when (model) {
-            is Selection.Handle.Invisible -> {
+            is BookSelections.Handle.Invisible -> {
                 view.isVisible = false
             }
-            is Selection.Handle.Visible -> {
+            is BookSelections.Handle.Visible -> {
                 view.isVisible = true
                 view.position = model.bottom
                 view.alpha = 255
             }
-            is Selection.Handle.NotOnPage -> {
+            is BookSelections.Handle.NotOnPage -> {
                 view.isVisible = true
                 view.position = model.bottom
                 view.alpha = 127
@@ -127,7 +128,7 @@ class SelectionView(
     private var touchedHandleInfo: TouchedHandleInfo? = null
 
     private fun onTouch(event: MotionEvent): Boolean {
-        val touchRadius = event.touchMajor / 2 + ADDITIONAL_TOUCH_RADIUS
+        val touchRadius = event.touchMajor / 2 + additionalTouchRadius
         val touchPosition = PositionF(event.x, event.y)
 
         return when (event.actionMasked) {

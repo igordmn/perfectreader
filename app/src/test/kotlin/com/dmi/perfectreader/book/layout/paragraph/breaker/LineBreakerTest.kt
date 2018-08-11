@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.book.layout.paragraph.breaker
 
-import com.dmi.test.shouldEqual
+import com.dmi.test.shouldBe
 import org.junit.Test
 import java.util.*
 
@@ -16,8 +16,8 @@ class LineBreakerTest {
         val breaks = breaker.breakText(text, Locale.US, Breaker.Config(true))
 
         // then
-        breakIndicesOf(breaks, text) shouldEqual listOf(10, 16, 24, 28, 34, 38, 43, 52, 53)
-        hyphenIndicesOf(breaks, text) shouldEqual emptyList<Int>()
+        breakIndicesOf(breaks, text) shouldBe listOf(10, 16, 24, 28, 34, 38, 43, 52, 53)
+        hyphenIndicesOf(breaks, text) shouldBe emptyList<Int>()
     }
 
 
@@ -31,7 +31,7 @@ class LineBreakerTest {
         val breaks = breaker.breakText(text, Locale.US, Breaker.Config(true))
 
         // then
-        breakIndicesOf(breaks, text) shouldEqual emptyList<Float>()
-        hyphenIndicesOf(breaks, text) shouldEqual emptyList<Float>()
+        breakIndicesOf(breaks, text) shouldBe emptyList<Float>()
+        hyphenIndicesOf(breaks, text) shouldBe emptyList<Float>()
     }
 }

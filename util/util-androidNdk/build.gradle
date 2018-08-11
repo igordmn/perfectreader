@@ -28,8 +28,6 @@ model {
                 }
             }
         }
-
-        publishNonDefault true
     }
 }
 

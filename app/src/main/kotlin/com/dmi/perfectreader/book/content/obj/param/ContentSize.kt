@@ -5,13 +5,13 @@ import com.dmi.util.lang.safeEquals
 import java.io.Serializable
 
 class ContentSize(val width: Dimension, val height: Dimension) : Serializable {
-    fun configure(config: ContentConfig) = ConfiguredSize(
+    fun configure(config: FormatConfig) = ConfiguredSize(
             width.configure(config),
             height.configure(config)
     )
 
     class Dimension(val value: Length?, val min: Length?, val max: Length?) {
-        fun configure(config: ContentConfig): ConfiguredSize.Dimension {
+        fun configure(config: FormatConfig): ConfiguredSize.Dimension {
             val limits = ConfiguredSize.Limits(
                     (min ?: Length.Absolute(0F)).configure(config),
                     (max ?: Length.Absolute(Float.POSITIVE_INFINITY)).configure(config)

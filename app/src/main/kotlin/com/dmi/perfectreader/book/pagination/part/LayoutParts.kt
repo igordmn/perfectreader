@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.book.pagination.part
 
-import com.dmi.perfectreader.book.location.Location
-import com.dmi.perfectreader.book.location.LocationRange
+import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.layout.obj.LayoutChild
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
 import java.util.*
@@ -11,7 +10,7 @@ fun splitIntoParts(rootObj: LayoutObject): List<LayoutPart> {
 
     fun addPartsFrom(obj: LayoutObject, top: Bound, bottom: Bound, absoluteTop: Float, childIndices: List<Int>) {
         val children = obj.children
-        if (obj.canBeSeparated() && children.size > 0) {
+        if (obj.canBeSeparated() && children.isNotEmpty()) {
             children.forEachIndexed { i, child ->
                 addPartsFrom(
                         obj = child.obj,
@@ -26,7 +25,7 @@ fun splitIntoParts(rootObj: LayoutObject): List<LayoutPart> {
                     rootObj,
                     LayoutPart.Edge(childIndices, top.offset),
                     LayoutPart.Edge(childIndices, bottom.offset),
-                    LocationRange(top.location, bottom.location)
+                    top.location..bottom.location
             ))
         }
     }
@@ -45,7 +44,7 @@ fun splitIntoParts(rootObj: LayoutObject): List<LayoutPart> {
 private fun LayoutChild.topBound(absoluteTop: Float) = obj.topBound(absoluteTop + y)
 private fun LayoutChild.bottomBound(absoluteTop: Float) = obj.bottomBound(absoluteTop + y)
 
-private fun LayoutObject.topBound(absoluteTop: Float) = Bound(absoluteTop + internalMargins().top, range.begin)
-private fun LayoutObject.bottomBound(absoluteTop: Float) = Bound(absoluteTop + height - internalMargins().bottom, range.end)
+private fun LayoutObject.topBound(absoluteTop: Float) = Bound(absoluteTop + internalMargins().top, range.start)
+private fun LayoutObject.bottomBound(absoluteTop: Float) = Bound(absoluteTop + height - internalMargins().bottom, range.endInclusive)
 
 private class Bound(val offset: Float, val location: Location)

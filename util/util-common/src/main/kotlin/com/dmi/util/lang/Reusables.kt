@@ -6,6 +6,8 @@ import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 
+// todo maybe get rid of this classes. or make them thread-local
+
 class ReusableValue<T>(private val create: () -> T) {
     private val holder = AtomicReference(WeakReference<T>(null))
 
@@ -16,7 +18,7 @@ class ReusableValue<T>(private val create: () -> T) {
             value = create()
             holder.set(WeakReference(value))
         }
-        return value
+        return value!!
     }
 }
 

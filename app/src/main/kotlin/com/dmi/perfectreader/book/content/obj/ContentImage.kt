@@ -1,9 +1,9 @@
 package com.dmi.perfectreader.book.content.obj
 
 import com.dmi.perfectreader.book.content.obj.param.ConfiguredSize
-import com.dmi.perfectreader.book.content.obj.param.ContentConfig
+import com.dmi.perfectreader.book.content.obj.param.FormatConfig
 import com.dmi.perfectreader.book.content.obj.param.ContentSize
-import com.dmi.perfectreader.book.location.LocationRange
+import com.dmi.perfectreader.book.content.location.LocationRange
 
 class ContentImage(
         val size: ContentSize,
@@ -13,7 +13,7 @@ class ContentImage(
 ) : ContentObject(range, textSize) {
     override val length = 32.0
 
-    override fun configure(config: ContentConfig) = ConfiguredImage(
+    override fun configure(config: FormatConfig) = ConfiguredImage(
             size.configure(config),
             src,
             config.imageSourceScale,

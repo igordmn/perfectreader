@@ -1,3 +1,7 @@
+-optimizations !class/merging/horizontal
+-optimizationpasses 7
+-allowaccessmodification
+
 -dontpreverify
 -dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses
@@ -39,6 +43,10 @@
     static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
 }
 
+-keepclassmembernames class kotlinx.** {
+    volatile <fields>;
+}
+
 # Android
 -keep public class com.google.vending.licensing.ILicensingService
 -keep public class com.android.vending.licensing.ILicensingService
@@ -69,6 +77,9 @@
 -dontwarn java.lang.ClassValue
 -dontwarn com.google.j2objc.annotations.Weak
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+-dontwarn afu.org.checkerframework.**
+-dontwarn org.checkerframework.**
+-dontwarn com.google.errorprone.annotations.*
 
 # RxJava
 -dontwarn sun.misc.**
@@ -95,7 +106,6 @@
 -dontwarn com.github.moduth.**
 
 # PerfectReader
--keep class com.dmi.util.android.opengl.GLSurfaceViewExt$RendererExt
 -keep @interface com.dmi.util.android.jni.UsedByNative
 -keep @com.dmi.util.android.jni.UsedByNative class *
 -keepclassmembers class ** {

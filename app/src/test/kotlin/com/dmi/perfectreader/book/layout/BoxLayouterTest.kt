@@ -9,7 +9,7 @@ import com.dmi.perfectreader.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
 import com.dmi.perfectreader.layoutObj
 import com.dmi.perfectreader.range
-import com.dmi.test.shouldEqual
+import com.dmi.test.shouldBe
 import org.junit.Test
 
 @Suppress("IllegalIdentifier")
@@ -35,13 +35,13 @@ class BoxLayouterTest {
 
         // then
         with (renderBox) {
-            width shouldEqual 200F
-            height shouldEqual 100F
-            childWidths shouldEqual listOf(200F, 300F, 200F, 2F * 200F)
-            childHeights shouldEqual listOf(20F, 200F, 100F, 2F * 100F)
-            childXs shouldEqual listOf(0F, 0F, 0F, 0F)
-            childYs shouldEqual listOf(0F, 20F, 20F + 200F, 220F + 100F)
-            range shouldEqual box.range
+            width shouldBe 200F
+            height shouldBe 100F
+            childWidths shouldBe listOf(200F, 300F, 200F, 2F * 200F)
+            childHeights shouldBe listOf(20F, 200F, 100F, 2F * 100F)
+            childXs shouldBe listOf(0F, 0F, 0F, 0F)
+            childYs shouldBe listOf(0F, 20F, 20F + 200F, 220F + 100F)
+            range shouldBe box.range
         }
     }
 
@@ -66,10 +66,10 @@ class BoxLayouterTest {
 
         // then
         with (renderBox) {
-            width shouldEqual 200F
-            height shouldEqual 100F
-            childWidths shouldEqual listOf(200F, 300F, 200F, 2F * 200F)
-            childHeights shouldEqual listOf(20F, 200F, 100F, 2F * 100F)
+            width shouldBe 200F
+            height shouldBe 100F
+            childWidths shouldBe listOf(200F, 300F, 200F, 2F * 200F)
+            childHeights shouldBe listOf(20F, 200F, 100F, 2F * 100F)
         }
     }
 
@@ -94,10 +94,10 @@ class BoxLayouterTest {
 
         // then
         with (renderBox) {
-            width shouldEqual 100F
-            height shouldEqual 20F + 200F + 100F + 2F * 0F
-            childWidths shouldEqual listOf(200F, 300F, 100F, 2F * 100F)
-            childHeights shouldEqual listOf(20F, 200F, 100F, 2F * 0F)
+            width shouldBe 100F
+            height shouldBe 20F + 200F + 100F + 2F * 0F
+            childWidths shouldBe listOf(200F, 300F, 100F, 2F * 100F)
+            childHeights shouldBe listOf(20F, 200F, 100F, 2F * 0F)
         }
     }
 
@@ -122,10 +122,10 @@ class BoxLayouterTest {
 
         // then
         with (renderBox) {
-            width shouldEqual 300F
-            height shouldEqual 20F + 200F + 100F + 2F * 0F
-            childWidths shouldEqual listOf(200F, 300F, 300F, 2F * 300F)
-            childHeights shouldEqual listOf(20F, 200F, 100F, 2F * 0F)
+            width shouldBe 300F
+            height shouldBe 20F + 200F + 100F + 2F * 0F
+            childWidths shouldBe listOf(200F, 300F, 300F, 2F * 300F)
+            childHeights shouldBe listOf(20F, 200F, 100F, 2F * 0F)
         }
     }
 
@@ -150,10 +150,10 @@ class BoxLayouterTest {
 
         // then
         with (renderBox) {
-            width shouldEqual 100F
-            height shouldEqual 100F
-            childWidths shouldEqual listOf(200F, 300F, 100F, 2F * 100F)
-            childHeights shouldEqual listOf(20F, 200F, 100F, 2F * 0F)
+            width shouldBe 100F
+            height shouldBe 100F
+            childWidths shouldBe listOf(200F, 300F, 100F, 2F * 100F)
+            childHeights shouldBe listOf(20F, 200F, 100F, 2F * 0F)
         }
     }
 
@@ -178,10 +178,10 @@ class BoxLayouterTest {
 
         // then
         with (renderBox) {
-            width shouldEqual 1000F
-            height shouldEqual 20F + 200F + 1000F + 2F * 0F
-            childWidths shouldEqual listOf(200F, 300F, 1000F, 2F * 1000F)
-            childHeights shouldEqual listOf(20F, 200F, 1000F, 2F* 0F)
+            width shouldBe 1000F
+            height shouldBe 20F + 200F + 1000F + 2F * 0F
+            childWidths shouldBe listOf(200F, 300F, 1000F, 2F * 1000F)
+            childHeights shouldBe listOf(20F, 200F, 1000F, 2F * 0F)
         }
     }
 
@@ -206,9 +206,9 @@ class BoxLayouterTest {
 
         // then
         with (renderBox) {
-            width shouldEqual 300F
-            childWidths shouldEqual listOf(200F, 300F, 300F, 2F * 300F)
-            childXs shouldEqual listOf(
+            width shouldBe 300F
+            childWidths shouldBe listOf(200F, 300F, 300F, 2F * 300F)
+            childXs shouldBe listOf(
                     300F - 200F,
                     300F - 300F,
                     300F - 300F,
@@ -238,9 +238,9 @@ class BoxLayouterTest {
 
         // then
         with (renderBox) {
-            width shouldEqual 300F
-            childWidths shouldEqual listOf(200F, 300F, 300F, 2F * 300F)
-            childXs shouldEqual listOf(
+            width shouldBe 300F
+            childWidths shouldBe listOf(200F, 300F, 300F, 2F * 300F)
+            childXs shouldBe listOf(
                     (300F - 200F) / 2F,
                     (300F - 300F) / 2F,
                     (300F - 300F) / 2F,
@@ -265,9 +265,9 @@ class BoxLayouterTest {
 
         // then
         with (renderBox) {
-            width shouldEqual 0F
-            height shouldEqual 0F
-            children.size == 0
+            width shouldBe 0F
+            height shouldBe 0F
+            children.isEmpty() shouldBe true
         }
     }
 
@@ -329,6 +329,6 @@ class BoxLayouterTest {
         get() = children.map { it.y }
 
     inner class FixedObject(val width: Float, val height: Float) : ConfiguredObject(range())
-    inner class FillObject() : ConfiguredObject(range())
+    inner class FillObject : ConfiguredObject(range())
     inner class PercentObject(val percent: Float) : ConfiguredObject(range())
 }

@@ -1,6 +1,7 @@
 package com.dmi.util.font
 
 import com.dmi.util.ext.cache
+import com.dmi.util.log.Log
 import java.io.File
 
 class FontCollection(
@@ -32,12 +33,13 @@ class FontCollection(
 }
 
 class FontCollectionCache(
+        private val log: Log,
         loadSystemFiles: () -> Sequence<File>,
         private val createCollection: (getFileCollection: () -> FontFileCollection) -> FontCollection
 ) {
     private val systemFiles by lazy { loadSystemFiles() }
     private val userFilesToFileCollection = cache<List<File>, FontFileCollection>(maximumSize = 1) { userFiles ->
-        buildFontFileCollection(systemFiles + userFiles)
+        buildFontFileCollection(log, systemFiles + userFiles)
     }
 
     fun collectionFor(userDirectory: File) = createCollection {

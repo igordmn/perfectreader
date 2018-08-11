@@ -3,7 +3,7 @@ package com.dmi.perfectreader.reader.action
 enum class ReaderActionID {
     NONE,
     TOGGLE_MENU,
-    EXIT_ACTIVITY,
+    CLOSE_APPLICATION_WINDOW,
     GO_TO_LIBRARY_LAST,
     GO_TO_LIBRARY_FAVOURITE,
     GO_TO_LIBRARY_FILES,

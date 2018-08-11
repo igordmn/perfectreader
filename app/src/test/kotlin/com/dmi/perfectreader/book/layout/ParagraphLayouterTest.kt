@@ -1,6 +1,9 @@
 package com.dmi.perfectreader.book.layout
 
 import com.dmi.perfectreader.fontStyle
+import com.dmi.perfectreader.book.content.location.Location
+import com.dmi.perfectreader.book.content.location.LocationRange
+import com.dmi.perfectreader.book.content.location.subrange
 import com.dmi.perfectreader.book.content.obj.ConfiguredObject
 import com.dmi.perfectreader.book.content.obj.ConfiguredParagraph
 import com.dmi.perfectreader.book.content.obj.ConfiguredParagraph.Run
@@ -17,9 +20,7 @@ import com.dmi.perfectreader.book.layout.obj.LayoutText
 import com.dmi.perfectreader.book.layout.paragraph.ParagraphLayouter
 import com.dmi.perfectreader.book.layout.paragraph.liner.Liner
 import com.dmi.perfectreader.book.layout.paragraph.metrics.TextMetrics
-import com.dmi.perfectreader.book.location.Location
-import com.dmi.perfectreader.book.location.LocationRange
-import com.dmi.test.shouldEqual
+import com.dmi.test.shouldBe
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.text.Chars
 import org.junit.Assert.assertArrayEquals
@@ -66,10 +67,10 @@ class ParagraphLayouterTest {
 
         // then
         with (liner.config) {
-            firstLineIndent shouldEqual 20F
-            maxWidth shouldEqual 200F
-            leftHangFactor('(') shouldEqual 0.6F
-            rightHangFactor(',') shouldEqual 0.5F
+            firstLineIndent shouldBe 20F
+            maxWidth shouldBe 200F
+            leftHangFactor('(') shouldBe 0.6F
+            rightHangFactor(',') shouldBe 0.5F
         }
     }
 
@@ -119,16 +120,16 @@ class ParagraphLayouterTest {
 
         // then
         with (liner.measuredText) {
-            plainText.toString() shouldEqual "some text"
-            locale shouldEqual Locale.US
-            advanceOf(0) shouldEqual LETTER_WIDTH1
-            advanceOf(4) shouldEqual SPACE_WIDTH1
-            advanceOf(0, 9) shouldEqual 4 * LETTER_WIDTH1 + SPACE_WIDTH1 + 4 * LETTER_WIDTH2
-            advanceOf(4, 8) shouldEqual SPACE_WIDTH1 + 3 * LETTER_WIDTH2
-            hyphenWidthAfter(0) shouldEqual HYPHEN_WIDTH1
-            hyphenWidthAfter(4) shouldEqual HYPHEN_WIDTH1
-            hyphenWidthAfter(5) shouldEqual HYPHEN_WIDTH2
-            hyphenWidthAfter(8) shouldEqual HYPHEN_WIDTH2
+            plainText.toString() shouldBe "some text"
+            locale shouldBe Locale.US
+            advanceOf(0) shouldBe LETTER_WIDTH1
+            advanceOf(4) shouldBe SPACE_WIDTH1
+            advanceOf(0, 9) shouldBe 4 * LETTER_WIDTH1 + SPACE_WIDTH1 + 4 * LETTER_WIDTH2
+            advanceOf(4, 8) shouldBe SPACE_WIDTH1 + 3 * LETTER_WIDTH2
+            hyphenWidthAfter(0) shouldBe HYPHEN_WIDTH1
+            hyphenWidthAfter(4) shouldBe HYPHEN_WIDTH1
+            hyphenWidthAfter(5) shouldBe HYPHEN_WIDTH2
+            hyphenWidthAfter(8) shouldBe HYPHEN_WIDTH2
         }
     }
 
@@ -172,12 +173,12 @@ class ParagraphLayouterTest {
 
         // then
         with (liner.measuredText) {
-            plainText.toString() shouldEqual "\uFFFCtext\uFFFC"
-            locale shouldEqual Locale.US
-            advanceOf(0) shouldEqual 30F
-            advanceOf(5) shouldEqual 100F
-            hyphenWidthAfter(0) shouldEqual 0F
-            hyphenWidthAfter(5) shouldEqual 0F
+            plainText.toString() shouldBe "\uFFFCtext\uFFFC"
+            locale shouldBe Locale.US
+            advanceOf(0) shouldBe 30F
+            advanceOf(5) shouldBe 100F
+            hyphenWidthAfter(0) shouldBe 0F
+            hyphenWidthAfter(5) shouldBe 0F
         }
     }
 
@@ -213,12 +214,12 @@ class ParagraphLayouterTest {
         // then
         with (childLayouter.space) {
             with (width) {
-                percentBase shouldEqual 200F
-                area shouldEqual Area.WrapContent(200F)
+                percentBase shouldBe 200F
+                area shouldBe Area.WrapContent(200F)
             }
             with (height) {
-                percentBase shouldEqual 0F
-                area shouldEqual Area.WrapContent(200F)
+                percentBase shouldBe 0F
+                area shouldBe Area.WrapContent(200F)
             }
         }
     }
@@ -276,35 +277,32 @@ class ParagraphLayouterTest {
             val LINE_HEIGHT2 = HEIGHT2 + LEADING2
 
             with (children[0].obj as LayoutLine) {
-                childTexts shouldEqual listOf("some", " ")
-                childIsSpaces shouldEqual listOf(false, true)
-                childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
-                childStyles shouldEqual listOf(style1, style1)
+                childTexts shouldBe listOf("some", " ")
+                childIsSpaces shouldBe listOf(false, true)
+                childBaselines shouldBe listOf(-ASCENT1, -ASCENT1)
+                childStyles shouldBe listOf(style1, style1)
                 childCharOffsets shouldEqualCharOffsets listOf(
                         charOffsets(4, LETTER_WIDTH1),
                         charOffsets(1, SPACE_WIDTH1)
                 )
 
-                childWidths shouldEqual listOf(4 * LETTER_WIDTH1, 1 * SPACE_WIDTH1)
-                childHeights shouldEqual listOf(HEIGHT1, HEIGHT1)
-                childXs shouldEqual listOf(20F, 20 + 4 * LETTER_WIDTH1)
-                childYs shouldEqual listOf(LEADING1 / 2, LEADING1 / 2)
+                childWidths shouldBe listOf(4 * LETTER_WIDTH1, 1 * SPACE_WIDTH1)
+                childHeights shouldBe listOf(HEIGHT1, HEIGHT1)
+                childXs shouldBe listOf(20F, 20 + 4 * LETTER_WIDTH1)
+                childYs shouldBe listOf(LEADING1 / 2, LEADING1 / 2)
 
-                range == LocationRange(
-                        runs[0].charLocation(0),
-                        runs[0].charLocation(5)
-                )
-                childRanges shouldEqual listOf(
+                range shouldBe runs[0].charLocation(0)..runs[0].charLocation(5)
+                childRanges shouldBe listOf(
                         runs[0].charRange(0, 4),
                         runs[0].charRange(4, 5)
                 )
             }
 
             with (children[1].obj as LayoutLine) {
-                childTexts shouldEqual listOf("t", "ext", " ", "words")
-                childIsSpaces shouldEqual listOf(false, false, true, false)
-                childBaselines shouldEqual listOf(-ASCENT1, -ASCENT2, -ASCENT2, -ASCENT2)
-                childStyles shouldEqual listOf(style1, style2, style2, style2)
+                childTexts shouldBe listOf("t", "ext", " ", "words")
+                childIsSpaces shouldBe listOf(false, false, true, false)
+                childBaselines shouldBe listOf(-ASCENT1, -ASCENT2, -ASCENT2, -ASCENT2)
+                childStyles shouldBe listOf(style1, style2, style2, style2)
                 childCharOffsets shouldEqualCharOffsets listOf(
                         charOffsets(1, LETTER_WIDTH1),
                         charOffsets(3, LETTER_WIDTH2),
@@ -312,21 +310,18 @@ class ParagraphLayouterTest {
                         charOffsets(5, LETTER_WIDTH2)
                 )
 
-                childWidths shouldEqual listOf(1 * LETTER_WIDTH1, 3 * LETTER_WIDTH2, 1 * SPACE_WIDTH2, 5 * LETTER_WIDTH2)
-                childHeights shouldEqual listOf(HEIGHT1, HEIGHT2, HEIGHT2, HEIGHT2)
-                childXs shouldEqual listOf(
+                childWidths shouldBe listOf(1 * LETTER_WIDTH1, 3 * LETTER_WIDTH2, 1 * SPACE_WIDTH2, 5 * LETTER_WIDTH2)
+                childHeights shouldBe listOf(HEIGHT1, HEIGHT2, HEIGHT2, HEIGHT2)
+                childXs shouldBe listOf(
                         -5F,
                         -5F + 1 * LETTER_WIDTH1,
                         -5F + 1 * LETTER_WIDTH1 + 3 * LETTER_WIDTH2,
                         -5F + 1 * LETTER_WIDTH1 + 3 * LETTER_WIDTH2 + 1 * SPACE_WIDTH2
                 )
-                childYs shouldEqual listOf(LEADING2 / 2 - ASCENT2 + ASCENT1, LEADING2 / 2, LEADING2 / 2, LEADING2 / 2)
+                childYs shouldBe listOf(LEADING2 / 2 - ASCENT2 + ASCENT1, LEADING2 / 2, LEADING2 / 2, LEADING2 / 2)
 
-                range == LocationRange(
-                        runs[0].charLocation(5),
-                        runs[1].charLocation(9)
-                )
-                childRanges shouldEqual listOf(
+                range shouldBe runs[0].charLocation(5)..runs[1].charLocation(9)
+                childRanges shouldBe listOf(
                         runs[0].charRange(5, 6),
                         runs[1].charRange(0, 3),
                         runs[1].charRange(3, 4),
@@ -335,26 +330,23 @@ class ParagraphLayouterTest {
             }
 
             with (children[2].obj as LayoutLine) {
-                childTexts shouldEqual listOf(" ", " ", "qwert")
-                childIsSpaces shouldEqual listOf(true, true, false)
-                childBaselines shouldEqual listOf(-ASCENT2, -ASCENT1, -ASCENT1)
-                childStyles shouldEqual listOf(style2, style1, style1)
+                childTexts shouldBe listOf(" ", " ", "qwert")
+                childIsSpaces shouldBe listOf(true, true, false)
+                childBaselines shouldBe listOf(-ASCENT2, -ASCENT1, -ASCENT1)
+                childStyles shouldBe listOf(style2, style1, style1)
                 childCharOffsets shouldEqualCharOffsets listOf(
                         charOffsets(1, SPACE_WIDTH2),
                         charOffsets(1, SPACE_WIDTH1),
                         charOffsets(5, LETTER_WIDTH1)
                 )
 
-                childWidths shouldEqual listOf(1 * SPACE_WIDTH2, 1 * SPACE_WIDTH1, 5 * LETTER_WIDTH1)
-                childHeights shouldEqual listOf(HEIGHT2, HEIGHT1, HEIGHT1)
-                childXs shouldEqual listOf(0F, SPACE_WIDTH2, SPACE_WIDTH2 + SPACE_WIDTH1)
-                childYs shouldEqual listOf(LEADING2 / 2, LEADING2 / 2 - ASCENT2 + ASCENT1, LEADING2 / 2 - ASCENT2 + ASCENT1)
+                childWidths shouldBe listOf(1 * SPACE_WIDTH2, 1 * SPACE_WIDTH1, 5 * LETTER_WIDTH1)
+                childHeights shouldBe listOf(HEIGHT2, HEIGHT1, HEIGHT1)
+                childXs shouldBe listOf(0F, SPACE_WIDTH2, SPACE_WIDTH2 + SPACE_WIDTH1)
+                childYs shouldBe listOf(LEADING2 / 2, LEADING2 / 2 - ASCENT2 + ASCENT1, LEADING2 / 2 - ASCENT2 + ASCENT1)
 
-                range == LocationRange(
-                        runs[1].charLocation(9),
-                        runs[2].charLocation(6)
-                )
-                childRanges shouldEqual listOf(
+                range shouldBe runs[1].charLocation(9)..runs[2].charLocation(6)
+                childRanges shouldBe listOf(
                         runs[1].charRange(9, 10),
                         runs[2].charRange(0, 1),
                         runs[2].charRange(1, 6)
@@ -362,42 +354,39 @@ class ParagraphLayouterTest {
             }
 
             with (children[3].obj as LayoutLine) {
-                childTexts shouldEqual listOf("y")
-                childIsSpaces shouldEqual listOf(false)
-                childBaselines shouldEqual listOf(-ASCENT1)
-                childStyles shouldEqual listOf(style1)
+                childTexts shouldBe listOf("y")
+                childIsSpaces shouldBe listOf(false)
+                childBaselines shouldBe listOf(-ASCENT1)
+                childStyles shouldBe listOf(style1)
                 childCharOffsets shouldEqualCharOffsets listOf(
                         charOffsets(1, LETTER_WIDTH1)
                 )
 
-                childWidths shouldEqual listOf(1 * LETTER_WIDTH1)
-                childHeights shouldEqual listOf(HEIGHT1)
-                childXs shouldEqual listOf(0F)
-                childYs shouldEqual listOf(LEADING1 / 2)
+                childWidths shouldBe listOf(1 * LETTER_WIDTH1)
+                childHeights shouldBe listOf(HEIGHT1)
+                childXs shouldBe listOf(0F)
+                childYs shouldBe listOf(LEADING1 / 2)
 
-                range == LocationRange(
-                        runs[2].charLocation(6),
-                        runs[2].charLocation(7)
-                )
-                childRanges shouldEqual listOf(
+                range shouldBe runs[2].charLocation(6)..runs[2].charLocation(7)
+                childRanges shouldBe listOf(
                         runs[2].charRange(6, 7)
                 )
             }
 
-            width shouldEqual 200F
-            height shouldEqual 1 * LINE_HEIGHT1 + 2 * LINE_HEIGHT2 + 1 * LINE_HEIGHT1
-            childWidths shouldEqual listOf(200F, 200F, 200F, 200F)
-            childHeights shouldEqual listOf(LINE_HEIGHT1, LINE_HEIGHT2, LINE_HEIGHT2, LINE_HEIGHT1)
-            childXs shouldEqual listOf(0F, 0F, 0F, 0F)
-            childYs shouldEqual listOf(0F, LINE_HEIGHT1, LINE_HEIGHT1 + LINE_HEIGHT2, LINE_HEIGHT1 + LINE_HEIGHT2 + LINE_HEIGHT2)
-            blankVerticalMargins shouldEqual listOf(LEADING1 / 2, LEADING2 / 2, LEADING2 / 2, LEADING1 / 2)
-            range shouldEqual obj.range
+            width shouldBe 200F
+            height shouldBe 1 * LINE_HEIGHT1 + 2 * LINE_HEIGHT2 + 1 * LINE_HEIGHT1
+            childWidths shouldBe listOf(200F, 200F, 200F, 200F)
+            childHeights shouldBe listOf(LINE_HEIGHT1, LINE_HEIGHT2, LINE_HEIGHT2, LINE_HEIGHT1)
+            childXs shouldBe listOf(0F, 0F, 0F, 0F)
+            childYs shouldBe listOf(0F, LINE_HEIGHT1, LINE_HEIGHT1 + LINE_HEIGHT2, LINE_HEIGHT1 + LINE_HEIGHT2 + LINE_HEIGHT2)
+            blankVerticalMargins shouldBe listOf(LEADING1 / 2, LEADING2 / 2, LEADING2 / 2, LEADING1 / 2)
+            range shouldBe obj.range
         }
 
         layoutObj.children.map { it.obj }.forEach {
             (it as LayoutLine).children.map { it.obj }.forEach {
                 it as LayoutText
-                it.locale shouldEqual Locale.US
+                it.locale shouldBe Locale.US
             }
         }
     }
@@ -444,27 +433,27 @@ class ParagraphLayouterTest {
         // then
         with (layoutObj) {
             with (children[0].obj as LayoutLine) {
-                children[0].obj shouldEqual layoutObj1
-                children[2].obj shouldEqual layoutObj2
+                children[0].obj shouldBe layoutObj1
+                children[2].obj shouldBe layoutObj2
 
                 with (children[1].obj as LayoutText) {
-                    text.toString() shouldEqual "text"
-                    baseline shouldEqual 20F
-                    style shouldEqual style
+                    text.toString() shouldBe "text"
+                    baseline shouldBe 20F
+                    style shouldBe style
                 }
 
-                childWidths shouldEqual listOf(50F, 4 * CHAR_WIDTH, 70F)
-                childHeights shouldEqual listOf(10F, 26F, 70F)
-                childXs shouldEqual listOf(0F, 50F, 50F + 4 * CHAR_WIDTH)
-                childYs shouldEqual listOf(70F - 10, 70F - 20, 70F - 70)
+                childWidths shouldBe listOf(50F, 4 * CHAR_WIDTH, 70F)
+                childHeights shouldBe listOf(10F, 26F, 70F)
+                childXs shouldBe listOf(0F, 50F, 50F + 4 * CHAR_WIDTH)
+                childYs shouldBe listOf(70F - 10, 70F - 20, 70F - 70)
             }
 
-            width shouldEqual 200F
-            height shouldEqual 70F + 6F
-            childWidths shouldEqual listOf(200F)
-            childHeights shouldEqual listOf(70F + 6)
-            childXs shouldEqual listOf(0F)
-            childYs shouldEqual listOf(0F)
+            width shouldBe 200F
+            height shouldBe 70F + 6F
+            childWidths shouldBe listOf(200F)
+            childHeights shouldBe listOf(70F + 6)
+            childXs shouldBe listOf(0F)
+            childYs shouldBe listOf(0F)
         }
     }
 
@@ -525,94 +514,85 @@ class ParagraphLayouterTest {
             val HEIGHT2 = -ASCENT2 + DESCENT2
 
             with (children[0].obj as LayoutLine) {
-                childTexts shouldEqual listOf("t", HYPHEN_STRING)
-                childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
-                childStyles shouldEqual listOf(style1, style1)
+                childTexts shouldBe listOf("t", HYPHEN_STRING)
+                childBaselines shouldBe listOf(-ASCENT1, -ASCENT1)
+                childStyles shouldBe listOf(style1, style1)
                 childCharOffsets shouldEqualCharOffsets listOf(
                         charOffsets(1, CHAR_WIDTH1),
                         charOffsets(1, HYPHEN_WIDTH1)
                 )
 
-                childWidths shouldEqual listOf(1 * CHAR_WIDTH1, 1 * HYPHEN_WIDTH1)
-                childHeights shouldEqual listOf(HEIGHT1, HEIGHT1)
-                childXs shouldEqual listOf(0F, 1 * CHAR_WIDTH1)
-                childYs shouldEqual listOf(0F, 0F)
+                childWidths shouldBe listOf(1 * CHAR_WIDTH1, 1 * HYPHEN_WIDTH1)
+                childHeights shouldBe listOf(HEIGHT1, HEIGHT1)
+                childXs shouldBe listOf(0F, 1 * CHAR_WIDTH1)
+                childYs shouldBe listOf(0F, 0F)
 
-                range == LocationRange(
-                        run0.charLocation(0),
-                        run0.charLocation(1)
-                )
-                childRanges shouldEqual listOf(
+                range shouldBe run0.charLocation(0)..run0.charLocation(1)
+                childRanges shouldBe listOf(
                         run0.charRange(0, 1),
                         run0.charRange(1, 1)
                 )
             }
 
             with (children[1].obj as LayoutLine) {
-                childTexts shouldEqual listOf("ext", HYPHEN_STRING)
-                childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
-                childStyles shouldEqual listOf(style1, style1)
+                childTexts shouldBe listOf("ext", HYPHEN_STRING)
+                childBaselines shouldBe listOf(-ASCENT1, -ASCENT1)
+                childStyles shouldBe listOf(style1, style1)
                 childCharOffsets shouldEqualCharOffsets listOf(
                         charOffsets(3, CHAR_WIDTH1),
                         charOffsets(1, HYPHEN_WIDTH1)
                 )
 
-                childWidths shouldEqual listOf(3 * CHAR_WIDTH1, 1 * HYPHEN_WIDTH1)
-                childHeights shouldEqual listOf(HEIGHT1, HEIGHT1)
-                childXs shouldEqual listOf(0F, 3 * CHAR_WIDTH1)
-                childYs shouldEqual listOf(0F, 0F)
+                childWidths shouldBe listOf(3 * CHAR_WIDTH1, 1 * HYPHEN_WIDTH1)
+                childHeights shouldBe listOf(HEIGHT1, HEIGHT1)
+                childXs shouldBe listOf(0F, 3 * CHAR_WIDTH1)
+                childYs shouldBe listOf(0F, 0F)
 
-                range == LocationRange(
-                        run0.charLocation(0),
-                        run0.charLocation(4)
-                )
-                childRanges shouldEqual listOf(
+                range shouldBe run0.charLocation(1)..run0.charLocation(4)
+                childRanges shouldBe listOf(
                         run0.charRange(1, 4),
                         run0.charRange(4, 4)
                 )
             }
 
             with (children[2].obj as LayoutLine) {
-                children[0].obj shouldEqual layoutObj1
+                children[0].obj shouldBe layoutObj1
 
-                childWidths shouldEqual listOf(50F)
-                childHeights shouldEqual listOf(10F)
-                childXs shouldEqual listOf(0F)
-                childYs shouldEqual listOf(0F)
+                childWidths shouldBe listOf(50F)
+                childHeights shouldBe listOf(10F)
+                childXs shouldBe listOf(0F)
+                childYs shouldBe listOf(0F)
             }
 
             with (children[3].obj as LayoutLine) {
-                childTexts shouldEqual listOf("t", "ext2", HYPHEN_STRING)
-                childBaselines shouldEqual listOf(-ASCENT1, -ASCENT2, -ASCENT2)
-                childStyles shouldEqual listOf(style1, style2, style2)
+                childTexts shouldBe listOf("t", "ext2", HYPHEN_STRING)
+                childBaselines shouldBe listOf(-ASCENT1, -ASCENT2, -ASCENT2)
+                childStyles shouldBe listOf(style1, style2, style2)
                 childCharOffsets shouldEqualCharOffsets listOf(
                         charOffsets(1, CHAR_WIDTH1),
                         charOffsets(4, CHAR_WIDTH2),
                         charOffsets(1, HYPHEN_WIDTH2)
                 )
 
-                childWidths shouldEqual listOf(1 * CHAR_WIDTH1, 4 * CHAR_WIDTH2, 1 * HYPHEN_WIDTH2)
-                childHeights shouldEqual listOf(HEIGHT1, HEIGHT2, HEIGHT2)
-                childXs shouldEqual listOf(0F, 1 * CHAR_WIDTH1, 1 * CHAR_WIDTH1 + 4 * CHAR_WIDTH2)
-                childYs shouldEqual listOf(8F, 0F, 0F)
+                childWidths shouldBe listOf(1 * CHAR_WIDTH1, 4 * CHAR_WIDTH2, 1 * HYPHEN_WIDTH2)
+                childHeights shouldBe listOf(HEIGHT1, HEIGHT2, HEIGHT2)
+                childXs shouldBe listOf(0F, 1 * CHAR_WIDTH1, 1 * CHAR_WIDTH1 + 4 * CHAR_WIDTH2)
+                childYs shouldBe listOf(8F, 0F, 0F)
 
-                range == LocationRange(
-                        run2.charLocation(0),
-                        run3.charLocation(4)
-                )
-                childRanges shouldEqual listOf(
+                range shouldBe run2.charLocation(0)..run3.charLocation(4)
+                childRanges shouldBe listOf(
                         run2.charRange(0, 1),
                         run3.charRange(0, 4),
                         run3.charRange(4, 4)
                 )
             }
 
-            width shouldEqual 200F
-            height shouldEqual HEIGHT1 + HEIGHT1 + 10 + HEIGHT2
-            childWidths shouldEqual listOf(200F, 200F, 200F, 200F)
-            childHeights shouldEqual listOf(HEIGHT1, HEIGHT1, 10F, HEIGHT2)
-            childXs shouldEqual listOf(0F, 0F, 0F, 0F)
-            childYs shouldEqual listOf(0F, HEIGHT1, HEIGHT1 + HEIGHT1, HEIGHT1 + HEIGHT1 + 10)
+            width shouldBe 200F
+            height shouldBe HEIGHT1 + HEIGHT1 + 10 + HEIGHT2
+            childWidths shouldBe listOf(200F, 200F, 200F, 200F)
+            childHeights shouldBe listOf(HEIGHT1, HEIGHT1, 10F, HEIGHT2)
+            childXs shouldBe listOf(0F, 0F, 0F, 0F)
+            childYs shouldBe listOf(0F, HEIGHT1, HEIGHT1 + HEIGHT1, HEIGHT1 + HEIGHT1 + 10)
         }
     }
 
@@ -656,8 +636,8 @@ class ParagraphLayouterTest {
                     charOffsets(5, LETTER_WIDTH),
                     charOffsets(1, SPACE_WIDTH)
             )
-            childWidths shouldEqual widths
-            childXs shouldEqual listOf(
+            childWidths shouldBe widths
+            childXs shouldBe listOf(
                     200F - 180,
                     20F + widths[0],
                     20F + widths[0] + widths[1],
@@ -673,8 +653,8 @@ class ParagraphLayouterTest {
                     charOffsets(1, LETTER_WIDTH),
                     charOffsets(1, LETTER_WIDTH)
             )
-            childWidths shouldEqual widths
-            childXs shouldEqual listOf(
+            childWidths shouldBe widths
+            childXs shouldBe listOf(
                     200F - 50,
                     150F + widths[0],
                     150F + widths[0] + widths[1]
@@ -688,8 +668,8 @@ class ParagraphLayouterTest {
                     charOffsets(1, SPACE_WIDTH),
                     charOffsets(5, LETTER_WIDTH)
             )
-            childWidths shouldEqual widths
-            childXs shouldEqual listOf(
+            childWidths shouldBe widths
+            childXs shouldBe listOf(
                     200F - 300,
                     -100F + widths[0],
                     -100F + widths[0] + widths[1]
@@ -737,8 +717,8 @@ class ParagraphLayouterTest {
                     charOffsets(5, LETTER_WIDTH),
                     charOffsets(1, SPACE_WIDTH)
             )
-            childWidths shouldEqual widths
-            childXs shouldEqual listOf(
+            childWidths shouldBe widths
+            childXs shouldBe listOf(
                     -10F + (200 + 10 - 180) / 2,
                     5F + widths[0],
                     5F + widths[0] + widths[1],
@@ -754,8 +734,8 @@ class ParagraphLayouterTest {
                     charOffsets(1, LETTER_WIDTH),
                     charOffsets(1, LETTER_WIDTH)
             )
-            childWidths shouldEqual widths
-            childXs shouldEqual listOf(
+            childWidths shouldBe widths
+            childXs shouldBe listOf(
                     20F + (200 - 20 - 50) / 2,
                     85F + widths[0],
                     85F + widths[0] + widths[1]
@@ -769,8 +749,8 @@ class ParagraphLayouterTest {
                     charOffsets(1, SPACE_WIDTH),
                     charOffsets(5, LETTER_WIDTH)
             )
-            childWidths shouldEqual widths
-            childXs shouldEqual listOf(
+            childWidths shouldBe widths
+            childXs shouldBe listOf(
                     0F + (200 - 300) / 2,
                     -50F + widths[0],
                     -50F + widths[0] + widths[1]
@@ -834,8 +814,8 @@ class ParagraphLayouterTest {
                     charOffsets(4, LETTER_WIDTH),
                     charOffsets(1, SPACE_WIDTH)
             )
-            childWidths shouldEqual widths
-            childXs shouldEqual listOf(
+            childWidths shouldBe widths
+            childXs shouldBe listOf(
                     -10F,
                     -10F + widths[0],
                     -10F + widths[0] + widths[1],
@@ -854,8 +834,8 @@ class ParagraphLayouterTest {
                     charOffsets(1, LETTER_WIDTH),
                     charOffsets(1, LETTER_WIDTH)
             )
-            childWidths shouldEqual widths
-            childXs shouldEqual listOf(
+            childWidths shouldBe widths
+            childXs shouldBe listOf(
                     20F,
                     20F + widths[0],
                     20F + widths[0] + widths[1]
@@ -870,8 +850,8 @@ class ParagraphLayouterTest {
                     charOffsets(1, SPACE_WIDTH),
                     charOffsets(1, LETTER_WIDTH)
             )
-            childWidths shouldEqual widths
-            childXs shouldEqual listOf(
+            childWidths shouldBe widths
+            childXs shouldBe listOf(
                     0F,
                     widths[0],
                     widths[0] + widths[1]
@@ -887,8 +867,8 @@ class ParagraphLayouterTest {
                     charOffsets(5, LETTER_WIDTH),
                     charOffsets(1, SPACE_WIDTH)
             )
-            childWidths shouldEqual widths
-            childXs shouldEqual listOf(
+            childWidths shouldBe widths
+            childXs shouldBe listOf(
                     0F,
                     widths[0],
                     widths[0] + widths[1],
@@ -914,9 +894,9 @@ class ParagraphLayouterTest {
 
         // then
         with (layoutObj) {
-            width shouldEqual 200F
-            height shouldEqual 0F
-            children.size shouldEqual 0
+            width shouldBe 200F
+            height shouldBe 0F
+            children.size shouldBe 0
         }
     }
 
@@ -951,8 +931,8 @@ class ParagraphLayouterTest {
         )
 
         // then
-        layoutObj.width shouldEqual 170F
-        layoutObj.childWidths shouldEqual listOf(170F, 170F, 170F)
+        layoutObj.width shouldBe 170F
+        layoutObj.childWidths shouldBe listOf(170F, 170F, 170F)
 
         // when
         layoutObj = layouter.layout(
@@ -961,11 +941,11 @@ class ParagraphLayouterTest {
         )
 
         // then
-        layoutObj.width shouldEqual 170F
-        layoutObj.childWidths shouldEqual listOf(170F, 170F, 170F)
-        layoutObj.children[0].obj.childXs shouldEqual listOf(170F - 100)
-        layoutObj.children[1].obj.childXs shouldEqual listOf(170F - 180)
-        layoutObj.children[2].obj.childXs shouldEqual listOf(170F - 50)
+        layoutObj.width shouldBe 170F
+        layoutObj.childWidths shouldBe listOf(170F, 170F, 170F)
+        layoutObj.children[0].obj.childXs shouldBe listOf(170F - 100)
+        layoutObj.children[1].obj.childXs shouldBe listOf(170F - 180)
+        layoutObj.children[2].obj.childXs shouldBe listOf(170F - 50)
 
         // when
         layoutObj = layouter.layout(
@@ -974,11 +954,11 @@ class ParagraphLayouterTest {
         )
 
         // then
-        layoutObj.width shouldEqual 170F
-        layoutObj.childWidths shouldEqual listOf(170F, 170F, 170F)
-        layoutObj.children[0].obj.childXs shouldEqual listOf(30F + (170 - 30 - 100) / 2)
-        layoutObj.children[1].obj.childXs shouldEqual listOf(-10F + (170 + 10 - 180) / 2)
-        layoutObj.children[2].obj.childXs shouldEqual listOf(0F + (170 + 0 - 50) / 2)
+        layoutObj.width shouldBe 170F
+        layoutObj.childWidths shouldBe listOf(170F, 170F, 170F)
+        layoutObj.children[0].obj.childXs shouldBe listOf(30F + (170 - 30 - 100) / 2)
+        layoutObj.children[1].obj.childXs shouldBe listOf(-10F + (170 + 10 - 180) / 2)
+        layoutObj.children[2].obj.childXs shouldBe listOf(0F + (170 + 0 - 50) / 2)
     }
 
     @Test
@@ -1027,8 +1007,8 @@ class ParagraphLayouterTest {
 
         // then
         with (liner.measuredText) {
-            advanceOf(4) shouldEqual SPACE_WIDTH1 * WORD_SPACING1
-            advanceOf(9) shouldEqual SPACE_WIDTH2 * WORD_SPACING2
+            advanceOf(4) shouldBe SPACE_WIDTH1 * WORD_SPACING1
+            advanceOf(9) shouldBe SPACE_WIDTH2 * WORD_SPACING2
         }
     }
 
@@ -1086,27 +1066,27 @@ class ParagraphLayouterTest {
             val FACT_LEADING2 = LINE_HEIGHT2 - HEIGHT2
 
             with (children[0].obj as LayoutLine) {
-                childBaselines shouldEqual listOf(-ASCENT1, -ASCENT1)
-                childHeights shouldEqual listOf(HEIGHT1, HEIGHT1)
-                childYs shouldEqual listOf(FACT_LEADING1 / 2, FACT_LEADING1 / 2)
+                childBaselines shouldBe listOf(-ASCENT1, -ASCENT1)
+                childHeights shouldBe listOf(HEIGHT1, HEIGHT1)
+                childYs shouldBe listOf(FACT_LEADING1 / 2, FACT_LEADING1 / 2)
             }
 
             with (children[1].obj as LayoutLine) {
-                childBaselines shouldEqual listOf(-ASCENT1, -ASCENT2, -ASCENT2, -ASCENT2)
-                childHeights shouldEqual listOf(HEIGHT1, HEIGHT2, HEIGHT2, HEIGHT2)
-                childYs shouldEqual listOf(FACT_LEADING2 / 2 - ASCENT2 + ASCENT1, FACT_LEADING2 / 2, FACT_LEADING2 / 2, FACT_LEADING2 / 2)
+                childBaselines shouldBe listOf(-ASCENT1, -ASCENT2, -ASCENT2, -ASCENT2)
+                childHeights shouldBe listOf(HEIGHT1, HEIGHT2, HEIGHT2, HEIGHT2)
+                childYs shouldBe listOf(FACT_LEADING2 / 2 - ASCENT2 + ASCENT1, FACT_LEADING2 / 2, FACT_LEADING2 / 2, FACT_LEADING2 / 2)
             }
 
-            height shouldEqual LINE_HEIGHT1 + LINE_HEIGHT2
-            childHeights shouldEqual listOf(LINE_HEIGHT1, LINE_HEIGHT2)
-            childYs shouldEqual listOf(0F, LINE_HEIGHT1)
-            blankVerticalMargins shouldEqual listOf(0F, FACT_LEADING2 / 2)
+            height shouldBe LINE_HEIGHT1 + LINE_HEIGHT2
+            childHeights shouldBe listOf(LINE_HEIGHT1, LINE_HEIGHT2)
+            childYs shouldBe listOf(0F, LINE_HEIGHT1)
+            blankVerticalMargins shouldBe listOf(0F, FACT_LEADING2 / 2)
         }
 
         layoutObj.children.map { it.obj }.forEach {
             (it as LayoutLine).children.map { it.obj }.forEach {
                 it as LayoutText
-                it.locale shouldEqual Locale.US
+                it.locale shouldBe Locale.US
             }
         }
     }
@@ -1242,9 +1222,9 @@ class ParagraphLayouterTest {
     val LayoutObject.childRanges: List<LocationRange>
         get() = children.map { it.obj.range }
 
-    fun charOffsets(textLength: Int, charWidth: Float) = (0..textLength - 1).map { charWidth * it }.toFloatArray()
+    fun charOffsets(textLength: Int, charWidth: Float) = (0 until textLength).map { charWidth * it }.toFloatArray()
 
-    fun rootRange() = LocationRange(Location(0.0), Location(100.0))
+    fun rootRange() = Location(0.0)..Location(100.0)
     fun runRange(index: Int) = rootRange().subrange(
             index.toDouble() / 1000,
             (index.toDouble() + 1) / 1000
@@ -1253,8 +1233,8 @@ class ParagraphLayouterTest {
     fun rootSpace(width: Float, height: Float) = LayoutSpace.root(SizeF(width, height))
 
     private infix fun List<FloatArray?>.shouldEqualCharOffsets(expected: List<FloatArray?>) {
-        size shouldEqual expected.size
-        for (i in 0..size-1) {
+        size shouldBe expected.size
+        for (i in 0 until size) {
             assertArrayEquals("actual[$i] == expected[$i]", expected[i], this[i], 0.00001F)
         }
     }

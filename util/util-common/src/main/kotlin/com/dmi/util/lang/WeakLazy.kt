@@ -13,6 +13,6 @@ fun <T> weakLazy(create: () -> T) = object : ReadOnlyProperty<Any?, T> {
             obj = create()
             ref = WeakReference<T>(obj)
         }
-        return obj
+        return obj!!
     }
 }

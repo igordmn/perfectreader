@@ -14,28 +14,31 @@ import com.dmi.util.android.ext.inflate
 import com.dmi.util.android.ext.px2dip
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.lang.returnValue
-import com.dmi.util.refWatcher
+import com.dmi.util.scope.Disposable
+import com.dmi.util.scope.Disposables
+import com.dmi.util.scope.Event
+import com.dmi.util.scope.Scope.Companion.onchange
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.find
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.toast
-import rx.Observable
-import rx.subscriptions.CompositeSubscription
 import java.util.*
 
-abstract class BaseView(val widget: ViewGroup) {
+abstract class BaseView(val widget: ViewGroup) : Disposable {
     constructor(context: Context, layoutId: Int) : this(context.inflate(layoutId))
 
     protected val context: Context = widget.context
+    private val disposables = Disposables()
 
-    private val subscriptions = CompositeSubscription()
     private val children = LinkedList<BaseView>()
     private val childToContainer = HashMap<BaseView, ViewGroup>()
 
     @CallSuper
-    open fun destroy() {
-        children.forEach { it.destroy() }
-        subscriptions.clear()
-        refWatcher.watch(this)
+    override fun dispose() {
+        children.forEach { it.dispose() }
+        disposables.dispose()
     }
 
     protected fun <T : BaseView> addChild(child: T, containerId: Int) = addChild(child, find<ViewGroup>(containerId))
@@ -49,15 +52,15 @@ abstract class BaseView(val widget: ViewGroup) {
     }
 
     protected fun <T : BaseView> removeChild(child: T) {
-        child.destroy()
+        child.dispose()
         children.remove(child)
         childToContainer[child]!!.removeView(child.widget)
     }
 
-    protected fun <V : BaseView, VM : BaseViewModel> toggleChildByModel(model: VM?, current: V?, containerId: Int, create: (VM) -> V) =
+    protected fun <V : BaseView, VM> toggleChildByModel(model: VM?, current: V?, containerId: Int, create: (VM) -> V) =
             toggleChildByModel(model, current, find<ViewGroup>(containerId), create)
 
-    protected fun <V : BaseView, VM : BaseViewModel> toggleChildByModel(model: VM?, current: V?, container: ViewGroup, create: (VM) -> V) =
+    protected fun <V : BaseView, VM> toggleChildByModel(model: VM?, current: V?, container: ViewGroup, create: (VM) -> V) =
             if (model != null && current == null) {
                 addChild(create(model), container)
             } else if (model == null && current != null) {
@@ -66,8 +69,39 @@ abstract class BaseView(val widget: ViewGroup) {
                 current
             }
 
-    protected fun <T> subscribe(observable: Observable<T>, onNext: (T) -> Unit) =
-            subscriptions.add(observable.subscribe(onNext))
+    protected fun autorun(action: () -> Unit) {
+        disposables += object : Disposable {
+            var subscription: Disposable? = null
+            var job: Job? = null
+
+            init {
+                deffer()
+            }
+
+            fun deffer() {
+                if (job == null) {
+                    job = launch(UI) {
+                        perform()
+                        job = null
+                    }
+                }
+            }
+
+            fun perform() {
+                subscription?.dispose()
+                subscription = onchange(action).subscribe { deffer() }
+            }
+
+            override fun dispose() {
+                job?.cancel()
+                subscription?.dispose()
+            }
+        }
+    }
+
+    protected fun subscribe(event: Event, action: () -> Unit) {
+        disposables += event.subscribe(action)
+    }
 
     open fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean = children.lastOrNull()?.onKeyDown(keyCode, event) ?: false
     open fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean = children.lastOrNull()?.onKeyUp(keyCode, event) ?: false

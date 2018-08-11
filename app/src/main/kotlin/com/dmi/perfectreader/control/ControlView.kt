@@ -1,24 +1,24 @@
 package com.dmi.perfectreader.control
 
-import android.content.Context
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import com.dmi.perfectreader.ViewContext
 import com.dmi.util.android.base.BaseView
 import com.dmi.util.android.input.hardKeyFromKeyCode
 import com.dmi.util.android.input.performTouchEvents
 import com.dmi.util.android.widget.onSizeChange
 
 class ControlView(
-        context: Context,
+        viewContext: ViewContext,
         private val model: Control
-) : BaseView(FrameLayout(context)), View.OnTouchListener {
+) : BaseView(FrameLayout(viewContext.android)), View.OnTouchListener {
     init {
         widget.isClickable = false
         widget.isFocusable = false
         widget.setOnTouchListener(this)
-        widget.onSizeChange { size, oldSize ->
+        widget.onSizeChange { size, _ ->
             model.resize(size.toFloat())
         }
     }

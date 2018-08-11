@@ -4,11 +4,11 @@ interface SequenceEntry<T> {
     val item: T
     val hasPrevious: Boolean
     val hasNext: Boolean
-    val previous: SequenceEntry<T>
-    val next: SequenceEntry<T>
+    suspend fun previous(): SequenceEntry<T>
+    suspend fun next(): SequenceEntry<T>
 
-    val previousOrNull: SequenceEntry<T>? get() = if (hasPrevious) previous else null
-    val nextOrNull: SequenceEntry<T>? get() = if (hasNext) next else null
+    suspend fun previousOrNull(): SequenceEntry<T>? = if (hasPrevious) previous() else null
+    suspend fun nextOrNull(): SequenceEntry<T>? = if (hasNext) next() else null
 }
 
 class ListSequenceEntry<T>(private val list: List<T>, private val index: Int) : SequenceEntry<T> {
@@ -20,6 +20,8 @@ class ListSequenceEntry<T>(private val list: List<T>, private val index: Int) : 
     override val hasPrevious = index > 0
     override val hasNext = index < list.size - 1
 
-    override val previous: SequenceEntry<T> get() = ListSequenceEntry(list, index - 1)
-    override val next: SequenceEntry<T> get() = ListSequenceEntry(list, index + 1)
+    override suspend fun previous(): SequenceEntry<T> = ListSequenceEntry(list, index - 1)
+    override suspend fun next(): SequenceEntry<T> = ListSequenceEntry(list, index + 1)
 }
+
+fun <T> List<T>.asSequenceEntry(index: Int): SequenceEntry<T> = ListSequenceEntry(this, index)

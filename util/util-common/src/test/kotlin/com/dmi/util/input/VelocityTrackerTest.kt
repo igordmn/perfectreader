@@ -1,6 +1,6 @@
 package com.dmi.util.input
 
-import com.dmi.test.shouldEqual
+import com.dmi.test.shouldBe
 import com.dmi.util.graphic.PositionF
 import org.junit.Test
 import java.lang.Math.round
@@ -8,14 +8,14 @@ import java.lang.Math.round
 class VelocityTrackerTest {
     @Test
     fun zeroVelocity() {
-        velocityFor() shouldEqual PositionF(0.0F, 0.0F)
+        velocityFor() shouldBe PositionF(0.0F, 0.0F)
         velocityFor(
                 Movement(4.0, 6.0, 0.01)
-        ) shouldEqual PositionF(0.0F, 0.0F)
+        ) shouldBe PositionF(0.0F, 0.0F)
         velocityFor(
                 Movement(4.0, 5.0, 0.02),
                 Movement(4.0, 5.0, 0.03)
-        ) shouldEqual PositionF(0.0F, 0.0F)
+        ) shouldBe PositionF(0.0F, 0.0F)
     }
 
     @Test
@@ -23,7 +23,7 @@ class VelocityTrackerTest {
         velocityFor(
                 Movement(8.0, 6.0, 0.04),
                 Movement(10.0, 7.0, 0.05)
-        ) shouldEqual PositionF(2.0F / 0.01F, 1.0F / 0.01F)
+        ) shouldBe PositionF(2.0F / 0.01F, 1.0F / 0.01F)
     }
 
     @Test
@@ -34,7 +34,7 @@ class VelocityTrackerTest {
                 Movement(6.0, 5.0, 0.03),
                 Movement(8.0, 6.0, 0.04),
                 Movement(10.0, 7.0, 0.05)
-        ) shouldEqual PositionF(2.0F / 0.01F, 1.0F / 0.01F)
+        ) shouldBe PositionF(2.0F / 0.01F, 1.0F / 0.01F)
     }
 
     @Test
@@ -45,7 +45,7 @@ class VelocityTrackerTest {
                 Movement(5.0, 4.0, 0.03),
                 Movement(8.0, 7.0, 0.04),
                 Movement(12.0, 11.0, 0.05)
-        ) shouldEqual PositionF(4.5F / 0.01F, 4.5F / 0.01F)
+        ) shouldBe PositionF(4.5F / 0.01F, 4.5F / 0.01F)
     }
 
     /**
@@ -60,7 +60,7 @@ class VelocityTrackerTest {
                 Movement(4.3, 4.7, 0.02),
                 Movement(7.1, 7.7, 0.03),
                 Movement(11.1, 9.9, 0.04)
-        ) shouldEqual PositionF(428.5F, 229.5F)
+        ) shouldBe PositionF(428.5F, 229.5F)
     }
 
     @Test
@@ -70,7 +70,7 @@ class VelocityTrackerTest {
                 Movement(10.0, 10.0, 0.02),
                 Movement(22.0, 22.0, 0.03),
                 Movement(24.0, 24.0, 0.13)
-        ) shouldEqual PositionF(2F / 0.1F, 2F / 0.1F)
+        ) shouldBe PositionF(2F / 0.1F, 2F / 0.1F)
     }
 
     fun velocityFor(vararg movements: Movement): PositionF {

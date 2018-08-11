@@ -30,3 +30,15 @@ infix fun <R, T> ReadWriteProperty<R, T>.afterSet(afterSet: (value: T) -> Unit):
         }
     }
 }
+
+fun <T> threadLocal() = object : ReadWriteProperty<Any?, T> {
+    private val value = ThreadLocal<T>()
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T = value.get()
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) = this.value.set(value)
+}
+
+fun <T> threadLocal(initial: T) = object : ReadWriteProperty<Any?, T> {
+    private val value = ThreadLocal<T>()
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T = value.get() ?: initial
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) = this.value.set(value)
+}

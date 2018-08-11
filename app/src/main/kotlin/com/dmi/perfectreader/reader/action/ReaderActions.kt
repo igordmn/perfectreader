@@ -1,33 +1,34 @@
 package com.dmi.perfectreader.reader.action
 
-import com.dmi.perfectreader.AppActivity
-import com.dmi.perfectreader.data.UserSettingKeys
-import com.dmi.perfectreader.data.UserSettingValues
-import com.dmi.perfectreader.data.UserSettings
-import com.dmi.perfectreader.data.scaleSettingValue
+import com.dmi.perfectreader.Main
 import com.dmi.perfectreader.book.Book
-import com.dmi.perfectreader.book.animation.PageScroller
+import com.dmi.perfectreader.book.page.PageScroller
 import com.dmi.perfectreader.reader.Reader
+import com.dmi.perfectreader.settings.Settings
+import com.dmi.perfectreader.settings.values.UserSettingValues
+import com.dmi.perfectreader.settings.values.chooseSettingValue
 import com.dmi.util.action.*
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.input.TouchArea
-import com.dmi.util.mainScheduler
-import com.dmi.util.setting.Settings
+import com.dmi.util.system.ApplicationWindow
+import kotlinx.coroutines.experimental.android.UI
 import java.lang.Math.abs
 import java.lang.Math.round
+import kotlin.reflect.KMutableProperty0
 
 class ReaderActions(
-        private val density: Float,
-        private val activity: AppActivity,
-        private val settings: UserSettings,
-        private val reader: Reader
+        private val main: Main,
+        private val window: ApplicationWindow,
+        private val reader: Reader,
+        private val density: Float = main.density,
+        private val settings: Settings = main.settings
 ) {
     private val book: Book get() = reader.book
 
     operator fun get(id: ReaderActionID): Action = when (id) {
         ReaderActionID.NONE -> NoneAction
         ReaderActionID.TOGGLE_MENU -> performAction { reader.toggleMenu() }
-        ReaderActionID.EXIT_ACTIVITY -> performAction { activity.finish() }
+        ReaderActionID.CLOSE_APPLICATION_WINDOW -> performAction { window.close() }
         ReaderActionID.GO_TO_LIBRARY_LAST -> NoneAction
         ReaderActionID.GO_TO_LIBRARY_FAVOURITE -> NoneAction
         ReaderActionID.GO_TO_LIBRARY_FILES -> NoneAction
@@ -52,16 +53,16 @@ class ReaderActions(
             lateinit var scroller: PageScroller
 
             override fun startScroll(area: TouchArea) = run { scroller = book.scroll() }
-            override fun scroll(delta: PositionF) = scroller.scroll(delta)
-            override fun endScroll(velocity: PositionF) = scroller.end(velocity)
+            override fun scroll(delta: PositionF) = scroller.scroll(-delta)
+            override fun endScroll(velocity: PositionF) = scroller.end(-velocity)
             override fun cancelScroll() = scroller.cancel()
         }
-        ReaderActionID.GO_NEXT_PAGE -> repeatAction { book.movePage(1) }
-        ReaderActionID.GO_PREVIOUS_PAGE -> repeatAction { book.movePage(-1) }
-        ReaderActionID.GO_NEXT_PAGE_WITHOUT_ANIMATION -> repeatAction { book.goPage(1) }
-        ReaderActionID.GO_PREVIOUS_PAGE_WITHOUT_ANIMATION -> repeatAction { book.goPage(-1) }
-        ReaderActionID.GO_NEXT_PAGE_10 -> performAction { book.movePage(10) }
-        ReaderActionID.GO_PREVIOUS_PAGE_10 -> performAction { book.movePage(-10) }
+        ReaderActionID.GO_NEXT_PAGE -> repeatAction { book.animateRelative(1) }
+        ReaderActionID.GO_PREVIOUS_PAGE -> repeatAction { book.animateRelative(-1) }
+        ReaderActionID.GO_NEXT_PAGE_WITHOUT_ANIMATION -> repeatAction { book.goRelative(1) }
+        ReaderActionID.GO_PREVIOUS_PAGE_WITHOUT_ANIMATION -> repeatAction { book.goRelative(-1) }
+        ReaderActionID.GO_NEXT_PAGE_10 -> performAction { book.animateRelative(10) }
+        ReaderActionID.GO_PREVIOUS_PAGE_10 -> performAction { book.animateRelative(-10) }
         ReaderActionID.GO_BOOK_BEGIN -> NoneAction
         ReaderActionID.GO_BOOK_END -> NoneAction
         ReaderActionID.GO_NEXT_CHAPTER -> NoneAction
@@ -69,8 +70,8 @@ class ReaderActions(
         ReaderActionID.GO_BACK_BY_HISTORY -> NoneAction
         ReaderActionID.GO_FORWARD_BY_HISTORY -> NoneAction
 
-        ReaderActionID.SELECT_WORD -> touchAction { book.startSelection(it.x, it.y) }
-        ReaderActionID.SELECT_WORD_AT_CENTER -> performAction { book.startSelectionAtCenter() }
+        ReaderActionID.SELECT_WORD -> touchAction { reader.selection = reader.selection(book.selections?.at(it.position)) }
+        ReaderActionID.SELECT_WORD_AT_CENTER -> performAction { reader.selection = reader.selection(book.selections?.center()) }
         ReaderActionID.TRANSLATE_WORD -> NoneAction
         ReaderActionID.SEARCH_WORD -> NoneAction
         ReaderActionID.WIKI_WORD -> NoneAction
@@ -82,49 +83,49 @@ class ReaderActions(
         ReaderActionID.TOGGLE_BOOK_CSS_ENABLED -> NoneAction
 
         ReaderActionID.CHANGE_PAGE_MARGINS -> NoneAction
-        ReaderActionID.CHANGE_TEXT_SIZE -> ChangeSettingAction(ReaderSettingActionID.TEXT_SIZE, UserSettingKeys.Format.textSizeDip, UserSettingValues.TEXT_SIZE)
-        ReaderActionID.CHANGE_TEXT_LINE_HEIGHT -> ChangeSettingAction(ReaderSettingActionID.TEXT_LINE_HEIGHT, UserSettingKeys.Format.lineHeightMultiplier, UserSettingValues.LINE_HEIGHT_MULTIPLIER)
-        ReaderActionID.CHANGE_TEXT_GAMMA -> ChangeSettingAction(ReaderSettingActionID.TEXT_GAMMA, UserSettingKeys.Format.pageTextGammaCorrection, UserSettingValues.GAMMA)
+        ReaderActionID.CHANGE_TEXT_SIZE -> ChangeSettingAction(ReaderSettingActionID.TEXT_SIZE, settings.format::textSizeDip, UserSettingValues.TEXT_SIZE)
+        ReaderActionID.CHANGE_TEXT_LINE_HEIGHT -> ChangeSettingAction(ReaderSettingActionID.TEXT_LINE_HEIGHT, settings.format::lineHeightMultiplier, UserSettingValues.LINE_HEIGHT_MULTIPLIER)
+        ReaderActionID.CHANGE_TEXT_GAMMA -> ChangeSettingAction(ReaderSettingActionID.TEXT_GAMMA, settings.format::pageGammaCorrection, UserSettingValues.GAMMA)
         ReaderActionID.CHANGE_TEXT_COLOR_GAMMA -> NoneAction
         ReaderActionID.CHANGE_TEXT_COLOR_CONTRAST -> NoneAction
         ReaderActionID.CHANGE_TEXT_COLOR_BRIGHTNESS -> NoneAction
-        ReaderActionID.CHANGE_TEXT_STROKE_WIDTH -> ChangeSettingAction(ReaderSettingActionID.TEXT_STROKE_WIDTH, UserSettingKeys.Format.textStrokeWidthDip, UserSettingValues.TEXT_STROKE_WIDTH)
-        ReaderActionID.CHANGE_TEXT_SCALE_X -> ChangeSettingAction(ReaderSettingActionID.TEXT_SCALE_X, UserSettingKeys.Format.textScaleX, UserSettingValues.TEXT_SCALE_X)
-        ReaderActionID.CHANGE_TEXT_LETTER_SPACING -> ChangeSettingAction(ReaderSettingActionID.TEXT_LETTER_SPACING, UserSettingKeys.Format.letterSpacingEm, UserSettingValues.TEXT_LETTER_SPACING)
+        ReaderActionID.CHANGE_TEXT_STROKE_WIDTH -> ChangeSettingAction(ReaderSettingActionID.TEXT_STROKE_WIDTH, settings.format::textStrokeWidthDip, UserSettingValues.TEXT_STROKE_WIDTH)
+        ReaderActionID.CHANGE_TEXT_SCALE_X -> ChangeSettingAction(ReaderSettingActionID.TEXT_SCALE_X, settings.format::textScaleX, UserSettingValues.TEXT_SCALE_X)
+        ReaderActionID.CHANGE_TEXT_LETTER_SPACING -> ChangeSettingAction(ReaderSettingActionID.TEXT_LETTER_SPACING, settings.format::letterSpacingEm, UserSettingValues.TEXT_LETTER_SPACING)
         ReaderActionID.CHANGE_SCREEN_BRIGHTNESS -> NoneAction
 
         ReaderActionID.INCREASE_PAGE_MARGINS -> NoneAction
-        ReaderActionID.INCREASE_TEXT_SIZE -> IncreaseSettingAction(ReaderSettingActionID.TEXT_SIZE, UserSettingKeys.Format.textSizeDip, UserSettingValues.TEXT_SIZE)
-        ReaderActionID.INCREASE_TEXT_LINE_HEIGHT -> IncreaseSettingAction(ReaderSettingActionID.TEXT_LINE_HEIGHT, UserSettingKeys.Format.lineHeightMultiplier, UserSettingValues.LINE_HEIGHT_MULTIPLIER)
-        ReaderActionID.INCREASE_TEXT_GAMMA -> IncreaseSettingAction(ReaderSettingActionID.TEXT_GAMMA, UserSettingKeys.Format.pageTextGammaCorrection, UserSettingValues.GAMMA)
+        ReaderActionID.INCREASE_TEXT_SIZE -> IncreaseSettingAction(ReaderSettingActionID.TEXT_SIZE, settings.format::textSizeDip, UserSettingValues.TEXT_SIZE)
+        ReaderActionID.INCREASE_TEXT_LINE_HEIGHT -> IncreaseSettingAction(ReaderSettingActionID.TEXT_LINE_HEIGHT, settings.format::lineHeightMultiplier, UserSettingValues.LINE_HEIGHT_MULTIPLIER)
+        ReaderActionID.INCREASE_TEXT_GAMMA -> IncreaseSettingAction(ReaderSettingActionID.TEXT_GAMMA, settings.format::pageGammaCorrection, UserSettingValues.GAMMA)
         ReaderActionID.INCREASE_TEXT_COLOR_GAMMA -> NoneAction
         ReaderActionID.INCREASE_TEXT_COLOR_CONTRAST -> NoneAction
         ReaderActionID.INCREASE_TEXT_COLOR_BRIGHTNESS -> NoneAction
-        ReaderActionID.INCREASE_TEXT_STROKE_WIDTH -> IncreaseSettingAction(ReaderSettingActionID.TEXT_STROKE_WIDTH, UserSettingKeys.Format.textStrokeWidthDip, UserSettingValues.TEXT_STROKE_WIDTH)
-        ReaderActionID.INCREASE_TEXT_SCALE_X -> IncreaseSettingAction(ReaderSettingActionID.TEXT_SCALE_X, UserSettingKeys.Format.textScaleX, UserSettingValues.TEXT_SCALE_X)
-        ReaderActionID.INCREASE_TEXT_LETTER_SPACING -> IncreaseSettingAction(ReaderSettingActionID.TEXT_LETTER_SPACING, UserSettingKeys.Format.letterSpacingEm, UserSettingValues.TEXT_LETTER_SPACING)
+        ReaderActionID.INCREASE_TEXT_STROKE_WIDTH -> IncreaseSettingAction(ReaderSettingActionID.TEXT_STROKE_WIDTH, settings.format::textStrokeWidthDip, UserSettingValues.TEXT_STROKE_WIDTH)
+        ReaderActionID.INCREASE_TEXT_SCALE_X -> IncreaseSettingAction(ReaderSettingActionID.TEXT_SCALE_X, settings.format::textScaleX, UserSettingValues.TEXT_SCALE_X)
+        ReaderActionID.INCREASE_TEXT_LETTER_SPACING -> IncreaseSettingAction(ReaderSettingActionID.TEXT_LETTER_SPACING, settings.format::letterSpacingEm, UserSettingValues.TEXT_LETTER_SPACING)
         ReaderActionID.INCREASE_SCREEN_BRIGHTNESS -> NoneAction
 
         ReaderActionID.DECREASE_PAGE_MARGINS -> NoneAction
-        ReaderActionID.DECREASE_TEXT_SIZE -> DecreaseSettingsAction(ReaderSettingActionID.TEXT_SIZE, UserSettingKeys.Format.textSizeDip, UserSettingValues.TEXT_SIZE)
-        ReaderActionID.DECREASE_TEXT_LINE_HEIGHT -> DecreaseSettingsAction(ReaderSettingActionID.TEXT_LINE_HEIGHT, UserSettingKeys.Format.lineHeightMultiplier, UserSettingValues.LINE_HEIGHT_MULTIPLIER)
-        ReaderActionID.DECREASE_TEXT_GAMMA -> DecreaseSettingsAction(ReaderSettingActionID.TEXT_GAMMA, UserSettingKeys.Format.pageTextGammaCorrection, UserSettingValues.GAMMA)
+        ReaderActionID.DECREASE_TEXT_SIZE -> DecreaseSettingsAction(ReaderSettingActionID.TEXT_SIZE, settings.format::textSizeDip, UserSettingValues.TEXT_SIZE)
+        ReaderActionID.DECREASE_TEXT_LINE_HEIGHT -> DecreaseSettingsAction(ReaderSettingActionID.TEXT_LINE_HEIGHT, settings.format::lineHeightMultiplier, UserSettingValues.LINE_HEIGHT_MULTIPLIER)
+        ReaderActionID.DECREASE_TEXT_GAMMA -> DecreaseSettingsAction(ReaderSettingActionID.TEXT_GAMMA, settings.format::pageGammaCorrection, UserSettingValues.GAMMA)
         ReaderActionID.DECREASE_TEXT_COLOR_GAMMA -> NoneAction
         ReaderActionID.DECREASE_TEXT_COLOR_CONTRAST -> NoneAction
         ReaderActionID.DECREASE_TEXT_COLOR_BRIGHTNESS -> NoneAction
-        ReaderActionID.DECREASE_TEXT_STROKE_WIDTH -> DecreaseSettingsAction(ReaderSettingActionID.TEXT_STROKE_WIDTH, UserSettingKeys.Format.textStrokeWidthDip, UserSettingValues.TEXT_STROKE_WIDTH)
-        ReaderActionID.DECREASE_TEXT_SCALE_X -> DecreaseSettingsAction(ReaderSettingActionID.TEXT_SCALE_X, UserSettingKeys.Format.textScaleX, UserSettingValues.TEXT_SCALE_X)
-        ReaderActionID.DECREASE_TEXT_LETTER_SPACING -> DecreaseSettingsAction(ReaderSettingActionID.TEXT_LETTER_SPACING, UserSettingKeys.Format.letterSpacingEm, UserSettingValues.TEXT_LETTER_SPACING)
+        ReaderActionID.DECREASE_TEXT_STROKE_WIDTH -> DecreaseSettingsAction(ReaderSettingActionID.TEXT_STROKE_WIDTH, settings.format::textStrokeWidthDip, UserSettingValues.TEXT_STROKE_WIDTH)
+        ReaderActionID.DECREASE_TEXT_SCALE_X -> DecreaseSettingsAction(ReaderSettingActionID.TEXT_SCALE_X, settings.format::textScaleX, UserSettingValues.TEXT_SCALE_X)
+        ReaderActionID.DECREASE_TEXT_LETTER_SPACING -> DecreaseSettingsAction(ReaderSettingActionID.TEXT_LETTER_SPACING, settings.format::letterSpacingEm, UserSettingValues.TEXT_LETTER_SPACING)
         ReaderActionID.DECREASE_SCREEN_BRIGHTNESS -> NoneAction
     }
 
-    private fun repeatAction(action: () -> Unit) = object : RepeatAction(mainScheduler, periodMillis = 400) {
+    private fun repeatAction(action: () -> Unit) = object : RepeatAction(UI, periodMillis = 400) {
         override fun perform() = action()
     }
 
     private inner class ChangeSettingAction(
             private val id: ReaderSettingActionID,
-            private val key: Settings.FloatKey,
+            private val property: KMutableProperty0<Float>,
             private val values: FloatArray
     ) : Action {
         private val SENSITIVITY = 16F * density
@@ -141,7 +142,7 @@ class ReaderActions(
             if (abs(deltaFromLast) >= SENSITIVITY) {
                 val indexDelta: Int = round(deltaFromLast / SENSITIVITY)
                 deltaFromLast -= indexDelta * SENSITIVITY
-                setBookSetting(values, key, indexDelta)
+                setBookSetting(values, property, indexDelta)
                 showPopup()
             }
         }
@@ -150,19 +151,19 @@ class ReaderActions(
             reader.hideActionPopup()
         }
 
-        private fun showPopup() = reader.showActionPopup(id, settings[key])
+        private fun showPopup() = reader.showActionPopup(id, property.get())
     }
 
-    private inner abstract class DeltaSettingAction(
+    private abstract inner class DeltaSettingAction(
             private val id: ReaderSettingActionID,
-            private val key: Settings.FloatKey,
+            private val property: KMutableProperty0<Float>,
             private val values: FloatArray,
             private val offset: Int
-    ) : RepeatAction(mainScheduler, periodMillis = 200) {
+    ) : RepeatAction(UI, periodMillis = 200) {
         private var popupShowed = false
 
         override fun perform() {
-            setBookSetting(values, key, offset)
+            setBookSetting(values, property, offset)
             if (popupShowed)
                 showPopup()
         }
@@ -179,23 +180,22 @@ class ReaderActions(
             super.endTap()
         }
 
-        private fun showPopup() = reader.showActionPopup(id, settings[key])
+        private fun showPopup() = reader.showActionPopup(id, property.get())
     }
 
     private inner class IncreaseSettingAction(
-            id: ReaderSettingActionID, key: Settings.FloatKey, values: FloatArray
-    ) : DeltaSettingAction(id, key, values, 1)
+            id: ReaderSettingActionID, property: KMutableProperty0<Float>, values: FloatArray
+    ) : DeltaSettingAction(id, property, values, 1)
 
     private inner class DecreaseSettingsAction(
-            id: ReaderSettingActionID, key: Settings.FloatKey, values: FloatArray
-    ) : DeltaSettingAction(id, key, values, -1)
+            id: ReaderSettingActionID, property: KMutableProperty0<Float>, values: FloatArray
+    ) : DeltaSettingAction(id, property, values, -1)
 
-    private fun setBookSetting(values: FloatArray, key: Settings.FloatKey, offset: Int) {
-        val oldValue = settings[key]
-        val newValue = scaleSettingValue(values, oldValue, offset)
+    private fun setBookSetting(values: FloatArray, property: KMutableProperty0<Float>, offset: Int) {
+        val oldValue = property.get()
+        val newValue = chooseSettingValue(values, oldValue, offset)
         if (newValue != oldValue) {
-            settings[key] = newValue
-            book.reformat()
+            property.set(newValue)
         }
     }
 }

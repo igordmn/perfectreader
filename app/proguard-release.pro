@@ -1,3 +1,0 @@
--optimizations !class/merging/horizontal
--optimizationpasses 7
--allowaccessmodification

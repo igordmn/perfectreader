@@ -1,38 +1,42 @@
 package com.dmi.perfectreader.book.pagination.column
 
-import com.dmi.perfectreader.book.location.LocatedSequence
-import com.dmi.perfectreader.book.location.Location
+import com.dmi.perfectreader.book.content.location.LocatedSequence
+import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.pagination.part.LayoutPart
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.withContext
 import com.dmi.util.collection.SequenceEntry as Entry
 
+fun LocatedSequence<LayoutPart>.columns(columnHeight: Float) = LayoutColumnSequence(this, columnHeight)
+
 class LayoutColumnSequence(
-        val partSequence: LocatedSequence<LayoutPart>,
-        val columnHeight: Float
+        private val partSequence: LocatedSequence<LayoutPart>,
+        private val columnHeight: Float
 ) : LocatedSequence<LayoutColumn> {
-    val LAST_COLUMN_MIN_HEIGHT = columnHeight / 2
+    private val lastColumnMinHeight = columnHeight / 2
 
-    override fun get(location: Location): Entry<LayoutColumn> = makeCurrent(partSequence[location])
+    override suspend fun get(location: Location): Entry<LayoutColumn> = makeCurrent(partSequence.get(location))
 
-    private fun makeCurrent(initialPart: Entry<LayoutPart>) = initialColumn(initialPart).addBottomParts().addTopPartsForLastColumn()
-    private fun makePrevious(initialPart: Entry<LayoutPart>) = initialColumn(initialPart).addTopParts().addBottomParts()
-    private fun makeNext(initialPart: Entry<LayoutPart>) = initialColumn(initialPart).addBottomParts()
+    private suspend fun makeCurrent(initialPart: Entry<LayoutPart>) = initialColumn(initialPart).addBottomParts().addTopPartsForLastColumn()
+    private suspend fun makePrevious(initialPart: Entry<LayoutPart>) = initialColumn(initialPart).addTopParts().addBottomParts()
+    private suspend fun makeNext(initialPart: Entry<LayoutPart>) = initialColumn(initialPart).addBottomParts()
 
     private fun initialColumn(part: Entry<LayoutPart>) = ColumnEntry(singlePartColumn(part.item), part, part)
 
-    private fun ColumnEntry.addTopParts() = addTopParts(columnHeight)
+    private suspend fun ColumnEntry.addTopParts() = addTopParts(columnHeight)
 
-    private fun ColumnEntry.addTopPartsForLastColumn() = if (!hasNext) {
-        addTopParts(LAST_COLUMN_MIN_HEIGHT)
+    private suspend fun ColumnEntry.addTopPartsForLastColumn() = if (!hasNext) {
+        addTopParts(lastColumnMinHeight)
     } else {
         this
     }
 
-    private fun ColumnEntry.addTopParts(maxHeight: Float): ColumnEntry {
+    private suspend fun ColumnEntry.addTopParts(maxHeight: Float): ColumnEntry = withContext(CommonPool) {
         var column = this
 
         var part = firstPart
         while (part.hasPrevious) {
-            part = part.previous
+            part = part.previous()
 
             val enlargedColumn = part mergeColumn column
 
@@ -43,15 +47,15 @@ class LayoutColumnSequence(
             }
         }
 
-        return column
+        column
     }
 
-    private fun ColumnEntry.addBottomParts(): ColumnEntry {
+    private suspend fun ColumnEntry.addBottomParts(): ColumnEntry = withContext(CommonPool) {
         var column = this
 
         var part = lastPart
         while (part.hasNext) {
-            part = part.next
+            part = part.next()
 
             val enlargedColumn = column mergePart part
 
@@ -62,7 +66,7 @@ class LayoutColumnSequence(
             }
         }
 
-        return column
+        column
     }
 
     private infix fun ColumnEntry.mergePart(part: Entry<LayoutPart>) = ColumnEntry(
@@ -78,17 +82,16 @@ class LayoutColumnSequence(
     )
 
     private inner class ColumnEntry(
-            val column: LayoutColumn,
+            override val item: LayoutColumn,
             val firstPart: Entry<LayoutPart>,
             val lastPart: Entry<LayoutPart>
     ) : Entry<LayoutColumn> {
-        override val item = column
         override val hasPrevious = firstPart.hasPrevious
         override val hasNext = lastPart.hasNext
 
-        override val previous: Entry<LayoutColumn> get() = makePrevious(firstPart.previous)
-        override val next: Entry<LayoutColumn> get() = makeNext(lastPart.next)
+        override suspend fun previous(): Entry<LayoutColumn> = makePrevious(firstPart.previous())
+        override suspend fun next(): Entry<LayoutColumn> = makeNext(lastPart.next())
 
-        val height = column.height
+        val height = item.height
     }
 }

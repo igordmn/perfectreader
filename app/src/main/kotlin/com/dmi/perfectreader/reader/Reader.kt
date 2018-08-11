@@ -1,54 +1,55 @@
 package com.dmi.perfectreader.reader
 
-import android.os.Bundle
+import android.net.Uri
+import com.dmi.perfectreader.Main
 import com.dmi.perfectreader.book.Book
+import com.dmi.perfectreader.book.book
+import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.control.Control
 import com.dmi.perfectreader.menu.Menu
 import com.dmi.perfectreader.reader.action.ReaderActions
 import com.dmi.perfectreader.reader.action.ReaderSettingActionID
 import com.dmi.perfectreader.selection.Selection
-import com.dmi.util.android.base.BaseViewModel
-import com.dmi.util.rx.rxObservable
-import rx.lang.kotlin.BehaviorSubject
+import com.dmi.util.scope.Scoped
+import com.dmi.util.system.ApplicationWindow
+
+suspend fun reader(main: Main, window: ApplicationWindow, uri: Uri): Reader {
+    val book = book(main, uri)
+    return Reader(main, window, book)
+}
 
 class Reader(
-        createBook: () -> Book,
-        createControl: (Reader) -> Control,
-        private val createSelection: (Reader) -> Selection,
-        private val createMenu: (Reader, close: () -> Unit) -> Menu,
-        createActions: (Reader) -> ReaderActions
-) : BaseViewModel() {
-    val selectionObservable = BehaviorSubject<Selection?>()
-    val menuObservable = BehaviorSubject<Menu?>()
-    val actionPopupObservable = BehaviorSubject<ActionPopupModel>()
+        private val main: Main,
+        window: ApplicationWindow,
+        book: Book
+) : Scoped by Scoped.Impl() {
+    val actions = ReaderActions(main, window, this)
+    val book: Book by scope.disposable(book)
+    val control: Control = Control(main, this)
+    var selection: Selection? by scope.value(null)
+    var menu: Menu? by scope.value(null)
 
-    val actions = createActions(this)
-
-    val book = initChild(createBook())
-    val control = initChild(createControl(this))
-    var selection: Selection?  by rxObservable(null, selectionObservable)
-    var menu: Menu? by rxObservable(null, menuObservable)
-
-    var menuIsOpened: Boolean by saveState(false)
-        private set
-    var actionPopup: ActionPopupModel by rxObservable(ActionPopupModel.INVISIBLE, actionPopupObservable)
-        private set
-
-    init {
-        subscribe(book.isSelectedObservable) {
-            selection = addOrRemoveChild(it, selection) { createSelection(this) }
+    fun selection(range: LocationRange?): Selection? = if (range != null) {
+        val deselect = {
+            selection = null
         }
+        Selection(main, book, range, deselect)
+    } else {
+        null
     }
 
-    override fun restore(state: Bundle) {
-        super.restore(state)
-        if (menuIsOpened)
-            menu = initChild(initMenu())
-    }
+    var actionPopup: ActionPopupModel by scope.value(ActionPopupModel.INVISIBLE)
+        private set
 
     fun toggleMenu() {
-        menu = toggleChild(menu, initMenu)
-        menuIsOpened = menu != null
+        menu = if (menu == null) menu() else null
+    }
+
+    private fun menu(): Menu {
+        val closeMenu = {
+            menu = null
+        }
+        return Menu(book, closeMenu)
     }
 
     fun showActionPopup(id: ReaderSettingActionID, value: Any) {
@@ -58,13 +59,6 @@ class Reader(
     fun hideActionPopup() {
         actionPopup = ActionPopupModel.INVISIBLE
     }
-
-    private val closeMenu = {
-        require(menuIsOpened)  // todo срабатывает exception
-        toggleMenu()
-    }
-
-    private val initMenu = { createMenu(this, closeMenu) }
 
     class ActionPopupModel(val isVisible: Boolean, val id: ReaderSettingActionID, val value: Any) {
         companion object {

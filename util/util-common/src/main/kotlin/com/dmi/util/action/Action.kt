@@ -1,10 +1,11 @@
 package com.dmi.util.action
 
-import com.dmi.util.ext.repeat
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.input.TouchArea
-import rx.Scheduler
-import rx.Subscription
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
+import kotlin.coroutines.experimental.CoroutineContext
 
 interface Action {
     fun startScroll(area: TouchArea) = Unit
@@ -33,16 +34,22 @@ fun touchAction(touch: (area: TouchArea) -> Unit) = object : Action {
     override fun touch(area: TouchArea) = touch(area)
 }
 
-abstract class RepeatAction(private val scheduler: Scheduler, private val periodMillis: Long) : Action {
-    private var subscription: Subscription? = null
+abstract class RepeatAction(private val context: CoroutineContext, private val periodMillis: Long) : Action {
+    private var job: Job? = null
 
     override fun startTap() {
-        if (subscription == null)
-            subscription = repeat(periodMillis, scheduler) { perform() }
+        if (job == null) {
+            job = launch(context) {
+                while (true) {
+                    perform()
+                    delay(periodMillis)
+                }
+            }
+        }
     }
 
     override fun endTap() {
-        subscription?.unsubscribe()
-        subscription = null
+        job?.cancel()
+        job = null
     }
 }

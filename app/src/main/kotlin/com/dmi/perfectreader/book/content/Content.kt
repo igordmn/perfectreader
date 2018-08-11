@@ -1,31 +1,30 @@
 package com.dmi.perfectreader.book.content
 
+import com.dmi.perfectreader.book.content.location.LocatedSequence
+import com.dmi.perfectreader.book.content.location.Location
+import com.dmi.perfectreader.book.content.location.percentOf
+import com.dmi.perfectreader.book.content.location.sublocation
 import com.dmi.perfectreader.book.content.obj.ContentObject
-import com.dmi.perfectreader.book.location.LocatedSequence
-import com.dmi.perfectreader.book.location.Location
 import com.dmi.util.range.PercentRanges
+import com.dmi.util.range.globalPercent
 import com.dmi.util.range.indexOfNearestRange
+import com.dmi.util.range.localPercent
 import java.io.FileNotFoundException
 import java.util.*
 
 class Content private constructor(
-        private val objects: List<ContentObject>
+        private val objects: List<ContentObject>,
+        private val percentRanges: PercentRanges,
+        val length: Double,
+        val title: String = "Alice in wonderland",
+        val author: String = "Lewis Carroll"
 ) {
-    private val percentRanges = PercentRanges()
-    val length: Double
-
     init {
-        require(objects.size > 0)
-
-        var length = 0.0
-        objects.forEach {
-            percentRanges.add(it.length)
-            length += it.length
-        }
-        this.length = length
+        require(objects.isNotEmpty())
+        require(objects.size == percentRanges.size)
     }
 
-    val openResource = { path: String -> throw FileNotFoundException() }
+    val openResource = { _: String -> throw FileNotFoundException() }
 
     val sequence: LocatedSequence<ContentObject> = ContentObjectSequence(objects)
 
@@ -49,15 +48,15 @@ class Content private constructor(
 
     class Builder {
         private val objects = ArrayList<ContentObject>(1024)
+        private val percentRanges = PercentRanges()
+        private var length = 0.0
 
-        fun addObject(obj: ContentObject): Builder {
+        fun add(obj: ContentObject) {
             objects.add(obj)
-            return this
+            percentRanges.add(obj.length)
+            length += obj.length
         }
 
-        fun build(): Content {
-            require(objects.size > 0)
-            return Content(objects)
-        }
+        fun build() = Content(objects, percentRanges, length)
     }
 }

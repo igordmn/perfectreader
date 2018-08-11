@@ -33,27 +33,18 @@ android {
         debug {
             debuggable true
             jniDebuggable true
-            minifyEnabled true
+            minifyEnabled false
+            shrinkResources false
             signingConfig config['sign.enabled'] ? signingConfigs.main : null
-            proguardFiles 'proguard.pro', 'proguard-debug.pro'
-            testProguardFiles 'proguard.pro', 'proguard-debug.pro'
-            buildConfigField 'boolean', 'DEBUG_LEAKCANARY', config['debug.leakCanary'] ?: 'false'
-            buildConfigField 'boolean', 'DEBUG_BLOCKCANARY', config['debug.blockCanary'] ?: 'false'
-            buildConfigField 'int', 'DEBUG_BLOCKCANARY_LIMIT_MILLIS', config['debug.blockCanary.limitMillis'] ?: '500'
-            buildConfigField 'boolean', 'DEBUG_STRICTMODE', config['debug.strictMode'] ?: 'false'
-            buildConfigField 'boolean', 'DEBUG_SHOWRENDERFREEZES', config['debug.showRenderFreezes'] ?: 'false'
         }
         release {
+            debuggable false
+            jniDebuggable false
             minifyEnabled true
             shrinkResources true
             signingConfig config['sign.enabled'] ? signingConfigs.main : null
-            proguardFiles 'proguard.pro', 'proguard-release.pro'
-            testProguardFiles 'proguard.pro', 'proguard-release.pro'
-            buildConfigField 'boolean', 'DEBUG_LEAKCANARY', 'false'
-            buildConfigField 'boolean', 'DEBUG_BLOCKCANARY', 'false'
-            buildConfigField 'int', 'DEBUG_BLOCKCANARY_LIMIT_MILLIS', '500'
-            buildConfigField 'boolean', 'DEBUG_STRICTMODE', 'false'
-            buildConfigField 'boolean', 'DEBUG_SHOWRENDERFREEZES', 'false'
+            proguardFiles 'proguard.pro'
+            testProguardFiles 'proguard.pro'
         }
     }
 
@@ -79,18 +70,9 @@ android {
 
 dependencies {
     compile project(':util:util-common')
-    debugCompile project(path: ':util:util-android', configuration: 'debug')
-    releaseCompile project(path: ':util:util-android', configuration: 'release')
+    compile project(':util:util-android')
 
     compile 'com.github.Turbo87.hugo:hugo-annotations:1.2.2'
-
-    debugCompile 'com.github.moduth:blockcanary-android:1.2.1'
-    releaseCompile 'com.github.moduth:blockcanary-no-op:1.2.1'
-    testCompile 'com.github.moduth:blockcanary-no-op:1.2.1'
-
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
-    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
 
     androidTestCompile('com.android.support.test:runner:0.5') {
         exclude module: 'support-annotations'
@@ -102,4 +84,10 @@ dependencies {
     androidTestCompile project(':util:util-testCommon')
     testCompile project(':util:util-testCommon')
     testCompile 'junit:junit:4.12'
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }

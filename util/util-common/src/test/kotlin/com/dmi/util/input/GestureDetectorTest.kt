@@ -1,11 +1,11 @@
 package com.dmi.util.input
 
-import com.dmi.test.shouldEqual
+import com.dmi.test.shouldBe
 import com.dmi.util.graphic.PositionF
-import com.dmi.util.initTestPlatform
 import com.dmi.util.input.GestureDetector.*
 import com.dmi.util.lang.returnUnit
-import com.dmi.util.mainScheduler
+import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.test.TestCoroutineContext
 import org.junit.Test
 import java.lang.Math.round
 import java.util.*
@@ -15,10 +15,7 @@ private val DOUBLE_TAP_TIMEOUT_MILLIS = 20L
 private val LONG_TAP_TIMEOUT_MILLIS = 20L
 
 class GestureDetectorTest {
-    init {
-        initTestPlatform()
-    }
-
+    private val context = TestCoroutineContext()
 
     @Test
     fun `single tap without double tap enabled`() = testDetector(doubleTapEnabled = false) {
@@ -563,17 +560,19 @@ class GestureDetectorTest {
     fun TestArea.toTouchArea() = TouchArea(x.toFloat(), y.toFloat(), radius.toFloat())
     fun TouchArea.toTestArea() = area(round(x), round(y), round(radius))
 
-    fun testDetector(doubleTapEnabled: Boolean = true, test: DetectorTester.() -> Unit) {
-        val collector = ActionCollector()
-        val detector = GestureDetector(
-                mainScheduler,
-                collector,
-                doubleTapEnabled,
-                MAX_TAP_OFFSET,
-                LONG_TAP_TIMEOUT_MILLIS,
-                DOUBLE_TAP_TIMEOUT_MILLIS
-        )
-        DetectorTester(collector, detector).test()
+    fun testDetector(doubleTapEnabled: Boolean = true, test: suspend DetectorTester.() -> Unit) {
+        runBlocking(context) {
+            val collector = ActionCollector()
+            val detector = GestureDetector(
+                    context,
+                    collector,
+                    doubleTapEnabled,
+                    MAX_TAP_OFFSET,
+                    LONG_TAP_TIMEOUT_MILLIS,
+                    DOUBLE_TAP_TIMEOUT_MILLIS
+            )
+            DetectorTester(collector, detector).test()
+        }
     }
 
     inner class DetectorTester(val collector: ActionCollector, val detector: GestureDetector) {
@@ -602,14 +601,11 @@ class GestureDetectorTest {
         fun touchDown(millis: Long, vararg fingerAreas: TestArea) = touchEvent(TouchAction.DOWN, millis, *fingerAreas)
         fun touchUp(millis: Long, vararg fingerAreas: TestArea) = touchEvent(TouchAction.UP, millis, *fingerAreas)
 
-        fun cancel(): List<Action> =
-                collector.newActionsAfter { detector.cancel() }
+        fun cancel(): List<Action> = collector.newActionsAfter { detector.cancel() }
+        suspend fun sleep(millis: Long): List<Action> = collector.newActionsAfterSuspend { context.advanceTimeBy(millis) }
 
-        fun sleep(millis: Long): List<Action> =
-                collector.newActionsAfter { Thread.sleep(millis) }
-
-        infix fun List<Action>.leadsTo(action: Action) = this shouldEqual listOf(action)
-        infix fun List<Action>.leadsTo(actions: List<Action>) = this shouldEqual actions
+        infix fun List<Action>.leadsTo(action: Action) = this shouldBe listOf(action)
+        infix fun List<Action>.leadsTo(actions: List<Action>) = this shouldBe actions
 
         val nothing: List<Action> = emptyList()
     }
@@ -624,6 +620,7 @@ class GestureDetectorTest {
             }
 
         fun newActionsAfter(action: () -> Unit) = action().run { newActions }
+        suspend fun newActionsAfterSuspend(action: suspend () -> Unit) = action().run { newActions }
 
         override fun onSingleTap(fingerCount: FingerCount, focusArea: TouchArea) =
                 actions.add(OnSingleTap(fingerCount, focusArea.toTestArea())).returnUnit()

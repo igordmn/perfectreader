@@ -5,7 +5,7 @@ import com.dmi.perfectreader.book.layout.paragraph.breaker.Breaker
 import com.dmi.perfectreader.book.layout.paragraph.breaker.Breaks
 import com.dmi.perfectreader.book.layout.paragraph.breaker.NoneBreaks
 import com.dmi.perfectreader.book.layout.paragraph.liner.Liner.*
-import com.dmi.test.shouldEqual
+import com.dmi.test.shouldBe
 import org.junit.Test
 import java.lang.Character.isUpperCase
 import java.util.*
@@ -26,13 +26,13 @@ class BreakLinerTest {
         val lines = liner.makeLines(measuredText(text), config(300F))
 
         // then
-        tokenTextsOf(lines[0], text) shouldEqual listOf("single", "   ", "line")
+        tokenTextsOf(lines[0], text) shouldBe listOf("single", "   ", "line")
 
-        leftsOf(lines) shouldEqual listOf(0F)
-        widthsOf(lines) shouldEqual listOf(
+        leftsOf(lines) shouldBe listOf(0F)
+        widthsOf(lines) shouldBe listOf(
                 6 * SYMBOL_WIDTH + 3 * SPACE_WIDTH + 4 * SYMBOL_WIDTH
         )
-        hasHyphensAfterOf(lines) shouldEqual listOf(false)
+        hasHyphensAfterOf(lines) shouldBe listOf(false)
 
         checkSpaces(lines, text)
     }
@@ -50,17 +50,17 @@ class BreakLinerTest {
         val lines = liner.makeLines(measuredText(text), config(125F))
 
         // then
-        tokenTextsOf(lines[0], text) shouldEqual listOf("break", "   ", "simple", "  ")
-        tokenTextsOf(lines[1], text) shouldEqual listOf("text", " ", "into", " ")
-        tokenTextsOf(lines[2], text) shouldEqual listOf("three", " ", "lines", "  ")
+        tokenTextsOf(lines[0], text) shouldBe listOf("break", "   ", "simple", "  ")
+        tokenTextsOf(lines[1], text) shouldBe listOf("text", " ", "into", " ")
+        tokenTextsOf(lines[2], text) shouldBe listOf("three", " ", "lines", "  ")
 
-        leftsOf(lines) shouldEqual listOf(0F, 0F, 0F)
-        widthsOf(lines) shouldEqual listOf(
+        leftsOf(lines) shouldBe listOf(0F, 0F, 0F)
+        widthsOf(lines) shouldBe listOf(
                 5 * SYMBOL_WIDTH + 3 * SPACE_WIDTH + 6 * SYMBOL_WIDTH,
                 4 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 4 * SYMBOL_WIDTH,
                 5 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 5 * SYMBOL_WIDTH
         )
-        hasHyphensAfterOf(lines) shouldEqual listOf(false, false, false)
+        hasHyphensAfterOf(lines) shouldBe listOf(false, false, false)
 
         checkSpaces(lines, text)
     }
@@ -79,20 +79,20 @@ class BreakLinerTest {
         val lines = liner.makeLines(measuredText(text), config(80F))
 
         // then
-        tokenTextsOf(lines[0], text) shouldEqual listOf("brEak", " ", "be")
-        tokenTextsOf(lines[1], text) shouldEqual listOf("Tween", "  ")
-        tokenTextsOf(lines[2], text) shouldEqual listOf("woRds,", " ")
-        tokenTextsOf(lines[3], text) shouldEqual listOf("in", " ", "wo")
-        tokenTextsOf(lines[4], text) shouldEqual listOf("Rdswords")
+        tokenTextsOf(lines[0], text) shouldBe listOf("brEak", " ", "be")
+        tokenTextsOf(lines[1], text) shouldBe listOf("Tween", "  ")
+        tokenTextsOf(lines[2], text) shouldBe listOf("woRds,", " ")
+        tokenTextsOf(lines[3], text) shouldBe listOf("in", " ", "wo")
+        tokenTextsOf(lines[4], text) shouldBe listOf("Rdswords")
 
-        widthsOf(lines) shouldEqual listOf(
+        widthsOf(lines) shouldBe listOf(
                 5 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 2 * SYMBOL_WIDTH + HYPHEN_WIDTH,
                 5 * SYMBOL_WIDTH,
                 6 * SYMBOL_WIDTH,
                 2 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 2 * SYMBOL_WIDTH + HYPHEN_WIDTH,
                 8 * SYMBOL_WIDTH
         )
-        hasHyphensAfterOf(lines) shouldEqual listOf(
+        hasHyphensAfterOf(lines) shouldBe listOf(
                 true,
                 false,
                 false,
@@ -119,15 +119,15 @@ class BreakLinerTest {
         val lines = liner.makeLines(measuredText(text), config(50F))
 
         // then
-        tokenTextsOf(lines[0], text) shouldEqual listOf("longw")
-        tokenTextsOf(lines[1], text) shouldEqual listOf("ord")
-        tokenTextsOf(lines[2], text) shouldEqual listOf("Longw")
-        tokenTextsOf(lines[3], text) shouldEqual listOf("ordso")
-        tokenTextsOf(lines[4], text) shouldEqual listOf("long", " ")
-        tokenTextsOf(lines[5], text) shouldEqual listOf("longw")
-        tokenTextsOf(lines[6], text) shouldEqual listOf("ord")
+        tokenTextsOf(lines[0], text) shouldBe listOf("longw")
+        tokenTextsOf(lines[1], text) shouldBe listOf("ord")
+        tokenTextsOf(lines[2], text) shouldBe listOf("Longw")
+        tokenTextsOf(lines[3], text) shouldBe listOf("ordso")
+        tokenTextsOf(lines[4], text) shouldBe listOf("long", " ")
+        tokenTextsOf(lines[5], text) shouldBe listOf("longw")
+        tokenTextsOf(lines[6], text) shouldBe listOf("ord")
 
-        widthsOf(lines) shouldEqual listOf(
+        widthsOf(lines) shouldBe listOf(
                 5 * SYMBOL_WIDTH,
                 3 * SYMBOL_WIDTH + HYPHEN_WIDTH,
                 5 * SYMBOL_WIDTH,
@@ -136,7 +136,7 @@ class BreakLinerTest {
                 5 * SYMBOL_WIDTH,
                 3 * SYMBOL_WIDTH
         )
-        hasHyphensAfterOf(lines) shouldEqual listOf(
+        hasHyphensAfterOf(lines) shouldBe listOf(
                 false,
                 true,
                 false,
@@ -164,14 +164,14 @@ class BreakLinerTest {
         val lines = liner.makeLines(measuredText(text), config(50F))
 
         // then
-        tokenTextsOf(lines[0], text) shouldEqual listOf("longw")
-        tokenTextsOf(lines[1], text) shouldEqual listOf("ordlo")
-        tokenTextsOf(lines[2], text) shouldEqual listOf("ngwor")
-        tokenTextsOf(lines[3], text) shouldEqual listOf("dsolo")
-        tokenTextsOf(lines[4], text) shouldEqual listOf("nglon")
-        tokenTextsOf(lines[5], text) shouldEqual listOf("gword")
+        tokenTextsOf(lines[0], text) shouldBe listOf("longw")
+        tokenTextsOf(lines[1], text) shouldBe listOf("ordlo")
+        tokenTextsOf(lines[2], text) shouldBe listOf("ngwor")
+        tokenTextsOf(lines[3], text) shouldBe listOf("dsolo")
+        tokenTextsOf(lines[4], text) shouldBe listOf("nglon")
+        tokenTextsOf(lines[5], text) shouldBe listOf("gword")
 
-        widthsOf(lines) shouldEqual listOf(
+        widthsOf(lines) shouldBe listOf(
                 5 * SYMBOL_WIDTH,
                 5 * SYMBOL_WIDTH,
                 5 * SYMBOL_WIDTH,
@@ -179,7 +179,7 @@ class BreakLinerTest {
                 5 * SYMBOL_WIDTH,
                 5 * SYMBOL_WIDTH
         )
-        hasHyphensAfterOf(lines) shouldEqual listOf(
+        hasHyphensAfterOf(lines) shouldBe listOf(
                 false,
                 false,
                 false,
@@ -201,12 +201,12 @@ class BreakLinerTest {
         val lines = liner.makeLines(measuredText(text), config(85F))
 
         // then
-        tokenTextsOf(lines[0], text) shouldEqual listOf("text", "\u00A0", "with", "\u00A0 ")
-        tokenTextsOf(lines[1], text) shouldEqual listOf("non", "\u00A0", "break", "\u00A0")
-        tokenTextsOf(lines[2], text) shouldEqual listOf("ing", " ")  // break because long word
-        tokenTextsOf(lines[3], text) shouldEqual listOf("spaces", "\u00A0\u00A0")
+        tokenTextsOf(lines[0], text) shouldBe listOf("text", "\u00A0", "with", "\u00A0 ")
+        tokenTextsOf(lines[1], text) shouldBe listOf("non", "\u00A0", "break", "\u00A0")
+        tokenTextsOf(lines[2], text) shouldBe listOf("ing", " ")  // break because long word
+        tokenTextsOf(lines[3], text) shouldBe listOf("spaces", "\u00A0\u00A0")
 
-        widthsOf(lines) shouldEqual listOf(
+        widthsOf(lines) shouldBe listOf(
                 4 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 4 * SYMBOL_WIDTH,
                 3 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 5 * SYMBOL_WIDTH,
                 3 * SYMBOL_WIDTH,
@@ -229,16 +229,16 @@ class BreakLinerTest {
         val lines = liner.makeLines(measuredText(text), config(100F, 8F))
 
         // then
-        tokenTextsOf(lines[0], text) shouldEqual listOf("some", " ", "text", " ")
-        tokenTextsOf(lines[1], text) shouldEqual listOf("a", " ", "text", " ", "text", " ")
-        tokenTextsOf(lines[2], text) shouldEqual listOf("text")
+        tokenTextsOf(lines[0], text) shouldBe listOf("some", " ", "text", " ")
+        tokenTextsOf(lines[1], text) shouldBe listOf("a", " ", "text", " ", "text", " ")
+        tokenTextsOf(lines[2], text) shouldBe listOf("text")
 
-        widthsOf(lines) shouldEqual listOf(
+        widthsOf(lines) shouldBe listOf(
                 4 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 4 * SYMBOL_WIDTH,
                 1 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 4 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 4 * SYMBOL_WIDTH,
                 4 * SYMBOL_WIDTH
         )
-        leftsOf(lines) shouldEqual listOf(
+        leftsOf(lines) shouldBe listOf(
                 8F,
                 0F,
                 0F
@@ -269,16 +269,16 @@ class BreakLinerTest {
         )
 
         // then
-        tokenTextsOf(lines[0], text) shouldEqual listOf(" ", "(some", "     ", "(text)", "      ", "text)", " ")
-        tokenTextsOf(lines[1], text) shouldEqual listOf("(with", " ", "hyphenated", " ", "symbols),", " ")
-        tokenTextsOf(lines[2], text) shouldEqual listOf("\"hyphenated,", " ", "symbols\"")
+        tokenTextsOf(lines[0], text) shouldBe listOf(" ", "(some", "     ", "(text)", "      ", "text)", " ")
+        tokenTextsOf(lines[1], text) shouldBe listOf("(with", " ", "hyphenated", " ", "symbols),", " ")
+        tokenTextsOf(lines[2], text) shouldBe listOf("\"hyphenated,", " ", "symbols\"")
 
-        widthsOf(lines) shouldEqual listOf(
+        widthsOf(lines) shouldBe listOf(
                 1 * SPACE_WIDTH + 5 * SYMBOL_WIDTH + 5 * SPACE_WIDTH + 6 * SYMBOL_WIDTH + 6 * SPACE_WIDTH + 5 * SYMBOL_WIDTH - 1.0F * SYMBOL_WIDTH,
                 5 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 10 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 9 * SYMBOL_WIDTH - 0.5F * SYMBOL_WIDTH,
                 12 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 8 * SYMBOL_WIDTH - 0.5F * SYMBOL_WIDTH
         )
-        leftsOf(lines) shouldEqual listOf(
+        leftsOf(lines) shouldBe listOf(
                 8F,
                 -1.0F * SYMBOL_WIDTH,
                 0F - 0.5F * SYMBOL_WIDTH
@@ -302,14 +302,14 @@ class BreakLinerTest {
         )
 
         // then
-        tokenTextsOf(lines[0], text) shouldEqual listOf("brEak", " ", "wo")
-        tokenTextsOf(lines[1], text) shouldEqual listOf("Rd")
+        tokenTextsOf(lines[0], text) shouldBe listOf("brEak", " ", "wo")
+        tokenTextsOf(lines[1], text) shouldBe listOf("Rd")
 
-        widthsOf(lines) shouldEqual listOf(
+        widthsOf(lines) shouldBe listOf(
                 5 * SYMBOL_WIDTH + 1 * SPACE_WIDTH + 2 * SYMBOL_WIDTH + HYPHEN_WIDTH - 1.0F * HYPHEN_WIDTH,
                 2 * SYMBOL_WIDTH
         )
-        hasHyphensAfterOf(lines) shouldEqual listOf(
+        hasHyphensAfterOf(lines) shouldBe listOf(
                 true,
                 false
         )
@@ -334,24 +334,24 @@ class BreakLinerTest {
         )
 
         // then
-        tokenTextsOf(lines[0], text) shouldEqual listOf("s")
-        tokenTextsOf(lines[1], text) shouldEqual listOf("o")
-        tokenTextsOf(lines[2], text) shouldEqual listOf("M")
-        tokenTextsOf(lines[3], text) shouldEqual listOf("e", "  ")
-        tokenTextsOf(lines[4], text) shouldEqual listOf("t")
-        tokenTextsOf(lines[5], text) shouldEqual listOf("e")
-        tokenTextsOf(lines[6], text) shouldEqual listOf("X")
-        tokenTextsOf(lines[7], text) shouldEqual listOf("t")
-        tokenTextsOf(lines[8], text) shouldEqual listOf(",", "   ")
-        tokenTextsOf(lines[9], text) shouldEqual listOf("\"")
-        tokenTextsOf(lines[10], text) shouldEqual listOf("t")
-        tokenTextsOf(lines[11], text) shouldEqual listOf("e")
-        tokenTextsOf(lines[12], text) shouldEqual listOf("X")
-        tokenTextsOf(lines[13], text) shouldEqual listOf("t")
-        tokenTextsOf(lines[14], text) shouldEqual listOf("\"", "  ")
-        tokenTextsOf(lines[15], text) shouldEqual listOf("q", "  ")
+        tokenTextsOf(lines[0], text) shouldBe listOf("s")
+        tokenTextsOf(lines[1], text) shouldBe listOf("o")
+        tokenTextsOf(lines[2], text) shouldBe listOf("M")
+        tokenTextsOf(lines[3], text) shouldBe listOf("e", "  ")
+        tokenTextsOf(lines[4], text) shouldBe listOf("t")
+        tokenTextsOf(lines[5], text) shouldBe listOf("e")
+        tokenTextsOf(lines[6], text) shouldBe listOf("X")
+        tokenTextsOf(lines[7], text) shouldBe listOf("t")
+        tokenTextsOf(lines[8], text) shouldBe listOf(",", "   ")
+        tokenTextsOf(lines[9], text) shouldBe listOf("\"")
+        tokenTextsOf(lines[10], text) shouldBe listOf("t")
+        tokenTextsOf(lines[11], text) shouldBe listOf("e")
+        tokenTextsOf(lines[12], text) shouldBe listOf("X")
+        tokenTextsOf(lines[13], text) shouldBe listOf("t")
+        tokenTextsOf(lines[14], text) shouldBe listOf("\"", "  ")
+        tokenTextsOf(lines[15], text) shouldBe listOf("q", "  ")
 
-        widthsOf(lines) shouldEqual listOf(
+        widthsOf(lines) shouldBe listOf(
                 SYMBOL_WIDTH, /* s */
                 SYMBOL_WIDTH, /* o */
                 SYMBOL_WIDTH, /* M */
@@ -369,7 +369,7 @@ class BreakLinerTest {
                 SYMBOL_WIDTH - 0.5F * SYMBOL_WIDTH, /* "   */
                 SYMBOL_WIDTH  /* q   */
         )
-        leftsOf(lines) shouldEqual listOf(
+        leftsOf(lines) shouldBe listOf(
                 8F, /* s */
                 0F, /* o */
                 0F, /* m */
@@ -387,7 +387,7 @@ class BreakLinerTest {
                 -0.5F * SYMBOL_WIDTH, /* "   */
                 0F  /* q   */
         )
-        hasHyphensAfterOf(lines) shouldEqual listOf(
+        hasHyphensAfterOf(lines) shouldBe listOf(
                 false, /* s */
                 false, /* o */
                 false, /* m */
@@ -418,7 +418,7 @@ class BreakLinerTest {
         val lines = liner.makeLines(measuredText(""), config(300F))
 
         // then
-        lines.size shouldEqual 0
+        lines.size shouldBe 0
     }
 
     @Test
@@ -438,13 +438,13 @@ class BreakLinerTest {
         liner.makeLines(measuredText("text"), config(300F, hyphenation = false))
 
         // then
-        breaker.config.hyphenation shouldEqual false
+        breaker.config.hyphenation shouldBe false
 
         // when
         liner.makeLines(measuredText("text"), config(300F, hyphenation = true))
 
         // then
-        breaker.config.hyphenation shouldEqual true
+        breaker.config.hyphenation shouldBe true
     }
 
     fun checkSpaces(lines: List<Line>, text: String) {
@@ -452,7 +452,7 @@ class BreakLinerTest {
             for (token in line.tokens) {
                 val isSpace = isSpaceChar(text[token.beginIndex])
                 for (i in token.beginIndex..token.endIndex - 1) {
-                    isSpaceChar(text[token.beginIndex]) shouldEqual isSpace
+                    isSpaceChar(text[token.beginIndex]) shouldBe isSpace
                 }
             }
         }

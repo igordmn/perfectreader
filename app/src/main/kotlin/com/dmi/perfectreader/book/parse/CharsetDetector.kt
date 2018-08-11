@@ -1,11 +1,14 @@
 package com.dmi.perfectreader.book.parse
 
-import com.dmi.util.log
+import com.dmi.util.log.Log
 import com.google.common.io.ByteSource
 import org.mozilla.universalchardet.UniversalDetector
 import java.nio.charset.Charset
 
-class CharsetDetector(private val charsetConfig: ParseConfig.Charset) {
+class CharsetDetector(
+        private val log: Log,
+        private val charsetConfig: ParseConfig.Charset
+) {
     companion object {
         private val BUFFER = ByteArray(10000)
         private val mozillaDetector = UniversalDetector(null)

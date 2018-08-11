@@ -1,17 +1,17 @@
 package com.dmi.util.android.font
 
-import com.dmi.util.log
+import com.dmi.util.log.Log
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
 import java.io.File
 import java.util.*
 import javax.xml.parsers.SAXParserFactory
 
-fun androidSystemFontFiles(): Sequence<File> = try {
+fun androidSystemFontFiles(log: Log): Sequence<File> = try {
     parseFontFilesFromFontConfig(File("/system/fonts"), File("/etc/system_fonts.xml"))
 } catch (e: Exception) {
     log.e(e, "Cannot read system fonts")
-    emptySequence<File>()
+    emptySequence()
 }
 
 fun parseFontFilesFromFontConfig(fontsFolder: File, fontConfigFile: File): Sequence<File> {

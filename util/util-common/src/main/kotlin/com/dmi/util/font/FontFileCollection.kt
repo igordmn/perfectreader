@@ -1,17 +1,17 @@
 package com.dmi.util.font
 
 import com.dmi.util.collection.putIntoBegin
-import com.dmi.util.log
+import com.dmi.util.log.Log
 import java.io.File
 import java.util.*
 
-fun buildFontFileCollection(files: Sequence<File>): FontFileCollection {
+fun buildFontFileCollection(log: Log, files: Sequence<File>): FontFileCollection {
     val families = ArrayList<String>()
     val familyToStyles = HashMap<String, ArrayList<FontFileCollection.Style>>()
 
     for (file in files) {
         if (file.exists() && supportsFontFile(file)) {
-            val info: FontInfo? = safeParseInfo(file)
+            val info: FontInfo? = safeParseInfo(log, file)
             if (info != null) {
                 val normalizedFamily = info.familyName.trim()
                 val lowercaseFamily = normalizedFamily.toLowerCase()
@@ -24,7 +24,7 @@ fun buildFontFileCollection(files: Sequence<File>): FontFileCollection {
         }
     }
 
-    for ((family, styles) in familyToStyles) {
+    for ((_, styles) in familyToStyles) {
         var regularStyle: FontFileCollection.Style? = null
         var boldStyle: FontFileCollection.Style? = null
         var italicStyle: FontFileCollection.Style? = null
@@ -78,7 +78,7 @@ private fun supportsFontFile(file: File): Boolean {
     return ext == "ttf" || ext == "otf"
 }
 
-private fun safeParseInfo(file: File): FontInfo? = try {
+private fun safeParseInfo(log: Log, file: File): FontInfo? = try {
     parseFontInfo(file)
 } catch(e: Exception) {
     log.w("font file get info error. file: ${file.absolutePath}; error: ${e.message}")

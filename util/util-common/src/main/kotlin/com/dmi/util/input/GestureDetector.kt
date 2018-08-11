@@ -1,13 +1,15 @@
 package com.dmi.util.input
 
-import com.dmi.util.ext.delay
 import com.dmi.util.graphic.PositionF
-import rx.Scheduler
-import rx.subscriptions.CompositeSubscription
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
 import java.lang.Math.abs
+import kotlin.coroutines.experimental.CoroutineContext
 
+// todo cancel stateJob on dispose
 class GestureDetector(
-        private val scheduler: Scheduler,
+        private val context: CoroutineContext,
         private val listener: Listener,
         private val doubleTapEnabled: Boolean,
         private val tapMaxOffset: Float,
@@ -41,10 +43,11 @@ class GestureDetector(
 
     private var state: State = State.None
         private set(value) {
-            stateSubscriptions.clear()
+            stateJob.cancel()
+            stateJob = Job()
             field = value
         }
-    private val stateSubscriptions = CompositeSubscription()
+    private var stateJob = Job()
     private val velocityTracker = VelocityTracker()
     private var velocityTrackerFingerCount = 0
 
@@ -213,7 +216,12 @@ class GestureDetector(
         this.state = State.None
     }
 
-    private fun delay(millis: Long, action: () -> Unit) = stateSubscriptions.add(delay(millis, scheduler, action))
+    private fun delay(millis: Long, action: () -> Unit) {
+        launch(context, parent = stateJob) {
+            delay(millis)
+            action()
+        }
+    }
 
     fun cancel() {
         val state = state
@@ -233,7 +241,7 @@ class GestureDetector(
             return true
         val firstX = newState.fingers[0].x - oldState.fingers[0].x
         val firstY = newState.fingers[0].y - oldState.fingers[0].y
-        for (i in 1..newState.fingerCount - 1) {
+        for (i in 1 until newState.fingerCount) {
             val x = newState.fingers[i].x - oldState.fingers[i].x
             val y = newState.fingers[i].y - oldState.fingers[i].y
             val dot = firstX * x + firstY * y
@@ -242,9 +250,6 @@ class GestureDetector(
         }
         return true
     }
-
-    private fun recognizeDirection(oldArea: TouchArea, newArea: TouchArea) =
-            recognizeDirection(newArea.x - oldArea.x, newArea.y - oldArea.y)
 
     private fun recognizeDirection(vectorX: Float, vectorY: Float) = when {
         vectorX < 0 && abs(vectorX) > abs(vectorY) -> Direction.LEFT

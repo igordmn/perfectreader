@@ -1,36 +1,27 @@
 package com.dmi.perfectreader.control
 
+import com.dmi.perfectreader.Main
+import com.dmi.perfectreader.reader.Reader
 import com.dmi.perfectreader.reader.action.ReaderActions
-import com.dmi.util.android.base.BaseViewModel
+import com.dmi.perfectreader.settings.Settings
+import com.dmi.util.action.TouchActionPerformer
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.input.GestureDetector
 import com.dmi.util.input.HardKey
 import com.dmi.util.input.TouchEvent
-import com.dmi.util.setting.Settings
-import com.dmi.perfectreader.data.UserSettingKeys.Control as ControlKeys
-import com.dmi.perfectreader.data.UserSettingKeys.Format as FormatKeys
+import kotlinx.coroutines.experimental.android.UI
 
 class Control(
-        private val settings: Settings,
-        private val createGestureDetector: (SizeF) -> GestureDetector,
-        private val actions: ReaderActions
-) : BaseViewModel() {
-    private lateinit var size: SizeF
+        private val main: Main,
+        private val reader: Reader,
+        private val actions: ReaderActions = reader.actions,
+        private val settings: Settings = main.settings
+) {
     private var gestureDetector: GestureDetector? = null
 
-    override fun destroy() {
-        super.destroy()
-        gestureDetector?.cancel()
-    }
-
     fun resize(size: SizeF) {
-        this.size = size
-        reload()
-    }
-
-    fun reload() {
         gestureDetector?.cancel()
-        gestureDetector = createGestureDetector(size)
+        gestureDetector = gestureDetector(size, main, reader)
     }
 
     fun onTouchEvent(touchEvent: TouchEvent) = gestureDetector?.onTouchEvent(touchEvent)
@@ -38,7 +29,21 @@ class Control(
 
     fun onKeyDown(hardKey: HardKey) {
         gestureDetector?.cancel()
-        val actionID = settings[ControlKeys.HardKeys.SinglePress[hardKey]]
+        val actionID = settings.control.hardKeys.singlePress.property(hardKey).get()
         actions[actionID].perform()
     }
+}
+
+fun gestureDetector(size: SizeF, main: Main, reader: Reader): GestureDetector {
+    val settings = main.settings
+    val actionProvider = ReaderActionProvider(size, main.density, settings, reader)
+    val listener = TouchActionPerformer(actionProvider)
+    return GestureDetector(
+            UI,
+            listener,
+            settings.control.touches.doubleTapEnabled,
+            settings.control.touches.tapMaxOffset * main.density,
+            settings.control.touches.longTapTimeout,
+            settings.control.touches.doubleTapTimeout
+    )
 }
