@@ -9,7 +9,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.ViewContext
+import com.dmi.perfectreader.common.ViewContext
 import com.dmi.perfectreader.book.selection.BookSelections
 import com.dmi.util.android.base.*
 import com.dmi.util.android.widget.addHintOnLongClick

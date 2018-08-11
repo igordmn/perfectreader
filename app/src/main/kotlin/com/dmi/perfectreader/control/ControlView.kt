@@ -4,7 +4,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import com.dmi.perfectreader.ViewContext
+import com.dmi.perfectreader.common.ViewContext
 import com.dmi.util.android.base.BaseView
 import com.dmi.util.android.input.hardKeyFromKeyCode
 import com.dmi.util.android.input.performTouchEvents

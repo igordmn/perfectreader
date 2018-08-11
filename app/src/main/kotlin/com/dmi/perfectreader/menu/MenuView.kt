@@ -8,7 +8,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.ViewContext
+import com.dmi.perfectreader.common.ViewContext
 import com.dmi.util.android.base.BaseView
 import com.dmi.util.android.base.color
 import com.dmi.util.android.base.drawable

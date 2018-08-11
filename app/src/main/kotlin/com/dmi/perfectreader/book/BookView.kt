@@ -1,13 +1,13 @@
 package com.dmi.perfectreader.book
 
 import android.widget.FrameLayout
-import com.dmi.perfectreader.ViewContext
 import com.dmi.perfectreader.book.gl.GLBook
 import com.dmi.perfectreader.book.gl.GLBookModel
 import com.dmi.perfectreader.book.render.factory.FramePainter
 import com.dmi.perfectreader.book.render.factory.ImagePainter
 import com.dmi.perfectreader.book.render.factory.PageRenderer
 import com.dmi.perfectreader.book.render.factory.TextPainter
+import com.dmi.perfectreader.common.ViewContext
 import com.dmi.perfectreader.reader.Reader
 import com.dmi.util.android.base.BaseView
 import com.dmi.util.android.opengl.GLSurfaceScopedView

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.ViewContext
+import com.dmi.perfectreader.common.ViewContext
 import com.dmi.perfectreader.reader.ReaderLoader.LoadError
 import com.dmi.util.android.base.BaseView
 import com.dmi.util.android.base.find

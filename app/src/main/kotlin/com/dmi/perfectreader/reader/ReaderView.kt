@@ -2,7 +2,7 @@ package com.dmi.perfectreader.reader
 
 import android.view.ViewGroup
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.ViewContext
+import com.dmi.perfectreader.common.ViewContext
 import com.dmi.perfectreader.book.BookView
 import com.dmi.perfectreader.control.ControlView
 import com.dmi.perfectreader.menu.MenuView

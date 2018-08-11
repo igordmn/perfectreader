@@ -1,4 +1,4 @@
-package com.dmi.perfectreader
+package com.dmi.perfectreader.common
 
 import android.content.Context
 import com.dmi.perfectreader.Main

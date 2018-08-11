@@ -1,6 +1,7 @@
 package com.dmi.perfectreader
 
 import android.content.Intent
+import com.dmi.perfectreader.common.ViewContext
 import com.dmi.perfectreader.reader.ReaderLoader
 import com.dmi.perfectreader.reader.ReaderLoaderView
 import com.dmi.util.android.base.BaseActivity
