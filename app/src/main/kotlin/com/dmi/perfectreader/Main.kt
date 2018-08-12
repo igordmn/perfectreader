@@ -13,12 +13,13 @@ import com.dmi.util.io.FileURIHandler
 import com.dmi.util.io.ProtocolURIHandler
 import com.dmi.util.log.Log
 import com.dmi.util.system.Display
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.anko.displayMetrics
 
 class Main(val log: Log, val applicationContext: Context) {
     val databases = Databases(log, applicationContext)
     val userData = UserData(databases.default)
-    val settings = settings(databases.default)
+    val settings = runBlocking { settings(databases.default) }
     val protocols = Protocols()
     val fontCollectionCache = androidFontCollectionCache(log)
     val density = applicationContext.displayMetrics.density

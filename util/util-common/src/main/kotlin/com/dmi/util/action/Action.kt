@@ -2,10 +2,10 @@ package com.dmi.util.action
 
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.input.TouchArea
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 interface Action {
     fun startScroll(area: TouchArea) = Unit

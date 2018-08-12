@@ -2,14 +2,14 @@ package com.dmi.util.scope
 
 import com.dmi.util.coroutine.threadContext
 import com.dmi.util.lang.threadLocal
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.lang.Thread.currentThread
-import kotlin.coroutines.experimental.AbstractCoroutineContextElement
-import kotlin.coroutines.experimental.Continuation
-import kotlin.coroutines.experimental.ContinuationInterceptor
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.ContinuationInterceptor
+import kotlin.coroutines.CoroutineContext
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -258,8 +258,7 @@ class Scope : Disposable {
 
         private fun wrapContext(context: CoroutineContext): CoroutineContext {
             class WrapContinuation<T>(val cont: Continuation<T>) : Continuation<T> by cont {
-                override fun resume(value: T) = wrapBlock { cont.resume(value) }
-                override fun resumeWithException(exception: Throwable) = cont.resumeWithException(exception)
+                override fun resumeWith(result: SuccessOrFailure<T>) = wrapBlock { cont.resumeWith(result) }
             }
 
             return context + object : AbstractCoroutineContextElement(ContinuationInterceptor), ContinuationInterceptor {
@@ -272,7 +271,7 @@ class Scope : Disposable {
 
         private var job = job()
 
-        private fun job() = kotlinx.coroutines.experimental.launch(wrapContext(context)) {
+        private fun job() = kotlinx.coroutines.launch(wrapContext(context)) {
             require(currentThread() == thread)
             if (value != null)
                 value?.let(dispose)

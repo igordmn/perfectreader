@@ -7,9 +7,8 @@ import com.dmi.util.persist.ValueStore
 import com.dmi.util.persist.group
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
-import kotlinx.coroutines.experimental.runBlocking
 
-fun settings(userDatabase: SQLiteDatabase): Settings = runBlocking {
+suspend fun settings(userDatabase: SQLiteDatabase): Settings {
     val scope = Scope()
     val store = DBValueStore(userDatabase,
             DBValueStore.Schema(
@@ -21,7 +20,7 @@ fun settings(userDatabase: SQLiteDatabase): Settings = runBlocking {
     )
     val settings = Settings(ScopedValueStore(scope, store), scope)
     store.load()
-    settings
+    return settings
 }
 
 class Settings(store: ValueStore, scope: Scope) : Disposable by scope {

@@ -3,8 +3,9 @@ package com.dmi.util.android.system
 import android.view.Choreographer
 import com.dmi.util.system.Display
 import com.dmi.util.system.Nanos
-import kotlinx.coroutines.experimental.suspendCancellableCoroutine
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.lang.System.nanoTime
+import kotlin.coroutines.resume
 import kotlin.math.max
 
 object AndroidDisplay : Display {

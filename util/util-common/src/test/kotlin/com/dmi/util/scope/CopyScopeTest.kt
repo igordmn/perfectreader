@@ -2,10 +2,10 @@ package com.dmi.util.scope
 
 import com.dmi.test.shouldBe
 import com.dmi.util.scope.Scope.Companion.onchange
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.newSingleThreadContext
-import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.coroutines.experimental.yield
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 

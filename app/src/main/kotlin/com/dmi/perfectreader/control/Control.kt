@@ -9,7 +9,7 @@ import com.dmi.util.graphic.SizeF
 import com.dmi.util.input.GestureDetector
 import com.dmi.util.input.HardKey
 import com.dmi.util.input.TouchEvent
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.android.UI
 
 class Control(
         private val main: Main,

@@ -1,8 +1,8 @@
 package com.dmi.util.coroutine
 
 import com.dmi.util.lang.threadLocal
-import kotlinx.coroutines.experimental.newSingleThreadContext
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlinx.coroutines.newSingleThreadContext
+import kotlin.coroutines.CoroutineContext
 
 val IOPool = newSingleThreadContext("IO")
 

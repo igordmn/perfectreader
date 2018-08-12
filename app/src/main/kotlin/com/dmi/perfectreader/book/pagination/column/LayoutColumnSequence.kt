@@ -3,8 +3,8 @@ package com.dmi.perfectreader.book.pagination.column
 import com.dmi.perfectreader.book.content.location.LocatedSequence
 import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.pagination.part.LayoutPart
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.withContext
 import com.dmi.util.collection.SequenceEntry as Entry
 
 fun LocatedSequence<LayoutPart>.columns(columnHeight: Float) = LayoutColumnSequence(this, columnHeight)

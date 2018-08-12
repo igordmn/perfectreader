@@ -11,7 +11,7 @@ import com.dmi.util.action.*
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.input.TouchArea
 import com.dmi.util.system.ApplicationWindow
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.android.UI
 import java.lang.Math.abs
 import java.lang.Math.round
 import kotlin.reflect.KMutableProperty0

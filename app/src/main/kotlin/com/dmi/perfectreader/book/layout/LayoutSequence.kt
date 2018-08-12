@@ -6,8 +6,8 @@ import com.dmi.perfectreader.book.content.obj.ConfiguredObject
 import com.dmi.perfectreader.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
 import com.dmi.util.graphic.SizeF
-import kotlinx.coroutines.experimental.newSingleThreadContext
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.withContext
 import com.dmi.util.collection.SequenceEntry as Entry
 
 /**

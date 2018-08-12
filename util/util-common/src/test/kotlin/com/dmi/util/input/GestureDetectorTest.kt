@@ -4,8 +4,8 @@ import com.dmi.test.shouldBe
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.input.GestureDetector.*
 import com.dmi.util.lang.returnUnit
-import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.coroutines.experimental.test.TestCoroutineContext
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineContext
 import org.junit.Test
 import java.lang.Math.round
 import java.util.*

@@ -8,8 +8,8 @@ import com.dmi.util.coroutine.IOPool
 import com.dmi.util.lang.Enums
 import com.dmi.util.lang.unsupported
 import com.dmi.util.persist.ValueStore
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.db.replace
 import org.jetbrains.anko.db.select
 

@@ -1,11 +1,11 @@
 package com.dmi.util.input
 
 import com.dmi.util.graphic.PositionF
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.lang.Math.abs
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.CoroutineContext
 
 // todo cancel stateJob on dispose
 class GestureDetector(

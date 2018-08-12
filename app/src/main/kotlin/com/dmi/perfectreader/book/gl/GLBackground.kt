@@ -9,8 +9,8 @@ import com.dmi.util.android.opengl.GLTexture
 import com.dmi.util.graphic.Size
 import com.dmi.util.io.ProtocolURIHandler
 import com.dmi.util.scope.Scope
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.withContext
 
 suspend fun glBackground(
         size: Size,

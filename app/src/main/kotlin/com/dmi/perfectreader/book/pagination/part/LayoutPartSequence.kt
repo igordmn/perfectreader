@@ -4,8 +4,8 @@ import com.dmi.perfectreader.book.content.location.LocatedSequence
 import com.dmi.perfectreader.book.content.location.flatMap
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
 import com.dmi.util.range.indexOfNearestRange
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.withContext
 import com.dmi.util.collection.SequenceEntry as Entry
 
 fun LocatedSequence<LayoutObject>.parts() = flatMap(

@@ -11,9 +11,9 @@ import com.dmi.util.scope.EmittableEvent
 import com.dmi.util.system.Display
 import com.dmi.util.system.Nanos
 import com.dmi.util.system.toSeconds
-import kotlinx.coroutines.experimental.newSingleThreadContext
-import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.coroutines.experimental.yield
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
 import org.junit.Test
 
 class AnimatedPagesTest {

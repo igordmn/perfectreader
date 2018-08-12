@@ -11,10 +11,10 @@ import com.dmi.util.android.opengl.GLTexture
 import com.dmi.util.graphic.Color
 import com.dmi.util.graphic.Rect
 import com.dmi.util.graphic.Size
-import kotlinx.coroutines.experimental.newSingleThreadContext
-import kotlinx.coroutines.experimental.sync.Mutex
-import kotlinx.coroutines.experimental.sync.withLock
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 
 private val pageDrawContext = newSingleThreadContext("pageDraw")
 

@@ -5,8 +5,8 @@ import android.net.Uri
 import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.util.android.ext.execQuery
 import com.dmi.util.coroutine.IOPool
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.db.DoubleParser
 import org.jetbrains.anko.db.StringParser
 import org.jetbrains.anko.db.parseOpt

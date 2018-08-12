@@ -11,8 +11,8 @@ import com.dmi.perfectreader.book.content.obj.param.FormatConfig
 import com.dmi.util.collection.ListSequenceEntry
 import com.dmi.util.ext.cache
 import com.dmi.util.range.indexOfNearestRange
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.withContext
 
 fun LocatedSequence<ContentObject>.configure(config: FormatConfig) = map {
     withContext(CommonPool) {

@@ -1,7 +1,8 @@
 package com.dmi.util.scope
 
 import com.dmi.util.collection.LinkedCache
-import kotlinx.coroutines.experimental.suspendCancellableCoroutine
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 interface Event {
     /**

@@ -12,9 +12,9 @@ import com.dmi.util.lang.intRound
 import com.dmi.util.lang.max
 import com.dmi.util.lang.min
 import com.dmi.util.scope.EmittableEvent
-import kotlinx.coroutines.experimental.newSingleThreadContext
-import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.coroutines.experimental.yield
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
 import org.junit.Test
 
 class LoadingPagesTest {

@@ -2,7 +2,7 @@ package com.dmi.perfectreader.book.content
 
 import com.dmi.perfectreader.book.content.location.*
 import com.dmi.perfectreader.book.content.obj.ContentParagraph
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.anko.collections.forEachReversedWithIndex
 import org.jetbrains.anko.collections.forEachWithIndex
 

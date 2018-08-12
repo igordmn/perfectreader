@@ -10,7 +10,7 @@ import com.dmi.util.io.ProtocolURIHandler
 import com.dmi.util.io.getChild
 import com.dmi.util.io.parseDOM
 import com.dmi.util.scope.Scoped
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.withContext
 import java.net.URI
 
 suspend fun glPageAnimation(uriHandler: ProtocolURIHandler, uri: URI, size: Size): GLPageAnimation {

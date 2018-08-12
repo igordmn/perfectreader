@@ -12,16 +12,16 @@ import com.dmi.util.log.Log
 import com.dmi.util.scope.CopyScope
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope.Companion.onchange
-import kotlinx.coroutines.experimental.CoroutineDispatcher
-import kotlinx.coroutines.experimental.Runnable
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.android.UI
+import kotlinx.coroutines.runBlocking
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.egl.EGLContext
 import javax.microedition.khronos.egl.EGLDisplay
 import javax.microedition.khronos.opengles.GL10
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.CoroutineContext
 
 @SuppressLint("ViewConstructor")
 class GLSurfaceScopedView(
