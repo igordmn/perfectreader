@@ -1,6 +1,7 @@
 package com.dmi.util.android.opengl
 
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.opengl.GLES20.*
 import com.google.common.io.CharStreams.toString
 import java.nio.ByteBuffer
@@ -126,3 +127,8 @@ fun getEGLErrorString(error: Int) = when (error) {
     EGL11.EGL_CONTEXT_LOST -> "EGL_CONTEXT_LOST"
     else -> "0x" + Integer.toHexString(error)
 }
+
+external fun texSubImage2D(
+        target: Int, level: Int, xoffset: Int, yoffset: Int,
+        bitmap: Bitmap, bitmapX: Int, bitmapY: Int, bitmapWidth: Int, bitmapHeight: Int
+)

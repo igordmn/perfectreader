@@ -8,6 +8,31 @@ android {
     defaultConfig {
         minSdkVersion projectVersions.minSdk
         targetSdkVersion projectVersions.targetSdk
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_static"
+                cppFlags.addAll('-std=c++14', '-Wall', '-Wno-unknown-pragmas')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            externalNativeBuild {
+                cmake {
+                    cppFlags.addAll('-ffunction-sections', '-fdata-sections', '-fvisibility=hidden', '-O2', '-Wl,--gc-sections')
+                }
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
     }
 
     sourceSets {
@@ -23,7 +48,6 @@ configurations {
 
 dependencies {
     compile project(':util:util-common')
-    compile project(':util:util-androidNdk')
     compile "com.android.support:appcompat-v7:$projectVersions.supportLibrary"
     compile "com.android.support:cardview-v7:$projectVersions.supportLibrary"
     compile "com.android.support:recyclerview-v7:$projectVersions.supportLibrary"

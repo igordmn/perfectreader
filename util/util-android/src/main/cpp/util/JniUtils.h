@@ -59,6 +59,6 @@ namespace dmi {
         std::string toUTF8String(JNIEnv *env, jstring jstr);
         jstring toJavaString(JNIEnv *env, std::string utf8str);
         jstring toJavaString(JNIEnv *env, const char *cstr);
-        std::string getJavaStackTrace(JNIEnv *env);
+        std::string javaStackTrace(JNIEnv *env);
     };
 }

@@ -8,7 +8,6 @@ buildscript {
                 kotlin                   : '1.2.51',
                 buildTools               : '28-rc1',
                 androidPlugin            : '3.0.0',
-                androidExperimentalPlugin: '0.11.0',
                 minSdk                   : 21,
                 targetSdk                : 27,
                 compileSdk               : 27,
@@ -27,19 +26,12 @@ buildscript {
             maven { url 'https://jitpack.io' }
             flatDir { dirs new File(projectDir, 'libs') }
         }
-
-        projectAbi = config['abis']?.split(',') ?: [
-                'armeabi-v7a',
-                'x86',
-                'mips'
-        ]
     }
 
     repositories projectRepositories
 
     dependencies {
         classpath "com.android.tools.build:gradle:$projectVersions.androidPlugin"
-        classpath "com.android.tools.build:gradle-experimental:$projectVersions.androidExperimentalPlugin"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$projectVersions.kotlin"
         classpath 'com.github.Turbo87.hugo:hugo-plugin:1.2.2'
     }

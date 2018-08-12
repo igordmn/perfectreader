@@ -41,7 +41,7 @@ namespace {
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_dmi_util_android_graphics_CorrectGamma_correctAlphaGamma(
+Java_com_dmi_util_android_graphics_CorrectGammaKt_correctAlphaGamma(
         JNIEnv *env, jclass, jobject jBitmap, jint x, jint y, jint width, jint height, float gamma
 ) {
     AndroidBitmapInfo info;

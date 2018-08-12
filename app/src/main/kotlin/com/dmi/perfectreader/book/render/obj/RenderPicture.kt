@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.book.render.obj
 
 import android.graphics.*
-import com.dmi.util.android.graphics.CorrectGamma.correctAlphaGamma
+import com.dmi.util.android.graphics.correctAlphaGamma
 import java.lang.ref.WeakReference
 
 private var bufferRef = WeakReference<Bitmap>(null)

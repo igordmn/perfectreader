@@ -5,7 +5,7 @@ namespace {
     JavaVM *javaVM = 0;
 
     jclass jniUtilsCls;
-    jmethodID getCurrentStackTraceMethod;
+    jmethodID currentStackTraceMethod;
 }
 
 namespace dmi {
@@ -15,8 +15,8 @@ namespace dmi {
         JNIScope scope;
         JNIEnv *env = scope.env();
 
-        jniUtilsCls = (jclass) env->NewGlobalRef(env->FindClass("com/dmi/util/android/jni/JniUtils"));
-        getCurrentStackTraceMethod = env->GetStaticMethodID(jniUtilsCls, "getCurrentStackTrace", "()Ljava/lang/String;");
+        jniUtilsCls = (jclass) env->NewGlobalRef(env->FindClass("com/dmi/util/android/jni/JniUtilsKt"));
+        currentStackTraceMethod = env->GetStaticMethodID(jniUtilsCls, "currentStackTrace", "()Ljava/lang/String;");
     }
 
     JNIScope::JNIScope() {
@@ -44,8 +44,8 @@ namespace dmi {
             return env->NewStringUTF(cstr);
         }
 
-        std::string getJavaStackTrace(JNIEnv *env) {
-            return toUTF8String(env, (jstring) env->CallStaticObjectMethod(jniUtilsCls, getCurrentStackTraceMethod));
+        std::string javaStackTrace(JNIEnv *env) {
+            return toUTF8String(env, (jstring) env->CallStaticObjectMethod(jniUtilsCls, currentStackTraceMethod));
         }
     }
 }

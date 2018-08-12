@@ -3,7 +3,6 @@ package com.dmi.util.android.opengl
 import android.graphics.Bitmap
 import android.opengl.GLES20.*
 import android.opengl.GLUtils.texSubImage2D
-import com.dmi.util.android.opengl.OpenGL.texSubImage2D
 import com.dmi.util.graphic.Rect
 import com.dmi.util.graphic.Size
 import com.dmi.util.lang.clamp

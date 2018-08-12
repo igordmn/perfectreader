@@ -1,4 +1,3 @@
 rootProject.name = 'perfectreader'
 
-include ':util:util-common', 'util:util-android', 'util:util-androidNdk', 'util:util-testCommon',
-        ':app'
+include ':util:util-common', 'util:util-android', 'util:util-testCommon', ':app'

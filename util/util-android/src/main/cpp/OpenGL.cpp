@@ -4,7 +4,7 @@
 #include "GLES2/gl2.h"
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_dmi_util_android_opengl_OpenGL_texSubImage2D(
+Java_com_dmi_util_android_opengl_GLUtilsKt_texSubImage2D(
         JNIEnv *env, jclass, jint target, jint level, jint xoffset, jint yoffset,
         jobject bitmap, jint bitmapX, jint bitmapY, jint bitmapWidth, jint bitmapHeight
 ) {

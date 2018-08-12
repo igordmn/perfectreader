@@ -19,12 +19,10 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         System.loadLibrary("utilAndroid")
-
         val log = initLog()
         initMainExceptionCatcher(log)
         initStrictMode()
         initThreadContext(UI)
-
         main = Main(log, this)
     }
 
