@@ -65,6 +65,12 @@ android {
     defaultConfig {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    testOptions {
+        unitTests.all {
+            systemProperty "kotlinx.coroutines.blocking.checker", "disable"
+        }
+    }
 }
 
 dependencies {

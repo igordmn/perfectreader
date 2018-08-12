@@ -432,18 +432,18 @@ class ScopeTest {
 
         yield()
         nested!!.v3 shouldBe 2
-        nested.x shouldBe 3
+        nested!!.x shouldBe 3
 
-        nested.v3 = 3
-        nested.v3 shouldBe 3
-        nested.x shouldBe 3
-
-        yield()
-        nested.v3 shouldBe 3
-        nested.x shouldBe 3
+        nested!!.v3 = 3
+        nested!!.v3 shouldBe 3
+        nested!!.x shouldBe 3
 
         yield()
-        nested.v3 shouldBe 3
-        nested.x shouldBe 3
+        nested!!.v3 shouldBe 3
+        nested!!.x shouldBe 3
+
+        yield()
+        nested!!.v3 shouldBe 3
+        nested!!.x shouldBe 3
     }
 }
