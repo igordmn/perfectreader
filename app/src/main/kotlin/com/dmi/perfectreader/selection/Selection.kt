@@ -10,7 +10,6 @@ import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.graphic.Position
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.graphic.Size
-import com.dmi.util.scope.EmittableEvent
 import com.dmi.util.scope.Scoped
 import java.lang.Math.max
 import java.lang.Math.min
@@ -22,7 +21,7 @@ class Selection(
         private val deselect: () -> Unit,
         dip2px: (Float) -> Float = main.dip2px,
         private val settings: Settings = main.settings,
-        private val copyPlainText: (String) -> Unit = main.copyPlainText
+        private val textActions: TextActions = TextActions(main)
 ) : Scoped by Scoped.Impl() {
     private val bottomActionsOffset = dip2px(24F)
 
@@ -42,7 +41,8 @@ class Selection(
     }
 
     val actionsIsVisible: Boolean get() = !isSelecting && handles.isPositioned
-    val onSelectionCopiedToClipboard = EmittableEvent()
+
+    private val selectedText get() = book.text.plain(range)
 
     fun actionsPosition(actionsContainerSize: Size, actionsSize: Size): Position {
         val handles = handles
@@ -93,9 +93,12 @@ class Selection(
     }
 
     fun copySelectedText() {
-        val plainText = book.text.plain(range)
-        copyPlainText(plainText)
-        onSelectionCopiedToClipboard.emit()
+        textActions.copy(selectedText)
+        deselect()
+    }
+
+    fun translateSelectedText() {
+        textActions.translate(selectedText)
         deselect()
     }
 }

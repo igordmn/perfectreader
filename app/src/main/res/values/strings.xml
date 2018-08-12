@@ -12,8 +12,10 @@
     <string name="bookMenuAutoScroll">Включить автопрокрутку</string>
     <string name="bookMenuTextToSpeech">Читать вслух</string>
     <string name="bookMenuAddBookmark">Добавить закладку</string>
+    <string name="googleTranslateNotInstalled">Приложение "Google Translate" не установлено</string>
     <string name="selectionCopiedToClipboard">Текст скопирован</string>
     <string name="selectionCopyText">Копировать</string>
+    <string name="selectionTranslateText">Перевести</string>
 
     <string name="settingPageMargins">Поля страницы</string>
     <string name="settingTextSize">Размер текста</string>

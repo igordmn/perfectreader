@@ -9,8 +9,8 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.common.ViewContext
 import com.dmi.perfectreader.book.selection.BookSelections
+import com.dmi.perfectreader.common.ViewContext
 import com.dmi.util.android.base.*
 import com.dmi.util.android.widget.addHintOnLongClick
 import com.dmi.util.android.widget.fadeTransition
@@ -34,6 +34,7 @@ class SelectionView(
     private val actionsContainer = find<FrameLayout>(R.id.actionsContainer)
     private val actions = find<View>(R.id.actions)
     private val copyTextButton = find<ImageButton>(R.id.copyTextButton)
+    private val translateTextButton = find<ImageButton>(R.id.translateTextButton)
 
     private val leftHandle = HandleView(
             drawable(R.drawable.selection_handle_left, color(R.color.primary)).apply {
@@ -50,10 +51,6 @@ class SelectionView(
     init {
         initHandles(context)
         initActions()
-
-        subscribe(model.onSelectionCopiedToClipboard) {
-            toast(string(R.string.selectionCopiedToClipboard))
-        }
     }
 
     private fun initHandles(context: Context) {
@@ -88,8 +85,15 @@ class SelectionView(
         DrawableCompat.setTint(copyTextButton.drawable, color(R.color.icon_dark))
         addHintOnLongClick(copyTextButton)
 
+        DrawableCompat.setTint(translateTextButton.drawable, color(R.color.icon_dark))
+        addHintOnLongClick(translateTextButton)
+
         copyTextButton.onClick {
             model.copySelectedText()
+        }
+
+        translateTextButton.onClick {
+            model.translateSelectedText()
         }
 
         autorun {

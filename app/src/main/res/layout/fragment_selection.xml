@@ -43,6 +43,14 @@
                         android:contentDescription="@string/selectionCopyText"
                         app:srcCompat="@drawable/ic_content_copy"/>
 
+                    <ImageButton
+                        android:id="@+id/translateTextButton"
+                        android:layout_width="48dip"
+                        android:layout_height="48dip"
+                        android:background="?android:selectableItemBackground"
+                        android:contentDescription="@string/selectionTranslateText"
+                        app:srcCompat="@drawable/ic_translate"/>
+
                 </LinearLayout>
 
             </ScrollView>
