@@ -6,8 +6,8 @@ buildscript {
 
         projectVersions = [
                 kotlin                   : '1.2.51',
-                buildTools               : '28-rc1',
-                androidPlugin            : '3.0.0',
+                buildTools               : '28.0.2',
+                androidPlugin            : '3.2.0-beta05',
                 minSdk                   : 21,
                 targetSdk                : 27,
                 compileSdk               : 27,
@@ -28,12 +28,14 @@ buildscript {
         }
     }
 
-    repositories projectRepositories
-
     dependencies {
         classpath "com.android.tools.build:gradle:$projectVersions.androidPlugin"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$projectVersions.kotlin"
-        classpath 'com.github.Turbo87.hugo:hugo-plugin:1.2.2'
+    }
+
+    repositories {
+        jcenter()
+        google()
     }
 }
 

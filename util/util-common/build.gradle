@@ -1,4 +1,5 @@
 apply plugin: 'kotlin'
+apply plugin: 'java-library'
 
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
@@ -6,17 +7,13 @@ sourceSets {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$projectVersions.kotlin"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$projectVersions.coroutines"
-    compile 'com.google.guava:guava:25.0-android'
-    compile 'com.carrotsearch:hppc:0.7.1'
-    compile 'com.github.kittinunf.result:result:1.0.2'
-    compile 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
-    testCompile project(':util:util-testCommon')
+    api "org.jetbrains.kotlin:kotlin-stdlib:$projectVersions.kotlin"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$projectVersions.coroutines"
+    api 'com.google.guava:guava:26.0-android'
+    api 'com.carrotsearch:hppc:0.7.1'
+    api 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
+    testImplementation project(':util:util-testCommon')
 }
-
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
 
 kotlin {
     experimental {

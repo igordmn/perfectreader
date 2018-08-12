@@ -1,12 +1,12 @@
 ext {
     loadProperties = { String... paths ->
-        def all = new Properties();
+        def all = new Properties()
         for (String path in paths) {
-            File file = new File(path);
+            File file = new File(path)
             if (file.exists())
-                all.load(new FileInputStream(file));
+                all.load(new FileInputStream(file))
         }
-        return all;
+        return all
     }
 
     versionNameFromGit = { path ->

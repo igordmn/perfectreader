@@ -47,20 +47,20 @@ configurations {
 }
 
 dependencies {
-    compile project(':util:util-common')
-    compile "com.android.support:appcompat-v7:$projectVersions.supportLibrary"
-    compile "com.android.support:cardview-v7:$projectVersions.supportLibrary"
-    compile "com.android.support:recyclerview-v7:$projectVersions.supportLibrary"
-    compile "com.android.support:palette-v7:$projectVersions.supportLibrary"
-    compile "com.android.support:design:$projectVersions.supportLibrary"
-    compile "com.android.support:support-annotations:$projectVersions.supportLibrary"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:$projectVersions.coroutines"
-    compile 'org.adw.library:discrete-seekbar:1.0.1'
-    compile 'org.jetbrains.anko:anko-sdk15:0.8.3'
-    compile 'org.jetbrains.anko:anko-appcompat-v7:0.8.3'
-    compile 'org.jetbrains.anko:anko-sqlite:0.8.3'
-    compile 'gun0912.ted:tedpermission:2.2.0'
-    testCompile project(':util:util-testCommon')
+    api project(':util:util-common')
+    api "com.android.support:appcompat-v7:$projectVersions.supportLibrary"
+    api "com.android.support:cardview-v7:$projectVersions.supportLibrary"
+    api "com.android.support:recyclerview-v7:$projectVersions.supportLibrary"
+    api "com.android.support:palette-v7:$projectVersions.supportLibrary"
+    api "com.android.support:design:$projectVersions.supportLibrary"
+    api "com.android.support:support-annotations:$projectVersions.supportLibrary"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$projectVersions.coroutines"
+    api 'org.adw.library:discrete-seekbar:1.0.1'
+    api 'org.jetbrains.anko:anko-sdk15:0.8.3'
+    api 'org.jetbrains.anko:anko-appcompat-v7:0.8.3'
+    api 'org.jetbrains.anko:anko-sqlite:0.8.3'
+    api 'gun0912.ted:tedpermission:2.2.0'
+    testImplementation project(':util:util-testCommon')
 }
 
 kotlin {
