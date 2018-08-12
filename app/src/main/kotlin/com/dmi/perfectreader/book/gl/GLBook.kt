@@ -3,11 +3,7 @@ package com.dmi.perfectreader.book.gl
 import android.content.Context
 import android.opengl.GLES20.*
 import com.dmi.perfectreader.book.render.factory.PageRenderer
-import com.dmi.util.android.opengl.GLColor
-import com.dmi.util.android.opengl.GLFrameBuffer
-import com.dmi.util.android.opengl.GLTexture
-import com.dmi.util.android.opengl.bind
-import com.dmi.util.graphic.Color
+import com.dmi.util.android.opengl.*
 import com.dmi.util.graphic.Size
 import com.dmi.util.io.ProtocolURIHandler
 import com.dmi.util.scope.Scoped
@@ -29,11 +25,12 @@ class GLBook(
 
     private val pageTexture by scope.disposable(GLTexture(size))
     private val pageFrameBuffer by scope.disposable(GLFrameBuffer().apply { bindTo(pageTexture) })
+    private val quad by scope.disposable(GLQuad(context))
     private val pageAnimation: GLPageAnimation? by scope.asyncDisposable(resetOnRecompute = false) {
         glPageAnimation(uriHandler, model.pageAnimationPath, size)
     }
-    private val pageBackground = GLColor(Color.WHITE)
-    private val pages by scope.disposable(GLPages(model, context, pageRenderer, size))
+    private val pageBackground: GLObject? by scope.asyncDisposable { glBackground(size, quad, model, uriHandler) }
+    private val pages by scope.disposable(GLPages(size, quad, model, pageRenderer))
 
     fun draw() {
         glClearColor(1F, 1F, 1F, 1F)
@@ -48,9 +45,9 @@ class GLBook(
         // При рисовании во фреймбуфер, привязанный к текстуре, нужно рисовать вверх ногами, чтобы текстура была правильно повернута
         // (page/pageBackground рисуются вверх ногами из-за использования GLTextureBackground)
         pageFrameBuffer.bind {
-            glClearColor(1F, 1F, 1F, 1F)
+            glClearColor(0F, 0F, 0F, 0F)
             glClear(GL_COLOR_BUFFER_BIT)
-            pageBackground.draw()
+            pageBackground?.draw()
             page?.draw()
         }
 

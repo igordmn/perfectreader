@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.book.gl
 
-import android.content.Context
 import com.dmi.perfectreader.book.page.VisiblePages
 import com.dmi.perfectreader.book.pagination.page.Page
 import com.dmi.perfectreader.book.render.factory.PageRenderer
@@ -12,13 +11,12 @@ import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
 
 class GLPages(
-        private val model: GLBookModel,
-        context: Context,
-        private val pageRenderer: PageRenderer,
         private val size: Size,
+        private val quad: GLQuad,
+        private val model: GLBookModel,
+        private val pageRenderer: PageRenderer,
         private val scope: Scope = Scope()
 ) : Disposable by scope {
-    private val quad by scope.disposable(GLQuad(context))
     private val texturePool by scope.disposable(ImmediatelyCreatePool(VisiblePages.COUNT) { GLTexture(size) })
     private fun createPage(page: Page) = GLPage(page, model, quad, texturePool, GLPageRefresher(size, pageRenderer))
 

@@ -25,6 +25,12 @@ class GLTexture(size: Size) : GLResource {
         glDelTexture(id)
     }
 
+    fun refreshBy(bitmap: Bitmap) {
+        glBindTexture(GL_TEXTURE_2D, id)
+        texSubImage2D(GL_TEXTURE_2D, 0, 0, 0, bitmap)
+        glBindTexture(GL_TEXTURE_2D, 0)
+    }
+
     fun refreshBy(bitmap: Bitmap, rect: Rect) {
         glBindTexture(GL_TEXTURE_2D, id)
 

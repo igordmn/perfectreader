@@ -5,6 +5,7 @@ import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.page.VisiblePages
 import com.dmi.perfectreader.reader.Reader
 import com.dmi.perfectreader.settings.Settings
+import com.dmi.util.graphic.Color
 import com.dmi.util.scope.CopyScope
 import com.dmi.util.scope.Disposable
 import java.net.URI
@@ -13,4 +14,7 @@ class GLBookModel(scope: CopyScope, settings: Settings, reader: Reader, book: Bo
     val pages: VisiblePages by scope.computed { book.pages }
     val selection: LocationRange? by scope.computed { reader.selection?.range }
     val pageAnimationPath: URI by scope.computed { URI(settings.format.pageAnimationPath) }
+    val pageBackgroundIsColor: Boolean by scope.computed { settings.format.pageBackgroundIsColor }
+    val pageBackgroundColor: Color by scope.computed { Color(settings.format.pageBackgroundColor) }
+    val pageBackgroundPath: URI by scope.computed { URI(settings.format.pageBackgroundPath) }
 }
