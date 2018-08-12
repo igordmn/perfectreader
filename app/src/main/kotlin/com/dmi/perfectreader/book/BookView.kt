@@ -47,14 +47,6 @@ class BookView(
         glSurface.onSizeChange { size, _ ->
             reader.book.size = size.toFloat()
         }
-
-        autorun {
-            if (window.isActive) {
-                glSurface.onResume()
-            } else {
-                glSurface.onPause()
-            }
-        }
     }
 
     override fun dispose() {
