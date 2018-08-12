@@ -1,8 +1,8 @@
 package com.dmi.util.android.base
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
+import androidx.appcompat.app.AppCompatActivity
 import com.dmi.util.scope.Scoped
 import com.dmi.util.system.ChangingApplicationWindow
 

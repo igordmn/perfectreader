@@ -2,13 +2,13 @@ package com.dmi.util.android.base
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.support.annotation.CallSuper
-import android.support.graphics.drawable.VectorDrawableCompat
-import android.support.v4.content.ContextCompat.getColor
-import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
+import androidx.core.content.ContextCompat.getColor
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.dmi.util.android.ext.dip2Px
 import com.dmi.util.android.ext.inflate
 import com.dmi.util.android.ext.px2dip

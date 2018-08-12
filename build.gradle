@@ -9,10 +9,10 @@ buildscript {
                 coroutines               : '0.24.0-eap13',
                 buildTools               : '28.0.2',
                 androidPlugin            : '3.2.0-beta05',
+                androidx                 : '1.0.0-rc01',
                 minSdk                   : 21,
-                targetSdk                : 27,
-                compileSdk               : 27,
-                supportLibrary           : '27.0.0',
+                targetSdk                : 28,
+                compileSdk               : 28,
         ]
 
         projectRepositories = {

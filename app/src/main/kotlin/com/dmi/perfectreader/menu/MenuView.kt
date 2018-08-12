@@ -1,12 +1,12 @@
 package com.dmi.perfectreader.menu
 
-import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v7.widget.Toolbar
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
+import androidx.core.graphics.drawable.DrawableCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.common.ViewContext
 import com.dmi.util.android.base.BaseView

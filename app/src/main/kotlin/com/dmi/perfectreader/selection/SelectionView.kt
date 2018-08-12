@@ -3,11 +3,11 @@ package com.dmi.perfectreader.selection
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
-import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import androidx.core.graphics.drawable.DrawableCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.book.selection.BookSelections
 import com.dmi.perfectreader.common.ViewContext

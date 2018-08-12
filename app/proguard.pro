@@ -64,9 +64,6 @@
     public static <fields>;
 }
 
-# Support library
--dontwarn android.support.**
-
 # Anko
 -dontwarn org.jetbrains.anko.**
 
