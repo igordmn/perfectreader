@@ -32,12 +32,15 @@ class GLBook(
     private val pageAnimation: GLPageAnimation? by scope.asyncDisposable(resetOnRecompute = false) {
         glPageAnimation(uriHandler, model.pageAnimationPath, size)
     }
-    private val pageBackground: GLBackground by scope.disposable(GLBackground(size, quad, model, uriHandler))
+    private val pageBackground: GLBackground by scope.disposable(glPageBackground(size, quad, uriHandler, model))
+    private val bookBackground: GLBackground by scope.disposable(glBookBackground(size, quad, uriHandler, model))
     private val pages by scope.disposable(GLPages(size, quad, model, pageRenderer))
 
     fun draw() {
         glClearColor(1F, 1F, 1F, 1F)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+        bookBackground.draw()
+        glClear(GL_DEPTH_BUFFER_BIT)
         drawAnimatedPage(pages.right, pages.rightProgress)
         drawAnimatedPage(pages.left, pages.leftProgress)
     }
