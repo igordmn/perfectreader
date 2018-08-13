@@ -2,6 +2,7 @@ package com.dmi.perfectreader.book.gl
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.dmi.util.android.graphics.resizeSeamCarvingTo
 import com.dmi.util.android.opengl.GLColor
 import com.dmi.util.android.opengl.GLObject
 import com.dmi.util.android.opengl.GLQuad
@@ -22,12 +23,22 @@ suspend fun glBackground(
         GLColor(model.pageBackgroundColor)
     } else {
         val path = model.pageBackgroundPath
+        val contentAwareResize = model.pageBackgroundContentAwareResize
         val bitmap = withContext(CommonPool) {
-            Bitmap.createScaledBitmap(BitmapFactory.decodeStream(
+            val original = BitmapFactory.decodeStream(
                     uriHandler.open(path),
                     null,
                     BitmapFactory.Options()
-            ), size.width, size.height, true)
+            )!!
+            if (contentAwareResize) {
+                val aspectRatio: Double = original.width.toDouble() / original.height
+                val fitted = Bitmap.createScaledBitmap(original, size.width, (size.width / aspectRatio).toInt(), true)
+                Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888).apply {
+                    fitted.resizeSeamCarvingTo(this)
+                }
+            } else {
+                Bitmap.createScaledBitmap(original, size.width, size.height, true)
+            }
         }
         GLBackground(size, quad, bitmap)
     }

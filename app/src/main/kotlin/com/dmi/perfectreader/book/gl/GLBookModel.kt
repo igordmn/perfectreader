@@ -17,4 +17,5 @@ class GLBookModel(scope: CopyScope, settings: Settings, reader: Reader, book: Bo
     val pageBackgroundIsColor: Boolean by scope.computed { settings.format.pageBackgroundIsColor }
     val pageBackgroundColor: Color by scope.computed { Color(settings.format.pageBackgroundColor) }
     val pageBackgroundPath: URI by scope.computed { URI(settings.format.pageBackgroundPath) }
+    val pageBackgroundContentAwareResize: Boolean by scope.computed { settings.format.pageBackgroundContentAwareResize }
 }

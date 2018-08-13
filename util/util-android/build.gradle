@@ -12,7 +12,7 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_STL=c++_static"
-                cppFlags.addAll('-std=c++14', '-Wall', '-Wno-unknown-pragmas')
+                cppFlags.addAll('-std=c++17', '-Wall', '-Wno-unknown-pragmas')
             }
         }
     }
@@ -29,7 +29,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            path "CMakeLists.txt"
+            path "src/main/CMakeLists.txt"
         }
     }
 

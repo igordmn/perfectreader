@@ -52,7 +52,7 @@ Java_com_dmi_util_android_graphics_CorrectGammaKt_correctAlphaGamma(
     CHECK(y >= 0 && height >= 0);
     CHECK(x + width <= info.width);
     CHECK(y + height <= info.height);
-    uint32_t stride = info.stride / 4;
+    uint32_t stride = info.stride / 4;  // divide by 4 because one int contains 4 bytes
 
     setGamma(gamma);
 
