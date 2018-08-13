@@ -1,5 +1,6 @@
 package com.dmi.perfectreader
 
+import android.app.Activity
 import android.content.Context
 import com.dmi.perfectreader.common.Databases
 import com.dmi.perfectreader.common.Permissions
@@ -30,4 +31,5 @@ class Main(val log: Log, val applicationContext: Context) {
     ))
     val display: Display = AndroidDisplay
     val permissions = Permissions(this)
+    var currentActivity: Activity? = null
 }
