@@ -14,7 +14,7 @@ class GLBookModel(scope: CopyScope, settings: Settings, reader: Reader, book: Bo
     val pages: VisiblePages by scope.computed { book.pages }
     val selection: LocationRange? by scope.computed { reader.selection?.range }
     val pageAnimationPath: URI by scope.computed { URI(settings.format.pageAnimationPath) }
-    val pageBackgroundIsColor: Boolean by scope.computed { settings.format.pageBackgroundIsColor }
+    val pageBackgroundIsImage: Boolean by scope.computed { settings.format.pageBackgroundIsImage }
     val pageBackgroundColor: Color by scope.computed { Color(settings.format.pageBackgroundColor) }
     val pageBackgroundPath: URI by scope.computed { URI(settings.format.pageBackgroundPath) }
     val pageBackgroundContentAwareResize: Boolean by scope.computed { settings.format.pageBackgroundContentAwareResize }

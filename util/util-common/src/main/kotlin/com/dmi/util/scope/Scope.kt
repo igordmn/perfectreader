@@ -86,14 +86,14 @@ class Scope : Disposable {
             context: CoroutineContext = threadContext,
             resetOnRecompute: Boolean = true,
             dispose: (T) -> Unit = {},
-            compute: suspend CoroutineScope.() -> T
+            compute: suspend CoroutineScope.() -> T?
     ) = AsyncComputedDelegate(context, resetOnRecompute, compute, dispose)
 
     // todo think how to dispose after cancel
     fun <T : Disposable> asyncDisposable(
             context: CoroutineContext = threadContext,
             resetOnRecompute: Boolean = true,
-            compute: suspend CoroutineScope.() -> T
+            compute: suspend CoroutineScope.() -> T?
     ) = async(context, resetOnRecompute, dispose = { it.dispose() }, compute = compute)
 
     fun launch(
@@ -229,7 +229,7 @@ class Scope : Disposable {
     inner class AsyncComputedDelegate<T>(
             private val context: CoroutineContext,
             private val resetOnRecompute: Boolean,
-            private val compute: suspend CoroutineScope.() -> T,
+            private val compute: suspend CoroutineScope.() -> T?,
             private val dispose: (T) -> Unit
     ) : ObservableDelegate<T?>() {
         override var value: T? = null
