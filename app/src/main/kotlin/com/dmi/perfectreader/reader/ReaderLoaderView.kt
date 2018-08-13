@@ -16,7 +16,7 @@ import com.dmi.util.android.base.string
 class ReaderLoaderView(
         viewContext: ViewContext,
         private val model: ReaderLoader
-) : BaseView(viewContext.android, R.layout.fragment_readerloader) {
+) : BaseView(viewContext.android, R.layout.readerloader) {
     private var reader: ReaderView? = null
     private var readerContainer = find<ViewGroup>(R.id.readerContainer)
     private val loadIndicator = find<ProgressBar>(R.id.loadIndicator)

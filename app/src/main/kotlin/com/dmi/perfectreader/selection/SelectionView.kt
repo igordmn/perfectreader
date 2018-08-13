@@ -26,7 +26,7 @@ import java.lang.Math.round
 class SelectionView(
         viewContext: ViewContext,
         private val model: Selection
-) : BaseView(viewContext.android, R.layout.fragment_selection) {
+) : BaseView(viewContext.android, R.layout.selection) {
     private val handleWidth = round(dip2Px(24F))
     private val additionalTouchRadius = round(dip2Px(24F))
 

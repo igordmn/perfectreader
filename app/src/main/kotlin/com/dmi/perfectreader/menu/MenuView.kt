@@ -22,7 +22,7 @@ import java.lang.Math.round
 class MenuView(
         viewContext: ViewContext,
         private val model: Menu
-) : BaseView(viewContext.android, R.layout.fragment_menu) {
+) : BaseView(viewContext.android, R.layout.menu) {
     private val toolbar = find<Toolbar>(R.id.toolbar)
     private val currentChapterText = find<TextView>(R.id.currentChapterText)
     private val currentPageText = find<TextView>(R.id.currentPageText)

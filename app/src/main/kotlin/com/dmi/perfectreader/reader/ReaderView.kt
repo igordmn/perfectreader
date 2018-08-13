@@ -15,7 +15,7 @@ import com.dmi.util.android.widget.fadeTransition
 class ReaderView(
         private val viewContext: ViewContext,
         model: Reader
-) : BaseView(viewContext.android, R.layout.fragment_reader) {
+) : BaseView(viewContext.android, R.layout.reader) {
     private val menuContainer = find<ViewGroup>(R.id.menuContainer)
     private val actionPopupContainer = find<ViewGroup>(R.id.actionPopupContainer)
     private var selection: SelectionView? = null
