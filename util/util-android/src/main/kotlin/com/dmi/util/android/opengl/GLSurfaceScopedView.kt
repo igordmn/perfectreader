@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.opengl.GLSurfaceView
+import android.view.View
 import android.widget.FrameLayout
 import com.dmi.util.coroutine.initThreadContext
 import com.dmi.util.graphic.Size
@@ -58,6 +59,7 @@ class GLSurfaceScopedView(
         glSurfaceView.setEGLContextFactory(DefaultContextFactory())
         glSurfaceView.setRenderer(OriginalRenderer())
         glSurfaceView.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
+        visibility = View.INVISIBLE
         glSurfaceView.queueEvent {
             initThreadContext(coroutineContext)
             runBlocking(UI) {
@@ -97,6 +99,9 @@ class GLSurfaceScopedView(
         fun draw()
     }
 
+    @Volatile
+    private var blackFlickeringFixApplied = false
+
     private inner class OriginalRenderer : GLSurfaceView.Renderer {
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) = Unit
 
@@ -110,6 +115,13 @@ class GLSurfaceScopedView(
                 init()
             } else {
                 afterScopeInit.add(::init)
+            }
+
+            if (!blackFlickeringFixApplied) {
+                runBlocking(UI) {
+                    visibility = View.VISIBLE
+                }
+                blackFlickeringFixApplied = true
             }
         }
 
