@@ -33,11 +33,6 @@ class FormatSettings(store: ValueStore) {
     var textShadowBlurRadiusDip by store.value(1F)
     var textShadowColor by store.value(Color.GRAY.value)
 
-    var bookBackgroundIsImage by store.value(true)
-    var bookBackgroundColor by store.value(Color.WHITE.value)
-    var bookBackgroundPath by store.value("assets:///resources/backgrounds/book/0004.jpg")
-    var bookBackgroundContentAwareResize by store.value(true)
-
     var pageAnimationPath by store.value("assets:///resources/animations/curl.xml")
     var pageBackgroundIsImage by store.value(true)
     var pageBackgroundColor by store.value(Color.WHITE.value)
