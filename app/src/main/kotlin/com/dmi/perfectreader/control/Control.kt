@@ -2,7 +2,7 @@ package com.dmi.perfectreader.control
 
 import com.dmi.perfectreader.Main
 import com.dmi.perfectreader.reader.Reader
-import com.dmi.perfectreader.reader.action.ReaderActions
+import com.dmi.perfectreader.action.Actions
 import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.action.TouchActionPerformer
 import com.dmi.util.graphic.SizeF
@@ -14,7 +14,7 @@ import kotlinx.coroutines.android.UI
 class Control(
         private val main: Main,
         private val reader: Reader,
-        private val actions: ReaderActions = reader.actions,
+        private val actions: Actions = reader.actions,
         private val settings: Settings = main.settings
 ) {
     private var gestureDetector: GestureDetector? = null

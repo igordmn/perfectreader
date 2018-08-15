@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.settings
 
 import com.dmi.perfectreader.control.OpenTapMode
-import com.dmi.perfectreader.reader.action.ReaderActionID
+import com.dmi.perfectreader.action.ActionID
 import com.dmi.util.action.TouchZone
 import com.dmi.util.action.TouchZoneConfiguration
 import com.dmi.util.input.HardKey
@@ -41,20 +41,20 @@ class ControlSettings(store: ValueStore) {
         abstract class Taps(
                 store: ValueStore,
                 configuration: TouchZoneConfiguration,
-                left: ReaderActionID,
-                middle: ReaderActionID,
-                right: ReaderActionID
+                left: ActionID,
+                middle: ActionID,
+                right: ActionID
         ) {
             constructor(
                     store: ValueStore,
                     configuration: TouchZoneConfiguration,
-                    middle: ReaderActionID
+                    middle: ActionID
             ) : this(store, configuration, middle, middle, middle)
             
             constructor(
                     store: ValueStore,
                     configuration: TouchZoneConfiguration
-            ) : this(store, configuration, ReaderActionID.NONE)
+            ) : this(store, configuration, ActionID.NONE)
 
             var configuration by store.value(configuration)
 
@@ -78,7 +78,7 @@ class ControlSettings(store: ValueStore) {
             var bottomMiddle2 by store.value(right)
             var bottomRight by store.value(right)
 
-            fun property(zone: TouchZone): KMutableProperty0<ReaderActionID> = when (zone) {
+            fun property(zone: TouchZone): KMutableProperty0<ActionID> = when (zone) {
                 TouchZone.TOP_LEFT -> ::topLeft
                 TouchZone.TOP_MIDDLE1 -> ::topMiddle1
                 TouchZone.TOP_MIDDLE2 -> ::topMiddle2
@@ -101,20 +101,20 @@ class ControlSettings(store: ValueStore) {
         abstract class Scrolls(
                 store: ValueStore,
                 configuration: TouchZoneConfiguration,
-                first: ReaderActionID,
-                middle: ReaderActionID,
-                last: ReaderActionID
+                first: ActionID,
+                middle: ActionID,
+                last: ActionID
         ) {
             constructor(
                     store: ValueStore,
                     configuration: TouchZoneConfiguration,
-                    middle: ReaderActionID
+                    middle: ActionID
             ) : this(store, configuration, middle, middle, middle)
 
             constructor(
                     store: ValueStore,
                     configuration: TouchZoneConfiguration
-            ) : this(store, configuration, ReaderActionID.NONE)
+            ) : this(store, configuration, ActionID.NONE)
 
             var configuration by store.value(configuration)
 
@@ -123,7 +123,7 @@ class ControlSettings(store: ValueStore) {
             var middle2 by store.value(middle)
             var last by store.value(last)
 
-            fun verticalProperty(zone: TouchZone): KMutableProperty0<ReaderActionID> = when (zone) {
+            fun verticalProperty(zone: TouchZone): KMutableProperty0<ActionID> = when (zone) {
                 TouchZone.TOP_LEFT -> ::first
                 TouchZone.TOP_MIDDLE1 -> ::middle1
                 TouchZone.TOP_MIDDLE2 -> ::middle2
@@ -142,7 +142,7 @@ class ControlSettings(store: ValueStore) {
                 TouchZone.BOTTOM_RIGHT -> ::last
             }
 
-            fun horizontalProperty(zone: TouchZone): KMutableProperty0<ReaderActionID> = when (zone) {
+            fun horizontalProperty(zone: TouchZone): KMutableProperty0<ActionID> = when (zone) {
                 TouchZone.TOP_LEFT -> ::first
                 TouchZone.TOP_MIDDLE1 -> ::first
                 TouchZone.TOP_MIDDLE2 -> ::first
@@ -165,44 +165,44 @@ class ControlSettings(store: ValueStore) {
         class SingleTaps(store: ValueStore) : Taps(
                 store,
                 TouchZoneConfiguration.NINE,
-                left = ReaderActionID.GO_PREVIOUS_PAGE,
-                middle = ReaderActionID.TOGGLE_MENU,
-                right = ReaderActionID.GO_NEXT_PAGE
+                left = ActionID.GO_PREVIOUS_PAGE,
+                middle = ActionID.TOGGLE_MENU,
+                right = ActionID.GO_NEXT_PAGE
         )
 
-        class LongTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE, ReaderActionID.SELECT_WORD)
-        class DoubleTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE, ReaderActionID.NONE)
+        class LongTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE, ActionID.SELECT_WORD)
+        class DoubleTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE, ActionID.NONE)
         class TwoFingersSingleTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE)
         class TwoFingersLongTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE)
         class TwoFingersDoubleTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE)
 
-        class LeftScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ReaderActionID.SCROLL)
-        class RightScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ReaderActionID.SCROLL)
+        class LeftScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.SCROLL)
+        class RightScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.SCROLL)
 
         class UpScrolls(store: ValueStore) : Scrolls(
                 store, 
                 TouchZoneConfiguration.THREE_COLUMNS_FIXED,
-                ReaderActionID.CHANGE_SCREEN_BRIGHTNESS,
-                ReaderActionID.SCROLL,
-                ReaderActionID.SCROLL
+                ActionID.CHANGE_SCREEN_BRIGHTNESS,
+                ActionID.SCROLL,
+                ActionID.SCROLL
         )
 
         class DownScrolls(store: ValueStore) : Scrolls(
                 store,
                 TouchZoneConfiguration.THREE_COLUMNS_FIXED,
-                ReaderActionID.CHANGE_SCREEN_BRIGHTNESS,
-                ReaderActionID.SCROLL,
-                ReaderActionID.SCROLL
+                ActionID.CHANGE_SCREEN_BRIGHTNESS,
+                ActionID.SCROLL,
+                ActionID.SCROLL
         )
 
-        class TwoFingersLeftScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ReaderActionID.GO_NEXT_PAGE_10)
-        class TwoFingersRightScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ReaderActionID.GO_PREVIOUS_PAGE_10)
-        class TwoFingersUpScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ReaderActionID.CHANGE_TEXT_LINE_HEIGHT)
-        class TwoFingersDownScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ReaderActionID.CHANGE_TEXT_LINE_HEIGHT)
+        class TwoFingersLeftScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.GO_NEXT_PAGE_10)
+        class TwoFingersRightScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.GO_PREVIOUS_PAGE_10)
+        class TwoFingersUpScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.CHANGE_TEXT_LINE_HEIGHT)
+        class TwoFingersDownScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.CHANGE_TEXT_LINE_HEIGHT)
 
         class TwoFingersPinches(store: ValueStore) {
-            var pinchIn by store.value(ReaderActionID.CHANGE_TEXT_SIZE)
-            var pinchOut by store.value(ReaderActionID.CHANGE_TEXT_SIZE)
+            var pinchIn by store.value(ActionID.CHANGE_TEXT_SIZE)
+            var pinchOut by store.value(ActionID.CHANGE_TEXT_SIZE)
         }
     }
 
@@ -214,19 +214,19 @@ class ControlSettings(store: ValueStore) {
         val singlePress by store.group(::SinglePress)
 
         class SinglePress(store: ValueStore) {
-            var volumeUp by store.value(ReaderActionID.GO_PREVIOUS_PAGE)
-            var volumeDown by store.value(ReaderActionID.GO_NEXT_PAGE)
-            var menu by store.value(ReaderActionID.TOGGLE_MENU)
-            var back by store.value(ReaderActionID.CLOSE_APPLICATION_WINDOW)
-            var search by store.value(ReaderActionID.NONE)
-            var camera by store.value(ReaderActionID.NONE)
-            var dpadPress by store.value(ReaderActionID.NONE)
-            var dpadLeft by store.value(ReaderActionID.NONE)
-            var dpadRight by store.value(ReaderActionID.NONE)
-            var dpadUp by store.value(ReaderActionID.NONE)
-            var dpadDown by store.value(ReaderActionID.NONE)
+            var volumeUp by store.value(ActionID.GO_PREVIOUS_PAGE)
+            var volumeDown by store.value(ActionID.GO_NEXT_PAGE)
+            var menu by store.value(ActionID.TOGGLE_MENU)
+            var back by store.value(ActionID.CLOSE_APPLICATION_WINDOW)
+            var search by store.value(ActionID.NONE)
+            var camera by store.value(ActionID.NONE)
+            var dpadPress by store.value(ActionID.NONE)
+            var dpadLeft by store.value(ActionID.NONE)
+            var dpadRight by store.value(ActionID.NONE)
+            var dpadUp by store.value(ActionID.NONE)
+            var dpadDown by store.value(ActionID.NONE)
 
-            fun property(hardKey: HardKey): KMutableProperty0<ReaderActionID> = when (hardKey) {
+            fun property(hardKey: HardKey): KMutableProperty0<ActionID> = when (hardKey) {
                 HardKey.VOLUME_UP -> ::volumeUp
                 HardKey.VOLUME_DOWN -> ::volumeDown
                 HardKey.MENU -> ::menu

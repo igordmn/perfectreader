@@ -3,7 +3,7 @@ package com.dmi.perfectreader.common
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import com.dmi.perfectreader.book.content.location.Location
-import com.dmi.util.android.ext.execQuery
+import com.dmi.util.android.db.execQuery
 import com.dmi.util.coroutine.IOPool
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

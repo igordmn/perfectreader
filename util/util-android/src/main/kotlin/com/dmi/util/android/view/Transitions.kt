@@ -1,4 +1,4 @@
-package com.dmi.util.android.widget
+package com.dmi.util.android.view
 
 import android.animation.LayoutTransition
 import android.animation.ObjectAnimator

@@ -1,6 +1,6 @@
-package com.dmi.perfectreader.reader.action
+package com.dmi.perfectreader.action
 
-enum class ReaderActionID {
+enum class ActionID {
     NONE,
     TOGGLE_MENU,
     CLOSE_APPLICATION_WINDOW,
@@ -87,7 +87,7 @@ enum class ReaderActionID {
     DECREASE_SCREEN_BRIGHTNESS;
 }
 
-enum class ReaderSettingActionID {
+enum class SettingActionID {
     NONE,
     PAGE_MARGINS,
     TEXT_SIZE,

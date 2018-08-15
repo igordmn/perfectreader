@@ -29,7 +29,7 @@ class GLSurfaceScopedView(
         context: Context,
         private val log: Log,
         private val createRenderer: (CopyScope) -> ((Size) -> Renderer)
-) : FrameLayout(context), Disposable {
+) : FrameLayout(context) {
     private val eglContextClientVersion = 2
     private val glSurfaceView = GLSurfaceView(context)
 
@@ -72,10 +72,6 @@ class GLSurfaceScopedView(
         }
     }
 
-    override fun dispose() {
-        scope?.dispose()
-    }
-
     fun onPause() = glSurfaceView.onPause()
     fun onResume() = glSurfaceView.onResume()
 
@@ -88,6 +84,7 @@ class GLSurfaceScopedView(
     }
 
     override fun onDetachedFromWindow() {
+        scope?.dispose()
         detached = true
         super.onDetachedFromWindow()
     }

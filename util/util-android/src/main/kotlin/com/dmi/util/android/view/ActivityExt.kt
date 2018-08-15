@@ -1,26 +1,27 @@
-package com.dmi.util.android.base
+package com.dmi.util.android.view
 
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.dmi.util.scope.Scoped
 import com.dmi.util.system.ChangingApplicationWindow
 
-abstract class BaseActivity<M : Scoped, V : BaseView> protected constructor() : AppCompatActivity() {
+abstract class ActivityExt<M : Scoped> protected constructor() : AppCompatActivity() {
     lateinit var window: ChangingApplicationWindow
 
     protected lateinit var model: M
-    protected lateinit var view: V
+    protected lateinit var view: View
 
     protected abstract fun createModel(): M
-    protected abstract fun createView(viewModel: M): V
+    protected abstract fun createView(model: M): View
 
     protected fun recreateModel() {
         model.scope.dispose()
         model = createModel()
-        view.dispose()
         view = createView(model)
-        setContentView(view.widget)
+        setContentView(view)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -38,14 +39,13 @@ abstract class BaseActivity<M : Scoped, V : BaseView> protected constructor() : 
             finish()
         }
         view = createView(model)
-        setContentView(view.widget)
+        setContentView(view)
     }
 
     override fun onDestroy() {
         window.exit = null
         if (!isChangingConfigurations)
             model.scope.dispose()
-        view.dispose()
         super.onDestroy()
     }
 
@@ -61,8 +61,23 @@ abstract class BaseActivity<M : Scoped, V : BaseView> protected constructor() : 
 
     final override fun onRetainCustomNonConfigurationInstance() = Retain(window, model)
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent) = view.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
-    override fun onKeyUp(keyCode: Int, event: KeyEvent) = view.onKeyUp(keyCode, event) || super.onKeyUp(keyCode, event)
-
     class Retain<VM>(val window: ChangingApplicationWindow, val model: VM)
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        return getWindow().decorView.interceptKeys(event) || super.dispatchKeyEvent(event)
+    }
+
+    private fun View.interceptKeys(event: KeyEvent): Boolean {
+        if (this is KeyInterceptable) {
+            if (onInterceptKey(event))
+                return true
+        }
+        if (this is ViewGroup) {
+            for (i in childCount - 1 downTo 0) {
+                if (getChildAt(i).interceptKeys(event))
+                    return true
+            }
+        }
+        return false
+    }
 }

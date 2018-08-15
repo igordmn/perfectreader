@@ -1,9 +1,9 @@
 package com.dmi.util.android.persist
 
 import android.database.sqlite.SQLiteDatabase
-import com.dmi.util.android.ext.getNullOrDouble
-import com.dmi.util.android.ext.getNullOrLong
-import com.dmi.util.android.ext.getNullOrString
+import com.dmi.util.android.db.getNullOrDouble
+import com.dmi.util.android.db.getNullOrLong
+import com.dmi.util.android.db.getNullOrString
 import com.dmi.util.coroutine.IOPool
 import com.dmi.util.lang.Enums
 import com.dmi.util.lang.unsupported

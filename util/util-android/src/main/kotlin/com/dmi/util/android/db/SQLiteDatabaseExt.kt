@@ -1,4 +1,4 @@
-package com.dmi.util.android.ext
+package com.dmi.util.android.db
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase

@@ -2,14 +2,13 @@ package com.dmi.perfectreader
 
 import android.content.Intent
 import android.os.Bundle
-import com.dmi.perfectreader.common.ViewContext
 import com.dmi.perfectreader.reader.ReaderLoader
-import com.dmi.perfectreader.reader.ReaderLoaderView
-import com.dmi.util.android.base.BaseActivity
+import com.dmi.perfectreader.reader.readerLoaderView
+import com.dmi.util.android.view.ActivityExt
 
-class MainActivity : BaseActivity<ReaderLoader, ReaderLoaderView>() {
+class MainActivity : ActivityExt<ReaderLoader>() {
     override fun createModel() = ReaderLoader(main, window, intent)
-    override fun createView(viewModel: ReaderLoader) = ReaderLoaderView(ViewContext(this, window, main), viewModel)
+    override fun createView(model: ReaderLoader) = readerLoaderView(model)
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)

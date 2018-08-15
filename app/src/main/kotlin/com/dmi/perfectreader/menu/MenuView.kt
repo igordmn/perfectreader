@@ -1,105 +1,159 @@
 package com.dmi.perfectreader.menu
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Typeface
 import android.view.KeyEvent
 import android.view.MenuItem
+import android.view.View
 import android.widget.FrameLayout
-import android.widget.ImageButton
+import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.Toolbar
-import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.common.ViewContext
-import com.dmi.util.android.base.BaseView
-import com.dmi.util.android.base.color
-import com.dmi.util.android.base.drawable
-import com.dmi.util.android.base.find
-import com.dmi.util.android.ext.onClick
-import com.dmi.util.android.widget.addHintOnLongClick
+import com.dmi.util.android.view.*
+import com.dmi.util.lang.intRound
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
-import org.jetbrains.anko.onClick
-import java.lang.Math.round
+import org.jetbrains.anko.*
 
-class MenuView(
-        viewContext: ViewContext,
-        private val model: Menu
-) : BaseView(viewContext.android, R.layout.menu) {
-    private val toolbar = find<Toolbar>(R.id.toolbar)
-    private val currentChapterText = find<TextView>(R.id.currentChapterText)
-    private val currentPageText = find<TextView>(R.id.currentPageText)
-    private val locationSlider = find<DiscreteSeekBar>(R.id.locationSlider)
-    private val middleSpace = find<FrameLayout>(R.id.middleSpace)
+fun Context.menuView(model: Menu): View {
+    fun DiscreteSeekBar.progress() = intRound(model.percent * max)
 
-    private val searchButton = find<ImageButton>(R.id.searchButton)
-    private val switchThemeButton = find<ImageButton>(R.id.switchThemeButton)
-    private val autoScrollButton = find<ImageButton>(R.id.autoScrollButton)
-    private val textToSpeechButton = find<ImageButton>(R.id.textToSpeechButton)
-    private val addBookmarkButton = find<ImageButton>(R.id.addBookmarkButton)
-
-    init {
-        initTopBar()
-        initBottomBar()
-        initMiddleSpace()
-    }
-
-    private fun initTopBar() {
-        DrawableCompat.setTint(toolbar.navigationIcon!!, color(R.color.icon_dark))
-
-        toolbar.title = "Alice's Adventures in Wonderland"
-        toolbar.subtitle = "Lewis Carroll"
-        toolbar.menu.add(R.string.bookMenuSettings).apply {
-            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-            icon = drawable(R.drawable.ic_settings, color(R.color.icon_dark))
-            onClick {
-                model.showSettings()
-            }
-        }
-        currentChapterText.text = "X — Alice's evidence"
-        autorun {
-            currentPageText.text = "${model.pageNumber} / ${model.numberOfPages}"
-        }
-    }
-
-    private fun initBottomBar() {
-        DrawableCompat.setTint(searchButton.drawable, color(R.color.icon_dark))
-        DrawableCompat.setTint(switchThemeButton.drawable, color(R.color.icon_dark))
-        DrawableCompat.setTint(autoScrollButton.drawable, color(R.color.icon_dark))
-        DrawableCompat.setTint(textToSpeechButton.drawable, color(R.color.icon_dark))
-        DrawableCompat.setTint(addBookmarkButton.drawable, color(R.color.icon_dark))
-
-        addHintOnLongClick(searchButton)
-        addHintOnLongClick(switchThemeButton)
-        addHintOnLongClick(autoScrollButton)
-        addHintOnLongClick(textToSpeechButton)
-        addHintOnLongClick(addBookmarkButton)
-
-        autorun {
-            locationSlider.progress = round(model.percent * locationSlider.max).toInt()
-        }
-        locationSlider.numericTransformer = object: DiscreteSeekBar.NumericTransformer() {
-            override fun transform(value: Int): Int {
-                val percent = value.toFloat() / locationSlider.max
-                return round(percent * 100)
-            }
-        }
-        locationSlider.setOnProgressChangeListener(object: DiscreteSeekBar.OnProgressChangeListener {
+    fun DiscreteSeekBar.onProgressChangeListener(): DiscreteSeekBar.OnProgressChangeListener {
+        return object : DiscreteSeekBar.OnProgressChangeListener {
             override fun onProgressChanged(seekBar: DiscreteSeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser)
-                    model.goPercent(progress.toDouble() / locationSlider.max)
+                    model.goPercent(progress.toDouble() / max)
             }
 
             override fun onStartTrackingTouch(seekBar: DiscreteSeekBar) = Unit
             override fun onStopTrackingTouch(seekBar: DiscreteSeekBar) = Unit
-        })
-    }
-
-    private fun initMiddleSpace() {
-        middleSpace.onClick { model.close() }
-    }
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU) {
-            model.close()
         }
-        return true
+    }
+
+    fun DiscreteSeekBar.numericTransformer(): DiscreteSeekBar.NumericTransformer {
+        return object : DiscreteSeekBar.NumericTransformer() {
+            override fun transform(value: Int): Int {
+                val percent = value.toFloat() / max
+                return intRound(percent * 100)
+            }
+        }
+    }
+
+    fun top() = view(::LinearLayoutCompat) {
+        isClickable = true
+        isFocusable = true
+        orientation = LinearLayoutCompat.VERTICAL
+        backgroundResource = R.color.white
+        elevation = dipFloat(4F)
+
+        child(::Toolbar, params(matchParent, wrapContent)) {
+            navigationIcon = drawable(R.drawable.ic_arrow_back)
+            popupTheme = R.style.Theme_AppCompat_Light
+            title = "Alice's Adventures in Wonderland"
+            subtitle = "Lewis Carroll"
+            menu.add(R.string.bookMenuSettings).apply {
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                icon = drawable(R.drawable.ic_settings, color(R.color.icon_dark))
+                onClick {
+                    model.showSettings()
+                }
+            }
+        }
+
+        child(::RelativeLayout, params(matchParent, dip(48))) {
+            child(::TextView, params(matchParent, wrapContent)) {
+                textColor = R.color.text_primary_dark
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
+                TextViewCompat.setTextAppearance(this, attr(android.R.attr.textAppearanceSmall).data)
+                text = "X — Alice's evidence"
+            }
+            child(::TextView, params(wrapContent, wrapContent)) {
+                textColor = R.color.text_primary_dark
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
+                autorun {
+                    @SuppressLint("SetTextI18n")
+                    text = "${model.pageNumber} / ${model.numberOfPages}"
+                }
+            }
+        }
+    }
+
+    fun middle() = view(::FrameLayout) {
+        backgroundResource = android.R.color.transparent
+        isClickable = true
+        isFocusable = true
+        onClick { model.close() }
+    }
+
+    fun bottom() = view(::LinearLayoutCompat) {
+        orientation = LinearLayoutCompat.VERTICAL
+        backgroundResource = android.R.color.white
+        elevation = dipFloat(8F)
+        isClickable = true
+        isFocusable = true
+
+        child(::DiscreteSeekBar, params(
+                matchParent, matchParent,
+                leftMargin = dip(4),
+                topMargin = dip(4),
+                rightMargin = dip(4),
+                bottomMargin = dip(4)
+        )) {
+            min = 0
+            max = 100
+            setIndicatorFormatter("%d%%")
+            autorun {
+                progress = progress()
+            }
+            numericTransformer = numericTransformer()
+            setOnProgressChangeListener(onProgressChangeListener())
+        }
+        child(::LinearLayoutCompat, params(matchParent, dip(48))) {
+            child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
+                backgroundResource = attr(R.attr.selectableItemBackground).resourceId
+                contentDescription = string(R.string.bookMenuSearch)
+                image = drawable(R.drawable.ic_search, color(R.color.icon_dark))
+                onLongClick { showHint(); true }
+            }
+            child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
+                backgroundResource = attr(R.attr.selectableItemBackground).resourceId
+                contentDescription = string(R.string.bookMenuSwitchTheme)
+                image = drawable(R.drawable.ic_style, color(R.color.icon_dark))
+                onLongClick { showHint(); true }
+            }
+            child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
+                backgroundResource = attr(R.attr.selectableItemBackground).resourceId
+                contentDescription = string(R.string.bookMenuAutoScroll)
+                image = drawable(R.drawable.ic_slideshow, color(R.color.icon_dark))
+                onLongClick { showHint(); true }
+            }
+            child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
+                backgroundResource = attr(R.attr.selectableItemBackground).resourceId
+                contentDescription = string(R.string.bookMenuTextToSpeech)
+                image = drawable(R.drawable.ic_volume_up, color(R.color.icon_dark))
+                onLongClick { showHint(); true }
+            }
+            child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
+                backgroundResource = attr(R.attr.selectableItemBackground).resourceId
+                contentDescription = string(R.string.bookMenuAddBookmark)
+                image = drawable(R.drawable.ic_bookmark_border, color(R.color.icon_dark))
+                onLongClick { showHint(); true }
+            }
+        }
+    }
+
+    return view(::LinearLayoutExt) {
+        orientation = LinearLayoutCompat.VERTICAL
+
+        child(top(), params(matchParent, wrapContent, weight = 0F))
+        child(middle(), params(matchParent, wrapContent, weight = 1F))
+        child(bottom(), params(matchParent, wrapContent, weight = 0F))
+
+        onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.close(); true }
+        onInterceptKeyDown(KeyEvent.KEYCODE_MENU) { model.close(); true }
     }
 }

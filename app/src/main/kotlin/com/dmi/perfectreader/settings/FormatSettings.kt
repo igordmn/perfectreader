@@ -34,7 +34,7 @@ class FormatSettings(store: ValueStore) {
     var textShadowColor by store.value(Color.GRAY.value)
 
     var pageAnimationPath by store.value("assets:///resources/animations/curl.xml")
-    var pageBackgroundIsImage by store.value(true)
+    var pageBackgroundIsImage by store.value(false)
     var pageBackgroundColor by store.value(Color.WHITE.value)
     var pageBackgroundPath by store.value("assets:///resources/backgrounds/page/0004.png")
     var pageBackgroundContentAwareResize by store.value(true)

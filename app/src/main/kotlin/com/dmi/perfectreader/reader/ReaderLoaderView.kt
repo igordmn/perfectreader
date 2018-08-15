@@ -1,62 +1,50 @@
 package com.dmi.perfectreader.reader
 
-import android.annotation.SuppressLint
+import android.content.Context
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.common.ViewContext
 import com.dmi.perfectreader.reader.ReaderLoader.LoadError
-import com.dmi.util.android.base.BaseView
-import com.dmi.util.android.base.find
-import com.dmi.util.android.base.string
+import com.dmi.util.android.view.*
+import org.jetbrains.anko.dip
+import org.jetbrains.anko.matchParent
+import org.jetbrains.anko.padding
+import org.jetbrains.anko.wrapContent
 
-class ReaderLoaderView(
-        viewContext: ViewContext,
-        private val model: ReaderLoader
-) : BaseView(viewContext.android, R.layout.readerloader) {
-    private var reader: ReaderView? = null
-    private var readerContainer = find<ViewGroup>(R.id.readerContainer)
-    private val loadIndicator = find<ProgressBar>(R.id.loadIndicator)
-    private val error = find<TextView>(R.id.error)
-
-    init {
-        @SuppressLint("ResourceType")
-        widget.id = 1 // Если id не установить, не будет восстанавливаться состояние View
-
+fun Context.readerLoaderView(model: ReaderLoader) = view(::FrameLayoutExt) {
+    keepScreenOn = true
+    bindChild(model::reader, ::readerView, params(matchParent, matchParent, Gravity.CENTER))
+    child(::ProgressBar, params(wrapContent, wrapContent, Gravity.CENTER)) {
         autorun {
-            loadIndicator.visibility = if (model.isLoading) View.VISIBLE else View.GONE
+            visibility = if (model.isLoading) View.VISIBLE else View.GONE
+        }
+    }
+    child(::TextView, params(wrapContent, wrapContent, Gravity.CENTER)) {
+        fun showError(strId: Int) {
+            visibility = View.VISIBLE
+            text = string(strId)
         }
 
+        padding = dip(16)
         autorun {
-            fun showError(strId: Int) {
-                error.visibility = View.VISIBLE
-                error.text = string(strId)
-            }
-
             when (model.error) {
-                null -> error.visibility = View.GONE
+                null -> visibility = View.GONE
                 is LoadError.IO -> showError(R.string.bookOpenError)
                 is LoadError.NeedOpenThroughFileManager -> showError(R.string.bookNeedOpenThroughFileManager)
                 is LoadError.NeedStoragePermissions -> showError(R.string.bookNeedStoragePermissions)
             }
         }
-
-        autorun {
-            reader = toggleChildByModel(model.reader, reader, R.id.readerContainer) { ReaderView(viewContext, it) }
-            readerContainer.visibility = if (reader != null) View.VISIBLE else View.GONE
-        }
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        return if (reader == null) {
-            if (keyCode == KeyEvent.KEYCODE_BACK)
-                model.close()
+    onInterceptKeyDown(KeyEvent.KEYCODE_BACK) {
+        if (model.reader == null) {
+            model.close()
             true
         } else {
-            super.onKeyDown(keyCode, event)
+            false
         }
     }
 }
