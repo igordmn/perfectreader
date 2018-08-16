@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.selection
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
@@ -53,17 +54,17 @@ class HandlesView(context: Context, private val model: Selection) : View(context
     private class TouchedHandleInfo(var isLeft: Boolean, val touchOffset: PositionF)
 
     private val handleWidth = dip(24)
-    private val additionalTouchRadius = dip(24)
+    private val additionalTouchRadius = dip(8)
     private var touchedHandleInfo: TouchedHandleInfo? = null
 
     private val leftHandle = HandleView(
-            drawable(R.drawable.selection_handle_left, color(R.color.primary)).apply {
+            drawable(R.drawable.selection_handle_left, color(R.color.secondary)).apply {
                 setBounds(-handleWidth, 0, 0, handleWidth)
             }
     )
 
     private val rightHandle = HandleView(
-            drawable(R.drawable.selection_handle_right, color(R.color.primary)).apply {
+            drawable(R.drawable.selection_handle_right, color(R.color.secondary)).apply {
                 setBounds(0, 0, handleWidth, handleWidth)
             }
     )
@@ -74,6 +75,7 @@ class HandlesView(context: Context, private val model: Selection) : View(context
         rightHandle.draw(canvas)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val touchRadius = event.touchMajor / 2 + additionalTouchRadius
         val touchPosition = PositionF(event.x, event.y)

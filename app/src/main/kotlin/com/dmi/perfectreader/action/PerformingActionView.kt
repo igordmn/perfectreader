@@ -5,11 +5,10 @@ import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.cardview.widget.CardView
 import com.dmi.perfectreader.R
 import com.dmi.util.android.view.*
+import com.google.android.material.card.MaterialCardView
 import org.jetbrains.anko.dip
-import org.jetbrains.anko.padding
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.wrapContent
 
@@ -24,24 +23,25 @@ class PerformingActionView(context: Context) : FrameLayout(context) {
     private lateinit var value: TextView
 
     init {
-        child(::CardView, params(wrapContent, wrapContent)) {
-            setBackgroundColor(color(R.color.gray900))
+        child(::MaterialCardView, params(wrapContent, wrapContent)) {
+            setBackgroundColor(color(R.color.secondary))
             elevation = dipFloat(3F)
             useCompatPadding = true
 
             child(::LinearLayoutCompat, params(wrapContent, wrapContent)) {
                 orientation = LinearLayoutCompat.VERTICAL
-                padding = dip(12)
+                gravity = Gravity.CENTER_HORIZONTAL
+                setPadding(dip(12), dip(4), dip(12), dip(4))
 
-                name = child(::TextView, params(wrapContent, wrapContent, Gravity.CENTER)) {
+                name = child(::TextView, params(wrapContent, wrapContent)) {
                     isAllCaps = true
-                    textColor = color(R.color.text_secondary_light)
+                    textColor = color(R.color.onSecondary)
                     textSize = spFloat(16F)
                 }
 
-                value = child(::TextView, params(wrapContent, wrapContent, Gravity.CENTER)) {
+                value = child(::TextView, params(wrapContent, wrapContent)) {
                     isAllCaps = true
-                    textColor = color(R.color.text_primary_light)
+                    textColor = color(R.color.onSecondary)
                     textSize = spFloat(24F)
                 }
             }

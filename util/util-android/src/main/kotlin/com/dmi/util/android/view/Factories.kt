@@ -26,9 +26,9 @@ fun LinearLayoutCompat.params(
         bottomMargin: Int = 0
 ) = LinearLayoutCompat.LayoutParams(width, height, weight).apply {
     this.leftMargin = leftMargin
-    this.topMargin = leftMargin
-    this.rightMargin = leftMargin
-    this.bottomMargin = leftMargin
+    this.topMargin = topMargin
+    this.rightMargin = rightMargin
+    this.bottomMargin = bottomMargin
 }
 
 @Suppress("unused")

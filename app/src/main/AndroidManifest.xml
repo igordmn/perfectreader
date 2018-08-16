@@ -17,7 +17,7 @@
         android:label="Perfect Reader"
         android:largeHeap="true"
         android:supportsRtl="false"
-        android:theme="@style/AppTheme">
+        android:theme="@style/Theme.Main">
 
         <activity
             android:name=".MainActivity"

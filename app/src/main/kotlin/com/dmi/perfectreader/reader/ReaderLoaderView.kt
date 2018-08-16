@@ -6,13 +6,11 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.reader.ReaderLoader.LoadError
 import com.dmi.util.android.view.*
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.wrapContent
+import org.jetbrains.anko.*
 
 fun Context.readerLoaderView(model: ReaderLoader) = view(::FrameLayoutExt) {
     keepScreenOn = true
@@ -24,8 +22,10 @@ fun Context.readerLoaderView(model: ReaderLoader) = view(::FrameLayoutExt) {
     }
     child(::TextView, params(wrapContent, wrapContent, Gravity.CENTER)) {
         fun showError(strId: Int) {
+            TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
             visibility = View.VISIBLE
             text = string(strId)
+            textColor = color(R.color.onBackground)
         }
 
         padding = dip(16)

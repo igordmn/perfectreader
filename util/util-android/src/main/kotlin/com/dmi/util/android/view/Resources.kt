@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import org.jetbrains.anko.layoutInflater
+import org.jetbrains.anko.withAlpha
 
 fun View.dipFloat(value: Float): Float = value * resources.displayMetrics.density
 fun View.spFloat(value: Float): Float = value * resources.displayMetrics.scaledDensity
@@ -20,10 +21,12 @@ fun View.drawable(resID: Int, tintColor: Int): Drawable = drawable(resID).apply 
 
 fun View.string(resID: Int): String = context.getString(resID)
 
-fun View.attr(value : Int) : TypedValue {
+fun View.attr(value: Int): TypedValue {
     val ret = TypedValue()
     context.theme.resolveAttribute(value, ret, true)
     return ret
 }
 
 inline fun <reified T> Context.inflate(id: Int): T = layoutInflater.inflate(id, null, false) as T
+
+fun Int.withTransparency(transparency: Double) = withAlpha((transparency * 255).toInt())

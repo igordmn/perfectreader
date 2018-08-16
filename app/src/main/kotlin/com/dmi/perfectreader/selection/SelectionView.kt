@@ -9,9 +9,9 @@ import android.widget.ScrollView
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.TooltipCompat
-import androidx.cardview.widget.CardView
 import com.dmi.perfectreader.R
 import com.dmi.util.android.view.*
+import com.google.android.material.card.MaterialCardView
 import org.jetbrains.anko.*
 
 fun Context.selectionView(model: Selection) = view(::FrameLayoutExt) {
@@ -24,12 +24,12 @@ fun Context.selectionView(model: Selection) = view(::FrameLayoutExt) {
         actions.layoutParams = layoutParams
     }
 
-    fun actions() = view(::CardView) {
-        cardElevation = dipFloat(8F)
+    fun actions() = view(::MaterialCardView) {
+        cardElevation = dipFloat(6F)
         useCompatPadding = true
 
         child(::ScrollView, params(wrapContent, wrapContent)) {
-            backgroundColor = color(R.color.gray100)
+            backgroundColor = color(R.color.background)
 
             child(::LinearLayoutCompat, params(wrapContent, wrapContent)) {
                 orientation = LinearLayoutCompat.HORIZONTAL
@@ -37,17 +37,17 @@ fun Context.selectionView(model: Selection) = view(::FrameLayoutExt) {
                 child(::AppCompatImageButton, params(dip(48), dip(48))) {
                     backgroundResource = attr(R.attr.selectableItemBackground).resourceId
                     contentDescription = string(R.string.selectionCopyText)
-                    image = drawable(R.drawable.ic_content_copy, color(R.color.icon_dark))
-                    onClick { model.copySelectedText() }
+                    image = drawable(R.drawable.ic_content_copy, color(R.color.onBackground))
                     TooltipCompat.setTooltipText(this, contentDescription)
+                    onClick { model.copySelectedText() }
                 }
 
                 child(::AppCompatImageButton, params(dip(48), dip(48))) {
                     backgroundResource = attr(R.attr.selectableItemBackground).resourceId
                     contentDescription = string(R.string.selectionTranslateText)
-                    image = drawable(R.drawable.ic_translate, color(R.color.icon_dark))
-                    onClick { model.translateSelectedText() }
+                    image = drawable(R.drawable.ic_translate, color(R.color.onBackground))
                     TooltipCompat.setTooltipText(this, contentDescription)
+                    onClick { model.translateSelectedText() }
                 }
             }
         }
@@ -61,7 +61,7 @@ fun Context.selectionView(model: Selection) = view(::FrameLayoutExt) {
     }
 
     child(::FrameLayout, params(matchParent, matchParent)) {
-        layoutTransition = fadeTransition(200)
+        layoutTransition = fadeTransition(300)
         val actions = child(actions(), params(wrapContent, wrapContent))
         onSizeChange { _, _ ->
             updateActions(this, actions)

@@ -74,7 +74,7 @@ fun <M : Any, V : View> FrameLayout.bindChild(
         model: KProperty0<M?>,
         view: (M, old: V?) -> V,
         params: ViewGroup.LayoutParams,
-        init: (container: FrameLayout) -> Unit = {}
+        init: FrameLayout.() -> Unit = {}
 ): FrameLayout {
     val container = FrameLayout(context)
     container.layoutParams = params
@@ -82,13 +82,15 @@ fun <M : Any, V : View> FrameLayout.bindChild(
     autorun {
         val value = model.get()
         if (value == null) {
-            container.removeAllViews()
+            if (old != null)
+                container.removeView(old)
             old = null
         } else {
             val created = view(value, old)
             created.layoutParams = FrameLayout.LayoutParams(matchParent, matchParent)
             if (created !== old) {
-                container.removeAllViews()
+                if (old != null)
+                    container.removeView(old)
                 container.addView(created)
             }
             old = created
@@ -104,7 +106,7 @@ fun <M : Any, V : View> FrameLayout.bindChild(
         model: KProperty0<M?>,
         view: Context.(M, old: V?) -> V,
         params: ViewGroup.LayoutParams,
-        init: (container: FrameLayout) -> Unit = {}
+        init: FrameLayout.() -> Unit = {}
 ): FrameLayout {
     fun view(model: M, old: V?): V = context.view(model, old)
     return bindChild(model, ::view, params, init)
@@ -115,7 +117,7 @@ fun <M : Any> FrameLayout.bindChild(
         model: KProperty0<M?>,
         view: (M) -> View,
         params: ViewGroup.LayoutParams,
-        init: (container: FrameLayout) -> Unit = {}
+        init: FrameLayout.() -> Unit = {}
 ): FrameLayout {
     @Suppress("UNUSED_PARAMETER")
     fun view(model: M, old: View?) = view(model)
@@ -127,7 +129,7 @@ fun <M : Any> FrameLayout.bindChild(
         model: KProperty0<M?>,
         view: Context.(M) -> View,
         params: ViewGroup.LayoutParams,
-        init: (container: FrameLayout) -> Unit = {}
+        init: FrameLayout.() -> Unit = {}
 ): FrameLayout {
     @Suppress("UNUSED_PARAMETER")
     fun Context.view(model: M, old: View?) = view(model)
