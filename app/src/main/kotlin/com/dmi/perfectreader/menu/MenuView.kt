@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.widget.TooltipCompat
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
 import com.dmi.util.android.view.*
@@ -117,31 +118,31 @@ fun Context.menuView(model: Menu): View {
                 backgroundResource = attr(R.attr.selectableItemBackground).resourceId
                 contentDescription = string(R.string.bookMenuSearch)
                 image = drawable(R.drawable.ic_search, color(R.color.icon_dark))
-                onLongClick { showHint(); true }
+                TooltipCompat.setTooltipText(this, contentDescription)
             }
             child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
                 backgroundResource = attr(R.attr.selectableItemBackground).resourceId
                 contentDescription = string(R.string.bookMenuSwitchTheme)
                 image = drawable(R.drawable.ic_style, color(R.color.icon_dark))
-                onLongClick { showHint(); true }
+                TooltipCompat.setTooltipText(this, contentDescription)
             }
             child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
                 backgroundResource = attr(R.attr.selectableItemBackground).resourceId
                 contentDescription = string(R.string.bookMenuAutoScroll)
                 image = drawable(R.drawable.ic_slideshow, color(R.color.icon_dark))
-                onLongClick { showHint(); true }
+                TooltipCompat.setTooltipText(this, contentDescription)
             }
             child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
                 backgroundResource = attr(R.attr.selectableItemBackground).resourceId
                 contentDescription = string(R.string.bookMenuTextToSpeech)
                 image = drawable(R.drawable.ic_volume_up, color(R.color.icon_dark))
-                onLongClick { showHint(); true }
+                TooltipCompat.setTooltipText(this, contentDescription)
             }
             child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
                 backgroundResource = attr(R.attr.selectableItemBackground).resourceId
                 contentDescription = string(R.string.bookMenuAddBookmark)
                 image = drawable(R.drawable.ic_bookmark_border, color(R.color.icon_dark))
-                onLongClick { showHint(); true }
+                TooltipCompat.setTooltipText(this, contentDescription)
             }
         }
     }

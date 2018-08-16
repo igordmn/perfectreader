@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import android.widget.ScrollView
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.appcompat.widget.TooltipCompat
 import androidx.cardview.widget.CardView
 import com.dmi.perfectreader.R
 import com.dmi.util.android.view.*
@@ -38,7 +39,7 @@ fun Context.selectionView(model: Selection) = view(::FrameLayoutExt) {
                     contentDescription = string(R.string.selectionCopyText)
                     image = drawable(R.drawable.ic_content_copy, color(R.color.icon_dark))
                     onClick { model.copySelectedText() }
-                    onLongClick { showHint(); true }
+                    TooltipCompat.setTooltipText(this, contentDescription)
                 }
 
                 child(::AppCompatImageButton, params(dip(48), dip(48))) {
@@ -46,7 +47,7 @@ fun Context.selectionView(model: Selection) = view(::FrameLayoutExt) {
                     contentDescription = string(R.string.selectionTranslateText)
                     image = drawable(R.drawable.ic_translate, color(R.color.icon_dark))
                     onClick { model.translateSelectedText() }
-                    onLongClick { showHint(); true }
+                    TooltipCompat.setTooltipText(this, contentDescription)
                 }
             }
         }
