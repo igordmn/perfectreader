@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.opengl.GLES20.*
 import android.opengl.GLSurfaceView
-import android.view.View
 import android.widget.FrameLayout
 import com.dmi.util.coroutine.initThreadContext
 import com.dmi.util.graphic.Size
@@ -14,9 +14,10 @@ import com.dmi.util.scope.CopyScope
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope.Companion.onchange
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.android.UI
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.egl.EGLContext
@@ -37,12 +38,12 @@ class GLSurfaceScopedView(
         override fun dispatch(context: CoroutineContext, block: Runnable) = glSurfaceView.queueEvent(block)
     }
 
-    private var scope: CopyScope? = null
+    private var scope: CopyScope
     private var createRendererScoped: ((Size) -> Renderer)? = null
+    private val job = Job()
 
-    @Volatile
-    private var scopeInit = false
-    private val afterScopeInit = ArrayList<() -> Unit>()
+    private var initComplete = false
+    private val afterInit = ArrayList<() -> Unit>()
 
     private var renderer: Renderer? = null
 
@@ -59,17 +60,28 @@ class GLSurfaceScopedView(
         glSurfaceView.setEGLContextFactory(DefaultContextFactory())
         glSurfaceView.setRenderer(OriginalRenderer())
         glSurfaceView.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
-        visibility = View.INVISIBLE
+        scope = CopyScope(coroutineContext, UI)
+
         glSurfaceView.queueEvent {
+            // if we there, then scope already initialized
+
             initThreadContext(coroutineContext)
-            runBlocking(UI) {
-                scope = CopyScope(coroutineContext, UI)
-                createRendererScoped = createRenderer(scope!!)
+            launch(UI, parent = job) {
+                initUI()
             }
-            scopeInit = true
-            afterScopeInit.forEach { it() }
-            afterScopeInit.clear()
         }
+    }
+
+    private fun initUI() {
+        createRendererScoped = createRenderer(scope)
+        glSurfaceView.queueEvent { initGL() }
+    }
+
+    private fun initGL() {
+        initComplete = true
+        afterInit.forEach { it() }
+        afterInit.clear()
+        glSurfaceView.requestRender()
     }
 
     fun onPause() = glSurfaceView.onPause()
@@ -84,7 +96,8 @@ class GLSurfaceScopedView(
     }
 
     override fun onDetachedFromWindow() {
-        scope?.dispose()
+        job.cancel()
+        scope.dispose()
         detached = true
         super.onDetachedFromWindow()
     }
@@ -96,11 +109,11 @@ class GLSurfaceScopedView(
         fun draw()
     }
 
-    @Volatile
-    private var blackFlickeringFixApplied = false
-
     private inner class OriginalRenderer : GLSurfaceView.Renderer {
-        override fun onSurfaceCreated(gl: GL10, config: EGLConfig) = Unit
+        override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
+            glClearColor(1F, 1F, 1F, 1F)
+            glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+        }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
             fun init() {
@@ -108,17 +121,10 @@ class GLSurfaceScopedView(
                 renderer = createRendererScoped!!(Size(width, height))
             }
 
-            if (scopeInit) {
+            if (initComplete) {
                 init()
             } else {
-                afterScopeInit.add(::init)
-            }
-
-            if (!blackFlickeringFixApplied) {
-                runBlocking(UI) {
-                    visibility = View.VISIBLE
-                }
-                blackFlickeringFixApplied = true
+                afterInit.add(::init)
             }
         }
 
@@ -140,7 +146,7 @@ class GLSurfaceScopedView(
         }
 
         override fun destroyContext(egl: EGL10, display: EGLDisplay, context: EGLContext) {
-            afterScopeInit.clear()
+            afterInit.clear()
             renderer?.dispose()
             renderer = null
 
