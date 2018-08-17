@@ -4,6 +4,7 @@ import android.view.MenuItem
 import android.view.View
 import com.dmi.util.graphic.Size
 import org.jetbrains.anko.onLayoutChange
+import org.jetbrains.anko.onTouch
 
 val View.size: Size get() = Size(width, height)
 
@@ -20,3 +21,5 @@ fun View.onSizeChange(listener: (size: Size, oldSize: Size) -> Unit) {
 }
 
 fun MenuItem.onClick(action: () -> Unit) = setOnMenuItemClickListener { action(); true }
+
+fun View.dontSendTouchToParent() = onTouch { _, _ -> true }

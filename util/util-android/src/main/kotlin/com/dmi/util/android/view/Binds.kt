@@ -2,7 +2,6 @@ package com.dmi.util.android.view
 
 import android.content.Context
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
@@ -11,6 +10,7 @@ import kotlinx.coroutines.android.UI
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.onAttachStateChangeListener
+import org.jetbrains.anko.wrapContent
 import kotlin.reflect.KProperty0
 
 /**
@@ -73,7 +73,7 @@ fun View.autorun(action: () -> Unit) {
 fun <M : Any, V : View> FrameLayout.bindChild(
         model: KProperty0<M?>,
         view: (M, old: V?) -> V,
-        params: ViewGroup.LayoutParams,
+        params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(wrapContent, wrapContent),
         init: FrameLayout.() -> Unit = {}
 ): FrameLayout {
     val container = FrameLayout(context)
@@ -105,7 +105,7 @@ fun <M : Any, V : View> FrameLayout.bindChild(
 fun <M : Any, V : View> FrameLayout.bindChild(
         model: KProperty0<M?>,
         view: Context.(M, old: V?) -> V,
-        params: ViewGroup.LayoutParams,
+        params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(wrapContent, wrapContent),
         init: FrameLayout.() -> Unit = {}
 ): FrameLayout {
     fun view(model: M, old: V?): V = context.view(model, old)
@@ -116,7 +116,7 @@ fun <M : Any, V : View> FrameLayout.bindChild(
 fun <M : Any> FrameLayout.bindChild(
         model: KProperty0<M?>,
         view: (M) -> View,
-        params: ViewGroup.LayoutParams,
+        params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(wrapContent, wrapContent),
         init: FrameLayout.() -> Unit = {}
 ): FrameLayout {
     @Suppress("UNUSED_PARAMETER")
@@ -128,7 +128,7 @@ fun <M : Any> FrameLayout.bindChild(
 fun <M : Any> FrameLayout.bindChild(
         model: KProperty0<M?>,
         view: Context.(M) -> View,
-        params: ViewGroup.LayoutParams,
+        params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(wrapContent, wrapContent),
         init: FrameLayout.() -> Unit = {}
 ): FrameLayout {
     @Suppress("UNUSED_PARAMETER")

@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.widget.LinearLayoutCompat
+import org.jetbrains.anko.wrapContent
 
 fun <T : View> Context.view(
         create: (Context) -> T,
@@ -40,7 +41,7 @@ fun FrameLayout.params(
 
 fun <T : View> LinearLayoutCompat.child(
         create: (Context) -> T,
-        params: LinearLayoutCompat.LayoutParams,
+        params: LinearLayoutCompat.LayoutParams = LinearLayoutCompat.LayoutParams(wrapContent, wrapContent),
         init: T.() -> Unit = {}
 ): T = child(context.view(create, init), params)
 
@@ -54,7 +55,7 @@ fun <T : View> LinearLayoutCompat.child(
 
 fun <T : View> FrameLayout.child(
         create: (Context) -> T,
-        params: FrameLayout.LayoutParams,
+        params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(wrapContent, wrapContent),
         init: T.() -> Unit = {}
 ): T = child(context.view(create, init), params)
 

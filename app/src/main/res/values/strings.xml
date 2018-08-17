@@ -92,4 +92,7 @@
     <string name="actionChangeTextScaleX">Ширина текста</string>
     <string name="actionChangeTextLetterSpacing">Межбуквенное расстояние</string>
     <string name="actionChangeScreenBrightness">Яркость подсветки</string>
+
+    <string name="settingsChangeText">Текст</string>
+    <string name="settingsChangeView">Вид</string>
 </resources>

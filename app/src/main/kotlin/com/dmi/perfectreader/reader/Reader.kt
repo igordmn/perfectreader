@@ -10,6 +10,8 @@ import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.control.Control
 import com.dmi.perfectreader.menu.Menu
 import com.dmi.perfectreader.selection.Selection
+import com.dmi.perfectreader.settingschange.SettingsChange
+import com.dmi.util.lang.then
 import com.dmi.util.scope.Scoped
 import com.dmi.util.system.ApplicationWindow
 
@@ -28,6 +30,7 @@ class Reader(
     val control: Control = Control(main, this)
     var selection: Selection? by scope.value(null)
     var menu: Menu? by scope.value(null)
+    var settingsChange: SettingsChange? by scope.value(null)
     var performingAction: PerformingAction? by scope.value(null)
 
     fun createSelection(range: LocationRange?): Selection? = if (range != null) {
@@ -43,10 +46,22 @@ class Reader(
         menu = if (menu == null) createMenu() else null
     }
 
-    private fun createMenu(): Menu {
-        val closeMenu = {
-            menu = null
-        }
-        return Menu(book, closeMenu)
+    private fun createMenu() = Menu(book, ::hideMenu then ::showSettings, back = ::hideMenu)
+    private fun createSettings() = SettingsChange(back = ::hideSettings)
+
+    private fun hideMenu() {
+        menu = null
+    }
+
+    private fun showMenu() {
+        menu = createMenu()
+    }
+
+    private fun showSettings() {
+        settingsChange = createSettings()
+    }
+
+    private fun hideSettings() {
+        settingsChange = null
     }
 }

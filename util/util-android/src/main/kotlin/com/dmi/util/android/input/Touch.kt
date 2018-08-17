@@ -22,7 +22,7 @@ private fun MotionEvent.performMoveTouchEvents(perform: (TouchEvent) -> Unit) {
 }
 
 private fun MotionEvent.performHistoricalTouchEvents(perform: (TouchEvent) -> Unit, action: TouchAction) {
-    for (historyIndex in 0..historySize - 1) {
+    for (historyIndex in 0 until historySize) {
         val fingers = newTouchAreas { fingerIndex ->
             val x = getHistoricalX(fingerIndex, historyIndex)
             val y = getHistoricalY(fingerIndex, historyIndex)

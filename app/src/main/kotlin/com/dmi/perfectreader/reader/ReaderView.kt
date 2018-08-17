@@ -8,6 +8,7 @@ import com.dmi.perfectreader.book.bookView
 import com.dmi.perfectreader.control.controlView
 import com.dmi.perfectreader.menu.menuView
 import com.dmi.perfectreader.selection.selectionView
+import com.dmi.perfectreader.settingschange.settingsChangeView
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.matchParent
@@ -21,6 +22,9 @@ fun Context.readerView(model: Reader) = view(::FrameLayout) {
         layoutTransition = fadeTransition(300)
     }
     bindChild(model::menu, Context::menuView, params(matchParent, matchParent)) {
+        layoutTransition = fadeTransition(300)
+    }
+    bindChild(model::settingsChange, Context::settingsChangeView, params(matchParent, matchParent)) {
         layoutTransition = fadeTransition(300)
     }
     bindChild(model::performingAction, Context::performingActionView, params(wrapContent, wrapContent, Gravity.CENTER_HORIZONTAL)) {

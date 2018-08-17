@@ -45,12 +45,11 @@ fun Context.menuView(model: Menu): View {
     }
 
     fun top() = view(::LinearLayoutCompat) {
-        isClickable = true
-        isFocusable = true
         orientation = LinearLayoutCompat.VERTICAL
         backgroundColor = color(R.color.background)
         elevation = dipFloat(4F)
         child(::Toolbar, params(matchParent, wrapContent)) {
+            setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
             backgroundColor = color(android.R.color.transparent)
             navigationIcon = drawable(R.drawable.ic_arrow_back)
             popupTheme = R.style.Theme_AppCompat_Light
@@ -88,7 +87,7 @@ fun Context.menuView(model: Menu): View {
         backgroundColor = color(android.R.color.transparent)
         isClickable = true
         isFocusable = true
-        onClick { model.close() }
+        onClick { model.back() }
     }
 
     fun bottom() = view(::LinearLayoutCompat) {
@@ -154,12 +153,13 @@ fun Context.menuView(model: Menu): View {
 
     return view(::LinearLayoutExt) {
         orientation = LinearLayoutCompat.VERTICAL
+        dontSendTouchToParent()
 
         child(top(), params(matchParent, wrapContent, weight = 0F))
         child(middle(), params(matchParent, wrapContent, weight = 1F))
         child(bottom(), params(matchParent, wrapContent, weight = 0F))
 
-        onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.close(); true }
-        onInterceptKeyDown(KeyEvent.KEYCODE_MENU) { model.close(); true }
+        onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.back(); true }
+        onInterceptKeyDown(KeyEvent.KEYCODE_MENU) { model.back(); true }
     }
 }
