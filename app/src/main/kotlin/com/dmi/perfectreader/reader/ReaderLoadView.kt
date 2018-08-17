@@ -8,11 +8,11 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.reader.ReaderLoader.LoadError
+import com.dmi.perfectreader.reader.ReaderLoad.LoadError
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.*
 
-fun Context.readerLoaderView(model: ReaderLoader) = view(::FrameLayoutExt) {
+fun Context.readerLoadView(model: ReaderLoad) = view(::FrameLayoutExt) {
     keepScreenOn = true
     bindChild(model::reader, ::readerView, params(matchParent, matchParent, Gravity.CENTER))
     child(::ProgressBar, params(wrapContent, wrapContent, Gravity.CENTER)) {
@@ -24,8 +24,9 @@ fun Context.readerLoaderView(model: ReaderLoader) = view(::FrameLayoutExt) {
         fun showError(strId: Int) {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
             visibility = View.VISIBLE
+            gravity = Gravity.CENTER
             text = string(strId)
-            textColor = color(R.color.onBackground)
+            textColor = color(R.color.onBackground).withTransparency(0.60)
         }
 
         padding = dip(16)

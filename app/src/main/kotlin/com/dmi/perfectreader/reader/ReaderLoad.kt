@@ -10,7 +10,7 @@ import com.dmi.util.scope.Scoped
 import com.dmi.util.system.ApplicationWindow
 import java.io.IOException
 
-class ReaderLoader(
+class ReaderLoad(
         private val main: Main,
         private val window: ApplicationWindow,
         private val intent: Intent,
