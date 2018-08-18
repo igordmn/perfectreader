@@ -77,7 +77,7 @@ fun <M : Any, V : View> FrameLayout.bindChild(
         init: FrameLayout.() -> Unit = {}
 ): FrameLayout {
     val container = FrameLayout(context)
-    container.layoutParams = params
+    container.layoutParams = FrameLayout.LayoutParams(matchParent, matchParent)
     var old: V? = null
     autorun {
         val value = model.get()
@@ -87,7 +87,7 @@ fun <M : Any, V : View> FrameLayout.bindChild(
             old = null
         } else {
             val created = view(value, old)
-            created.layoutParams = FrameLayout.LayoutParams(matchParent, matchParent)
+            created.layoutParams = params
             if (created !== old) {
                 if (old != null)
                     container.removeView(old)
