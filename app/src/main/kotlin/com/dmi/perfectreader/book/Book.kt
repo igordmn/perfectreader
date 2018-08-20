@@ -85,9 +85,7 @@ class Book(
     )
 
     private val formatConfig by scope.cached {
-        val userDirectory = main.protocols.fileFor(main.settings.system.fontsPath)
-        val fontCollection = main.fontCollectionCache.collectionFor(userDirectory)
-        appFormatConfig(main.applicationContext, main.settings, fontCollection)
+        appFormatConfig(main.applicationContext, main.settings, main.fontCollection)
     }
 
     private val sized: Sized by scope.cachedDisposable(recache = onchange { size; formatConfig }) {

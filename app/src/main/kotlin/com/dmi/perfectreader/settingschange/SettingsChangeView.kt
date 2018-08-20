@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.viewpager.widget.ViewPager
 import com.dmi.perfectreader.R
 import com.dmi.util.android.view.*
 import com.google.android.material.tabs.TabLayout
@@ -22,12 +21,27 @@ fun Context.settingsChangeView(model: SettingsChange): View {
         onClick { model.back() }
     }
 
-    fun textSettings() = view(::TextView) {
-        text = "textSettings"
+    fun fontSettings() = view(::LinearLayoutCompat) {
+        child(settingsChangeFontView().apply {
+            clipToPadding = false
+            padding = dip(16)
+        }, params(matchParent, wrapContent))
     }
 
-    fun viewSettings() = view(::TextView) {
-        text = "viewSettings"
+    fun formatSettings() = view(::TextView) {
+        text = "formatSettings"
+    }
+
+    fun themeSettings() = view(::TextView) {
+        text = "themeSettings"
+    }
+
+    fun screenSettings() = view(::TextView) {
+        text = "screenSettings"
+    }
+
+    fun controlSettings() = view(::TextView) {
+        text = "controlSettings"
     }
 
     fun bottom() = view(::LinearLayoutCompat) {
@@ -35,13 +49,20 @@ fun Context.settingsChangeView(model: SettingsChange): View {
         backgroundColor = color(R.color.background)
         elevation = dipFloat(8F)
 
-        val tabLayout = child(TabLayout(context), params(matchParent, wrapContent, weight = 0F))
-        child(::ViewPager, params(matchParent, matchParent, weight = 1F)) {
-            tabLayout.setupWithViewPager(this)
+        val tabLayout = child(::TabLayout, params(matchParent, wrapContent, weight = 0F)) {
+            tabMode = TabLayout.MODE_SCROLLABLE
+        }
+
+        child(::ViewPagerExt, params(matchParent, matchParent, weight = 1F)) {
+            isScrollEnabled = false
             adapter = ViewPagerAdapter(
-                    string(R.string.settingsChangeText) to ::textSettings,
-                    string(R.string.settingsChangeView) to ::viewSettings
+                    string(R.string.settingsChangeFont) to ::fontSettings,
+                    string(R.string.settingsChangeFormat) to ::formatSettings,
+                    string(R.string.settingsChangeTheme) to ::themeSettings,
+                    string(R.string.settingsChangeScreen) to ::screenSettings,
+                    string(R.string.settingsChangeControl) to ::controlSettings
             )
+            tabLayout.setupWithViewPager(this)
         }
     }
 
@@ -50,7 +71,7 @@ fun Context.settingsChangeView(model: SettingsChange): View {
         dontSendTouchToParent()
 
         child(space(), params(matchParent, matchParent, weight = 1F))
-        child(bottom(), params(matchParent, dip(300), weight = 0F))
+        child(bottom(), params(matchParent, dip(320), weight = 0F))
 
         onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.back(); true }
         onInterceptKeyDown(KeyEvent.KEYCODE_MENU) { model.back(); true }

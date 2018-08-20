@@ -30,6 +30,6 @@ fun loadDefaultAndroidFont(styleName: String): StyledFont {
         "Bold Italic" -> Typeface.NORMAL
         else -> Typeface.NORMAL
     }
-    val font = AndroidFont(Typeface.create(Typeface.SERIF, style))
+    val font = AndroidFont(Typeface.create(Typeface.SANS_SERIF, style))
     return StyledFont(font, isFakeBold = false, isFakeItalic = false)
 }

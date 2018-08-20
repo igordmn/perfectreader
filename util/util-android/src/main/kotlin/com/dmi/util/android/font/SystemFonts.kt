@@ -8,6 +8,11 @@ import java.util.*
 import javax.xml.parsers.SAXParserFactory
 
 fun androidSystemFontFiles(log: Log): Sequence<File> = try {
+    /*
+     * todo in Emulator API27 system_fonts.xml doesn't exist
+     * instead we need to use fonts.xml
+     * or maybe directly load all fonts from folder
+     */
     parseFontFilesFromFontConfig(File("/system/fonts"), File("/etc/system_fonts.xml"))
 } catch (e: Exception) {
     log.e(e, "Cannot read system fonts")

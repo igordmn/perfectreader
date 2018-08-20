@@ -93,6 +93,9 @@
     <string name="actionChangeTextLetterSpacing">Межбуквенное расстояние</string>
     <string name="actionChangeScreenBrightness">Яркость подсветки</string>
 
-    <string name="settingsChangeText">Текст</string>
-    <string name="settingsChangeView">Вид</string>
+    <string name="settingsChangeFont">Шрифт</string>
+    <string name="settingsChangeFormat">Формат</string>
+    <string name="settingsChangeTheme">Тема</string>
+    <string name="settingsChangeScreen">Экран</string>
+    <string name="settingsChangeControl">Управление</string>
 </resources>

@@ -108,7 +108,7 @@ private fun normalizeStyleName(styleName: String): String {
 }
 
 class FontFileCollection(
-        val familyNames: Collection<String>,
+        val familyNames: List<String>,
         private val lowercaseFamilyToStyles: Map<String, List<Style>>
 ) {
     fun stylesFor(familyName: String): List<Style>? = lowercaseFamilyToStyles[familyName.toLowerCase()]

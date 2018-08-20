@@ -13,11 +13,11 @@ class FontCollection(
     private val fileToFontCache = cache<File, Font>(softValues = true) {
         loadFont(it)
     }
-    val familyNames: Collection<String> get() = fileCollection.familyNames
+    val familyNames: List<String> = listOf("") + fileCollection.familyNames
 
     fun loadFont(familyName: String, styleName: String): StyledFont {
         if (familyName == "")
-            return loadDefaultFont(familyName)
+            return loadDefaultFont(styleName)
 
         val style = fileCollection.styleFor(familyName, styleName)
         return if (style != null) {
