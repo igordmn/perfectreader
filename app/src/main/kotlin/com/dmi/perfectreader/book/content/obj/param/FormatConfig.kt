@@ -64,7 +64,7 @@ fun appFormatConfig(context: Context, settings: Settings, fontCollection: FontCo
                 settings.format.pagePaddingTopDip,
                 settings.format.pagePaddingBottomDip
         ),
-        pageTextGammaCorrection = settings.format.pageGammaCorrection,
+        pageTextGammaCorrection = settings.format.pageTextGammaCorrection,
 
         firstLineIndentEm = settings.format.firstLineIndentEm,
         textAlign = settings.format.textAlign,

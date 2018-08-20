@@ -38,7 +38,7 @@ class FormatSettings(store: ValueStore) {
     var pageBackgroundColor by store.value(Color.WHITE.value)
     var pageBackgroundPath by store.value("assets:///resources/backgrounds/page/0004.png")
     var pageBackgroundContentAwareResize by store.value(true)
-    var pageGammaCorrection by store.value(1F)
+    var pageTextGammaCorrection by store.value(1F)
     var pagePaddingLeftDip by store.value(20F)
     var pagePaddingRightDip by store.value(20F)
     var pagePaddingTopDip by store.value(20F)
