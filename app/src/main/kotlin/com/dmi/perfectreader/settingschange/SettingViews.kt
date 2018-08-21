@@ -7,7 +7,12 @@ import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
+import com.dmi.perfectreader.settingschange.SettingValues.TEXT_SIZE
+import com.dmi.perfectreader.settingschange.SettingValues.TEXT_SKALEX
+import com.dmi.perfectreader.settingschange.SettingValues.TEXT_SKEWX
+import com.dmi.perfectreader.settingschange.SettingValues.TEXT_STROKE_WIDTH
 import com.dmi.perfectreader.settingschange.common.SettingScrollView
+import com.dmi.perfectreader.settingschange.common.settingFloatView
 import com.dmi.util.android.font.AndroidFont
 import com.dmi.util.android.view.color
 import com.dmi.util.font.FontCollection
@@ -51,3 +56,31 @@ fun Context.settingsChangeFontView(): RecyclerView {
             FontView::bind
     )
 }
+
+fun Context.settingsChangeFontSize() = settingFloatView(
+        main.settings.format::textSizeDip,
+        TEXT_SIZE,
+        R.drawable.settings_font_size_dec,
+        R.drawable.settings_font_size_inc
+)
+
+fun Context.settingsChangeFontSkewX() = settingFloatView(
+        main.settings.format::textSkewX,
+        TEXT_SKEWX,
+        R.drawable.settings_font_skewx_dec,
+        R.drawable.settings_font_skewx_inc
+)
+
+fun Context.settingsChangeFontScaleX() = settingFloatView(
+        main.settings.format::textScaleX,
+        TEXT_SKALEX,
+        R.drawable.settings_font_scalex_dec,
+        R.drawable.settings_font_scalex_inc
+)
+
+fun Context.settingsChangeFontStrokeWidth() = settingFloatView(
+        main.settings.format::textStrokeWidthDip,
+        TEXT_STROKE_WIDTH,
+        R.drawable.settings_font_stroke_dec,
+        R.drawable.settings_font_stroke_inc
+)

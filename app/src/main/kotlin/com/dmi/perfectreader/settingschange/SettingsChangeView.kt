@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.settingschange
 
 import android.content.Context
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.widget.FrameLayout
@@ -22,10 +23,42 @@ fun Context.settingsChangeView(model: SettingsChange): View {
     }
 
     fun fontSettings() = view(::LinearLayoutCompat) {
+        orientation = LinearLayoutCompat.VERTICAL
+
         child(settingsChangeFontView().apply {
             clipToPadding = false
-            padding = dip(16)
-        }, params(matchParent, wrapContent))
+            setPadding(dip(16), 0, dip(16), 0)
+        }, params(matchParent, wrapContent) {
+            topMargin = dip(16)
+        })
+
+        child(::LinearLayoutCompat, params(matchParent, wrapContent) {
+            topMargin = dip(16)
+            leftMargin = dip(16)
+            rightMargin = dip(16)
+        }) {
+            orientation = LinearLayoutCompat.VERTICAL
+
+            child(::LinearLayoutCompat, params(wrapContent, wrapContent, gravity = Gravity.CENTER_HORIZONTAL)) {
+                orientation = LinearLayoutCompat.HORIZONTAL
+                child(settingsChangeFontSize(), params(wrapContent, wrapContent) {
+                    rightMargin = dip(24)
+                })
+                child(settingsChangeFontSkewX(), params(wrapContent, wrapContent) {
+                    leftMargin = dip(24)
+                })
+            }
+
+            child(::LinearLayoutCompat, params(wrapContent, wrapContent, gravity = Gravity.CENTER_HORIZONTAL)) {
+                orientation = LinearLayoutCompat.HORIZONTAL
+                child(settingsChangeFontScaleX(), params(wrapContent, wrapContent) {
+                    rightMargin = dip(24)
+                })
+                child(settingsChangeFontStrokeWidth(), params(wrapContent, wrapContent) {
+                    leftMargin = dip(24)
+                })
+            }
+        }
     }
 
     fun formatSettings() = view(::TextView) {

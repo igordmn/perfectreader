@@ -48,6 +48,15 @@ fun @TestDsl LinearLayoutCompat.params(
     this.bottomMargin = bottomMargin
 }
 
+
+@Suppress("unused")
+fun @TestDsl LinearLayoutCompat.params(
+        width: Int,
+        height: Int,
+        weight: Float = 0F,
+        init: LinearLayoutCompat.LayoutParams.() -> Unit
+) = LinearLayoutCompat.LayoutParams(width, height, weight).apply(init)
+
 @Suppress("unused")
 fun @TestDsl FrameLayout.params(
         width: Int,
