@@ -80,7 +80,7 @@ private fun supportsFontFile(file: File): Boolean {
 
 private fun safeParseInfo(log: Log, file: File): FontInfo? = try {
     parseFontInfo(file)
-} catch(e: Exception) {
+} catch (e: Exception) {
     log.w("font file get info error. file: ${file.absolutePath}; error: ${e.message}")
     null
 }
@@ -111,18 +111,11 @@ class FontFileCollection(
         val familyNames: List<String>,
         private val lowercaseFamilyToStyles: Map<String, List<Style>>
 ) {
-    fun stylesFor(familyName: String): List<Style>? = lowercaseFamilyToStyles[familyName.toLowerCase()]
+    fun stylesFor(familyName: String): List<Style> = lowercaseFamilyToStyles[familyName.toLowerCase()]!!
 
     fun styleFor(familyName: String, styleName: String): Style? {
-        val styles = stylesFor(familyName)
-        if (styles != null) {
-            for (style in styles) {
-                if (style.name.equals(styleName, ignoreCase = true))
-                    return style
-            }
-            return styles.first()
-        } else {
-            return null
+        return stylesFor(familyName).find {
+            it.name.equals(styleName, ignoreCase = true)
         }
     }
 
