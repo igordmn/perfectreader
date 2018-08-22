@@ -105,7 +105,7 @@ class Book(
                 size,
                 AnimatedPages.pages(loadingPages),
                 main.display,
-                speedToTurnPage = dip2px(50F),
+                speedToTurnPage = dip2px(20F),
                 animator = SmoothPageAnimator(seconds(0.4))
         )
         Sized(locations, loadingPages, animatedPages)
