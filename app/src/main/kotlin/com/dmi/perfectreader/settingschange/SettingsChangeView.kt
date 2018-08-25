@@ -1,18 +1,18 @@
 package com.dmi.perfectreader.settingschange
 
 import android.content.Context
-import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.widget.NestedScrollView
+import androidx.viewpager.widget.ViewPager
 import com.dmi.perfectreader.R
+import com.dmi.perfectreader.main
 import com.dmi.util.android.view.*
 import com.google.android.material.tabs.TabLayout
 import org.jetbrains.anko.*
-
-
 
 fun Context.settingsChangeView(model: SettingsChange): View {
     fun space() = view(::FrameLayout) {
@@ -22,42 +22,19 @@ fun Context.settingsChangeView(model: SettingsChange): View {
         onClick { model.back() }
     }
 
-    fun fontSettings() = view(::LinearLayoutCompat) {
-        orientation = LinearLayoutCompat.VERTICAL
+    fun fontSettings() = view(::NestedScrollView) {
+        child(::LinearLayoutCompat, params(matchParent, wrapContent)) {
+            operator fun View.unaryPlus() = child(this, params(matchParent, wrapContent))
 
-        child(settingsChangeFontView().apply {
-            clipToPadding = false
-            setPadding(dip(16), 0, dip(16), 0)
-        }, params(matchParent, wrapContent) {
-            topMargin = dip(16)
-        })
-
-        child(::LinearLayoutCompat, params(matchParent, wrapContent) {
-            topMargin = dip(16)
-            leftMargin = dip(16)
-            rightMargin = dip(16)
-        }) {
             orientation = LinearLayoutCompat.VERTICAL
 
-            child(::LinearLayoutCompat, params(wrapContent, wrapContent, gravity = Gravity.CENTER_HORIZONTAL)) {
-                orientation = LinearLayoutCompat.HORIZONTAL
-                child(settingsChangeFontSize(), params(wrapContent, wrapContent) {
-                    rightMargin = dip(24)
-                })
-                child(settingsChangeFontSkewX(), params(wrapContent, wrapContent) {
-                    leftMargin = dip(24)
-                })
-            }
-
-            child(::LinearLayoutCompat, params(wrapContent, wrapContent, gravity = Gravity.CENTER_HORIZONTAL)) {
-                orientation = LinearLayoutCompat.HORIZONTAL
-                child(settingsChangeFontScaleX(), params(wrapContent, wrapContent) {
-                    rightMargin = dip(24)
-                })
-                child(settingsChangeFontStrokeWidth(), params(wrapContent, wrapContent) {
-                    leftMargin = dip(24)
-                })
-            }
+            +floatSetting(R.string.settingsChangeFontFamily, main.settings.format::textSizeDip, SettingValues.TEXT_SIZE)
+            +floatSetting(R.string.settingsChangeFontStyle, main.settings.format::textSizeDip, SettingValues.TEXT_SIZE)
+            +floatSetting(R.string.settingsChangeFontSize, main.settings.format::textSizeDip, SettingValues.TEXT_SIZE)
+            +floatSetting(R.string.settingsChangeFontWidth, main.settings.format::textScaleX, SettingValues.TEXT_SCALE_X)
+            +floatSetting(R.string.settingsChangeFontBoldness, main.settings.format::textStrokeWidthDip, SettingValues.TEXT_STROKE_WIDTH)
+            +floatSetting(R.string.settingsChangeFontSkew, main.settings.format::textSkewX, SettingValues.TEXT_SKEWX)
+            +booleanSetting(R.string.settingsChangeFontHinting, main.settings.format::textHinting)
         }
     }
 
@@ -86,8 +63,7 @@ fun Context.settingsChangeView(model: SettingsChange): View {
             tabMode = TabLayout.MODE_SCROLLABLE
         }
 
-        child(::ViewPagerExt, params(matchParent, matchParent, weight = 1F)) {
-            isScrollEnabled = false
+        child(::ViewPager, params(matchParent, matchParent, weight = 1F)) {
             adapter = ViewPagerAdapter(
                     string(R.string.settingsChangeFont) to ::fontSettings,
                     string(R.string.settingsChangeFormat) to ::formatSettings,

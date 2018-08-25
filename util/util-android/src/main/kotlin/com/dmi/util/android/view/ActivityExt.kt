@@ -85,7 +85,7 @@ abstract class ActivityExt<M : Scoped> protected constructor() : AppCompatActivi
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         val focus = currentFocus
         return if (
-                event.action == MotionEvent.ACTION_UP &&
+                event.action == MotionEvent.ACTION_DOWN &&
                 focus != null &&
                 focus is ClearFocusOnClickOutside &&
                 event !in focus

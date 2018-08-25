@@ -98,4 +98,12 @@
     <string name="settingsChangeTheme">Тема</string>
     <string name="settingsChangeScreen">Экран</string>
     <string name="settingsChangeControl">Управление</string>
+
+    <string name="settingsChangeFontFamily">Гарнитура</string>
+    <string name="settingsChangeFontStyle">Стиль</string>
+    <string name="settingsChangeFontSize">Размер</string>
+    <string name="settingsChangeFontWidth">Ширина</string>
+    <string name="settingsChangeFontBoldness">Жирность</string>
+    <string name="settingsChangeFontSkew">Наклон</string>
+    <string name="settingsChangeFontHinting">Хинтинг</string>
 </resources>

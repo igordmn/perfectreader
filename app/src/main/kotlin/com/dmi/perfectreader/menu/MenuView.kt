@@ -3,7 +3,6 @@ package com.dmi.perfectreader.menu
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Typeface
-import android.text.InputFilter
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MenuItem
@@ -88,9 +87,8 @@ fun Context.menuView(model: Menu): View {
                 gravity = Gravity.END
 
                 beforeEdit {
-                    filters = arrayOf(InputFilter.LengthFilter(model.numberOfPages.toString().length))
-                    min = 1
-                    max = model.numberOfPages
+                    min = 1F
+                    max = model.numberOfPages.toFloat()
                 }
 
                 afterChange {

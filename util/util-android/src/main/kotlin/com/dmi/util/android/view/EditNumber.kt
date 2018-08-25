@@ -2,35 +2,77 @@ package com.dmi.util.android.view
 
 import android.content.Context
 import android.graphics.Rect
+import android.text.InputFilter
 import android.text.InputType
+import android.text.Spanned
+import android.text.method.DigitsKeyListener
 import android.view.ActionMode
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import com.dmi.util.android.R
 import com.dmi.util.android.system.hideSoftKeyboard
 import com.dmi.util.android.system.showSoftKeyboard
+import com.dmi.util.lang.intCeil
+import com.dmi.util.lang.intFloor
 import org.jetbrains.anko.padding
-
-
+import kotlin.math.max
 
 class EditNumber(context: Context) : EditText(context), ClearFocusOnClickOutside {
-    var min: Int? = null
-    var max: Int? = null
-
-    var isDecimal: Boolean = false
+    var min: Float? = null
         set(value) {
             field = value
-            updateInputType()
+            update()
         }
 
-    var isSigned: Boolean = false
+    var max: Float? = null
         set(value) {
             field = value
-            updateInputType()
+            update()
         }
+
+    var decimalCount: Int = 0
+        set(value) {
+            field = value
+            update()
+        }
+
+    private fun update() {
+        val min = min
+        val max = max
+        val decimalCount = decimalCount
+
+        val filters = ArrayList<InputFilter>()
+
+        if (min != null && max != null) {
+            val minLength = intFloor(min).toString().length
+            val maxLength = intCeil(max).toString().length
+            var length = max(minLength, maxLength)
+            if (decimalCount > 0)
+                length += 1 + decimalCount
+            if (min < 0)
+                length++
+            filters.add(InputFilter.LengthFilter(length))
+        }
+
+        if (decimalCount > 0)
+            filters.add(DecimalCountFilter(decimalCount))
+
+        this.filters = filters.toTypedArray()
+
+        var inputType = EditorInfo.TYPE_CLASS_NUMBER
+        if (min == null || min < 0)
+            inputType = inputType or InputType.TYPE_NUMBER_FLAG_SIGNED
+        if (decimalCount > 0)
+            inputType = inputType or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        setRawInputType(inputType)
+
+        // we always use '.' instead ','
+        // even in Russian language (we don't specify Locale)
+        @Suppress("DEPRECATION")
+        keyListener = DigitsKeyListener.getInstance(min == null || min < 0, decimalCount > 0)
+    }
 
     private var beforeEdit: (() -> Unit)? = null
     private var afterChange: (() -> Unit)? = null
@@ -44,15 +86,6 @@ class EditNumber(context: Context) : EditText(context), ClearFocusOnClickOutside
     }
 
     private lateinit var valueOnFocus: String
-
-    private fun updateInputType() {
-        var inputType = EditorInfo.TYPE_CLASS_NUMBER
-        if (isDecimal)
-            inputType = inputType or InputType.TYPE_NUMBER_FLAG_DECIMAL
-        if (isSigned)
-            inputType = inputType or InputType.TYPE_NUMBER_FLAG_SIGNED
-        this.inputType = inputType
-    }
 
     init {
         customSelectionActionModeCallback = object : ActionMode.Callback {
@@ -70,15 +103,14 @@ class EditNumber(context: Context) : EditText(context), ClearFocusOnClickOutside
     var floatValue: Float
         get() = text.toString().toFloat()
         set(value) {
-            require(isDecimal && (!isSigned || isSigned && value >= 0))
-            setText(value.toString())
+            super.setText(formatValue(value))
             hint = text
         }
 
     var intValue: Int
         get() = text.toString().toInt()
         set(value) {
-            setText(value.toString())
+            super.setText(formatValue(value.toFloat()))
             hint = text
         }
 
@@ -91,8 +123,13 @@ class EditNumber(context: Context) : EditText(context), ClearFocusOnClickOutside
             text.clear()
             showSoftKeyboard()
         } else {
-            if (!isValid())
-                setText(valueOnFocus)
+            val parsed = text.toString().toFloatOrNull()
+            super.setText(when {
+                parsed == null -> valueOnFocus
+                min != null && parsed < min!! -> formatValue(min!!)
+                max != null && parsed > max!! -> formatValue(max!!)
+                else -> formatValue(text.toString().toFloat())
+            })
             hint = text
             if (text.toString() != valueOnFocus)
                 afterChange?.invoke()
@@ -108,40 +145,32 @@ class EditNumber(context: Context) : EditText(context), ClearFocusOnClickOutside
 
     override fun onKeyPreIme(keyCode: Int, event: KeyEvent): Boolean {
         if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-            setText(valueOnFocus)
+            super.setText(valueOnFocus)
             clearFocus()
         }
         return super.onKeyPreIme(keyCode, event)
     }
 
-    override fun onTextChanged(text: CharSequence, start: Int, lengthBefore: Int, lengthAfter: Int) {
-        updateError()
-    }
+    private fun formatValue(value: Float) = String.format("%.${decimalCount}f", value)
+}
 
-    private fun isValid(): Boolean {
-        val parsed = text.toString().toIntOrNull()
+private class DecimalCountFilter(private val count: Int) : InputFilter {
+    override fun filter(source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int): CharSequence {
+        val inserting = source.subSequence(start, end)
+        val destDotIndex = dest.indexOf('.')
+        val insDotIndex = inserting.indexOf('.')
+
+        fun isInsertingAfterDot() = destDotIndex in 0 until dstart
+        fun isInsertingDot() = insDotIndex >= 0
+        fun afterDotCount() = dest.length - (destDotIndex + 1)
+        fun insertingAfterDotCount() = inserting.length - (insDotIndex + 1)
+        fun afterInsCount() = dest.length - dend
+
         return when {
-            parsed == null -> false
-            min != null && parsed < min!! -> false
-            max != null && parsed > max!! -> false
-            else -> true
+            inserting.isEmpty() -> inserting
+            isInsertingAfterDot() -> if (afterDotCount() + inserting.length > count) "" else inserting
+            isInsertingDot() && insertingAfterDotCount() + afterInsCount() > count -> ""
+            else -> inserting
         }
     }
-
-    private fun updateError() {
-        setError(
-                if (isValid() || text.isEmpty()) {
-                    null
-                } else {
-                    if (min != null && max != null) {
-                        string(R.string.editNumberLimitError, min!!, max!!)
-                    } else {
-                        string(R.string.editNumberError)
-                    }
-                },
-                null
-        )
-    }
-
-
 }

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="editNumberError">Введите число</string>
-    <string name="editNumberLimitError">Введите число от %d до %d</string>
-</resources>
