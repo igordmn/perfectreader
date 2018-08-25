@@ -3,6 +3,7 @@ package com.dmi.perfectreader.menu
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Typeface
+import android.text.InputFilter
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MenuItem
@@ -48,6 +49,7 @@ fun Context.menuView(model: Menu): View {
         orientation = LinearLayoutCompat.VERTICAL
         backgroundColor = color(R.color.background)
         elevation = dipFloat(4F)
+
         child(::Toolbar, params(matchParent, wrapContent)) {
             setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
             backgroundColor = color(android.R.color.transparent)
@@ -64,20 +66,53 @@ fun Context.menuView(model: Menu): View {
         }
 
         child(::LinearLayoutCompat, params(matchParent, wrapContent)) {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dip(16), 0, dip(16), dip(16))
             child(::TextView, params(matchParent, wrapContent, weight = 1F)) {
+                isClickable = true
+                isFocusable = true
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(dip(16), 0, dip(8), dip(16))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withTransparency(0.60)
                 text = "X — Alice's evidence"
+
+                onClick {
+                    toast("Show table of contents")
+                }
             }
+
+            val pageNumber = child(::EditNumber, params(wrapContent, wrapContent, weight = 0F)) {
+                setPadding(dip(8), 0, dip(0), dip(16))
+                TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
+                textColor = color(R.color.onBackground).withTransparency(0.60)
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                gravity = Gravity.END
+
+                beforeEdit {
+                    filters = arrayOf(InputFilter.LengthFilter(model.numberOfPages.toString().length))
+                    min = 1
+                    max = model.numberOfPages
+                }
+
+                afterChange {
+                    model.goPageNumber(intValue)
+                }
+
+                autorun {
+                    intValue = model.pageNumber
+                }
+            }
+
             child(::TextView, params(wrapContent, wrapContent, weight = 0F)) {
+                setPadding(0, 0, dip(16), dip(16))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withTransparency(0.60)
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 autorun {
                     @SuppressLint("SetTextI18n")
-                    text = "${model.pageNumber} / ${model.numberOfPages}"
+                    text = " / ${model.numberOfPages}"
+                }
+                onClick {
+                    pageNumber.requestFocus()
                 }
             }
         }
@@ -94,8 +129,6 @@ fun Context.menuView(model: Menu): View {
         orientation = LinearLayoutCompat.VERTICAL
         backgroundColor = color(R.color.background)
         elevation = dipFloat(8F)
-        isClickable = true
-        isFocusable = true
 
         child(::DiscreteSeekBar, params(
                 matchParent, matchParent,
@@ -141,7 +174,6 @@ fun Context.menuView(model: Menu): View {
                 image = drawable(R.drawable.ic_volume_up, color(R.color.onBackground))
                 TooltipCompat.setTooltipText(this, contentDescription)
             }
-
             child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
                 backgroundResource = attr(R.attr.selectableItemBackground).resourceId
                 contentDescription = string(R.string.bookMenuAddBookmark)
@@ -153,7 +185,6 @@ fun Context.menuView(model: Menu): View {
 
     return view(::LinearLayoutExt) {
         orientation = LinearLayoutCompat.VERTICAL
-        dontSendTouchToParent()
 
         child(top(), params(matchParent, wrapContent, weight = 0F))
         child(middle(), params(matchParent, wrapContent, weight = 1F))

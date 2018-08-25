@@ -1,8 +1,9 @@
 package com.dmi.perfectreader.control
 
 import com.dmi.perfectreader.Main
-import com.dmi.perfectreader.reader.Reader
+import com.dmi.perfectreader.action.ActionID
 import com.dmi.perfectreader.action.Actions
+import com.dmi.perfectreader.reader.Reader
 import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.action.TouchActionPerformer
 import com.dmi.util.graphic.SizeF
@@ -27,10 +28,20 @@ class Control(
     fun onTouchEvent(touchEvent: TouchEvent) = gestureDetector?.onTouchEvent(touchEvent)
     fun cancelTouch() = gestureDetector?.cancel()
 
-    fun onKeyDown(hardKey: HardKey) {
+    fun onKeyDown(hardKey: HardKey): Boolean {
         gestureDetector?.cancel()
         val actionID = settings.control.hardKeys.singlePress.property(hardKey).get()
-        actions[actionID].perform()
+        return if (actionID != ActionID.NONE) {
+            actions[actionID].perform()
+            true
+        } else {
+            false
+        }
+    }
+
+    fun onKeyUp(hardKey: HardKey): Boolean {
+        val actionID = settings.control.hardKeys.singlePress.property(hardKey).get()
+        return actionID == ActionID.NONE
     }
 }
 

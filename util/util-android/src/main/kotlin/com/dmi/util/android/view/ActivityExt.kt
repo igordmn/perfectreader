@@ -2,6 +2,7 @@ package com.dmi.util.android.view
 
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -79,5 +80,20 @@ abstract class ActivityExt<M : Scoped> protected constructor() : AppCompatActivi
             }
         }
         return false
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        val focus = currentFocus
+        return if (
+                event.action == MotionEvent.ACTION_UP &&
+                focus != null &&
+                focus is ClearFocusOnClickOutside &&
+                event !in focus
+        ) {
+            focus.clearFocus()
+            true
+        } else {
+            super.dispatchTouchEvent(event)
+        }
     }
 }

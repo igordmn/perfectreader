@@ -15,6 +15,7 @@ child(::FrameLayout, params(wrapContent, wrapContent)) {
     }
 }
  */
+// todo Maybe convert all code to Anko
 
 @DslMarker
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE)
@@ -47,7 +48,6 @@ fun @TestDsl LinearLayoutCompat.params(
     this.rightMargin = rightMargin
     this.bottomMargin = bottomMargin
 }
-
 
 @Suppress("unused")
 fun @TestDsl LinearLayoutCompat.params(

@@ -14,6 +14,9 @@ import org.jetbrains.anko.*
 
 fun Context.readerLoadView(model: ReaderLoad) = view(::FrameLayoutExt) {
     keepScreenOn = true
+    isFocusable = true
+    isFocusableInTouchMode = true
+
     bindChild(model::reader, ::readerView, params(matchParent, matchParent, Gravity.CENTER))
     child(::ProgressBar, params(wrapContent, wrapContent, Gravity.CENTER)) {
         autorun {

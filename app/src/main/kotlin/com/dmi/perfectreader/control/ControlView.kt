@@ -24,14 +24,11 @@ fun Context.controlView(model: Control) = view(::FrameLayoutExt) {
     }
 
     onInterceptKey { event ->
-        when (event.action) {
-            KeyEvent.ACTION_DOWN -> {
-                val hardKey = hardKeyFromKeyCode(event.keyCode)
-                if (hardKey != null)
-                    model.onKeyDown(hardKey)
-                true
-            }
-            KeyEvent.ACTION_UP -> true
+        val hardKey = hardKeyFromKeyCode(event.keyCode)
+        when {
+            hardKey == null -> false
+            event.action == KeyEvent.ACTION_DOWN ->model.onKeyDown(hardKey)
+            event.action == KeyEvent.ACTION_UP -> model.onKeyUp(hardKey)
             else -> false
         }
     }
