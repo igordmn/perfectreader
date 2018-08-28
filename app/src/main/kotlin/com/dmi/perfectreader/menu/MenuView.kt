@@ -149,31 +149,31 @@ fun Context.menuView(model: Menu): View {
         }
         child(::LinearLayoutCompat, params(matchParent, dip(48))) {
             child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
-                backgroundResource = attr(R.attr.selectableItemBackground).resourceId
+                backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
                 contentDescription = string(R.string.bookMenuSearch)
                 image = drawable(R.drawable.ic_search, color(R.color.onBackground))
                 TooltipCompat.setTooltipText(this, contentDescription)
             }
             child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
-                backgroundResource = attr(R.attr.selectableItemBackground).resourceId
+                backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
                 contentDescription = string(R.string.bookMenuSwitchTheme)
                 image = drawable(R.drawable.ic_style, color(R.color.onBackground))
                 TooltipCompat.setTooltipText(this, contentDescription)
             }
             child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
-                backgroundResource = attr(R.attr.selectableItemBackground).resourceId
+                backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
                 contentDescription = string(R.string.bookMenuAutoScroll)
                 image = drawable(R.drawable.ic_slideshow, color(R.color.onBackground))
                 TooltipCompat.setTooltipText(this, contentDescription)
             }
             child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
-                backgroundResource = attr(R.attr.selectableItemBackground).resourceId
+                backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
                 contentDescription = string(R.string.bookMenuTextToSpeech)
                 image = drawable(R.drawable.ic_volume_up, color(R.color.onBackground))
                 TooltipCompat.setTooltipText(this, contentDescription)
             }
             child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
-                backgroundResource = attr(R.attr.selectableItemBackground).resourceId
+                backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
                 contentDescription = string(R.string.bookMenuAddBookmark)
                 image = drawable(R.drawable.ic_bookmark_border, color(R.color.onBackground))
                 TooltipCompat.setTooltipText(this, contentDescription)

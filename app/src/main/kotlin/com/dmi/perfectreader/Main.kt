@@ -7,10 +7,10 @@ import com.dmi.perfectreader.common.Permissions
 import com.dmi.perfectreader.common.Protocols
 import com.dmi.perfectreader.common.UserData
 import com.dmi.perfectreader.settings.settings
-import com.dmi.util.android.font.androidFontCollectionCache
+import com.dmi.util.android.font.androidFontsCache
 import com.dmi.util.android.io.AssetsURIHandler
 import com.dmi.util.android.system.AndroidDisplay
-import com.dmi.util.font.FontCollection
+import com.dmi.util.font.Fonts
 import com.dmi.util.io.FileURIHandler
 import com.dmi.util.io.ProtocolURIHandler
 import com.dmi.util.log.Log
@@ -33,9 +33,9 @@ class Main(val log: Log, val applicationContext: Context) {
     val permissions = Permissions(this)
     var currentActivity: Activity? = null
 
-    private val fontCollectionCache = androidFontCollectionCache(log)
-    val fontCollection: FontCollection get() {
+    private val fontsCache = androidFontsCache(log)
+    val fonts: Fonts get() {
         val userDirectory = protocols.fileFor(settings.system.fontsPath)
-        return fontCollectionCache.collectionFor(userDirectory)
+        return fontsCache[userDirectory]
     }
 }

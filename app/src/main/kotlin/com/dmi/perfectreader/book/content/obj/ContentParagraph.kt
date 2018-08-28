@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.book.content.obj
 
-import com.dmi.perfectreader.book.content.obj.param.*
 import com.dmi.perfectreader.book.content.location.*
+import com.dmi.perfectreader.book.content.obj.param.*
 import java.util.*
 
 private val fontStyleCache = FontStyleCache()
@@ -126,7 +126,7 @@ private fun ContentFontStyle.configure(config: FormatConfig): ConfiguredFontStyl
     val textSize = (size ?: ContentParagraph.DEFAULT_TEXT_SIZE_DIP) * textSizeMultiplier * config.density
 
     return ConfiguredFontStyle(
-            config.fontCollection.loadFont(config.textFontFamily, config.textFontStyle),
+            config.fonts.loadFont(config.textFontFamily, config.textFontIsBold, config.textFontIsItalic),
 
             textSize,
             config.letterSpacingEm * textSize,

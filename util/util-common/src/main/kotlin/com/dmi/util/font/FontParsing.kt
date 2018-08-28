@@ -16,8 +16,15 @@ private val ENCODING_WINDOWS_SYMBOL_ID = 0
 private val ENCODING_WINDOWS_UNICODE_BMP_ID = 1
 private val STRING_BUFFER = ByteArray(512)
 
+private val WINDOWS_PLATFORM_ID = 3
+private val MACINTOSH_PLATFORM_ID = 1
+private val WINDOWS_ENGLISH_ID = 0x0409
+private val MACINTOSH_ENGLISH_ID = 0
+
 /**
- * См. https://www.microsoft.com/typography/otspec/otff.htm и https://www.microsoft.com/typography/otspec/name.htm
+ * See:
+ * https://docs.microsoft.com/en-us/typography/opentype/spec/otff
+ * https://docs.microsoft.com/ru-ru/typography/opentype/spec/name
  */
 fun parseFontInfo(file: File): FontInfo {
     var familyName: String? = null
@@ -35,7 +42,7 @@ fun parseFontInfo(file: File): FontInfo {
         if (numOfTables > 2000)
             throw RuntimeException("Too many tables. Path: ${file.absolutePath}")
 
-        for (i in 0..numOfTables - 1) {
+        for (i in 0 until numOfTables) {
             val tableName = raf.readInt()
             raf.readInt() // checkSum
             val tableOffset = raf.readInt().toLong()
@@ -49,30 +56,41 @@ fun parseFontInfo(file: File): FontInfo {
                 if (recordCount > 2000)
                     throw RuntimeException("Too many records. Path: ${file.absolutePath}")
 
-                for (j in 0..recordCount - 1) {
+                for (j in 0 until recordCount) {
                     val platformID = raf.readShort().toInt()
                     val encodingID = raf.readShort().toInt()
-                    raf.readShort() // languageID
+                    val languageID = raf.readShort().toInt()
                     val stringNameID = raf.readShort().toInt()
                     val stringLength = raf.readShort().toInt()
                     val stringOffset = raf.readShort().toLong()
 
-                    if (stringLength > 0 && (stringNameID == FAMILY_NAME_ID || stringNameID == SUB_FAMILY_NAME_ID)) {
-                        val stringTotalOffset = tableOffset + stringStorageOffset + stringOffset
-                        val charset = chooseCharsetFor(platformID, encodingID)
+                    val isLanguageValid = when (platformID) {
+                        WINDOWS_PLATFORM_ID -> languageID == WINDOWS_ENGLISH_ID
+                        MACINTOSH_PLATFORM_ID -> languageID == MACINTOSH_ENGLISH_ID
+                        else -> true
+                    }
+
+                    if (stringLength > 0 && isLanguageValid) {
+                        fun readValue(): String {
+                            val stringTotalOffset = tableOffset + stringStorageOffset + stringOffset
+                            val charset = chooseCharsetFor(platformID, encodingID)
+                            return readString(raf, stringTotalOffset, stringLength, charset)
+                        }
 
                         when (stringNameID) {
                             FAMILY_NAME_ID -> {
-                                familyName = readString(raf, stringTotalOffset, stringLength, charset)
+                                if (familyName == null)
+                                    familyName = readValue()
                             }
                             SUB_FAMILY_NAME_ID -> {
-                                subFamilyName = readString(raf, stringTotalOffset, stringLength, charset)
+                                if (subFamilyName == null)
+                                    subFamilyName = readValue()
                             }
                         }
+                    }
 
-                        if (familyName != null && subFamilyName != null) {
-                            break
-                        }
+                    if (familyName != null && subFamilyName != null) {
+                        break
                     }
                 }
 
@@ -81,10 +99,9 @@ fun parseFontInfo(file: File): FontInfo {
         }
     }
 
-    if (familyName != null && subFamilyName != null) {
-        return FontInfo(familyName!!, subFamilyName!!)
-    } else {
-        throw RuntimeException("Font doesn't contain family name")
+    return when {
+        familyName != null && subFamilyName != null -> FontInfo(familyName!!, subFamilyName!!)
+        else -> error("Font doesn't contain family name")
     }
 }
 

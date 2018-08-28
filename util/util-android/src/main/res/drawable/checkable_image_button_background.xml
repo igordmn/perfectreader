@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- todo ripple effect, fadeIn/fadeout -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true">
+        <inset
+            android:insetLeft="4dp"
+            android:insetTop="4dp"
+            android:insetRight="4dp"
+            android:insetBottom="4dp">
+            <shape android:shape="rectangle">
+                <solid android:color="#F0F0F0"/>
+                <corners android:radius="2dp"/>
+            </shape>
+        </inset>
+    </item>
+    <item
+        android:drawable="@android:color/transparent"
+        android:state_checked="false"/>
+</selector>

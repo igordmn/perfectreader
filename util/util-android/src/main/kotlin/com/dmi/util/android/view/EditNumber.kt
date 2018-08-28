@@ -16,7 +16,6 @@ import com.dmi.util.android.system.hideSoftKeyboard
 import com.dmi.util.android.system.showSoftKeyboard
 import com.dmi.util.lang.intCeil
 import com.dmi.util.lang.intFloor
-import org.jetbrains.anko.padding
 import kotlin.math.max
 
 class EditNumber(context: Context) : EditText(context), ClearFocusOnClickOutside {
@@ -94,7 +93,6 @@ class EditNumber(context: Context) : EditText(context), ClearFocusOnClickOutside
             override fun onCreateActionMode(mode: ActionMode, menu: Menu) = false
             override fun onActionItemClicked(mode: ActionMode, item: MenuItem) = false
         }
-        padding = 0
         background = null
         imeOptions = EditorInfo.IME_ACTION_DONE
         inputType = EditorInfo.TYPE_CLASS_NUMBER

@@ -101,9 +101,13 @@
 
     <string name="settingsChangeFontFamily">Гарнитура</string>
     <string name="settingsChangeFontStyle">Стиль</string>
+    <string name="settingsChangeFontStyleBold">Жирный</string>
+    <string name="settingsChangeFontStyleItalic">Курсив</string>
     <string name="settingsChangeFontSize">Размер</string>
     <string name="settingsChangeFontWidth">Ширина</string>
     <string name="settingsChangeFontBoldness">Жирность</string>
     <string name="settingsChangeFontSkew">Наклон</string>
     <string name="settingsChangeFontHinting">Хинтинг</string>
+    <string name="settingsChangeFontHintingDesc">Четкость горизонтальных линий</string>
+    <string name="settingsChangeFontAntialiasing">Сглаживание</string>
 </resources>

@@ -3,7 +3,7 @@ package com.dmi.perfectreader.book.content.obj.param
 import android.content.Context
 import com.dmi.perfectreader.book.pagination.page.Page
 import com.dmi.perfectreader.settings.Settings
-import com.dmi.util.font.FontCollection
+import com.dmi.util.font.Fonts
 import com.dmi.util.graphic.Color
 import org.jetbrains.anko.displayMetrics
 import java.util.*
@@ -27,7 +27,8 @@ class FormatConfig(
         val hyphenation: Boolean,
 
         val textFontFamily: String,
-        val textFontStyle: String,
+        val textFontIsBold: Boolean,
+        val textFontIsItalic: Boolean,
         val textSizeDip: Float,
         val textScaleX: Float,
         val textSkewX: Float,
@@ -49,10 +50,10 @@ class FormatConfig(
         val imageSourceScale: Float,
         val imageScaleFiltered: Boolean,
 
-        val fontCollection: FontCollection
+        val fonts: Fonts
 )
 
-fun appFormatConfig(context: Context, settings: Settings, fontCollection: FontCollection) = FormatConfig(
+fun appFormatConfig(context: Context, settings: Settings, fonts: Fonts) = FormatConfig(
         context.displayMetrics.density,
 
         defaultLocale = defaultLocale(context, settings),
@@ -76,7 +77,8 @@ fun appFormatConfig(context: Context, settings: Settings, fontCollection: FontCo
         hyphenation = settings.format.hyphenation,
 
         textFontFamily = settings.format.textFontFamily,
-        textFontStyle = settings.format.textFontStyle,
+        textFontIsBold = settings.format.textFontIsBold,
+        textFontIsItalic = settings.format.textFontIsItalic,
 
         textSizeDip = settings.format.textSizeDip,
         textScaleX = settings.format.textScaleX,
@@ -99,7 +101,7 @@ fun appFormatConfig(context: Context, settings: Settings, fontCollection: FontCo
         imageSourceScale = if (settings.image.sourceScaleByDpi) context.displayMetrics.density else settings.image.sourceScale,
         imageScaleFiltered = settings.image.scaleFiltered,
 
-        fontCollection = fontCollection
+        fonts = fonts
 )
 
 private fun defaultLocale(context: Context, settings: Settings) =

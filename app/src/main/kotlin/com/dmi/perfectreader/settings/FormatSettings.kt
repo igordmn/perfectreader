@@ -16,7 +16,8 @@ class FormatSettings(store: ValueStore) {
     var hyphenation by store.value(true)
 
     var textFontFamily by store.value("")
-    var textFontStyle by store.value("Regular")
+    var textFontIsBold by store.value(false)
+    var textFontIsItalic by store.value(false)
     var textSizeDip by store.value(20F)
     var textScaleX by store.value(1.0F)
     var textSkewX by store.value(0.0F)

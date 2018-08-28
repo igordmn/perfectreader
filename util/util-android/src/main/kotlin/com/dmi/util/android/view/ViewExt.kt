@@ -12,3 +12,7 @@ operator fun View.contains(event: MotionEvent): Boolean {
     getGlobalVisibleRect(rect)
     return rect.contains(event.rawX.toInt(), event.rawY.toInt())
 }
+
+interface Bindable<M> {
+    fun bind(model: M)
+}
