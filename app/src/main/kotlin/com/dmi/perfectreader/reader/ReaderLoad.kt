@@ -3,7 +3,7 @@ package com.dmi.perfectreader.reader
 import android.content.Intent
 import android.net.Uri
 import com.dmi.perfectreader.Main
-import com.dmi.perfectreader.common.Permissions
+import com.dmi.util.android.system.Permissions
 import com.dmi.perfectreader.common.UserData
 import com.dmi.util.log.Log
 import com.dmi.util.scope.Scoped
