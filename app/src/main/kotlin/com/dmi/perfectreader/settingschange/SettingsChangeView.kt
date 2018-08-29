@@ -20,62 +20,65 @@ import org.jetbrains.anko.*
 typealias GoBack = () -> Unit
 typealias GoDetails = (title: String, View) -> Unit
 
-fun Context.settingsChangeView(model: SettingsChange): View {
-    fun space() = view(::FrameLayout) {
+fun settingsChangeView(context: Context, model: SettingsChange): View {
+    val main = context.main
+
+    fun space() = FrameLayout(context).apply {
         backgroundColor = color(android.R.color.transparent)
         isClickable = true
         isFocusable = true
         onClick { model.back() }
     }
 
-    fun fontSettings(navigation: SettingsNavigation) = view(::NestedScrollView) {
-        child(::LinearLayoutCompat, params(matchParent, wrapContent)) {
-            operator fun View.unaryPlus() = child(this, params(matchParent, wrapContent))
+    fun fontSettings(navigation: SettingsNavigation) = NestedScrollView(context).apply {
+        child(params(matchParent, wrapContent), LinearLayoutCompat(context).apply {
+            operator fun View.unaryPlus() = child(params(matchParent, wrapContent), this)
 
             orientation = LinearLayoutCompat.VERTICAL
 
             with(main.settings) {
-                +listSetting(navigation, format::textFontFamily, fontFamilyItems(), R.string.settingsChangeFontFamily)
-                +titleSetting(fontStyleView(
+                +listSetting(context, navigation, format::textFontFamily, fontFamilyItems(context), R.string.settingsChangeFontFamily)
+                +titleSetting(context, fontStyleView(
+                        context,
                         format::textFontIsBold, format::textFontIsItalic,
                         R.string.settingsChangeFontStyleBold, R.string.settingsChangeFontStyleItalic
                 ), R.string.settingsChangeFontStyle)
-                +floatSetting(format::textSizeDip, SettingValues.TEXT_SIZE, titleResId = R.string.settingsChangeFontSize)
-                +floatSetting(format::textScaleX, SettingValues.TEXT_SCALE_X, titleResId = R.string.settingsChangeFontWidth)
-                +floatSetting(format::textStrokeWidthDip, SettingValues.TEXT_STROKE_WIDTH, titleResId = R.string.settingsChangeFontBoldness)
-                +floatSetting(format::textSkewX, SettingValues.TEXT_SKEW_X, titleResId = R.string.settingsChangeFontSkew)
-                +booleanSetting(format::textAntialiasing, R.string.settingsChangeFontAntialiasing)
-                +booleanSetting(format::textHinting, R.string.settingsChangeFontHinting, R.string.settingsChangeFontHintingDesc)
+                +floatSetting(context, format::textSizeDip, SettingValues.TEXT_SIZE, titleResId = R.string.settingsChangeFontSize)
+                +floatSetting(context, format::textScaleX, SettingValues.TEXT_SCALE_X, titleResId = R.string.settingsChangeFontWidth)
+                +floatSetting(context, format::textStrokeWidthDip, SettingValues.TEXT_STROKE_WIDTH, titleResId = R.string.settingsChangeFontBoldness)
+                +floatSetting(context, format::textSkewX, SettingValues.TEXT_SKEW_X, titleResId = R.string.settingsChangeFontSkew)
+                +booleanSetting(context, format::textAntialiasing, R.string.settingsChangeFontAntialiasing)
+                +booleanSetting(context, format::textHinting, R.string.settingsChangeFontHinting, R.string.settingsChangeFontHintingDesc)
             }
-        }
+        })
     }
 
-    fun formatSettings() = view(::TextView) {
+    fun formatSettings() = TextView(context).apply {
         text = "formatSettings"
     }
 
-    fun themeSettings() = view(::TextView) {
+    fun themeSettings() = TextView(context).apply {
         text = "themeSettings"
     }
 
-    fun screenSettings() = view(::TextView) {
+    fun screenSettings() = TextView(context).apply {
         text = "screenSettings"
     }
 
-    fun controlSettings() = view(::TextView) {
+    fun controlSettings() = TextView(context).apply {
         text = "controlSettings"
     }
 
-    fun bottomMain(navigation: SettingsNavigation) = view(::LinearLayoutCompat) {
+    fun bottomMain(navigation: SettingsNavigation) = LinearLayoutCompat(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
         backgroundColor = color(R.color.background)
         elevation = dipFloat(8F)
 
-        val tabLayout = child(::TabLayout, params(matchParent, wrapContent, weight = 0F)) {
+        val tabLayout = child(params(matchParent, wrapContent, weight = 0F), TabLayout(context).apply {
             tabMode = TabLayout.MODE_SCROLLABLE
-        }
+        })
 
-        child(::ViewPager, params(matchParent, matchParent, weight = 1F)) {
+        child(params(matchParent, matchParent, weight = 1F), ViewPager(context).apply {
             adapter = ViewPagerAdapter(
                     string(R.string.settingsChangeFont) to { fontSettings(navigation) },
                     string(R.string.settingsChangeFormat) to ::formatSettings,
@@ -84,15 +87,15 @@ fun Context.settingsChangeView(model: SettingsChange): View {
                     string(R.string.settingsChangeControl) to ::controlSettings
             )
             tabLayout.setupWithViewPager(this)
-        }
+        })
     }
 
-    return view(::LinearLayoutExt) {
+    return LinearLayoutExt(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
         dontSendTouchToParent()
 
-        child(space(), params(matchParent, matchParent, weight = 1F))
-        child(Bottom(context, ::bottomMain), params(matchParent, dip(320), weight = 0F))
+        child(params(matchParent, matchParent, weight = 1F), space())
+        child(params(matchParent, dip(320), weight = 0F), Bottom(context, ::bottomMain))
 
         onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.back(); true }
         onInterceptKeyDown(KeyEvent.KEYCODE_MENU) { model.back(); true }
@@ -100,8 +103,8 @@ fun Context.settingsChangeView(model: SettingsChange): View {
 }
 
 private class Bottom(context: Context, main: (SettingsNavigation) -> View) : FrameLayout(context), SettingsNavigation {
-    private val main = child(main(this), params(matchParent, matchParent))
-    private val details = child(Details(), params(matchParent, matchParent)).apply {
+    private val main = child(params(matchParent, matchParent), main(this))
+    private val details = child(params(matchParent, matchParent), Details()).apply {
         visibility = View.INVISIBLE
     }
 
@@ -136,7 +139,7 @@ private class Bottom(context: Context, main: (SettingsNavigation) -> View) : Fra
             backgroundColor = color(R.color.background)
         }
 
-        val toolbar = child(::Toolbar, params(matchParent, wrapContent, weight = 0F)) {
+        val toolbar = child(params(matchParent, wrapContent, weight = 0F), Toolbar(context).apply {
             setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
             backgroundColor = color(android.R.color.transparent)
             navigationIcon = drawable(R.drawable.ic_arrow_back)
@@ -144,8 +147,8 @@ private class Bottom(context: Context, main: (SettingsNavigation) -> View) : Fra
             setNavigationOnClickListener {
                 goBack()
             }
-        }
+        })
 
-        val container = child(FrameLayout(context), params(matchParent, matchParent, weight = 1F))
+        val container = child(params(matchParent, matchParent, weight = 1F), FrameLayout(context))
     }
 }

@@ -12,18 +12,18 @@ import com.dmi.perfectreader.reader.ReaderLoad.LoadError
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.*
 
-fun Context.readerLoadView(model: ReaderLoad) = view(::FrameLayoutExt) {
+fun readerLoadView(context: Context, model: ReaderLoad) = FrameLayoutExt(context).apply {
     keepScreenOn = true
     isFocusable = true
     isFocusableInTouchMode = true
 
-    bindChild(model::reader, ::readerView, params(matchParent, matchParent, Gravity.CENTER))
-    child(::ProgressBar, params(wrapContent, wrapContent, Gravity.CENTER)) {
+    bindChild(params(matchParent, matchParent, Gravity.CENTER), model::reader, ::readerView)
+    child(params(wrapContent, wrapContent, Gravity.CENTER), ProgressBar(context).apply {
         autorun {
             visibility = if (model.isLoading) View.VISIBLE else View.GONE
         }
-    }
-    child(::TextView, params(wrapContent, wrapContent, Gravity.CENTER)) {
+    })
+    child(params(wrapContent, wrapContent, Gravity.CENTER), TextView(context).apply {
         fun showError(strId: Int) {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
             visibility = View.VISIBLE
@@ -41,7 +41,7 @@ fun Context.readerLoadView(model: ReaderLoad) = view(::FrameLayoutExt) {
                 is LoadError.NeedStoragePermissions -> showError(R.string.bookNeedStoragePermissions)
             }
         }
-    }
+    })
 
     onInterceptKeyDown(KeyEvent.KEYCODE_BACK) {
         if (model.reader == null) {

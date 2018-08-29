@@ -19,7 +19,7 @@ import org.jetbrains.anko.padding
 import org.jetbrains.anko.singleLine
 import org.jetbrains.anko.textColor
 
-fun Context.fontFamilyItems() = SettingItems(main.fonts.familyNames, ::FontFamilyItemView, ::FontFamilyPreviewView)
+fun fontFamilyItems(context: Context) = SettingItems(context.main.fonts.familyNames, ::FontFamilyItemView, ::FontFamilyPreviewView)
 
 class FontFamilyItemView(context: Context) : TextView(context), Bindable<String> {
     private val fonts: Fonts = context.main.fonts

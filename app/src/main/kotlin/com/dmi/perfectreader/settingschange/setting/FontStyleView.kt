@@ -11,7 +11,8 @@ import org.jetbrains.anko.dip
 import org.jetbrains.anko.image
 import kotlin.reflect.KMutableProperty0
 
-fun Context.fontStyleView(
+fun fontStyleView(
+        context: Context,
         boldProperty: KMutableProperty0<Boolean>,
         italicProperty: KMutableProperty0<Boolean>,
         @StringRes
@@ -19,9 +20,9 @@ fun Context.fontStyleView(
         @StringRes
         italicStringId: Int
 ) = PreviewView(
-        view = view(::LinearLayoutCompat) {
+        view = LinearLayoutCompat(context).apply {
             setPadding(0, 0, dip(12), 0)
-            child(::CheckableImageButton, params(dip(48), dip(48))) {
+            child(params(dip(48), dip(48)), CheckableImageButton(context).apply {
                 contentDescription = string(boldStringId)
                 TooltipCompat.setTooltipText(this, contentDescription)
                 image = drawable(R.drawable.text_bold, color(R.color.onBackground))
@@ -30,9 +31,9 @@ fun Context.fontStyleView(
                 onChecked {
                     boldProperty.set(it)
                 }
-            }
+            })
 
-            child(::CheckableImageButton, params(dip(48), dip(48))) {
+            child(params(dip(48), dip(48)), CheckableImageButton(context).apply {
                 contentDescription = string(italicStringId)
                 TooltipCompat.setTooltipText(this, contentDescription)
                 image = drawable(R.drawable.text_italic, color(R.color.onBackground))
@@ -41,7 +42,7 @@ fun Context.fontStyleView(
                 onChecked {
                     italicProperty.set(it)
                 }
-            }
+            })
         },
         withPadding = false,
         isClickable = false

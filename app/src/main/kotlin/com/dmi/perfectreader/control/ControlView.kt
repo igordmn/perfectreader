@@ -7,10 +7,9 @@ import com.dmi.util.android.input.hardKeyFromKeyCode
 import com.dmi.util.android.input.performTouchEvents
 import com.dmi.util.android.view.FrameLayoutExt
 import com.dmi.util.android.view.onSizeChange
-import com.dmi.util.android.view.view
 import org.jetbrains.anko.onTouch
 
-fun Context.controlView(model: Control) = view(::FrameLayoutExt) {
+fun controlView(context: Context, model: Control) = FrameLayoutExt(context).apply {
     onTouch { _, event ->
         when(event.actionMasked) {
             MotionEvent.ACTION_CANCEL -> model.cancelTouch()

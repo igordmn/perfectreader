@@ -12,8 +12,8 @@ import org.jetbrains.anko.dip
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.wrapContent
 
-fun Context.performingActionView(model: PerformingAction, old: PerformingActionView?): PerformingActionView {
-    val view = old ?: PerformingActionView(this)
+fun performingActionView(context: Context, model: PerformingAction, old: PerformingActionView?): PerformingActionView {
+    val view = old ?: PerformingActionView(context)
     view.set(model)
     return view
 }
@@ -23,29 +23,29 @@ class PerformingActionView(context: Context) : FrameLayout(context) {
     private lateinit var value: TextView
 
     init {
-        child(::MaterialCardView, params(wrapContent, wrapContent)) {
+        child(params(wrapContent, wrapContent), MaterialCardView(context).apply {
             setBackgroundColor(color(R.color.secondary))
             elevation = dipFloat(3F)
             useCompatPadding = true
 
-            child(::LinearLayoutCompat, params(wrapContent, wrapContent)) {
+            child(params(wrapContent, wrapContent), LinearLayoutCompat(context).apply {
                 orientation = LinearLayoutCompat.VERTICAL
                 gravity = Gravity.CENTER_HORIZONTAL
                 setPadding(dip(12), dip(4), dip(12), dip(4))
 
-                name = child(::TextView, params(wrapContent, wrapContent)) {
+                name = child(params(wrapContent, wrapContent), TextView(context).apply {
                     isAllCaps = true
                     textColor = color(R.color.onSecondary)
                     textSize = spFloat(16F)
-                }
+                })
 
-                value = child(::TextView, params(wrapContent, wrapContent)) {
+                value = child(params(wrapContent, wrapContent), TextView(context).apply {
                     isAllCaps = true
                     textColor = color(R.color.onSecondary)
                     textSize = spFloat(24F)
-                }
-            }
-        }
+                })
+            })
+        })
     }
 
     fun set(action: PerformingAction) {

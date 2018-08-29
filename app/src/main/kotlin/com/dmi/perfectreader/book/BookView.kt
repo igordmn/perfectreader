@@ -14,15 +14,16 @@ import com.dmi.util.android.opengl.GLSurfaceScopedView
 import com.dmi.util.android.view.onSizeChange
 import com.dmi.util.graphic.Size
 
-fun Context.bookView(reader: Reader): View {
-    val glSurface = GLSurfaceScopedView(this, main.log) {
+fun bookView(context: Context, reader: Reader): View {
+    val main = context.main
+    val glSurface = GLSurfaceScopedView(context, main.log) {
         val model = GLBookModel(it, main.settings, reader, reader.book)
         val bitmapDecoder = reader.book.bitmapDecoder
         val pageRenderer = PageRenderer(FramePainter(), ImagePainter(bitmapDecoder), TextPainter())
         val uriHandler = main.uriHandler
 
         val createRenderer = { size: Size ->
-            val glBook = GLBook(model, this@bookView, pageRenderer, size, uriHandler)
+            val glBook = GLBook(model, context, pageRenderer, size, uriHandler)
 
             object : GLSurfaceScopedView.Renderer {
                 override fun dispose() = glBook.dispose()

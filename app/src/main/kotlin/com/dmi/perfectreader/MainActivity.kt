@@ -8,7 +8,7 @@ import com.dmi.util.android.view.ActivityExt
 
 class MainActivity : ActivityExt<ReaderLoad>() {
     override fun createModel() = ReaderLoad(main, window, intent)
-    override fun createView(model: ReaderLoad) = readerLoadView(model)
+    override fun createView(model: ReaderLoad) = readerLoadView(this, model)
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)

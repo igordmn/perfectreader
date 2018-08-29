@@ -20,7 +20,7 @@ import com.dmi.util.lang.intRound
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 import org.jetbrains.anko.*
 
-fun Context.menuView(model: Menu): View {
+fun menuView(context: Context, model: Menu): View {
     fun DiscreteSeekBar.progress() = intRound(model.percent * max)
 
     fun DiscreteSeekBar.onProgressChangeListener(): DiscreteSeekBar.OnProgressChangeListener {
@@ -44,12 +44,12 @@ fun Context.menuView(model: Menu): View {
         }
     }
 
-    fun top() = view(::LinearLayoutCompat) {
+    fun top() = LinearLayoutCompat(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
         backgroundColor = color(R.color.background)
         elevation = dipFloat(4F)
 
-        child(::Toolbar, params(matchParent, wrapContent)) {
+        child(params(matchParent, wrapContent), Toolbar(context).apply {
             setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
             backgroundColor = color(android.R.color.transparent)
             navigationIcon = drawable(R.drawable.ic_arrow_back)
@@ -62,10 +62,10 @@ fun Context.menuView(model: Menu): View {
                     model.showSettings()
                 }
             }
-        }
+        })
 
-        child(::LinearLayoutCompat, params(matchParent, wrapContent)) {
-            child(::TextView, params(matchParent, wrapContent, weight = 1F)) {
+        child(params(matchParent, wrapContent), LinearLayoutCompat(context).apply {
+            child(params(matchParent, wrapContent, weight = 1F), TextView(context).apply {
                 isClickable = true
                 isFocusable = true
                 gravity = Gravity.CENTER_VERTICAL
@@ -75,11 +75,11 @@ fun Context.menuView(model: Menu): View {
                 text = "X — Alice's evidence"
 
                 onClick {
-                    toast("Show table of contents")
+                    context.toast("Show table of contents")
                 }
-            }
+            })
 
-            val pageNumber = child(::EditNumber, params(wrapContent, wrapContent, weight = 0F)) {
+            val pageNumber = child(params(wrapContent, wrapContent, weight = 0F), EditNumber(context).apply {
                 setPadding(dip(8), 0, dip(0), dip(16))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withTransparency(0.60)
@@ -98,9 +98,9 @@ fun Context.menuView(model: Menu): View {
                 autorun {
                     intValue = model.pageNumber
                 }
-            }
+            })
 
-            child(::TextView, params(wrapContent, wrapContent, weight = 0F)) {
+            child(params(wrapContent, wrapContent, weight = 0F), TextView(context).apply {
                 setPadding(0, 0, dip(16), dip(16))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withTransparency(0.60)
@@ -112,29 +112,29 @@ fun Context.menuView(model: Menu): View {
                 onClick {
                     pageNumber.requestFocus()
                 }
-            }
-        }
+            })
+        })
     }
 
-    fun middle() = view(::FrameLayout) {
+    fun middle() = FrameLayout(context).apply {
         backgroundColor = color(android.R.color.transparent)
         isClickable = true
         isFocusable = true
         onClick { model.back() }
     }
 
-    fun bottom() = view(::LinearLayoutCompat) {
+    fun bottom() = LinearLayoutCompat(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
         backgroundColor = color(R.color.background)
         elevation = dipFloat(8F)
 
-        child(::DiscreteSeekBar, params(
+        child(params(
                 matchParent, matchParent,
                 leftMargin = dip(4),
                 topMargin = dip(8),
                 rightMargin = dip(4),
                 bottomMargin = dip(0)
-        )) {
+        ), DiscreteSeekBar(context).apply {
             min = 0
             max = 100
             setIndicatorFormatter("%d%%")
@@ -146,47 +146,47 @@ fun Context.menuView(model: Menu): View {
             setScrubberColor(color(R.color.secondary))
             numericTransformer = numericTransformer()
             setOnProgressChangeListener(onProgressChangeListener())
-        }
-        child(::LinearLayoutCompat, params(matchParent, dip(48))) {
-            child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
+        })
+        child(params(matchParent, dip(48)), LinearLayoutCompat(context).apply {
+            child(params(dip(0), matchParent, weight = 1F), AppCompatImageButton(context).apply {
                 backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
                 contentDescription = string(R.string.bookMenuSearch)
                 image = drawable(R.drawable.ic_search, color(R.color.onBackground))
                 TooltipCompat.setTooltipText(this, contentDescription)
-            }
-            child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
+            })
+            child(params(dip(0), matchParent, weight = 1F), AppCompatImageButton(context).apply {
                 backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
                 contentDescription = string(R.string.bookMenuSwitchTheme)
                 image = drawable(R.drawable.ic_style, color(R.color.onBackground))
                 TooltipCompat.setTooltipText(this, contentDescription)
-            }
-            child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
+            })
+            child(params(dip(0), matchParent, weight = 1F), AppCompatImageButton(context).apply {
                 backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
                 contentDescription = string(R.string.bookMenuAutoScroll)
                 image = drawable(R.drawable.ic_slideshow, color(R.color.onBackground))
                 TooltipCompat.setTooltipText(this, contentDescription)
-            }
-            child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
+            })
+            child(params(dip(0), matchParent, weight = 1F), AppCompatImageButton(context).apply {
                 backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
                 contentDescription = string(R.string.bookMenuTextToSpeech)
                 image = drawable(R.drawable.ic_volume_up, color(R.color.onBackground))
                 TooltipCompat.setTooltipText(this, contentDescription)
-            }
-            child(::AppCompatImageButton, params(dip(0), matchParent, weight = 1F)) {
+            })
+            child(params(dip(0), matchParent, weight = 1F), AppCompatImageButton(context).apply {
                 backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
                 contentDescription = string(R.string.bookMenuAddBookmark)
                 image = drawable(R.drawable.ic_bookmark_border, color(R.color.onBackground))
                 TooltipCompat.setTooltipText(this, contentDescription)
-            }
-        }
+            })
+        })
     }
 
-    return view(::LinearLayoutExt) {
+    return LinearLayoutExt(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
 
-        child(top(), params(matchParent, wrapContent, weight = 0F))
-        child(middle(), params(matchParent, wrapContent, weight = 1F))
-        child(bottom(), params(matchParent, wrapContent, weight = 0F))
+        child(params(matchParent, wrapContent, weight = 0F), top())
+        child(params(matchParent, wrapContent, weight = 1F), middle())
+        child(params(matchParent, wrapContent, weight = 0F), bottom())
 
         onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.back(); true }
         onInterceptKeyDown(KeyEvent.KEYCODE_MENU) { model.back(); true }

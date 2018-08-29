@@ -14,7 +14,7 @@ import com.dmi.util.android.view.*
 import com.google.android.material.card.MaterialCardView
 import org.jetbrains.anko.*
 
-fun Context.selectionView(model: Selection) = view(::FrameLayoutExt) {
+fun selectionView(context: Context, model: Selection) = FrameLayoutExt(context).apply {
     fun updateActions(container: ViewGroup, actions: View) {
         actions.visibility = if (model.actionsIsVisible) View.VISIBLE else View.GONE
         val position = model.actionsPosition(container.size, actions.size)
@@ -24,52 +24,52 @@ fun Context.selectionView(model: Selection) = view(::FrameLayoutExt) {
         actions.layoutParams = layoutParams
     }
 
-    fun actions() = view(::MaterialCardView) {
+    fun actions() = MaterialCardView(context).apply {
         cardElevation = dipFloat(6F)
         useCompatPadding = true
 
-        child(::ScrollView, params(wrapContent, wrapContent)) {
+        child(params(wrapContent, wrapContent), ScrollView(context).apply {
             backgroundColor = color(R.color.background)
 
-            child(::LinearLayoutCompat, params(wrapContent, wrapContent)) {
+            child(params(wrapContent, wrapContent), LinearLayoutCompat(context).apply {
                 orientation = LinearLayoutCompat.HORIZONTAL
 
-                child(::AppCompatImageButton, params(dip(48), dip(48))) {
+                child(params(dip(48), dip(48)), AppCompatImageButton(context).apply {
                     backgroundResource = attr(R.attr.selectableItemBackground).resourceId
                     contentDescription = string(R.string.selectionCopyText)
                     image = drawable(R.drawable.ic_content_copy, color(R.color.onBackground))
                     TooltipCompat.setTooltipText(this, contentDescription)
                     onClick { model.copySelectedText() }
-                }
+                })
 
-                child(::AppCompatImageButton, params(dip(48), dip(48))) {
+                child(params(dip(48), dip(48)), AppCompatImageButton(context).apply {
                     backgroundResource = attr(R.attr.selectableItemBackground).resourceId
                     contentDescription = string(R.string.selectionTranslateText)
                     image = drawable(R.drawable.ic_translate, color(R.color.onBackground))
                     TooltipCompat.setTooltipText(this, contentDescription)
                     onClick { model.translateSelectedText() }
-                }
-            }
-        }
+                })
+            })
+        })
     }
 
-    child(::FrameLayout, params(matchParent, matchParent)) {
-        val handles = child(HandlesView(context, model), params(wrapContent, wrapContent))
+    child(params(matchParent, matchParent), FrameLayout(context).apply {
+        val handles = child(params(wrapContent, wrapContent), HandlesView(context, model))
         autorun {
             handles.set(model.handles)
         }
-    }
+    })
 
-    child(::FrameLayout, params(matchParent, matchParent)) {
+    child(params(matchParent, matchParent), FrameLayout(context).apply {
         layoutTransition = fadeTransition(300)
-        val actions = child(actions(), params(wrapContent, wrapContent))
+        val actions = child(params(wrapContent, wrapContent), actions())
         onSizeChange { _, _ ->
             updateActions(this, actions)
         }
         autorun {
             updateActions(this, actions)
         }
-    }
+    })
 
     onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.deselect(); true }
 }

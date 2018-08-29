@@ -10,7 +10,6 @@ import kotlinx.coroutines.android.UI
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.onAttachStateChangeListener
-import org.jetbrains.anko.wrapContent
 import kotlin.reflect.KProperty0
 
 /**
@@ -69,12 +68,11 @@ fun View.autorun(action: () -> Unit) {
  * When any of this values changed, child will be recreated.
  * Returns container for child.
  */
-@JvmName("autochild1")
+@JvmName("bindChild1")
 fun <M : Any, V : View> FrameLayout.bindChild(
+        params: FrameLayout.LayoutParams,
         model: KProperty0<M?>,
-        view: (M, old: V?) -> V,
-        params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(wrapContent, wrapContent),
-        init: FrameLayout.() -> Unit = {}
+        view: (context: Context, M, old: V?) -> V
 ): FrameLayout {
     val container = FrameLayout(context)
     container.layoutParams = FrameLayout.LayoutParams(matchParent, matchParent)
@@ -86,7 +84,7 @@ fun <M : Any, V : View> FrameLayout.bindChild(
                 container.removeView(old)
             old = null
         } else {
-            val created = view(value, old)
+            val created = view(context, value, old)
             created.layoutParams = params
             if (created !== old) {
                 if (old != null)
@@ -96,42 +94,17 @@ fun <M : Any, V : View> FrameLayout.bindChild(
             old = created
         }
     }
-    init(container)
     addView(container)
     return container
 }
 
-@JvmName("autochild2")
-fun <M : Any, V : View> FrameLayout.bindChild(
-        model: KProperty0<M?>,
-        view: Context.(M, old: V?) -> V,
-        params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(wrapContent, wrapContent),
-        init: FrameLayout.() -> Unit = {}
-): FrameLayout {
-    fun view(model: M, old: V?): V = context.view(model, old)
-    return bindChild(model, ::view, params, init)
-}
-
-@JvmName("autochild3")
+@JvmName("bindChild2")
 fun <M : Any> FrameLayout.bindChild(
+        params: FrameLayout.LayoutParams,
         model: KProperty0<M?>,
-        view: (M) -> View,
-        params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(wrapContent, wrapContent),
-        init: FrameLayout.() -> Unit = {}
+        view: (context: Context, M) -> View
 ): FrameLayout {
     @Suppress("UNUSED_PARAMETER")
-    fun view(model: M, old: View?) = view(model)
-    return bindChild(model, ::view, params, init)
-}
-
-@JvmName("autochild4")
-fun <M : Any> FrameLayout.bindChild(
-        model: KProperty0<M?>,
-        view: Context.(M) -> View,
-        params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(wrapContent, wrapContent),
-        init: FrameLayout.() -> Unit = {}
-): FrameLayout {
-    @Suppress("UNUSED_PARAMETER")
-    fun Context.view(model: M, old: View?) = view(model)
-    return bindChild(model, Context::view, params, init)
+    fun view(context: Context, model: M, old: View?) = view(context, model)
+    return bindChild(params, model, ::view)
 }

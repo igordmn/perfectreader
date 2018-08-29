@@ -53,7 +53,7 @@ class SettingListView<T, V>(
         init {
             allItemViews.add(this)
             layoutParams = params(matchParent, wrapContent)
-            child(original, params(matchParent, wrapContent))
+            child(params(matchParent, wrapContent), original)
             isClickable = true
             isFocusable = true
             backgroundResource = attr(android.R.attr.activatedBackgroundIndicator).resourceId

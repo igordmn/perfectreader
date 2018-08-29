@@ -24,7 +24,8 @@ class SettingItems<T, IV, PV>(
 
 class PreviewView(val view: View, val withPadding: Boolean = true, val isClickable: Boolean = true)
 
-fun <T, IV, PV> Context.listSetting(
+fun <T, IV, PV> listSetting(
+        context: Context,
         navigation: SettingsNavigation,
         property: KMutableProperty0<T>,
         items: SettingItems<T, IV, PV>,
@@ -33,10 +34,10 @@ fun <T, IV, PV> Context.listSetting(
         @StringRes
         subtitleResId: Int? = null
 ) : View where IV : View, IV : Bindable<T>, PV : View, PV : Bindable<T> {
-    val previewView = items.createPreviewView(this)
+    val previewView = items.createPreviewView(context)
     previewView.bind(property.get())
 
-    return titleSetting(PreviewView(previewView), titleResId, subtitleResId).apply {
+    return titleSetting(context, PreviewView(previewView), titleResId, subtitleResId).apply {
         onClick {
             val view = SettingListView(context, property.get(), items.list, items.createItemView)
             navigation.goDetails(string(titleResId), view)
@@ -44,7 +45,8 @@ fun <T, IV, PV> Context.listSetting(
     }
 }
 
-fun Context.floatSetting(
+fun floatSetting(
+        context: Context,
         property: KMutableProperty0<Float>,
         values: FloatArray,
         decimalCount: Int = 2,
@@ -57,9 +59,9 @@ fun Context.floatSetting(
     val max = values.last()
 
     var editNumber: EditNumber by initOnce()
-    val view = LinearLayoutCompat(this).apply {
+    val view = LinearLayoutCompat(context).apply {
         orientation = LinearLayoutCompat.HORIZONTAL
-        child(::AppCompatImageButton, params(dip(48), dip(48))) {
+        child(params(dip(48), dip(48)), AppCompatImageButton(context).apply {
             backgroundResource = attr(R.attr.selectableItemBackground).resourceId
             image = drawable(R.drawable.minus, color(R.color.onBackground).withTransparency(0.60))
             onContinousClick {
@@ -69,9 +71,9 @@ fun Context.floatSetting(
                     editNumber.floatValue = value
                 }
             }
-        }
+        })
 
-        editNumber = child(::EditNumber, params(dip(48), dip(48))) {
+        editNumber = child(params(dip(48), dip(48)), EditNumber(context).apply {
             setPadding(0, dip(12), 0, dip(12))
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
             gravity = Gravity.CENTER
@@ -83,9 +85,9 @@ fun Context.floatSetting(
             afterChange {
                 property.set(floatValue)
             }
-        }
+        })
 
-        child(::AppCompatImageButton, params(dip(48), dip(48))) {
+        child(params(dip(48), dip(48)), AppCompatImageButton(context).apply {
             backgroundResource = attr(R.attr.selectableItemBackground).resourceId
             image = drawable(R.drawable.plus, color(R.color.onBackground).withTransparency(0.60))
             onContinousClick {
@@ -95,24 +97,25 @@ fun Context.floatSetting(
                     editNumber.floatValue = value
                 }
             }
-        }
+        })
     }
 
-    return titleSetting(PreviewView(view, withPadding = false), titleResId, subtitleResId).apply {
+    return titleSetting(context, PreviewView(view, withPadding = false), titleResId, subtitleResId).apply {
         onClick {
             editNumber.requestFocus()
         }
     }
 }
 
-fun Context.booleanSetting(
+fun booleanSetting(
+        context: Context,
         property: KMutableProperty0<Boolean>,
         @StringRes
         titleResId: Int,
         @StringRes
         subtitleResId: Int? = null
 ): View {
-    val switch = SwitchCompat(this).apply {
+    val switch = SwitchCompat(context).apply {
         isClickable = false
         isFocusable = false
         isChecked = property.get()
@@ -121,41 +124,42 @@ fun Context.booleanSetting(
         }
     }
 
-    return titleSetting(PreviewView(switch), titleResId, subtitleResId).apply {
+    return titleSetting(context, PreviewView(switch), titleResId, subtitleResId).apply {
         onClick {
             switch.performClick()
         }
     }
 }
 
-fun Context.titleSetting(
+fun titleSetting(
+        context: Context,
         previewView: PreviewView,
         @StringRes
         titleResId: Int,
         @StringRes
         subtitleResId: Int? = null
-) = view(::LinearLayoutCompat) {
+) = LinearLayoutCompat(context).apply {
     orientation = LinearLayoutCompat.HORIZONTAL
     setPadding(dip(16), 0, if (previewView.withPadding) dip(16) else 0, 0)
 
-    child(::LinearLayoutCompat, params(matchParent, wrapContent, weight = 1F, gravity = Gravity.CENTER_VERTICAL)) {
+    child(params(matchParent, wrapContent, Gravity.CENTER_VERTICAL, weight = 1F), LinearLayoutCompat(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
         setPaddingRelative(0, dip(12), dip(16), dip(12))
-        child(::TextView, params(wrapContent, wrapContent)) {
+        child(params(wrapContent, wrapContent), TextView(context).apply {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
             textColor = color(R.color.onBackground)
             text = string(titleResId)
-        }
+        })
         if (subtitleResId != null) {
-            child(::TextView, params(wrapContent, wrapContent)) {
+            child(params(wrapContent, wrapContent), TextView(context).apply {
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
                 textColor = color(R.color.onBackground).withTransparency(0.60)
                 text = string(subtitleResId)
-            }
+            })
         }
-    }
+    })
 
-    child(previewView.view, params(wrapContent, wrapContent, weight = 0F, gravity = Gravity.END or Gravity.CENTER_VERTICAL))
+    child(params(wrapContent, wrapContent, Gravity.END or Gravity.CENTER_VERTICAL, weight = 0F), previewView.view)
 
     if (previewView.isClickable) {
         backgroundResource = attr(R.attr.selectableItemBackground).resourceId

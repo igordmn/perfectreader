@@ -14,9 +14,9 @@ import org.jetbrains.anko.wrapContent
 @SuppressLint("ViewConstructor")
 class LoadingView<T : View>(context: Context, private val child: T, showProgress: Boolean = false) : FrameLayout(context) {
     private val progressBar:ProgressBar? = if (showProgress) {
-        child(::ProgressBar, params(wrapContent, wrapContent)) {
+        child(params(wrapContent, wrapContent), ProgressBar(context).apply {
             visibility = View.INVISIBLE
-        }
+        })
     } else {
         null
     }
