@@ -10,10 +10,13 @@ import com.dmi.util.scope.Scoped
 import com.dmi.util.system.ChangingApplicationWindow
 
 abstract class ActivityExt<M : Scoped> protected constructor() : AppCompatActivity() {
-    lateinit var window: ChangingApplicationWindow
+    val window = ChangingApplicationWindow().apply {
+        exit = {
+            finish()
+        }
+    }
 
     protected lateinit var model: M
-    protected lateinit var view: View
 
     protected abstract fun createModel(): M
     protected abstract fun createView(model: M): View
@@ -21,32 +24,18 @@ abstract class ActivityExt<M : Scoped> protected constructor() : AppCompatActivi
     protected fun recreateModel() {
         model.scope.dispose()
         model = createModel()
-        view = createView(model)
-        setContentView(view)
+        setContentView(createView(model))
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (lastCustomNonConfigurationInstance != null) {
-            val retain = lastCustomNonConfigurationInstance as Retain<M>
-            this.window = retain.window
-            this.model = retain.model
-        } else {
-            window = ChangingApplicationWindow()
-            model = createModel()
-        }
-        window.exit = {
-            finish()
-        }
-        view = createView(model)
-        setContentView(view)
+        model = createModel()
+        setContentView(createView(model))
     }
 
     override fun onDestroy() {
-        window.exit = null
-        if (!isChangingConfigurations)
-            model.scope.dispose()
+        model.scope.dispose()
         super.onDestroy()
     }
 
@@ -59,10 +48,6 @@ abstract class ActivityExt<M : Scoped> protected constructor() : AppCompatActivi
         window.isActive = false
         super.onPause()
     }
-
-    final override fun onRetainCustomNonConfigurationInstance() = Retain(window, model)
-
-    class Retain<VM>(val window: ChangingApplicationWindow, val model: VM)
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         return getWindow().decorView.interceptKeys(event) || super.dispatchKeyEvent(event)
