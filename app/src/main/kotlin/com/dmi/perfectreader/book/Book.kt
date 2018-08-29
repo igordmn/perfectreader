@@ -111,7 +111,7 @@ class Book(
         Sized(locations, loadingPages, animatedPages)
     }
 
-    val locations: Locations get() = sized.locations
+    private val locations: Locations get() = sized.locations
     private val loadingPages: LoadingPages get() = sized.loadingPages
     private val animatedPages: AnimatedPages get() = sized.animatedPages
 
@@ -128,6 +128,11 @@ class Book(
     val isMoving: Boolean get() = animatedPages.isMoving
     val pages: VisiblePages get() = animatedPages.visible
 
+
+    val percent: Double by scope.cached { locations.locationToPercent(location) }
+    val pageNumber: Int by scope.cached {  locations.locationToPageNumber(location) }
+    val numberOfPages: Int by scope.cached { locations.numberOfPages }
+
     fun goLocation(location: Location) {
         loadingPages.goLocation(location)
         animatedPages.reset()
@@ -137,6 +142,9 @@ class Book(
         loadingPages.goRelative(relativeIndex)
         animatedPages.reset()
     }
+
+    fun goPercent(percent: Double) = goLocation(locations.percentToLocation(percent))
+    fun goPageNumber(pageNumber: Int) = goLocation(locations.pageNumberToLocation(pageNumber))
 
     fun animateRelative(relativeIndex: Int) = animatedPages.animateRelative(relativeIndex)
     fun scroll() = animatedPages.scroll()

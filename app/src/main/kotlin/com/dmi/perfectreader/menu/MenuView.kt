@@ -15,19 +15,20 @@ import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
+import com.dmi.perfectreader.book.Book
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.intRound
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 import org.jetbrains.anko.*
 
-fun menuView(context: Context, model: Menu): View {
-    fun DiscreteSeekBar.progress() = intRound(model.percent * max)
+fun menuView(context: Context, model: Menu, book: Book): View {
+    fun DiscreteSeekBar.progress() = intRound(book.percent * max)
 
     fun DiscreteSeekBar.onProgressChangeListener(): DiscreteSeekBar.OnProgressChangeListener {
         return object : DiscreteSeekBar.OnProgressChangeListener {
             override fun onProgressChanged(seekBar: DiscreteSeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser)
-                    model.goPercent(progress.toDouble() / max)
+                    book.goPercent(progress.toDouble() / max)
             }
 
             override fun onStartTrackingTouch(seekBar: DiscreteSeekBar) = Unit
@@ -88,15 +89,15 @@ fun menuView(context: Context, model: Menu): View {
 
                 beforeEdit {
                     min = 1F
-                    max = model.numberOfPages.toFloat()
+                    max = book.numberOfPages.toFloat()
                 }
 
                 afterChange {
-                    model.goPageNumber(intValue)
+                    book.goPageNumber(intValue)
                 }
 
                 autorun {
-                    intValue = model.pageNumber
+                    intValue = book.pageNumber
                 }
             })
 
@@ -107,7 +108,7 @@ fun menuView(context: Context, model: Menu): View {
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 autorun {
                     @SuppressLint("SetTextI18n")
-                    text = " / ${model.numberOfPages}"
+                    text = " / ${book.numberOfPages}"
                 }
                 onClick {
                     pageNumber.requestFocus()

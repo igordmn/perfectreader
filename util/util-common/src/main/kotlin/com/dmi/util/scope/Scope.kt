@@ -76,11 +76,11 @@ class Scope : Disposable {
     }
 
     fun <T> value(initial: T, dispose: (T) -> Unit = {}) = VariableDelegate(initial, dispose)
-    fun <T : Disposable> disposable(initial: T) = value(initial, dispose = { it.dispose() })
+    fun <T : Disposable?> disposable(initial: T) = value(initial, dispose = { it?.dispose() })
     fun <T> cached(compute: () -> T) = CachedDelegate(compute, dispose = {})
-    fun <T : Disposable> cachedDisposable(compute: () -> T) = CachedDelegate(compute, dispose = { it.dispose() })
+    fun <T : Disposable?> cachedDisposable(compute: () -> T) = CachedDelegate(compute, dispose = { it?.dispose() })
     fun <T> cached(recache: Event, compute: () -> T) = EventCachedDelegate(recache, compute, dispose = {})
-    fun <T : Disposable> cachedDisposable(recache: Event, compute: () -> T) = EventCachedDelegate(recache, compute, dispose = { it.dispose() })
+    fun <T : Disposable?> cachedDisposable(recache: Event, compute: () -> T) = EventCachedDelegate(recache, compute, dispose = { it?.dispose() })
 
     fun <T> async(
             context: CoroutineContext = threadContext,
@@ -90,11 +90,11 @@ class Scope : Disposable {
     ) = AsyncComputedDelegate(context, resetOnRecompute, compute, dispose)
 
     // todo think how to dispose after cancel
-    fun <T : Disposable> asyncDisposable(
+    fun <T : Disposable?> asyncDisposable(
             context: CoroutineContext = threadContext,
             resetOnRecompute: Boolean = true,
             compute: suspend CoroutineScope.() -> T?
-    ) = async(context, resetOnRecompute, dispose = { it.dispose() }, compute = compute)
+    ) = async(context, resetOnRecompute, dispose = { it?.dispose() }, compute = compute)
 
     fun launch(
             context: CoroutineContext = threadContext,

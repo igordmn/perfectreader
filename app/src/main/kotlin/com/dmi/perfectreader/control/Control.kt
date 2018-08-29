@@ -10,6 +10,7 @@ import com.dmi.util.graphic.SizeF
 import com.dmi.util.input.GestureDetector
 import com.dmi.util.input.HardKey
 import com.dmi.util.input.TouchEvent
+import com.dmi.util.scope.Disposable
 import kotlinx.coroutines.android.UI
 
 class Control(
@@ -17,12 +18,16 @@ class Control(
         private val reader: Reader,
         private val actions: Actions = reader.actions,
         private val settings: Settings = main.settings
-) {
+): Disposable {
     private var gestureDetector: GestureDetector? = null
 
     fun resize(size: SizeF) {
         gestureDetector?.cancel()
         gestureDetector = gestureDetector(size, main, reader)
+    }
+
+    override fun dispose() {
+        gestureDetector?.cancel()
     }
 
     fun onTouchEvent(touchEvent: TouchEvent) = gestureDetector?.onTouchEvent(touchEvent)

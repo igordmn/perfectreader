@@ -6,6 +6,7 @@ import android.widget.FrameLayout
 import com.dmi.perfectreader.action.performingActionView
 import com.dmi.perfectreader.book.bookView
 import com.dmi.perfectreader.control.controlView
+import com.dmi.perfectreader.menu.Menu
 import com.dmi.perfectreader.menu.menuView
 import com.dmi.perfectreader.selection.selectionView
 import com.dmi.perfectreader.settingschange.settingsChangeView
@@ -19,6 +20,8 @@ import org.jetbrains.anko.padding
 import org.jetbrains.anko.wrapContent
 
 fun readerView(context: Context, model: Reader) = FrameLayout(context).apply {
+    fun menuView(context: Context, menu: Menu) = menuView(context, menu, model.book)
+
     child(params(matchParent, matchParent), bookView(context, model))
     child(params(matchParent, matchParent), controlView(context, model.control))
     bindChild(params(matchParent, matchParent), model::selection, ::selectionView).apply {

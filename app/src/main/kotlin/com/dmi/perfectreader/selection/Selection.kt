@@ -21,8 +21,6 @@ class Selection(
         val deselect: () -> Unit,
         dip2px: (Float) -> Float = main.dip2px,
         private val settings: Settings = main.settings,
-
-        // todo should be created in view, because it uses toast(R.string) (when user change system language, only view will be recreated)
         private val textActions: TextActions = TextActions(main)
 ) : Scoped by Scoped.Impl() {
     private val bottomActionsOffset = dip2px(24F)

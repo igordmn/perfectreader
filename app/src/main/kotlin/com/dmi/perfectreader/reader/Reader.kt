@@ -27,8 +27,8 @@ class Reader(
 ) : Scoped by Scoped.Impl() {
     val actions = Actions(main, window, this)
     val book: Book by scope.disposable(book)
-    val control: Control = Control(main, this)
-    var selection: Selection? by scope.value(null)
+    val control: Control by scope.disposable(Control(main, this))
+    var selection: Selection? by scope.disposable(null)
     var menu: Menu? by scope.value(null)
     var settingsChange: SettingsChange? by scope.value(null)
     var performingAction: PerformingAction? by scope.value(null)
@@ -46,15 +46,11 @@ class Reader(
         menu = if (menu == null) createMenu() else null
     }
 
-    private fun createMenu() = Menu(book, ::hideMenu then ::showSettings, back = ::hideMenu)
+    private fun createMenu() = Menu(showSettings = ::hideMenu then ::showSettings, back = ::hideMenu)
     private fun createSettings() = SettingsChange(back = ::hideSettings)
 
     private fun hideMenu() {
         menu = null
-    }
-
-    private fun showMenu() {
-        menu = createMenu()
     }
 
     private fun showSettings() {
