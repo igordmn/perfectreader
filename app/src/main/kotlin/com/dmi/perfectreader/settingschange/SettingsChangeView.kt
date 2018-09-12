@@ -71,8 +71,6 @@ fun settingsChangeView(context: Context, model: SettingsChange): View {
 
     fun bottomMain(navigation: SettingsNavigation) = LinearLayoutCompat(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
-        backgroundColor = color(R.color.background)
-        elevation = dipFloat(8F)
 
         val tabLayout = child(params(matchParent, wrapContent, weight = 0F), TabLayout(context).apply {
             tabMode = TabLayout.MODE_SCROLLABLE
@@ -95,7 +93,10 @@ fun settingsChangeView(context: Context, model: SettingsChange): View {
         dontSendTouchToParent()
 
         child(params(matchParent, matchParent, weight = 1F), space())
-        child(params(matchParent, dip(320), weight = 0F), Bottom(context, ::bottomMain))
+        child(params(matchParent, dip(320), weight = 0F), Bottom(context, ::bottomMain).apply {
+            backgroundColor = color(R.color.background)
+            elevation = dipFloat(8F)
+        })
 
         onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.back(); true }
         onInterceptKeyDown(KeyEvent.KEYCODE_MENU) { model.back(); true }
