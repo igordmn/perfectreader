@@ -26,7 +26,7 @@ fun controlView(context: Context, model: Control) = FrameLayoutExt(context).appl
         val hardKey = hardKeyFromKeyCode(event.keyCode)
         when {
             hardKey == null -> false
-            event.action == KeyEvent.ACTION_DOWN ->model.onKeyDown(hardKey)
+            event.action == KeyEvent.ACTION_DOWN -> model.onKeyDown(hardKey)
             event.action == KeyEvent.ACTION_UP -> model.onKeyUp(hardKey)
             else -> false
         }

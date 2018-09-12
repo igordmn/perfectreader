@@ -13,19 +13,17 @@ import com.dmi.perfectreader.selection.Selection
 import com.dmi.perfectreader.settingschange.SettingsChange
 import com.dmi.util.lang.then
 import com.dmi.util.scope.Scoped
-import com.dmi.util.system.ApplicationWindow
 
-suspend fun reader(main: Main, window: ApplicationWindow, uri: Uri): Reader {
+suspend fun reader(main: Main, uri: Uri): Reader {
     val book = book(main, uri)
-    return Reader(main, window, book)
+    return Reader(main, book)
 }
 
 class Reader(
         private val main: Main,
-        window: ApplicationWindow,
         book: Book
 ) : Scoped by Scoped.Impl() {
-    val actions = Actions(main, window, this)
+    val actions = Actions(main, this)
     val book: Book by scope.disposable(book)
     val control: Control by scope.disposable(Control(main, this))
     var selection: Selection? by scope.disposable(null)

@@ -207,38 +207,12 @@ class ControlSettings(store: ValueStore) {
     }
 
     class HardKeys(store: ValueStore) {
-        var doubleTapEnabled by store.value(false)
-        var longTapTimeout by store.value(500L)
-        var doubleTapTimeout by store.value(300L)
+        var volumeUp by store.value(ActionID.GO_PREVIOUS_PAGE)
+        var volumeDown by store.value(ActionID.GO_NEXT_PAGE)
 
-        val singlePress by store.group(::SinglePress)
-
-        class SinglePress(store: ValueStore) {
-            var volumeUp by store.value(ActionID.GO_PREVIOUS_PAGE)
-            var volumeDown by store.value(ActionID.GO_NEXT_PAGE)
-            var menu by store.value(ActionID.TOGGLE_MENU)
-            var back by store.value(ActionID.CLOSE_APPLICATION_WINDOW)
-            var search by store.value(ActionID.NONE)
-            var camera by store.value(ActionID.NONE)
-            var dpadPress by store.value(ActionID.NONE)
-            var dpadLeft by store.value(ActionID.NONE)
-            var dpadRight by store.value(ActionID.NONE)
-            var dpadUp by store.value(ActionID.NONE)
-            var dpadDown by store.value(ActionID.NONE)
-
-            fun property(hardKey: HardKey): KMutableProperty0<ActionID> = when (hardKey) {
-                HardKey.VOLUME_UP -> ::volumeUp
-                HardKey.VOLUME_DOWN -> ::volumeDown
-                HardKey.MENU -> ::menu
-                HardKey.BACK -> ::back
-                HardKey.SEARCH -> ::search
-                HardKey.CAMERA -> ::camera
-                HardKey.DPAD_CENTER -> ::dpadPress
-                HardKey.DPAD_LEFT -> ::dpadLeft
-                HardKey.DPAD_RIGHT -> ::dpadRight
-                HardKey.DPAD_UP -> ::dpadUp
-                HardKey.DPAD_DOWN -> ::dpadDown
-            }
+        fun property(hardKey: HardKey): KMutableProperty0<ActionID> = when (hardKey) {
+            HardKey.VOLUME_UP -> ::volumeUp
+            HardKey.VOLUME_DOWN -> ::volumeDown
         }
     }
 }

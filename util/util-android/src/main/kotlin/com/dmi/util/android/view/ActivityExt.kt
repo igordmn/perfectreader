@@ -7,15 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.dmi.util.scope.Scoped
-import com.dmi.util.system.ChangingApplicationWindow
 
 abstract class ActivityExt<M : Scoped> protected constructor() : AppCompatActivity() {
-    val window = ChangingApplicationWindow().apply {
-        exit = {
-            finish()
-        }
-    }
-
     protected lateinit var model: M
 
     protected abstract fun createModel(): M
@@ -39,18 +32,8 @@ abstract class ActivityExt<M : Scoped> protected constructor() : AppCompatActivi
         super.onDestroy()
     }
 
-    override fun onResume() {
-        super.onResume()
-        window.isActive = true
-    }
-
-    override fun onPause() {
-        window.isActive = false
-        super.onPause()
-    }
-
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        return getWindow().decorView.interceptKeys(event) || super.dispatchKeyEvent(event)
+        return window.decorView.interceptKeys(event) || super.dispatchKeyEvent(event)
     }
 
     private fun View.interceptKeys(event: KeyEvent): Boolean {

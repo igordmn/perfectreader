@@ -35,7 +35,7 @@ class Control(
 
     fun onKeyDown(hardKey: HardKey): Boolean {
         gestureDetector?.cancel()
-        val actionID = settings.control.hardKeys.singlePress.property(hardKey).get()
+        val actionID = settings.control.hardKeys.property(hardKey).get()
         return if (actionID != ActionID.NONE) {
             actions[actionID].perform()
             true
@@ -45,7 +45,7 @@ class Control(
     }
 
     fun onKeyUp(hardKey: HardKey): Boolean {
-        val actionID = settings.control.hardKeys.singlePress.property(hardKey).get()
+        val actionID = settings.control.hardKeys.property(hardKey).get()
         return actionID == ActionID.NONE
     }
 }

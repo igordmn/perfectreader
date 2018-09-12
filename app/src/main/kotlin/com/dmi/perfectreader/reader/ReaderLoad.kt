@@ -3,17 +3,16 @@ package com.dmi.perfectreader.reader
 import android.content.Intent
 import android.net.Uri
 import com.dmi.perfectreader.Main
-import com.dmi.util.android.system.Permissions
 import com.dmi.perfectreader.common.UserData
+import com.dmi.util.android.system.Permissions
 import com.dmi.util.log.Log
 import com.dmi.util.scope.Scoped
-import com.dmi.util.system.ApplicationWindow
 import java.io.IOException
 
 class ReaderLoad(
         private val main: Main,
-        private val window: ApplicationWindow,
         private val intent: Intent,
+        val back: () -> Unit,
         private val log: Log = main.log,
         private val userData: UserData = main.userData,
         private val permissions: Permissions = main.permissions
@@ -28,7 +27,7 @@ class ReaderLoad(
                 val uri = bookURI(intent)
                 if (uri != null) {
                     if (permissions.askStorage()) {
-                        reader = reader(main, window, uri)
+                        reader = reader(main, uri)
                     } else {
                         error = LoadError.NeedStoragePermissions()
                     }
@@ -52,8 +51,6 @@ class ReaderLoad(
             userData.loadLastBookURI()
         }
     }
-
-    fun close() = window.close()
 
     sealed class LoadError : Exception() {
         class IO : LoadError()
