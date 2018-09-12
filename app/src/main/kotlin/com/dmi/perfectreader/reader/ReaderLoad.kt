@@ -7,6 +7,7 @@ import com.dmi.perfectreader.common.UserData
 import com.dmi.util.android.system.Permissions
 import com.dmi.util.log.Log
 import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.observable
 import java.io.IOException
 
 class ReaderLoad(
@@ -17,9 +18,9 @@ class ReaderLoad(
         private val userData: UserData = main.userData,
         private val permissions: Permissions = main.permissions
 ) : Scoped by Scoped.Impl() {
-    var isLoading: Boolean by scope.value(true)
-    var error: LoadError? by scope.value(null)
-    var reader: Reader? by scope.value(null)
+    var isLoading: Boolean by observable(true)
+    var error: LoadError? by observable(null)
+    var reader: Reader? by observable(null)
 
     init {
         scope.launch {

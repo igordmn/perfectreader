@@ -12,9 +12,7 @@ class ScopeTest {
     @Test
     fun `on change variable`() {
         val obj1 = object {
-            val scope = Scope()
-
-            var v1: Int by scope.value(1)
+            var v1: Int by observable(1)
         }
 
         var v1 = 0
@@ -46,10 +44,8 @@ class ScopeTest {
     @Test
     fun `on change two variables`() {
         val obj1 = object {
-            val scope = Scope()
-
-            var v1: Int by scope.value(1)
-            var v2: Int by scope.value(2)
+            var v1: Int by observable(1)
+            var v2: Int by observable(2)
         }
 
         var v1 = 0
@@ -82,10 +78,8 @@ class ScopeTest {
     @Test
     fun `on change computed`() {
         val obj1 = object {
-            val scope = Scope()
-
-            var v1: Int by scope.value(1)
-            var v2: Int by scope.value(2)
+            var v1: Int by observable(1)
+            var v2: Int by observable(2)
         }
 
         val obj2 = object {
@@ -128,8 +122,8 @@ class ScopeTest {
         val obj1 = object {
             val scope = Scope()
 
-            var v1: Int by scope.value(1)
-            var v2: Int by scope.value(2)
+            var v1: Int by observable(1)
+            var v2: Int by observable(2)
             val v3: Int by scope.cached { v1 + v2 }
         }
 
@@ -187,9 +181,9 @@ class ScopeTest {
         val obj1 = object {
             val scope = Scope()
 
-            var v1: Boolean by scope.value(false)
-            var v2: Int by scope.value(1)
-            var v3: Int by scope.value(20)
+            var v1: Boolean by observable(false)
+            var v2: Int by observable(1)
+            var v3: Int by observable(20)
             val v4: Int by scope.cached { v2 + 1 }
             val v5: Int by scope.cached { v3 - 1 }
             val v6: Int by scope.cached { if (v1) v4 else v5 }
@@ -242,9 +236,7 @@ class ScopeTest {
     @Test
     fun `stop computing after dispose`() {
         val obj1 = object {
-            val scope = Scope()
-
-            var v1: Int by scope.value(1)
+            var v1: Int by observable(1)
         }
 
         val obj2 = object {
@@ -263,8 +255,7 @@ class ScopeTest {
     @Test
     fun `on change async value without suspend`() = runBlocking(context) {
         val obj1 = object {
-            val scope = Scope()
-            var v1: Int by scope.value(1)
+            var v1: Int by observable(1)
         }
 
         val obj2 = object {
@@ -292,9 +283,8 @@ class ScopeTest {
     @Test
     fun `on change async value with suspend`() = runBlocking(context) {
         val obj1 = object {
-            val scope = Scope()
-            var v1: Int by scope.value(1)
-            var v2: Int by scope.value(2)
+            var v1: Int by observable(1)
+            var v2: Int by observable(2)
         }
 
         val obj2 = object {
@@ -341,7 +331,7 @@ class ScopeTest {
     @Test
     fun `nested scopes`() {
         abstract class Obj1(val scope: Scope = Scope()) : Disposable by scope {
-            var v: Int by scope.value(1)
+            var v: Int by observable(1)
             abstract val obj3: Any
         }
 
@@ -352,7 +342,7 @@ class ScopeTest {
 
         class Obj3(obj2: Obj2, val scope: Scope = Scope()) : Disposable by scope {
             val obj2 by scope.disposable(obj2)
-            var v1 by scope.value(1)
+            var v1 by observable(1)
             val v2 by scope.cached { obj2.v1 + v1 }
             val v3 = v1
         }
@@ -389,7 +379,7 @@ class ScopeTest {
     @Test
     fun `simple async`() = runBlocking(context) {
         val scope = Scope()
-        val v1 by scope.value(1)
+        val v1 by observable(1)
         val v2: Int? by scope.async(context) {
             var x = v1
             yield()
@@ -412,7 +402,7 @@ class ScopeTest {
     @Test
     fun `nested async computed`() = runBlocking(context) {
         class Nested(val scope: Scope = Scope()) : Disposable by scope {
-            var v3 by scope.value(2)
+            var v3 by observable(2)
             var x: Int = v3
         }
 

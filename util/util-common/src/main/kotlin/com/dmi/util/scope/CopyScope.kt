@@ -59,7 +59,7 @@ class CopyScope(
             delegates.add(this)
 
             launch(copyContext, parent = job) {
-                copy = copyScope!!.value(readValue)
+                copy = copyScope!!.observable(readValue)
             }
 
             original.onchange.subscribe {

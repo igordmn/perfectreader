@@ -110,8 +110,8 @@ class Scope : Disposable {
         disposed = true
     }
 
-    fun <T> value(initial: T, dispose: (T) -> Unit = {}) = VariableDelegate(initial, dispose)
-    fun <T : Disposable?> disposable(initial: T) = value(initial, dispose = { it?.dispose() })
+    fun <T> observable(initial: T, dispose: (T) -> Unit = {}) = VariableDelegate(initial, dispose)
+    fun <T : Disposable?> disposable(initial: T) = observable(initial, dispose = { it?.dispose() })
     fun <T> cached(compute: () -> T) = CachedDelegate(compute, dispose = {})
     fun <T : Disposable?> cachedDisposable(compute: () -> T) = CachedDelegate(compute, dispose = { it?.dispose() })
     fun <T> cached(recache: Event, compute: () -> T) = EventCachedDelegate(recache, compute, dispose = {})

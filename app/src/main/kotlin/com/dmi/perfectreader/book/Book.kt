@@ -35,10 +35,7 @@ import com.dmi.perfectreader.common.UserData
 import com.dmi.util.coroutine.IOPool
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.graphic.shrink
-import com.dmi.util.scope.Disposable
-import com.dmi.util.scope.Scoped
-import com.dmi.util.scope.and
-import com.dmi.util.scope.onchange
+import com.dmi.util.scope.*
 import com.dmi.util.system.seconds
 import kotlinx.coroutines.withContext
 
@@ -64,7 +61,7 @@ class Book(
         private val content: Content,
         val bitmapDecoder: BitmapDecoder
 ) : Scoped by Scoped.Impl() {
-    var size by scope.value(SizeF(100F, 100F))
+    var size by observable(SizeF(100F, 100F))
 
     private val layouter = UniversalObjectLayouter(
             PaintTextMetrics(),

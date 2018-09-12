@@ -19,7 +19,7 @@ fun <T : Any> initOnce() = object : ReadWriteProperty<Any?, T> {
     }
 }
 
-infix fun <R, T> ReadWriteProperty<R, T>.afterSet(afterSet: (value: T) -> Unit): ReadWriteProperty<R, T> {
+infix fun <R, T> ReadWriteProperty<R, T>.set(afterSet: (value: T) -> Unit): ReadWriteProperty<R, T> {
     val self = this
     return object : ReadWriteProperty<R, T> {
         override fun getValue(thisRef: R, property: KProperty<*>) = self.getValue(thisRef, property)

@@ -17,7 +17,7 @@ class GLPage(
         private val refresher: GLPageRefresher,
         private val scope: Scope = Scope()
 ) : Disposable by scope {
-    private val canvasTexture: GLTexture by scope.value(
+    private val canvasTexture: GLTexture by scope.observable(
             texturePool.acquire(),
             dispose = {
                 texturePool.release(canvasTexture)

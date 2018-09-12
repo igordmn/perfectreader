@@ -13,6 +13,7 @@ import com.dmi.perfectreader.selection.Selection
 import com.dmi.perfectreader.settingschange.SettingsChange
 import com.dmi.util.lang.then
 import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.observable
 
 suspend fun reader(main: Main, uri: Uri): Reader {
     val book = book(main, uri)
@@ -27,9 +28,9 @@ class Reader(
     val book: Book by scope.disposable(book)
     val control: Control by scope.disposable(Control(main, this))
     var selection: Selection? by scope.disposable(null)
-    var menu: Menu? by scope.value(null)
-    var settingsChange: SettingsChange? by scope.value(null)
-    var performingAction: PerformingAction? by scope.value(null)
+    var menu: Menu? by observable(null)
+    var settingsChange: SettingsChange? by observable(null)
+    var performingAction: PerformingAction? by observable(null)
 
     fun createSelection(range: LocationRange?): Selection? = if (range != null) {
         val deselect = {

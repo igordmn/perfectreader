@@ -8,6 +8,7 @@ import com.dmi.util.lang.longFloor
 import com.dmi.util.lang.modPositive
 import com.dmi.util.scope.EmittableEvent
 import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.observable
 import com.dmi.util.system.Display
 import java.lang.Math.*
 
@@ -26,9 +27,9 @@ class AnimatedPages(
         }
     }
 
-    private var currentIndex: Int by scope.value(0)
-    private var animation by scope.value(PageAnimation(display.currentTime))
-    private var isScrolling by scope.value(false)
+    private var currentIndex: Int by observable(0)
+    private var animation by observable(PageAnimation(display.currentTime))
+    private var isScrolling by observable(false)
 
     private fun movingPageToIndex(movingPage: Long): Int = (movingPage - currentIndex).toInt()
     private fun indexToMovingPage(actualPage: Int): Long = actualPage + currentIndex.toLong()

@@ -7,6 +7,7 @@ import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.pagination.page.Page
 import com.dmi.util.lang.unsupported
 import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.observable
 import kotlin.math.max
 import kotlin.math.min
 
@@ -31,7 +32,7 @@ class LoadingPages(
         }
     }
 
-    private var buffer by scope.value(PageBuffer(maxRelativeIndex))
+    private var buffer by observable(PageBuffer(maxRelativeIndex))
 
     val goIndices: IntRange by scope.cached { minGoIndex..maxGoIndex }
     private val minGoIndex get() = min(1 - pages.pageNumber, buffer.shiftIndices.start)

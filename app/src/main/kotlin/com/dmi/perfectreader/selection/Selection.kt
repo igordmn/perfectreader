@@ -11,6 +11,7 @@ import com.dmi.util.graphic.Position
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.graphic.Size
 import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.observable
 import java.lang.Math.max
 import java.lang.Math.min
 
@@ -25,8 +26,8 @@ class Selection(
 ) : Scoped by Scoped.Impl() {
     private val bottomActionsOffset = dip2px(24F)
 
-    var isSelecting: Boolean by scope.value(false)
-    var range: LocationRange by scope.value(range)
+    var isSelecting: Boolean by observable(false)
+    var range: LocationRange by observable(range)
         private set
 
     val handles: Handles by scope.cached {

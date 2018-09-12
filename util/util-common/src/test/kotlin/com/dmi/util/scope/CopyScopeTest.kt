@@ -19,8 +19,8 @@ class CopyScopeTest {
             val obj = object {
                 val scope = Scope()
 
-                var v1: Int by scope.value(1)
-                var v2: Int by scope.value(2)
+                var v1: Int by observable(1)
+                var v2: Int by observable(2)
             }
 
             val copy = object {
@@ -90,8 +90,8 @@ class CopyScopeTest {
             val obj = object {
                 val scope = Scope()
 
-                var v1: Int by scope.value(1)
-                var v2: Int by scope.value(2)
+                var v1: Int by observable(1)
+                var v2: Int by observable(2)
             }
 
             val copy = object {
@@ -148,8 +148,8 @@ class CopyScopeTest {
             val obj = object {
                 val scope = Scope()
 
-                var v1: Int by scope.value(1)
-                var v2: Int by scope.value(2)
+                var v1: Int by observable(1)
+                var v2: Int by observable(2)
             }
 
             val copy = object {
