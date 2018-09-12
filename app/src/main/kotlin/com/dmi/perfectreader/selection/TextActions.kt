@@ -30,7 +30,7 @@ class TextActions(
             intent.type = "text/plain"
             intent.putExtra("android.intent.extra.PROCESS_TEXT", text)
             intent.component = ComponentName(packageName, activityName)
-            main.currentActivity!!.startActivity(intent)
+            context.startActivity(intent)
         } else {
             context.toast(R.string.googleTranslateNotInstalled)
         }

@@ -1,6 +1,5 @@
 package com.dmi.perfectreader
 
-import android.app.Activity
 import android.content.Context
 import com.dmi.perfectreader.common.Databases
 import com.dmi.perfectreader.common.Protocols
@@ -31,7 +30,6 @@ class Main(val log: Log, val applicationContext: Context) {
     ))
     val display: Display = AndroidDisplay
     val permissions = Permissions(applicationContext)
-    var currentActivity: Activity? = null
 
     private val fontsCache = androidFontsCache(log)
     val fonts: Fonts get() {
