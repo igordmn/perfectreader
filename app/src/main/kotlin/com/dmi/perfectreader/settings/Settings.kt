@@ -2,14 +2,11 @@ package com.dmi.perfectreader.settings
 
 import android.database.sqlite.SQLiteDatabase
 import com.dmi.util.android.persist.DBValueStore
-import com.dmi.util.persist.ScopedValueStore
+import com.dmi.util.persist.ObservableValueStore
 import com.dmi.util.persist.ValueStore
 import com.dmi.util.persist.group
-import com.dmi.util.scope.Disposable
-import com.dmi.util.scope.Scope
 
 suspend fun settings(userDatabase: SQLiteDatabase): Settings {
-    val scope = Scope()
     val store = DBValueStore(userDatabase,
             DBValueStore.Schema(
                     "Setting",
@@ -18,12 +15,12 @@ suspend fun settings(userDatabase: SQLiteDatabase): Settings {
                     )
             )
     )
-    val settings = Settings(ScopedValueStore(scope, store), scope)
+    val settings = Settings(ObservableValueStore(store))
     store.load()
     return settings
 }
 
-class Settings(store: ValueStore, scope: Scope) : Disposable by scope {
+class Settings(store: ValueStore) {
     val analyze by store.group(::AnalyzeSettings)
     val format by store.group(::FormatSettings)
     val image by store.group(::ImageSettings)

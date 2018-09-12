@@ -8,6 +8,9 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
+/**
+ * For copy all values from one thread to another synchronously
+ */
 class CopyScope(
         private val copyContext: CoroutineContext,
         thisContext: CoroutineContext = threadContext

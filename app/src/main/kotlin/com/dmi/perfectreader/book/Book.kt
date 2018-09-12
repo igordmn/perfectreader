@@ -36,9 +36,9 @@ import com.dmi.util.coroutine.IOPool
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.graphic.shrink
 import com.dmi.util.scope.Disposable
-import com.dmi.util.scope.Scope.Companion.onchange
 import com.dmi.util.scope.Scoped
 import com.dmi.util.scope.and
+import com.dmi.util.scope.onchange
 import com.dmi.util.system.seconds
 import kotlinx.coroutines.withContext
 
@@ -51,7 +51,7 @@ suspend fun book(main: Main, uri: Uri): Book {
     val content: Content = withContext(IOPool) {
         bookContentParserFactory.parserFor(uri).parse()
     }
-    val userBook: UserBook = userBook(userData, uri)   // todo need dispose if coroutine cancelled?
+    val userBook: UserBook = userBook(userData, uri)
     val bitmapDecoder = CachedBitmapDecoder(AndroidBitmapDecoder(content.openResource))
     val text = ContentText(content)
     return Book(main, text, userBook, content, bitmapDecoder)
@@ -60,13 +60,11 @@ suspend fun book(main: Main, uri: Uri): Book {
 class Book(
         private val main: Main,
         val text: ContentText,
-        userBook: UserBook,
+        private val userBook: UserBook,
         private val content: Content,
         val bitmapDecoder: BitmapDecoder
 ) : Scoped by Scoped.Impl() {
     var size by scope.value(SizeF(100F, 100F))
-
-    private val userBook: UserBook by scope.disposable(userBook)
 
     private val layouter = UniversalObjectLayouter(
             PaintTextMetrics(),

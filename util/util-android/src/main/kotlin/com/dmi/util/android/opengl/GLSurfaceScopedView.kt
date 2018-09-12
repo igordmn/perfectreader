@@ -12,7 +12,7 @@ import com.dmi.util.graphic.Size
 import com.dmi.util.log.Log
 import com.dmi.util.scope.CopyScope
 import com.dmi.util.scope.Disposable
-import com.dmi.util.scope.Scope.Companion.onchange
+import com.dmi.util.scope.onchange
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable

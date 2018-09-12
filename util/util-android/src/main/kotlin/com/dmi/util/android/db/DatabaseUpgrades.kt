@@ -33,7 +33,7 @@ fun upgradeDatabase(context: Context, db: SQLiteDatabase, scriptsAssetsPath: Str
 
 private fun findNewScripts(context: Context, currentVersion: Int, scriptsAssetsPath: String): NewScripts {
     val newScripts = NewScripts()
-    val scripts = context.assets.list(scriptsAssetsPath)
+    val scripts = context.assets.list(scriptsAssetsPath)!!
     sort(scripts)
     for (script in scripts) {
         if (script.endsWith(".sql")) {

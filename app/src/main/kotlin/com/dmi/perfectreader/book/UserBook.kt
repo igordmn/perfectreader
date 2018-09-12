@@ -4,7 +4,7 @@ import android.net.Uri
 import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.common.UserData
 import com.dmi.util.lang.afterSet
-import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.observable
 
 suspend fun userBook(
         userData: UserData,
@@ -19,8 +19,8 @@ class UserBook(
         private val userData: UserData,
         private val uri: Uri,
         initialLocation: Location
-) : Scoped by Scoped.Impl() {
-    var location by scope.value(initialLocation).afterSet(::saveLocation)
+) {
+    var location by observable(initialLocation).afterSet(::saveLocation)
 
     private fun saveLocation(location: Location) = userData.saveBookLocation(uri, location)
 }

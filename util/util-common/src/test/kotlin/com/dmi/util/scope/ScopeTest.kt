@@ -1,7 +1,6 @@
 package com.dmi.util.scope
 
 import com.dmi.test.shouldBe
-import com.dmi.util.scope.Scope.Companion.onchange
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield

@@ -14,6 +14,80 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
+private var callContext: CallContext? by threadLocal(null)
+
+private class CallContext {
+    val createdObservables = HashSet<ObservableDelegate<*>>()
+    val calledObservables = LinkedHashSet<ObservableDelegate<*>>()
+    val dependencies get() = calledObservables.filter { !createdObservables.contains(it) }
+
+    fun <T> use(action: () -> T): T {
+        val oldCallContext = callContext
+        callContext = this
+        try {
+            return action()
+        } finally {
+            callContext = oldCallContext
+        }
+    }
+}
+
+/**
+ * call [action] and intercept all called scoped values. when any of this values changed, event will be emitted
+ */
+fun onchange(action: () -> Unit): Event {
+    val callContext = CallContext()
+    callContext.use(action)
+    return object : Event {
+        override fun subscribe(action: () -> Unit): Disposable {
+            val disposables = Disposables()
+            callContext.dependencies.forEach {
+                disposables += it.onchange.subscribe(action)
+            }
+            return disposables
+        }
+    }
+}
+
+abstract class ObservableDelegate<T> : ReadOnlyProperty<Any?, T> {
+    abstract val value: T
+    abstract val onchange: Event
+    protected val thread: Thread = currentThread()
+
+    init {
+        @Suppress("LeakingThis")
+        callContext?.createdObservables?.add(this)
+    }
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        callContext?.calledObservables?.add(this)
+        return value
+    }
+}
+
+class VariableDelegate<T>(
+        value: T
+) : ObservableDelegate<T>(), ReadWriteProperty<Any?, T> {
+    override var value: T = value
+        get() {
+            check(currentThread() == thread)
+            return field
+        }
+        set (value) {
+            check(currentThread() == thread)
+            field = value
+            onchange.emit()
+        }
+
+    override val onchange = EmittableEvent()
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        this.value = value
+    }
+}
+
+fun <T> observable(initial: T) = VariableDelegate(initial)
+
 interface Scoped : Disposable {
     val scope: Scope
 
@@ -26,50 +100,11 @@ interface Scoped : Disposable {
 }
 
 class Scope : Disposable {
-    companion object {
-        private var callContext: CallContext? by threadLocal(null)
-
-        private class CallContext {
-            val createdObservables = HashSet<Scope.ObservableDelegate<*>>()
-            val calledObservables = LinkedHashSet<Scope.ObservableDelegate<*>>()
-            val dependencies get() = calledObservables.filter { !createdObservables.contains(it) }
-
-            fun <T> use(action: () -> T): T {
-                val oldCallContext = callContext
-                Scope.callContext = this
-                try {
-                    return action()
-                } finally {
-                    Scope.callContext = oldCallContext
-                }
-            }
-        }
-
-        /**
-         * call [action] and intercept all called scoped values. when any of this values changed, event will be emitted
-         */
-        fun onchange(action: () -> Unit): Event {
-            val callContext = CallContext()
-            callContext.use(action)
-            return object : Event {
-                override fun subscribe(action: () -> Unit): Disposable {
-                    val disposables = Disposables()
-                    callContext.dependencies.forEach {
-                        disposables += it.onchange.subscribe(action)
-                    }
-                    return disposables
-                }
-            }
-        }
-    }
-
     private val disposables = Disposables()
     private var disposed = false
-    private val thread = currentThread()
     private val job = Job()
 
     override fun dispose() {
-        require(currentThread() == thread)
         job.cancel()
         disposables.dispose()
         disposed = true
@@ -101,21 +136,6 @@ class Scope : Disposable {
             run: suspend CoroutineScope.() -> Unit
     ): Job = launch(context, parent = job, block = run)
 
-    abstract class ObservableDelegate<T> : ReadOnlyProperty<Any?, T> {
-        abstract val value: T
-        abstract val onchange: Event
-
-        init {
-            @Suppress("LeakingThis")
-            callContext?.createdObservables?.add(this)
-        }
-
-        override fun getValue(thisRef: Any?, property: KProperty<*>): T {
-            callContext?.calledObservables?.add(this)
-            return value
-        }
-    }
-
     inner class VariableDelegate<T>(
             value: T,
             private val dispose: (T) -> Unit
@@ -141,8 +161,6 @@ class Scope : Disposable {
         }
 
         override val onchange = EmittableEvent()
-
-        override fun getValue(thisRef: Any?, property: KProperty<*>): T = super.getValue(thisRef, property)
 
         override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
             this.value = value

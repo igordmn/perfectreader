@@ -1,6 +1,6 @@
 package com.dmi.util.persist
 
-import com.dmi.util.scope.Scope
+import com.dmi.util.scope.observable
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -40,20 +40,20 @@ class ValueDelegate<T : Any>(private val store: ValueStore, private val default:
     }
 }
 
-class ScopedValueStore(private val scope: Scope, private val valueStore: ValueStore): ValueStore {
+class ObservableValueStore(private val valueStore: ValueStore): ValueStore {
     override fun <T : Any> value(key: String, default: T): ValueStore.Value<T> {
         val original = valueStore.value(key, default)
-        var scopeValue by scope.value(Unit)
+        var observableValue by observable(Unit)
         return object : ValueStore.Value<T> {
             override fun get(): T {
                 @Suppress("UNUSED_EXPRESSION")
-                scopeValue // just call scopedValue for intercept observables
+                observableValue // just call scopedValue for intercept observables
                 return original.get()
             }
 
             override fun set(value: T) {
                 original.set(value)
-                scopeValue = Unit
+                observableValue = Unit
             }
         }
     }

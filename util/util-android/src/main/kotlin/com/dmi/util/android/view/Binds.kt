@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.View
 import android.widget.FrameLayout
 import com.dmi.util.scope.Disposable
-import com.dmi.util.scope.Scope
+import com.dmi.util.scope.onchange
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.android.UI
 import kotlinx.coroutines.launch
@@ -36,7 +36,7 @@ fun View.autorun(action: () -> Unit) {
 
         fun perform() {
             subscription?.dispose()
-            subscription = Scope.onchange(action).subscribe { deffer() }
+            subscription = onchange(action).subscribe { deffer() }
         }
 
         override fun dispose() {
