@@ -49,7 +49,7 @@ class EmittableEvent : Event {
     override fun subscribe(action: () -> Unit): Disposable {
         var disposed = false
         val entry = listeners.add {
-            if (!disposed) action() // may be called during iterate tempListeners
+            if (!disposed) action() // may be disposed during iterate tempListeners
         }
         return object : Disposable {
             override fun dispose() {

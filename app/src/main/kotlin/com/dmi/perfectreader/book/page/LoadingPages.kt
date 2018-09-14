@@ -6,15 +6,17 @@ import com.dmi.perfectreader.book.content.location.LocatedSequence
 import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.pagination.page.Page
 import com.dmi.util.lang.unsupported
-import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.Disposable
+import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
 import kotlin.math.max
 import kotlin.math.min
 
 class LoadingPages(
         private val pages: Pages,
-        private val maxRelativeIndex: Int = 10
-) : Scoped by Scoped.Impl() {
+        private val maxRelativeIndex: Int = 10,
+        private val scope: Scope = Scope()
+) : Disposable by scope {
     companion object {
         fun pages(sequence: LocatedSequence<Page>, locations: Locations, userBook: UserBook) = object : LoadingPages.Pages {
             override var location: Location

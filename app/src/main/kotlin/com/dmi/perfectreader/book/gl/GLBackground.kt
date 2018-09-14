@@ -4,11 +4,11 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.dmi.util.android.graphics.resizeSeamCarvingTo
 import com.dmi.util.android.opengl.GLColor
-import com.dmi.util.android.opengl.GLObject
 import com.dmi.util.android.opengl.GLQuad
 import com.dmi.util.android.opengl.GLTexture
 import com.dmi.util.graphic.Size
 import com.dmi.util.io.ProtocolURIHandler
+import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.withContext
@@ -22,8 +22,8 @@ class GLBackground(
         uriHandler: ProtocolURIHandler,
         private val model: GLBookModel,
         private val scope: Scope = Scope()
-) : GLObject {
-    private val color: GLColor by scope.cachedDisposable { GLColor(model.pageBackgroundColor) }
+) : Disposable by scope {
+    private val color: GLColor by scope.cached { GLColor(model.pageBackgroundColor) }
     private val texture: GLTexture? by scope.asyncDisposable {
         if (model.pageBackgroundIsImage) {
             val path = model.pageBackgroundPath
@@ -63,9 +63,7 @@ class GLBackground(
         }
     }
 
-    override fun dispose() = scope.dispose()
-
-    override fun draw() {
+    fun draw() {
         val texture = texture
         if (texture != null) {
             quad.draw(texture)

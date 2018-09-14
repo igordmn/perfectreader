@@ -10,7 +10,8 @@ import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.graphic.Position
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.graphic.Size
-import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.Disposable
+import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
 import java.lang.Math.max
 import java.lang.Math.min
@@ -22,8 +23,9 @@ class Selection(
         val deselect: () -> Unit,
         dip2px: (Float) -> Float = main.dip2px,
         private val settings: Settings = main.settings,
-        private val textActions: TextActions = TextActions(main)
-) : Scoped by Scoped.Impl() {
+        private val textActions: TextActions = TextActions(main),
+        scope: Scope = Scope()
+) : Disposable by scope {
     private val bottomActionsOffset = dip2px(24F)
 
     var isSelecting: Boolean by observable(false)

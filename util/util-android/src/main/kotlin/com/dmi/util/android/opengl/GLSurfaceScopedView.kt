@@ -104,7 +104,7 @@ class GLSurfaceScopedView(
 
     interface Renderer : Disposable {
         /**
-         * All scoped values will be intercepted. When any of this variables changed, draw will be called automatically again
+         * All observable values will be intercepted. When any of this variables changed, draw will be called automatically again
          */
         fun draw()
     }

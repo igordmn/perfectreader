@@ -1,6 +1,7 @@
 package com.dmi.util.scope
 
 import com.dmi.util.coroutine.threadContext
+import com.dmi.util.lang.ReadWriteProperty2
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
@@ -38,16 +39,16 @@ class CopyScope(
     fun <T> computed(compute: () -> T) = ComputedDelegate(compute)
 
     inner class ComputedDelegate<T>(compute: () -> T) : ReadOnlyProperty<Any?, T> {
-        val original = scope.cached(compute)
-        lateinit var copy: Scope.VariableDelegate<T>
+        val cached by scope.cached(compute)
+        lateinit var copy: ReadWriteProperty2<Any?, T>
 
         private var changed = false
 
         @Volatile
-        private var writeValue: T = original.value
+        private var writeValue: T = cached
 
         @Volatile
-        private var readValue: T = original.value
+        private var readValue: T = cached
 
         @Volatile
         private var writeChanged = false
@@ -59,10 +60,11 @@ class CopyScope(
             delegates.add(this)
 
             launch(copyContext, parent = job) {
-                copy = copyScope!!.observable(readValue)
+                copy = observable(readValue)
             }
 
-            original.onchange.subscribe {
+            // it safe subscribe without dispose, because subscription will be disposed in scope.dispose
+            onchange { cached }.subscribe {
                 changed = true
                 write.schedule()
             }
@@ -70,7 +72,7 @@ class CopyScope(
 
         fun write() {
             if (changed)
-                writeValue = original.value
+                writeValue = cached
             writeChanged = changed
             changed = false
         }
@@ -85,7 +87,7 @@ class CopyScope(
                 copy.value = readValue
         }
 
-        override fun getValue(thisRef: Any?, property: KProperty<*>): T = copy.getValue(thisRef, property)
+        override fun getValue(thisRef: Any?, property: KProperty<*>): T = copy.value
     }
 
     private var readMutex = Object()

@@ -9,15 +9,17 @@ import com.dmi.util.android.opengl.GLTexture
 import com.dmi.util.android.opengl.bind
 import com.dmi.util.graphic.Size
 import com.dmi.util.io.ProtocolURIHandler
-import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.Disposable
+import com.dmi.util.scope.Scope
 
 class GLBook(
         model: GLBookModel,
         context: Context,
         pageRenderer: PageRenderer,
         size: Size,
-        uriHandler: ProtocolURIHandler
-) : Scoped by Scoped.Impl() {
+        uriHandler: ProtocolURIHandler,
+        scope: Scope = Scope()
+) : Disposable by scope {
     init {
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_BLEND)
@@ -26,14 +28,14 @@ class GLBook(
         glViewport(0, 0, size.width, size.height)
     }
 
-    private val pageTexture by scope.disposable(GLTexture(size))
-    private val pageFrameBuffer by scope.disposable(GLFrameBuffer().apply { bindTo(pageTexture) })
-    private val quad by scope.disposable(GLQuad(context))
+    private val pageTexture by scope.observableDisposable(GLTexture(size))
+    private val pageFrameBuffer by scope.observableDisposable(GLFrameBuffer().apply { bindTo(pageTexture) })
+    private val quad by scope.observableDisposable(GLQuad(context))
     private val pageAnimation: GLPageAnimation? by scope.asyncDisposable(resetOnRecompute = false) {
         glPageAnimation(uriHandler, model.pageAnimationPath, size)
     }
-    private val pageBackground: GLBackground by scope.disposable(GLBackground(size, quad, uriHandler, model))
-    private val pages by scope.disposable(GLPages(size, quad, model, pageRenderer))
+    private val pageBackground: GLBackground by scope.observableDisposable(GLBackground(size, quad, uriHandler, model))
+    private val pages by scope.observableDisposable(GLPages(size, quad, model, pageRenderer))
 
     fun draw() {
         glClearColor(1F, 1F, 1F, 1F)

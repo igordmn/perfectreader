@@ -6,16 +6,16 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.Disposable
 
-abstract class ActivityExt<M : Scoped> protected constructor() : AppCompatActivity() {
+abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatActivity() {
     protected lateinit var model: M
 
     protected abstract fun createModel(): M
     protected abstract fun createView(model: M): View
 
     protected fun recreateModel() {
-        model.scope.dispose()
+        model.dispose()
         model = createModel()
         setContentView(createView(model))
     }
@@ -28,7 +28,7 @@ abstract class ActivityExt<M : Scoped> protected constructor() : AppCompatActivi
     }
 
     override fun onDestroy() {
-        model.scope.dispose()
+        model.dispose()
         super.onDestroy()
     }
 

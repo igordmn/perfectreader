@@ -59,8 +59,9 @@ class Book(
         val text: ContentText,
         private val userBook: UserBook,
         private val content: Content,
-        val bitmapDecoder: BitmapDecoder
-) : Scoped by Scoped.Impl() {
+        val bitmapDecoder: BitmapDecoder,
+        scope: Scope = Scope()
+) : Disposable by scope {
     var size by observable(SizeF(100F, 100F))
 
     private val layouter = UniversalObjectLayouter(
@@ -83,27 +84,32 @@ class Book(
         appFormatConfig(main.applicationContext, main.settings, main.fonts)
     }
 
-    private val sized: Sized by scope.cachedDisposable(recache = onchange { size; formatConfig }) {
-        val settings = main.settings
-        val dip2px = main.dip2px
-        val paddings = formatConfig.pagePaddingsDip * formatConfig.density
-        val contentSize = size.shrink(paddings.left + paddings.right, paddings.top + paddings.bottom)
-        val sequence = content.sequence
-                .configure(formatConfig)
-                .layout(layouter, contentSize)
-                .parts()
-                .columns(contentSize.height)
-                .pages(size, formatConfig)
-        val locations = Locations(content, contentSize, formatConfig, settings)
-        val loadingPages = LoadingPages(LoadingPages.pages(sequence, locations, userBook))
-        val animatedPages = AnimatedPages(
-                size,
-                AnimatedPages.pages(loadingPages),
-                main.display,
-                speedToTurnPage = dip2px(20F),
-                animator = SmoothPageAnimator(seconds(0.4))
-        )
-        Sized(locations, loadingPages, animatedPages)
+    private val sized: Sized by scope.cachedDisposable {
+        val size = size
+        val formatConfig = formatConfig
+
+        dontObserve {
+            val settings = main.settings
+            val dip2px = main.dip2px
+            val paddings = formatConfig.pagePaddingsDip * formatConfig.density
+            val contentSize = size.shrink(paddings.left + paddings.right, paddings.top + paddings.bottom)
+            val sequence = content.sequence
+                    .configure(formatConfig)
+                    .layout(layouter, contentSize)
+                    .parts()
+                    .columns(contentSize.height)
+                    .pages(size, formatConfig)
+            val locations = Locations(content, contentSize, formatConfig, settings)
+            val loadingPages = LoadingPages(LoadingPages.pages(sequence, locations, userBook))
+            val animatedPages = AnimatedPages(
+                    size,
+                    AnimatedPages.pages(loadingPages),
+                    main.display,
+                    speedToTurnPage = dip2px(20F),
+                    animator = SmoothPageAnimator(seconds(0.4))
+            )
+            Sized(locations, loadingPages, animatedPages)
+        }
     }
 
     private val locations: Locations get() = sized.locations
@@ -122,7 +128,6 @@ class Book(
     val location: Location get() = userBook.location
     val isMoving: Boolean get() = animatedPages.isMoving
     val pages: VisiblePages get() = animatedPages.visible
-
 
     val percent: Double by scope.cached { locations.locationToPercent(location) }
     val pageNumber: Int by scope.cached {  locations.locationToPageNumber(location) }

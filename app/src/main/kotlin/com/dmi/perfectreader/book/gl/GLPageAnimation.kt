@@ -9,7 +9,8 @@ import com.dmi.util.graphic.SizeF
 import com.dmi.util.io.ProtocolURIHandler
 import com.dmi.util.io.getChild
 import com.dmi.util.io.parseDOM
-import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.Disposable
+import com.dmi.util.scope.Scope
 import kotlinx.coroutines.withContext
 import java.net.URI
 
@@ -33,7 +34,12 @@ private suspend fun loadAnimationSource(uriHandler: ProtocolURIHandler, uri: URI
 
 private class AnimationSource(val vertexShader: String, val fragmentShader: String)
 
-class GLPageAnimation(vertexShader: String, fragmentShader: String, size: Size) : Scoped by Scoped.Impl() {
+class GLPageAnimation(
+        vertexShader: String,
+        fragmentShader: String,
+        size: Size,
+        scope: Scope = Scope()
+) : Disposable by scope {
     private val rows = 1
     private val cols = 100
     private val normalizedSize = SizeF(1F, size.width.toFloat() / size.height)
@@ -41,14 +47,14 @@ class GLPageAnimation(vertexShader: String, fragmentShader: String, size: Size) 
     private val positionSize = 2
     private val texCoordSize = 2
 
-    private val program by scope.disposable(GLProgram(vertexShader, fragmentShader))
+    private val program by scope.observableDisposable(GLProgram(vertexShader, fragmentShader))
     private val positionHandle = glGetAttribLocation(program.id, "pr_position")
     private val texCoordHandle = glGetAttribLocation(program.id, "pr_texCoord")
     private val projectionMatrixHandle = glGetUniformLocation(program.id, "pr_projectionMatrix")
     private val progressHandle = glGetUniformLocation(program.id, "pr_progress")
     private val textureHandle = glGetUniformLocation(program.id, "pr_texture")
 
-    private val positions by scope.disposable(GLArrayBuffer(GL_STATIC_DRAW,
+    private val positions by scope.observableDisposable(GLArrayBuffer(GL_STATIC_DRAW,
             FloatArray(positionSize * (rows + 1) * (cols + 1)).apply {
                 val halfWidth = normalizedSize.width / 2F
                 val halfHeight = normalizedSize.height / 2F
@@ -63,7 +69,7 @@ class GLPageAnimation(vertexShader: String, fragmentShader: String, size: Size) 
             }
     ))
 
-    private val indices by scope.disposable(GLElementArrayBuffer(GL_STATIC_DRAW,
+    private val indices by scope.observableDisposable(GLElementArrayBuffer(GL_STATIC_DRAW,
             ShortArray(2 * rows * (cols + 1) + 2 * (rows - 1)).apply {
                 fun indexAt(x: Int, y: Int) = (y * (cols + 1) + x).toShort()
 
@@ -85,7 +91,7 @@ class GLPageAnimation(vertexShader: String, fragmentShader: String, size: Size) 
             }
     ))
 
-    private val texCoords by scope.disposable(GLArrayBuffer(GL_STATIC_DRAW,
+    private val texCoords by scope.observableDisposable(GLArrayBuffer(GL_STATIC_DRAW,
             FloatArray(positionSize * (rows + 1) * (cols + 1)).apply {
                 var i = 0
                 for (y in 0..rows) {

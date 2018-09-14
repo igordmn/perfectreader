@@ -1,7 +1,6 @@
 package com.dmi.util.scope
 
 import com.dmi.test.shouldBe
-import com.dmi.util.scope.Scope.Companion.onchange
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
@@ -17,8 +16,6 @@ class CopyScopeTest {
     fun `read variables in copy context`() {
         runBlocking(writeContext) {
             val obj = object {
-                val scope = Scope()
-
                 var v1: Int by observable(1)
                 var v2: Int by observable(2)
             }
@@ -88,8 +85,6 @@ class CopyScopeTest {
     fun `subscribe variables in copy context`() {
         runBlocking(writeContext) {
             val obj = object {
-                val scope = Scope()
-
                 var v1: Int by observable(1)
                 var v2: Int by observable(2)
             }
@@ -146,8 +141,6 @@ class CopyScopeTest {
     fun `test many fast writes and reads`() {
         runBlocking(writeContext) {
             val obj = object {
-                val scope = Scope()
-
                 var v1: Int by observable(1)
                 var v2: Int by observable(2)
             }

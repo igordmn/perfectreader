@@ -1,7 +1,35 @@
 package com.dmi.util.lang
 
+import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+
+interface ReadOnlyProperty2<in R, out T>: ReadOnlyProperty<R, T> {
+    val value : T
+    override operator fun getValue(thisRef: R, property: KProperty<*>): T = value
+}
+
+interface ReadWriteProperty2<in R, T>: ReadWriteProperty<R, T> {
+    var value : T
+    override operator fun getValue(thisRef: R, property: KProperty<*>): T = value
+
+    override operator fun setValue(thisRef: R, property: KProperty<*>, value: T) {
+        this.value = value
+    }
+}
+
+fun <T> value(initial: T) = object : ReadWriteProperty2<Any?, T> {
+    override var value = initial
+}
+
+fun <T> ReadWriteProperty2<Any?, T>.set(afterSet: (value: T) -> Unit) = object : ReadWriteProperty2<Any?, T> {
+    override var value: T
+        get() = this@set.value
+        set(value) {
+            this@set.value = value
+            afterSet(value)
+        }
+}
 
 fun <T : Any> initOnce() = object : ReadWriteProperty<Any?, T> {
     private var initialized = false
@@ -16,18 +44,6 @@ fun <T : Any> initOnce() = object : ReadWriteProperty<Any?, T> {
         require(!initialized) { "Property ${property.name} is already initialized" }
         this.value = value
         initialized = true
-    }
-}
-
-infix fun <R, T> ReadWriteProperty<R, T>.set(afterSet: (value: T) -> Unit): ReadWriteProperty<R, T> {
-    val self = this
-    return object : ReadWriteProperty<R, T> {
-        override fun getValue(thisRef: R, property: KProperty<*>) = self.getValue(thisRef, property)
-
-        override fun setValue(thisRef: R, property: KProperty<*>, value: T) {
-            self.setValue(thisRef, property, value)
-            afterSet(value)
-        }
     }
 }
 

@@ -47,7 +47,7 @@ class ObservableValueStore(private val valueStore: ValueStore): ValueStore {
         return object : ValueStore.Value<T> {
             override fun get(): T {
                 @Suppress("UNUSED_EXPRESSION")
-                observableValue // just call scopedValue for intercept observables
+                observableValue // just call for intercept observables
                 return original.get()
             }
 

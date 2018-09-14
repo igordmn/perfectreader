@@ -6,8 +6,9 @@ import com.dmi.util.graphic.SizeF
 import com.dmi.util.lang.doubleRound
 import com.dmi.util.lang.longFloor
 import com.dmi.util.lang.modPositive
+import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.EmittableEvent
-import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
 import com.dmi.util.system.Display
 import java.lang.Math.*
@@ -17,8 +18,9 @@ class AnimatedPages(
         private val pages: Pages,
         private val display: Display,
         private val speedToTurnPage: Float, // pixels per second
-        private val animator: PageAnimator
-) : Scoped by Scoped.Impl() {
+        private val animator: PageAnimator,
+        scope: Scope = Scope()
+) : Disposable by scope {
     companion object {
         fun pages(pages: LoadingPages) = object : Pages {
             override fun get(relativeIndex: Int) = pages[relativeIndex]

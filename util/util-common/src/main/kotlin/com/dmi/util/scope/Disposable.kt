@@ -14,7 +14,7 @@ class Disposables : Disposable {
     @Suppress("ProtectedInFinal", "unused")
     protected fun finalize() {
         if (!disposed)
-            println("Object $this isn't disposed")
+            System.err.println("Object $this isn't disposed")
     }
 
     operator fun plusAssign(disposable: Disposable) {

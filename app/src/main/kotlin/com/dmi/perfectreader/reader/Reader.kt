@@ -12,7 +12,8 @@ import com.dmi.perfectreader.menu.Menu
 import com.dmi.perfectreader.selection.Selection
 import com.dmi.perfectreader.settingschange.SettingsChange
 import com.dmi.util.lang.then
-import com.dmi.util.scope.Scoped
+import com.dmi.util.scope.Disposable
+import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
 
 suspend fun reader(main: Main, uri: Uri): Reader {
@@ -22,12 +23,13 @@ suspend fun reader(main: Main, uri: Uri): Reader {
 
 class Reader(
         private val main: Main,
-        book: Book
-) : Scoped by Scoped.Impl() {
+        book: Book,
+        scope: Scope = Scope()
+) : Disposable by scope {
     val actions = Actions(main, this)
-    val book: Book by scope.disposable(book)
-    val control: Control by scope.disposable(Control(main, this))
-    var selection: Selection? by scope.disposable(null)
+    val book: Book by scope.observableDisposable(book)
+    val control: Control by scope.observableDisposable(Control(main, this))
+    var selection: Selection? by scope.observableDisposable(null)
     var menu: Menu? by observable(null)
     var settingsChange: SettingsChange? by observable(null)
     var performingAction: PerformingAction? by observable(null)

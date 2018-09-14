@@ -341,7 +341,7 @@ class ScopeTest {
         }
 
         class Obj3(obj2: Obj2, val scope: Scope = Scope()) : Disposable by scope {
-            val obj2 by scope.disposable(obj2)
+            val obj2 by scope.observableDisposable(obj2)
             var v1 by observable(1)
             val v2 by scope.cached { obj2.v1 + v1 }
             val v3 = v1
@@ -374,6 +374,51 @@ class ScopeTest {
         obj1.obj3.v1 shouldBe 2
         obj1.obj3.v2 shouldBe 5
         obj1.obj3.v3 shouldBe 1
+    }
+
+    @Test
+    fun `onchange nested observables`() {
+        class Obj1 {
+            var v: Int by observable(0)
+        }
+
+        class Obj2(val scope: Scope = Scope()) : Disposable by scope {
+            var v1: Obj1 by observable(Obj1())
+            val v2: Int by scope.cached { v1.v }
+        }
+
+        val obj = Obj2()
+
+        var changes1 = 0
+        var changes2 = 0
+
+        onchange {
+            obj.v1.v
+        }.subscribe {
+            changes1++
+        }
+
+        onchange {
+            obj.v2
+        }.subscribe {
+            changes2++
+        }
+
+        changes1 shouldBe 0
+        changes2 shouldBe 0
+
+        obj.v1.v++
+//        obj.v2
+        changes1 shouldBe 1
+        changes2 shouldBe 1
+
+        obj.v1 = Obj1()
+        changes1 shouldBe 2
+        changes2 shouldBe 2
+
+        obj.v1.v++
+        changes1 shouldBe 3
+        changes2 shouldBe 3
     }
 
     @Test

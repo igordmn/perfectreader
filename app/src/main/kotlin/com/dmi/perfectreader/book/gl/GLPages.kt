@@ -17,10 +17,10 @@ class GLPages(
         private val pageRenderer: PageRenderer,
         private val scope: Scope = Scope()
 ) : Disposable by scope {
-    private val texturePool by scope.disposable(ImmediatelyCreatePool(VisiblePages.COUNT) { GLTexture(size) })
+    private val texturePool by scope.observableDisposable(ImmediatelyCreatePool(VisiblePages.COUNT) { GLTexture(size) })
     private fun createPage(page: Page) = GLPage(page, model, quad, texturePool, GLPageRefresher(size, pageRenderer))
 
-    private val cache by scope.disposable(Cache(this::createPage))
+    private val cache by scope.observableDisposable(Cache(this::createPage))
     val left: GLPage? by scope.cached { cache.update(model.pages)[model.pages.left] }
     val right: GLPage? by scope.cached { cache.update(model.pages)[model.pages.right] }
     val leftProgress: Float get() = model.pages.leftProgress
