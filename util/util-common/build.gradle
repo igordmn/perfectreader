@@ -1,5 +1,6 @@
 apply plugin: 'kotlin'
 apply plugin: 'java-library'
+apply plugin: 'kotlinx-serialization'
 
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
@@ -9,6 +10,7 @@ sourceSets {
 dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib:$projectVersions.kotlin"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$projectVersions.coroutines"
+    api "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$projectVersions.serialization"
     api 'com.google.guava:guava:26.0-android'
     api 'com.carrotsearch:hppc:0.7.1'
     api 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'

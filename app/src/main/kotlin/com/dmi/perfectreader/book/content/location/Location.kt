@@ -1,9 +1,10 @@
 package com.dmi.perfectreader.book.content.location
 
 import com.google.common.primitives.Doubles
-import java.io.Serializable
+import kotlinx.serialization.Serializable
 
-data class Location(val offset: Double) : Comparable<Location>, Serializable {
+@Serializable
+data class Location(val offset: Double) : Comparable<Location> {
     override operator fun compareTo(other: Location) = Doubles.compare(offset, other.offset)
 }
 

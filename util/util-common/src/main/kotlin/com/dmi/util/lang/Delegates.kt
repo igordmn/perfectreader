@@ -2,6 +2,7 @@ package com.dmi.util.lang
 
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
 
 interface ReadOnlyProperty2<in R, out T>: ReadOnlyProperty<R, T> {
@@ -20,6 +21,14 @@ interface ReadWriteProperty2<in R, T>: ReadWriteProperty<R, T> {
 
 fun <T> value(initial: T) = object : ReadWriteProperty2<Any?, T> {
     override var value = initial
+}
+
+fun <T> value(property: KMutableProperty0<T>) = object : ReadWriteProperty2<Any?, T> {
+    override var value
+        get() = property.get()
+        set(value) {
+            property.set(value)
+        }
 }
 
 fun <T> ReadWriteProperty2<Any?, T>.set(afterSet: (value: T) -> Unit) = object : ReadWriteProperty2<Any?, T> {

@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.book.layout.paragraph
 
 import com.carrotsearch.hppc.FloatArrayList
+import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.content.obj.ConfiguredObject
 import com.dmi.perfectreader.book.content.obj.ConfiguredParagraph
 import com.dmi.perfectreader.book.content.obj.ConfiguredParagraph.Run
@@ -417,7 +418,7 @@ class ParagraphLayouter(
                     minFactLeading = factLeading
             }
 
-            val range = objects.first().range.start..objects.last().range.endInclusive
+            val range = LocationRange(objects.first().range.start, objects.last().range.endInclusive)
 
             return LayoutLine(width, lineHeight, max(0F, minFactLeading / 2), children, range)
         }

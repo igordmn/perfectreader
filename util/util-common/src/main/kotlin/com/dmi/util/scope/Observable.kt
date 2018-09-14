@@ -11,6 +11,7 @@ import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KMutableProperty0
 
 private var callContext: CallContext? by threadLocal(null)
 
@@ -59,6 +60,7 @@ private class CallContext {
 
 }
 
+fun <T> observableProperty(property: KMutableProperty0<T>) : ReadWriteProperty2<Any?, T> = value(property).observable()
 fun <T> observable(initial: T) : ReadWriteProperty2<Any?, T> = value(initial).observable()
 
 fun <T> ReadWriteProperty2<Any?, T>.observable() = object : ReadWriteProperty2<Any?, T> {

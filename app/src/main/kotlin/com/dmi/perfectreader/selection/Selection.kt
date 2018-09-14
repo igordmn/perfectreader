@@ -13,14 +13,16 @@ import com.dmi.util.graphic.Size
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
+import com.dmi.util.scope.observableProperty
+import kotlinx.serialization.Serializable
 import java.lang.Math.max
 import java.lang.Math.min
 
 class Selection(
         private val main: Main,
         private val book: Book,
-        range: LocationRange,
         val deselect: () -> Unit,
+        val state: SelectionState,
         dip2px: (Float) -> Float = main.dip2px,
         private val settings: Settings = main.settings,
         private val textActions: TextActions = TextActions(main),
@@ -29,7 +31,7 @@ class Selection(
     private val bottomActionsOffset = dip2px(24F)
 
     var isSelecting: Boolean by observable(false)
-    var range: LocationRange by observable(range)
+    var range: LocationRange by observableProperty(state::range)
         private set
 
     val handles: Handles by scope.cached {
@@ -105,3 +107,8 @@ class Selection(
         deselect()
     }
 }
+
+@Serializable
+class SelectionState(
+        var range: LocationRange
+)

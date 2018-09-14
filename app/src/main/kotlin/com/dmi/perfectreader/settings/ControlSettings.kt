@@ -166,7 +166,7 @@ class ControlSettings(store: ValueStore) {
                 store,
                 TouchZoneConfiguration.NINE,
                 left = ActionID.GO_PREVIOUS_PAGE,
-                middle = ActionID.TOGGLE_MENU,
+                middle = ActionID.SHOW_MENU,
                 right = ActionID.GO_NEXT_PAGE
         )
 

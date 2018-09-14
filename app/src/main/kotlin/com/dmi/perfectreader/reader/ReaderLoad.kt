@@ -9,12 +9,14 @@ import com.dmi.util.log.Log
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
+import kotlinx.serialization.Serializable
 import java.io.IOException
 
 class ReaderLoad(
         private val main: Main,
         private val intent: Intent,
         val back: () -> Unit,
+        val state: ReaderLoadState,
         private val log: Log = main.log,
         private val userData: UserData = main.userData,
         private val permissions: Permissions = main.permissions,
@@ -30,7 +32,7 @@ class ReaderLoad(
                 val uri = bookURI(intent)
                 if (uri != null) {
                     if (permissions.askStorage()) {
-                        reader = reader(main, uri)
+                        reader = reader(main, uri, state.reader)
                     } else {
                         error = LoadError.NeedStoragePermissions()
                     }
@@ -61,3 +63,6 @@ class ReaderLoad(
         class NeedStoragePermissions : LoadError()
     }
 }
+
+@Serializable
+class ReaderLoadState(val reader: ReaderState = ReaderState())

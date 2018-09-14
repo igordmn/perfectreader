@@ -1,6 +1,9 @@
 package com.dmi.perfectreader.book.content.location
 
-typealias LocationRange = ClosedRange<Location>
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class LocationRange(override val start: Location, override val endInclusive: Location) : ClosedRange<Location>
 
 fun LocationRange.sublocation(percent: Double): Location {
     require(percent in 0.0..1.0)
@@ -10,7 +13,7 @@ fun LocationRange.sublocation(percent: Double): Location {
 
 fun LocationRange.subrange(beginPercent: Double, endPercent: Double): LocationRange {
     require(beginPercent <= endPercent)
-    return sublocation(beginPercent)..sublocation(endPercent)
+    return LocationRange(sublocation(beginPercent), sublocation(endPercent))
 }
 
 fun LocationRange.percentOf(location: Location): Double {

@@ -2,7 +2,7 @@ package com.dmi.perfectreader.action
 
 enum class ActionID {
     NONE,
-    TOGGLE_MENU,
+    SHOW_MENU,
     GO_TO_LIBRARY_LAST,
     GO_TO_LIBRARY_FAVOURITE,
     GO_TO_LIBRARY_FILES,

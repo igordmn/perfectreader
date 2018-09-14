@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.book.layout
 
-import com.dmi.perfectreader.fontStyle
 import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.content.location.subrange
@@ -20,6 +19,7 @@ import com.dmi.perfectreader.book.layout.obj.LayoutText
 import com.dmi.perfectreader.book.layout.paragraph.ParagraphLayouter
 import com.dmi.perfectreader.book.layout.paragraph.liner.Liner
 import com.dmi.perfectreader.book.layout.paragraph.metrics.TextMetrics
+import com.dmi.perfectreader.fontStyle
 import com.dmi.test.shouldBe
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.text.Chars
@@ -291,7 +291,7 @@ class ParagraphLayouterTest {
                 childXs shouldBe listOf(20F, 20 + 4 * LETTER_WIDTH1)
                 childYs shouldBe listOf(LEADING1 / 2, LEADING1 / 2)
 
-                range shouldBe runs[0].charLocation(0)..runs[0].charLocation(5)
+                range shouldBe LocationRange(runs[0].charLocation(0), runs[0].charLocation(5))
                 childRanges shouldBe listOf(
                         runs[0].charRange(0, 4),
                         runs[0].charRange(4, 5)
@@ -320,7 +320,7 @@ class ParagraphLayouterTest {
                 )
                 childYs shouldBe listOf(LEADING2 / 2 - ASCENT2 + ASCENT1, LEADING2 / 2, LEADING2 / 2, LEADING2 / 2)
 
-                range shouldBe runs[0].charLocation(5)..runs[1].charLocation(9)
+                range shouldBe LocationRange(runs[0].charLocation(5), runs[1].charLocation(9))
                 childRanges shouldBe listOf(
                         runs[0].charRange(5, 6),
                         runs[1].charRange(0, 3),
@@ -345,7 +345,7 @@ class ParagraphLayouterTest {
                 childXs shouldBe listOf(0F, SPACE_WIDTH2, SPACE_WIDTH2 + SPACE_WIDTH1)
                 childYs shouldBe listOf(LEADING2 / 2, LEADING2 / 2 - ASCENT2 + ASCENT1, LEADING2 / 2 - ASCENT2 + ASCENT1)
 
-                range shouldBe runs[1].charLocation(9)..runs[2].charLocation(6)
+                range shouldBe LocationRange(runs[1].charLocation(9), runs[2].charLocation(6))
                 childRanges shouldBe listOf(
                         runs[1].charRange(9, 10),
                         runs[2].charRange(0, 1),
@@ -367,7 +367,7 @@ class ParagraphLayouterTest {
                 childXs shouldBe listOf(0F)
                 childYs shouldBe listOf(LEADING1 / 2)
 
-                range shouldBe runs[2].charLocation(6)..runs[2].charLocation(7)
+                range shouldBe LocationRange(runs[2].charLocation(6), runs[2].charLocation(7))
                 childRanges shouldBe listOf(
                         runs[2].charRange(6, 7)
                 )
@@ -527,7 +527,7 @@ class ParagraphLayouterTest {
                 childXs shouldBe listOf(0F, 1 * CHAR_WIDTH1)
                 childYs shouldBe listOf(0F, 0F)
 
-                range shouldBe run0.charLocation(0)..run0.charLocation(1)
+                range shouldBe LocationRange(run0.charLocation(0), run0.charLocation(1))
                 childRanges shouldBe listOf(
                         run0.charRange(0, 1),
                         run0.charRange(1, 1)
@@ -548,7 +548,7 @@ class ParagraphLayouterTest {
                 childXs shouldBe listOf(0F, 3 * CHAR_WIDTH1)
                 childYs shouldBe listOf(0F, 0F)
 
-                range shouldBe run0.charLocation(1)..run0.charLocation(4)
+                range shouldBe LocationRange(run0.charLocation(1), run0.charLocation(4))
                 childRanges shouldBe listOf(
                         run0.charRange(1, 4),
                         run0.charRange(4, 4)
@@ -579,7 +579,7 @@ class ParagraphLayouterTest {
                 childXs shouldBe listOf(0F, 1 * CHAR_WIDTH1, 1 * CHAR_WIDTH1 + 4 * CHAR_WIDTH2)
                 childYs shouldBe listOf(8F, 0F, 0F)
 
-                range shouldBe run2.charLocation(0)..run3.charLocation(4)
+                range shouldBe LocationRange(run2.charLocation(0), run3.charLocation(4))
                 childRanges shouldBe listOf(
                         run2.charRange(0, 1),
                         run3.charRange(0, 4),
@@ -1224,7 +1224,7 @@ class ParagraphLayouterTest {
 
     fun charOffsets(textLength: Int, charWidth: Float) = (0 until textLength).map { charWidth * it }.toFloatArray()
 
-    fun rootRange() = Location(0.0)..Location(100.0)
+    fun rootRange() = LocationRange(Location(0.0), Location(100.0))
     fun runRange(index: Int) = rootRange().subrange(
             index.toDouble() / 1000,
             (index.toDouble() + 1) / 1000

@@ -11,25 +11,31 @@ import com.dmi.util.scope.Disposable
 abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatActivity() {
     protected lateinit var model: M
 
-    protected abstract fun createModel(): M
-    protected abstract fun createView(model: M): View
+    protected abstract fun createModel(stateData: ByteArray?): M
+    protected abstract fun saveModel(model: M): ByteArray
+    protected abstract fun view(model: M): View
 
     protected fun recreateModel() {
         model.dispose()
-        model = createModel()
-        setContentView(createView(model))
+        model = createModel(null)
+        setContentView(view(model))
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        model = createModel()
-        setContentView(createView(model))
+        model = createModel(savedInstanceState?.getByteArray("stateData"))
+        setContentView(view(model))
     }
 
     override fun onDestroy() {
         model.dispose()
         super.onDestroy()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putByteArray("stateData", saveModel(model))
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {

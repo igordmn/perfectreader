@@ -9,7 +9,7 @@ import com.dmi.perfectreader.book.pagination.part.LayoutPart
 import com.dmi.util.graphic.SizeF
 
 @JvmName("testPage1")
-fun testPage(offsetRange: ClosedRange<Double>): Page = testPage(Location(offsetRange.start)..Location(offsetRange.endInclusive))
+fun testPage(offsetRange: ClosedRange<Double>): Page = testPage(LocationRange(Location(offsetRange.start), Location(offsetRange.endInclusive)))
 
 @JvmName("testPage2")
 fun testPage(range: LocationRange): Page = testPage(object : LayoutObject(10F, 10F, emptyList(), range) {})

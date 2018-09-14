@@ -21,15 +21,15 @@ class BookSelections(val page: Page, val text: ContentText) {
             val selectionLocation = selectionChar.obj.charLocation(selectionChar.charIndex)
             if (isLeftHandle) {
                 if (selectionLocation <= oldRange.endInclusive) {
-                    NewSelectionResult(selectionLocation..oldRange.endInclusive, true)
+                    NewSelectionResult(LocationRange(selectionLocation, oldRange.endInclusive), true)
                 } else {
-                    NewSelectionResult(oldRange.endInclusive..selectionLocation, false)
+                    NewSelectionResult(LocationRange(oldRange.endInclusive, selectionLocation), false)
                 }
             } else {
                 if (selectionLocation >= oldRange.start) {
-                    NewSelectionResult(oldRange.start..selectionLocation, false)
+                    NewSelectionResult(LocationRange(oldRange.start, selectionLocation), false)
                 } else {
-                    NewSelectionResult(selectionLocation..oldRange.start, true)
+                    NewSelectionResult(LocationRange(selectionLocation, oldRange.start), true)
                 }
             }
         } else {
@@ -42,7 +42,7 @@ class BookSelections(val page: Page, val text: ContentText) {
     fun selectionInitialRange(x: Float, y: Float): LocationRange? {
         val caret = page.selectionCaretOfCharNearestTo(x, y)
         return if (caret != null) {
-            val range = caret.obj.charLocation(caret.charIndex)..caret.obj.charLocation(caret.charIndex + 1)
+            val range = LocationRange(caret.obj.charLocation(caret.charIndex), caret.obj.charLocation(caret.charIndex + 1))
             selectionAlignToWords(range)
         } else {
             null
@@ -60,7 +60,7 @@ class BookSelections(val page: Page, val text: ContentText) {
         val firstWordBegin = if (firstWordEnd != null) text.wordBeginBefore(firstWordEnd) else null
         val lastWordEnd = if (lastWordBegin != null) text.wordEndAfter(lastWordBegin) else null
         return if (firstWordBegin != null && lastWordEnd != null && lastWordEnd > firstWordBegin) {
-            firstWordBegin..lastWordEnd
+            LocationRange(firstWordBegin, lastWordEnd)
         } else {
             range
         }

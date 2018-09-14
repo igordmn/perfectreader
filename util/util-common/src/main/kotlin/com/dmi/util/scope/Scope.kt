@@ -19,8 +19,17 @@ class Scope : Disposable {
         disposables.dispose()
     }
 
-    fun <T> observableDisposable(initial: T, dispose: (T) -> Unit = {}) = ObservableDisposableDelegate(initial, dispose)
+    fun <T> observableDisposable(initial: T, dispose: (T) -> Unit = {}) = ObservableDisposableDelegate(observable(initial), dispose)
     fun <T : Disposable?> observableDisposable(initial: T) = observableDisposable(initial, dispose = { it?.dispose() })
+
+    fun <T> observableDisposableProperty(
+            property: KMutableProperty0<T>, dispose: (T) -> Unit = {}
+    ) = ObservableDisposableDelegate(observableProperty(property), dispose)
+
+    fun <T : Disposable?> observableDisposableProperty(
+            property: KMutableProperty0<T>
+    ) = observableDisposableProperty(property, dispose = { it?.dispose() })
+
     fun <T> cached(compute: () -> T) = CachedDelegate(compute, dispose = {})
     fun <T : Disposable?> cachedDisposable(compute: () -> T) = CachedDelegate(compute, dispose = { it?.dispose() })
 
@@ -44,10 +53,10 @@ class Scope : Disposable {
     ): Job = GlobalScope.launch(context + job, block = run)
 
     inner class ObservableDisposableDelegate<T>(
-            value: T,
+            observableDelegate: ReadWriteProperty2<Any, T>,
             private val dispose: (T) -> Unit
     ) : ReadWriteProperty2<Any?, T> {
-        private var observable by observable(value)
+        private var observable by observableDelegate
 
         init {
             disposables += object : Disposable {
@@ -93,7 +102,7 @@ class Scope : Disposable {
                 return cache!!.value
             }
 
-        inner class Cache(val value: T, private val subscription: Disposable): Disposable {
+        inner class Cache(val value: T, private val subscription: Disposable) : Disposable {
             override fun dispose() {
                 dispose(value)
                 subscription.dispose()

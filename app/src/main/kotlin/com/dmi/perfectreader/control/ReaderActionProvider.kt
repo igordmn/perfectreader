@@ -17,7 +17,7 @@ class ReaderActionProvider(
         private val reader: Reader
 ) : TouchActionPerformer.Provider {
     private val cancelSelectionAction = performAction {
-        reader.selection = null
+        reader.deselect()
     }
     private val actions = reader.actions
 

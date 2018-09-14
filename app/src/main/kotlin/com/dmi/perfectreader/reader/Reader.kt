@@ -9,56 +9,80 @@ import com.dmi.perfectreader.book.book
 import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.control.Control
 import com.dmi.perfectreader.menu.Menu
+import com.dmi.perfectreader.menu.MenuState
 import com.dmi.perfectreader.selection.Selection
+import com.dmi.perfectreader.selection.SelectionState
 import com.dmi.perfectreader.settingschange.SettingsChange
-import com.dmi.util.lang.then
+import com.dmi.perfectreader.settingschange.SettingsChangeState
+import com.dmi.util.lang.map
+import com.dmi.util.lang.unsupported
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
+import com.dmi.util.scope.observableProperty
+import kotlinx.serialization.Serializable
 
-suspend fun reader(main: Main, uri: Uri): Reader {
+suspend fun reader(main: Main, uri: Uri, state: ReaderState): Reader {
     val book = book(main, uri)
-    return Reader(main, book)
+    return Reader(main, book, state)
 }
 
 class Reader(
         private val main: Main,
         book: Book,
+        val state: ReaderState,
         scope: Scope = Scope()
 ) : Disposable by scope {
     val actions = Actions(main, this)
     val book: Book by scope.observableDisposable(book)
     val control: Control by scope.observableDisposable(Control(main, this))
-    var selection: Selection? by scope.observableDisposable(null)
-    var menu: Menu? by observable(null)
-    var settingsChange: SettingsChange? by observable(null)
+    var selection: Selection? by scope.observableDisposableProperty(map(state::selection, ::Selection, ::state))
+        private set
+    var popup: Any? by observableProperty(map(state::popup, ::Popup, ::popupState))
+        private set
     var performingAction: PerformingAction? by observable(null)
 
-    fun createSelection(range: LocationRange?): Selection? = if (range != null) {
-        val deselect = {
-            selection = null
-        }
-        Selection(main, book, range, deselect)
-    } else {
-        null
+    fun select(range: LocationRange?) {
+        selection = if (range != null) Selection(SelectionState(range)) else null
     }
 
-    fun toggleMenu() {
-        menu = if (menu == null) createMenu() else null
+    fun deselect() {
+        selection = null
     }
 
-    private fun createMenu() = Menu(showSettings = ::hideMenu then ::showSettings, back = ::hideMenu)
-    private fun createSettings() = SettingsChange(back = ::hideSettings)
-
-    private fun hideMenu() {
-        menu = null
+    fun showMenu() {
+        popup = Menu()
     }
 
     private fun showSettings() {
-        settingsChange = createSettings()
+        popup = SettingsChange()
     }
 
-    private fun hideSettings() {
-        settingsChange = null
+    private fun hidePopup() {
+        popup = null
     }
+
+    private fun Popup(state: Any): Any = when (state) {
+        is MenuState -> Menu(state)
+        is SettingsChangeState -> SettingsChange(state)
+        else -> unsupported()
+    }
+
+    private fun Selection(state: SelectionState) = Selection(main, book, ::deselect, state)
+    private fun Menu(state: MenuState = MenuState()) = Menu(::showSettings, ::hidePopup, state)
+    private fun SettingsChange(state: SettingsChangeState = SettingsChangeState()) = SettingsChange(::hidePopup, state)
+
+    private fun popupState(model: Any): Any = when (model) {
+        is Menu -> model.state
+        is SettingsChange -> model.state
+        else -> unsupported()
+    }
+
+    private fun state(model: Selection) = model.state
 }
+
+@Serializable
+class ReaderState(
+        var selection: SelectionState? = null,
+        var popup: Any? = null
+)

@@ -26,7 +26,7 @@ class Actions(
 
     operator fun get(id: ActionID): Action = when (id) {
         ActionID.NONE -> NoneAction
-        ActionID.TOGGLE_MENU -> performAction { reader.toggleMenu() }
+        ActionID.SHOW_MENU -> performAction { reader.showMenu() }
         ActionID.GO_TO_LIBRARY_LAST -> NoneAction
         ActionID.GO_TO_LIBRARY_FAVOURITE -> NoneAction
         ActionID.GO_TO_LIBRARY_FILES -> NoneAction
@@ -68,8 +68,8 @@ class Actions(
         ActionID.GO_BACK_BY_HISTORY -> NoneAction
         ActionID.GO_FORWARD_BY_HISTORY -> NoneAction
 
-        ActionID.SELECT_WORD -> touchAction { reader.selection = reader.createSelection(book.selections?.at(it.position)) }
-        ActionID.SELECT_WORD_AT_CENTER -> performAction { reader.selection = reader.createSelection(book.selections?.center()) }
+        ActionID.SELECT_WORD -> touchAction { reader.select(book.selections?.at(it.position)) }
+        ActionID.SELECT_WORD_AT_CENTER -> performAction { reader.select(book.selections?.center()) }
         ActionID.TRANSLATE_WORD -> NoneAction
         ActionID.SEARCH_WORD -> NoneAction
         ActionID.WIKI_WORD -> NoneAction

@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.book.pagination.part
 
 import com.dmi.perfectreader.book.content.location.Location
+import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.layout.obj.LayoutChild
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
 import java.util.*
@@ -25,7 +26,7 @@ fun splitIntoParts(rootObj: LayoutObject): List<LayoutPart> {
                     rootObj,
                     LayoutPart.Edge(childIndices, top.offset),
                     LayoutPart.Edge(childIndices, bottom.offset),
-                    top.location..bottom.location
+                    LocationRange(top.location, bottom.location)
             ))
         }
     }

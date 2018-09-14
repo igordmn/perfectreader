@@ -23,7 +23,7 @@ class TXTContentParser(
         source.openBufferedStream().reader(charset).forEachLine() { text ->
             if (text.isNotEmpty()) {
                 val end = begin + text.length
-                val range = Location(begin)..Location(end)
+                val range = LocationRange(Location(begin), Location(end))
                 contentBuilder.add(toContentObject(text, style, range))
                 begin = end
             }
