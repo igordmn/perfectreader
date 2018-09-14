@@ -3,7 +3,6 @@ package com.dmi.perfectreader.book.gl
 import android.opengl.GLES20.*
 import android.opengl.Matrix.*
 import com.dmi.util.android.opengl.*
-import com.dmi.util.coroutine.IOPool
 import com.dmi.util.graphic.Size
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.io.ProtocolURIHandler
@@ -11,6 +10,8 @@ import com.dmi.util.io.getChild
 import com.dmi.util.io.parseDOM
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import java.net.URI
 
@@ -19,7 +20,7 @@ suspend fun glPageAnimation(uriHandler: ProtocolURIHandler, uri: URI, size: Size
     return GLPageAnimation(source.vertexShader, source.fragmentShader, size)
 }
 
-private suspend fun loadAnimationSource(uriHandler: ProtocolURIHandler, uri: URI): AnimationSource = withContext(IOPool) {
+private suspend fun loadAnimationSource(uriHandler: ProtocolURIHandler, uri: URI): AnimationSource = withContext(Dispatchers.IO) {
     val animation = uriHandler.open(uri).use(::parseDOM).documentElement
     require(animation.nodeName == "animation") { "Root tag name should be \"animation\"" }
 

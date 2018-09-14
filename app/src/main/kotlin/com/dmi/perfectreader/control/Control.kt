@@ -11,7 +11,8 @@ import com.dmi.util.input.GestureDetector
 import com.dmi.util.input.HardKey
 import com.dmi.util.input.TouchEvent
 import com.dmi.util.scope.Disposable
-import kotlinx.coroutines.android.UI
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.android.Main
 
 class Control(
         private val main: Main,
@@ -55,7 +56,7 @@ fun gestureDetector(size: SizeF, main: Main, reader: Reader): GestureDetector {
     val actionProvider = ReaderActionProvider(size, main.density, settings, reader)
     val listener = TouchActionPerformer(actionProvider)
     return GestureDetector(
-            UI,
+            Dispatchers.Main,
             listener,
             settings.control.touches.doubleTapEnabled,
             settings.control.touches.tapMaxOffset * main.density,

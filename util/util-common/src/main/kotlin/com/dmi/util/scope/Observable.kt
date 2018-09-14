@@ -4,6 +4,7 @@ import com.dmi.util.lang.ReadWriteProperty2
 import com.dmi.util.lang.threadLocal
 import com.dmi.util.lang.value
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.AbstractCoroutineContextElement
@@ -53,7 +54,7 @@ private class CallContext {
             }
         }
 
-        return launch(wrapContext(context), block = action)
+        return GlobalScope.launch(wrapContext(context), block = action)
     }
 
 }

@@ -1,10 +1,7 @@
 package com.dmi.util.coroutine
 
 import com.dmi.util.lang.threadLocal
-import kotlinx.coroutines.newSingleThreadContext
 import kotlin.coroutines.CoroutineContext
-
-val IOPool = newSingleThreadContext("IO")
 
 var threadContext: CoroutineContext by threadLocal()
     private set

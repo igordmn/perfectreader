@@ -4,10 +4,8 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import com.dmi.util.graphic.Size
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.android.UI
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.android.Main
 import org.jetbrains.anko.onClick
 import org.jetbrains.anko.onLayoutChange
 import org.jetbrains.anko.onLongClick
@@ -36,7 +34,7 @@ fun View.onContinousClick(repeatMillis: Long = 200, action: () -> Unit) {
     }
     onLongClick {
         action()
-        job = launch(UI) {
+        job = GlobalScope.launch(Dispatchers.Main) {
             while(true) {
                 delay(repeatMillis)
                 action()

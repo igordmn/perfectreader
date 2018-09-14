@@ -32,11 +32,12 @@ import com.dmi.perfectreader.book.parse.BookContentParserFactory
 import com.dmi.perfectreader.book.parse.settingsParseConfig
 import com.dmi.perfectreader.book.selection.BookSelections
 import com.dmi.perfectreader.common.UserData
-import com.dmi.util.coroutine.IOPool
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.graphic.shrink
 import com.dmi.util.scope.*
 import com.dmi.util.system.seconds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
 suspend fun book(main: Main, uri: Uri): Book {
@@ -45,7 +46,7 @@ suspend fun book(main: Main, uri: Uri): Book {
     val userData: UserData = main.userData
     val parseConfig = settingsParseConfig(settings)
     val bookContentParserFactory = BookContentParserFactory(log, parseConfig)
-    val content: Content = withContext(IOPool) {
+    val content: Content = withContext(Dispatchers.IO) {
         bookContentParserFactory.parserFor(uri).parse()
     }
     val userBook: UserBook = userBook(userData, uri)

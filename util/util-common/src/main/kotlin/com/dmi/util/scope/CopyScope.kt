@@ -2,6 +2,7 @@ package com.dmi.util.scope
 
 import com.dmi.util.coroutine.threadContext
 import com.dmi.util.lang.ReadWriteProperty2
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
@@ -23,7 +24,7 @@ class CopyScope(
     private val delegates = ArrayList<ComputedDelegate<*>>()
 
     init {
-        launch(copyContext, parent = job) {
+        GlobalScope.launch(copyContext + job) {
             copyScope = Scope()
         }
     }
@@ -31,7 +32,7 @@ class CopyScope(
     override fun dispose() {
         scope.dispose()
         job.cancel()
-        launch(copyContext) {
+        GlobalScope.launch(copyContext) {
             copyScope?.dispose()
         }
     }
@@ -59,7 +60,7 @@ class CopyScope(
         init {
             delegates.add(this)
 
-            launch(copyContext, parent = job) {
+            GlobalScope.launch(copyContext + job) {
                 copy = observable(readValue)
             }
 
@@ -117,7 +118,7 @@ class CopyScope(
 
         fun schedule() {
             if (!scheduled.getAndSet(true)) {
-                launch(context, parent = job) {
+                GlobalScope.launch(context + job) {
                     scheduled.set(false)
                     action()
                 }

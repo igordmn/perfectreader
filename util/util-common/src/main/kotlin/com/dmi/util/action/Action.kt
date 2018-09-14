@@ -2,6 +2,7 @@ package com.dmi.util.action
 
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.input.TouchArea
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,7 +40,7 @@ abstract class RepeatAction(private val context: CoroutineContext, private val p
 
     override fun startTap() {
         if (job == null) {
-            job = launch(context) {
+            job = GlobalScope.launch(context) {
                 while (true) {
                     perform()
                     delay(periodMillis)

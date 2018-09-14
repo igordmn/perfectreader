@@ -9,9 +9,8 @@ import com.dmi.util.lang.NoStackTraceThrowable
 import com.dmi.util.log.DebugLog
 import com.dmi.util.log.Log
 import com.dmi.util.log.ReleaseLog
-import kotlinx.coroutines.BLOCKING_CHECKER_PROPERTY_NAME
-import kotlinx.coroutines.BLOCKING_CHECKER_VALUE_DISABLE
-import kotlinx.coroutines.android.UI
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.android.Main
 
 @Suppress("ConstantConditionIf")
 class MainApplication : Application() {
@@ -21,11 +20,10 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         System.loadLibrary("utilAndroid")
-        System.setProperty(BLOCKING_CHECKER_PROPERTY_NAME, BLOCKING_CHECKER_VALUE_DISABLE)
         val log = initLog()
         initMainExceptionCatcher(log)
         initStrictMode()
-        initThreadContext(UI)
+        initThreadContext(Dispatchers.Main)
         main = Main(log, this)
     }
 

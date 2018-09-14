@@ -5,8 +5,10 @@ import android.view.View
 import android.widget.FrameLayout
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.onchange
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.android.UI
+import kotlinx.coroutines.android.Main
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.onAttachStateChangeListener
@@ -27,7 +29,7 @@ fun View.autorun(action: () -> Unit) {
 
         fun deffer() {
             if (job == null) {
-                job = launch(UI) {
+                job = GlobalScope.launch(Dispatchers.Main) {
                     perform()
                     job = null
                 }

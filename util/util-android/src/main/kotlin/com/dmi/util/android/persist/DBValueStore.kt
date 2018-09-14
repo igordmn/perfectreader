@@ -4,12 +4,10 @@ import android.database.sqlite.SQLiteDatabase
 import com.dmi.util.android.db.getNullOrDouble
 import com.dmi.util.android.db.getNullOrLong
 import com.dmi.util.android.db.getNullOrString
-import com.dmi.util.coroutine.IOPool
 import com.dmi.util.lang.Enums
 import com.dmi.util.lang.unsupported
 import com.dmi.util.persist.ValueStore
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.jetbrains.anko.db.replace
 import org.jetbrains.anko.db.select
 
@@ -22,7 +20,7 @@ class DBValueStore(
     override fun <T : Any> value(key: String, default: T): ValueStore.Value<T> = DBValue(key, default)
 
     suspend fun load() {
-        withContext(IOPool) {
+        withContext(Dispatchers.IO) {
             database.select(
                     schema.table,
                     schema.columns.key,
@@ -81,7 +79,7 @@ class DBValueStore(
 
         override fun set(value: T) {
             this.value = value
-            launch(IOPool) {
+            GlobalScope.launch(Dispatchers.IO) {
                 when (value) {
                     is Short -> saveInt(key, value.toLong())
                     is Int -> saveInt(key, value.toLong())

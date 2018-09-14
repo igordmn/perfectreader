@@ -13,11 +13,8 @@ import com.dmi.util.log.Log
 import com.dmi.util.scope.CopyScope
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.onchange
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.android.UI
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.android.Main
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.egl.EGLContext
@@ -60,13 +57,13 @@ class GLSurfaceScopedView(
         glSurfaceView.setEGLContextFactory(DefaultContextFactory())
         glSurfaceView.setRenderer(OriginalRenderer())
         glSurfaceView.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
-        scope = CopyScope(coroutineContext, UI)
+        scope = CopyScope(coroutineContext, Dispatchers.Main)
 
         glSurfaceView.queueEvent {
             // if we there, then scope already initialized
 
             initThreadContext(coroutineContext)
-            launch(UI, parent = job) {
+            GlobalScope.launch(Dispatchers.Main + job) {
                 initUI()
             }
         }

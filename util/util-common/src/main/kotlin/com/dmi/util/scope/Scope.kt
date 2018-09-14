@@ -4,9 +4,11 @@ import com.dmi.util.coroutine.threadContext
 import com.dmi.util.lang.ReadOnlyProperty2
 import com.dmi.util.lang.ReadWriteProperty2
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KMutableProperty0
 
 class Scope : Disposable {
     private val disposables = Disposables()
@@ -39,7 +41,7 @@ class Scope : Disposable {
     fun launch(
             context: CoroutineContext = threadContext,
             run: suspend CoroutineScope.() -> Unit
-    ): Job = launch(context, parent = job, block = run)
+    ): Job = GlobalScope.launch(context + job, block = run)
 
     inner class ObservableDisposableDelegate<T>(
             value: T,

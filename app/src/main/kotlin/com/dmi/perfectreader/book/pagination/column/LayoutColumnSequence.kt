@@ -3,7 +3,7 @@ package com.dmi.perfectreader.book.pagination.column
 import com.dmi.perfectreader.book.content.location.LocatedSequence
 import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.pagination.part.LayoutPart
-import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.dmi.util.collection.SequenceEntry as Entry
 
@@ -31,8 +31,8 @@ class LayoutColumnSequence(
         this
     }
 
-    private suspend fun ColumnEntry.addTopParts(maxHeight: Float): ColumnEntry = withContext(CommonPool) {
-        var column = this
+    private suspend fun ColumnEntry.addTopParts(maxHeight: Float): ColumnEntry = withContext(Dispatchers.Default) {
+        var column = this@addTopParts
 
         var part = firstPart
         while (part.hasPrevious) {
@@ -50,8 +50,8 @@ class LayoutColumnSequence(
         column
     }
 
-    private suspend fun ColumnEntry.addBottomParts(): ColumnEntry = withContext(CommonPool) {
-        var column = this
+    private suspend fun ColumnEntry.addBottomParts(): ColumnEntry = withContext(Dispatchers.Default) {
+        var column = this@addBottomParts
 
         var part = lastPart
         while (part.hasNext) {

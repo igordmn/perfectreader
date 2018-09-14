@@ -1,6 +1,7 @@
 package com.dmi.util.input
 
 import com.dmi.util.graphic.PositionF
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -217,7 +218,7 @@ class GestureDetector(
     }
 
     private fun delay(millis: Long, action: () -> Unit) {
-        launch(context, parent = stateJob) {
+        GlobalScope.launch(context + stateJob) {
             delay(millis)
             action()
         }

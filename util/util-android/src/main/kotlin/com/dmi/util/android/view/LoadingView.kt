@@ -5,10 +5,8 @@ import android.content.Context
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ProgressBar
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.android.UI
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.android.Main
 import org.jetbrains.anko.wrapContent
 
 @SuppressLint("ViewConstructor")
@@ -36,7 +34,7 @@ class LoadingView<T : View>(context: Context, private val child: T, showProgress
         currentJob = null
         isFinished = false
         launchJob = {
-            launch(UI, start = CoroutineStart.UNDISPATCHED) {
+            GlobalScope.launch(Dispatchers.Main, start = CoroutineStart.UNDISPATCHED) {
                 child.load()
                 child.visibility = View.VISIBLE
                 progressBar?.visibility = View.INVISIBLE

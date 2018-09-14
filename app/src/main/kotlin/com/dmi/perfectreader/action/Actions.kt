@@ -10,7 +10,8 @@ import com.dmi.perfectreader.settingschange.chooseSettingValue
 import com.dmi.util.action.*
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.input.TouchArea
-import kotlinx.coroutines.android.UI
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.android.Main
 import java.lang.Math.abs
 import java.lang.Math.round
 import kotlin.reflect.KMutableProperty0
@@ -116,7 +117,7 @@ class Actions(
         ActionID.DECREASE_SCREEN_BRIGHTNESS -> NoneAction
     }
 
-    private fun repeatAction(action: () -> Unit) = object : RepeatAction(UI, periodMillis = 400) {
+    private fun repeatAction(action: () -> Unit) = object : RepeatAction(Dispatchers.Main, periodMillis = 400) {
         override fun perform() = action()
     }
 
@@ -158,7 +159,7 @@ class Actions(
             private val property: KMutableProperty0<Float>,
             private val values: FloatArray,
             private val offset: Int
-    ) : RepeatAction(UI, periodMillis = 200) {
+    ) : RepeatAction(Dispatchers.Main, periodMillis = 200) {
         private var popupShowed = false
 
         override fun perform() {
