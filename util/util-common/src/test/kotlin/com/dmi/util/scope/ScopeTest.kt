@@ -377,51 +377,6 @@ class ScopeTest {
     }
 
     @Test
-    fun `onchange nested observables`() {
-        class Obj1 {
-            var v: Int by observable(0)
-        }
-
-        class Obj2(val scope: Scope = Scope()) : Disposable by scope {
-            var v1: Obj1 by observable(Obj1())
-            val v2: Int by scope.cached { v1.v }
-        }
-
-        val obj = Obj2()
-
-        var changes1 = 0
-        var changes2 = 0
-
-        onchange {
-            obj.v1.v
-        }.subscribe {
-            changes1++
-        }
-
-        onchange {
-            obj.v2
-        }.subscribe {
-            changes2++
-        }
-
-        changes1 shouldBe 0
-        changes2 shouldBe 0
-
-        obj.v1.v++
-//        obj.v2
-        changes1 shouldBe 1
-        changes2 shouldBe 1
-
-        obj.v1 = Obj1()
-        changes1 shouldBe 2
-        changes2 shouldBe 2
-
-        obj.v1.v++
-        changes1 shouldBe 3
-        changes2 shouldBe 3
-    }
-
-    @Test
     fun `simple async`() = runBlocking(context) {
         val scope = Scope()
         val v1 by observable(1)
