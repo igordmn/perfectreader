@@ -16,8 +16,10 @@ class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, () -> Vi
     override fun getCount() = items.size
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val view = items[position].createView()
-        view.restoreHierarchyState(savedStates[position])
+        val view = items[position].createView().restorable()
+        val state = savedStates[position]
+        if (state != null)
+            view.restoreHierarchyState(state)
         container.addView(view)
         instantiated[position] = view
         return view

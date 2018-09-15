@@ -18,14 +18,14 @@ abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatAc
     protected fun recreateModel() {
         model.dispose()
         model = createModel(null)
-        setContentView(view(model))
+        setContentView(view(model).restorable())
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         model = createModel(savedInstanceState?.getByteArray("stateData"))
-        setContentView(view(model))
+        setContentView(view(model).restorable())
     }
 
     override fun onDestroy() {
