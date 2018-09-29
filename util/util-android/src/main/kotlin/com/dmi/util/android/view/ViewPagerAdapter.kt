@@ -21,6 +21,7 @@ class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, () -> Vi
         if (state != null)
             view.restoreHierarchyState(state)
         container.addView(view)
+        savedStates[position] = null
         instantiated[position] = view
         return view
     }

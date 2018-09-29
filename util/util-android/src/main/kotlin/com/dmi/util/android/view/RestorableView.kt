@@ -21,7 +21,7 @@ class RestorableView(context: Context, child: View) : FrameLayout(context) {
     init {
         child(params(matchParent, matchParent), child)
 
-        var id = 0
+        var id = 1
 
         fun setIdRecursive(view: View) {
             view.id = ++id
@@ -37,16 +37,30 @@ class RestorableView(context: Context, child: View) : FrameLayout(context) {
     }
 
     override fun dispatchSaveInstanceState(container: SparseArray<Parcelable>) {
-        val newContainer = SparseArray<Parcelable>()
-        super.dispatchSaveInstanceState(newContainer)
+        val superContainer = SparseArray<Parcelable>()
+        withId(0) {
+            super.dispatchSaveInstanceState(superContainer)
+        }
         val bundle = Bundle()
-        bundle.putSparseParcelableArray("newContainer", newContainer)
+        bundle.putSparseParcelableArray("superContainer", superContainer)
         container[id] = bundle
     }
 
     override fun dispatchRestoreInstanceState(container: SparseArray<Parcelable>) {
         val bundle = container[id] as Bundle
-        val newContainer = bundle.getSparseParcelableArray<Parcelable>("newContainer")
-        super.dispatchRestoreInstanceState(newContainer)
+        val superContainer = bundle.getSparseParcelableArray<Parcelable>("superContainer")
+        withId(0) {
+            super.dispatchRestoreInstanceState(superContainer)
+        }
+    }
+
+    private inline fun withId(id: Int, action: () -> Unit) {
+        val oldId = this.id
+        this.id = id
+        try {
+            action()
+        } finally {
+            this.id = oldId
+        }
     }
 }
