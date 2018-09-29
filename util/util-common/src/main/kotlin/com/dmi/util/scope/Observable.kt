@@ -44,7 +44,7 @@ private class CallContext {
 
         fun wrapContext(context: CoroutineContext): CoroutineContext {
             class WrapContinuation<T>(val cont: Continuation<T>) : Continuation<T> by cont {
-                override fun resumeWith(result: SuccessOrFailure<T>) = wrapBlock { cont.resumeWith(result) }
+                override fun resumeWith(result: Result<T>) = wrapBlock { cont.resumeWith(result) }
             }
 
             return context + object : AbstractCoroutineContextElement(ContinuationInterceptor), ContinuationInterceptor {

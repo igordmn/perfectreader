@@ -5,12 +5,12 @@ buildscript {
         config = loadProperties('.sign/sign.properties', 'workspace.properties')
 
         projectVersions = [
-                kotlin                   : '1.3-M2',
-                coroutines               : '0.26.0-eap13',
-                serialization            : '0.7.0-eap-1',
+                kotlin                   : '1.3.0-rc-116',
+                coroutines               : '0.27.0-eap13',
+                serialization            : '0.8.1-rc13',
                 buildTools               : '28.0.2',
                 androidPlugin            : '3.2.0-beta05',
-                androidx                 : '1.0.0-rc01',
+                androidx                 : '1.0.0',
                 minSdk                   : 21,
                 targetSdk                : 28,
                 compileSdk               : 28,
@@ -33,7 +33,8 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:$projectVersions.androidPlugin"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$projectVersions.kotlin"
-        classpath "org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:$projectVersions.serialization"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$projectVersions.kotlin"
+        classpath 'com.android.tools.build.jetifier:jetifier-processor:1.0.0-alpha10' // todo remove after migrate to android plugin 3.3
     }
 
     repositories {
