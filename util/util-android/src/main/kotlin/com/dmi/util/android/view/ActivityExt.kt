@@ -48,15 +48,15 @@ abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatAc
     }
 
     private fun View.interceptKeys(event: KeyEvent): Boolean {
-        if (this is KeyInterceptable) {
-            if (onInterceptKey(event))
-                return true
-        }
         if (this is ViewGroup) {
             for (i in childCount - 1 downTo 0) {
                 if (getChildAt(i).interceptKeys(event))
                     return true
             }
+        }
+        if (this is KeyInterceptable) {
+            if (onInterceptKey(event))
+                return true
         }
         return false
     }

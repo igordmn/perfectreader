@@ -24,7 +24,7 @@ class SettingsChange(
     }
 
     private fun backDetails() {
-        if (screens.size > 0) {
+        if (screens.size > 1) {
             screens.goBackward()
         } else {
             back()
