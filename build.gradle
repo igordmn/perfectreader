@@ -5,9 +5,9 @@ buildscript {
         config = loadProperties('.sign/sign.properties', 'workspace.properties')
 
         projectVersions = [
-                kotlin                   : '1.3.0-rc-116',
+                kotlin                   : '1.3.0-rc-146',
                 coroutines               : '0.27.0-eap13',
-                serialization            : '0.8.1-rc13',
+                serialization            : '0.8.2-rc13',
                 buildTools               : '28.0.2',
                 androidPlugin            : '3.2.0-beta05',
                 androidx                 : '1.0.0',
