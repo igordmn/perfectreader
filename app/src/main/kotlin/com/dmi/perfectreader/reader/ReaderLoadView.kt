@@ -17,7 +17,7 @@ fun readerLoadView(context: Context, model: ReaderLoad) = FrameLayoutExt(context
     isFocusable = true
     isFocusableInTouchMode = true
 
-    bindChild(params(matchParent, matchParent, Gravity.CENTER), model::reader, ::readerView)
+    bindChild(params(matchParent, matchParent, Gravity.CENTER), model::reader, ::readerView, defferStateRestore = true)
     child(params(wrapContent, wrapContent, Gravity.CENTER), ProgressBar(context).apply {
         autorun {
             visibility = if (model.isLoading) View.VISIBLE else View.GONE

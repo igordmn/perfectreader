@@ -9,17 +9,17 @@ import androidx.viewpager.widget.PagerAdapter
 class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, () -> View>) : PagerAdapter() {
     private val items = titlesWithCreateViews.map { Item(it.first, it.second) }
 
-    private val savedStates = Array<ViewState?>(titlesWithCreateViews.size) { null }
+    private val savedStates = Array<Bundle?>(titlesWithCreateViews.size) { null }
     private val instantiated = Array<View?>(titlesWithCreateViews.size) { null }
 
     override fun isViewFromObject(view: View, obj: Any) = view === obj
     override fun getCount() = items.size
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val view = items[position].createView().restorable()
+        val view = items[position].createView()
         val state = savedStates[position]
         if (state != null)
-            view.restoreHierarchyState(state)
+            view.simpleRestoreState(state)
         container.addView(view)
         savedStates[position] = null
         instantiated[position] = view
@@ -28,8 +28,7 @@ class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, () -> Vi
 
     override fun destroyItem(container: ViewGroup, position: Int, view: Any) {
         view as View
-        val state = ViewState()
-        view.saveHierarchyState(state)
+        val state = view.simpleSaveState()
         container.removeView(view)
         savedStates[position] = state
         instantiated[position] = null
@@ -39,18 +38,15 @@ class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, () -> Vi
 
     override fun saveState(): Parcelable? {
         val state = Bundle()
-        val array = ArrayList<Bundle>()
+        val array = ArrayList<Bundle?>()
         for (i in items.indices) {
             var itemState = savedStates[i]
             val view = instantiated[i]
-            val bundle = Bundle()
             if (view != null) {
                 require(itemState == null)
-                itemState = ViewState()
-                view.saveHierarchyState(itemState)
+                itemState = view.simpleSaveState()
             }
-            bundle.putSparseParcelableArray("state", itemState)
-            array.add(bundle)
+            array.add(itemState)
         }
         state.putParcelableArray("items", array.toTypedArray())
         return state
@@ -58,23 +54,24 @@ class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, () -> Vi
 
     @Suppress("UNCHECKED_CAST")
     override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
-        if (state !=  null) {
+        if (state != null) {
             state as Bundle
             state.classLoader = loader
             val array = state.getParcelableArray("items")
 
             if (array != null && items.size == array.size) {
-                restoreState(array as Array<out Bundle>)
+                restoreState(array)
             }
         }
     }
 
-    private fun restoreState(array: Array<out Bundle>) {
+    private fun restoreState(array: Array<out Parcelable?>) {
         for (i in items.indices) {
-            val itemState = array[i].getSparseParcelableArray<Parcelable>("state")
+            val itemState = array[i] as Bundle?
             val instantiated = instantiated[i]
             if (instantiated != null) {
-                instantiated.restoreHierarchyState(itemState)
+                if (itemState != null)
+                    instantiated.simpleRestoreState(itemState)
             } else {
                 savedStates[i] = itemState
             }

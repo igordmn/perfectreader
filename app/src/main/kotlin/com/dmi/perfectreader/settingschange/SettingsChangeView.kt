@@ -13,6 +13,7 @@ import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.settingschange.setting.fontFamilyItems
 import com.dmi.perfectreader.settingschange.setting.fontStyleView
+import com.dmi.util.android.view.ViewPagerAdapter
 import com.dmi.util.android.view.*
 import com.google.android.material.tabs.TabLayout
 import org.jetbrains.anko.*
