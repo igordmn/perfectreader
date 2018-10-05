@@ -16,10 +16,10 @@ import com.dmi.perfectreader.settingschange.SettingsChange
 import com.dmi.perfectreader.settingschange.SettingsChangeState
 import com.dmi.util.lang.map
 import com.dmi.util.lang.unsupported
-import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
 import com.dmi.util.scope.observableProperty
+import com.dmi.util.screen.Screen
 import kotlinx.serialization.Serializable
 
 suspend fun reader(main: Main, uri: Uri, state: ReaderState): Reader {
@@ -32,13 +32,13 @@ class Reader(
         book: Book,
         val state: ReaderState,
         scope: Scope = Scope()
-) : Disposable by scope {
+) : Screen by Screen(scope) {
     val actions = Actions(main, this)
     val book: Book by scope.observableDisposable(book)
     val control: Control by scope.observableDisposable(Control(main, this))
     var selection: Selection? by scope.observableDisposableProperty(map(state::selection, ::Selection, ::state))
         private set
-    var popup: Any? by observableProperty(map(state::popup, ::Popup, ::popupState))
+    var popup: Screen? by observableProperty(map(state::popup, ::createPopup, ::popupState))
         private set
     var performingAction: PerformingAction? by observable(null)
 
@@ -62,7 +62,7 @@ class Reader(
         popup = null
     }
 
-    private fun Popup(state: Any): Any = when (state) {
+    private fun createPopup(state: Any): Screen = when (state) {
         is MenuState -> Menu(state)
         is SettingsChangeState -> SettingsChange(state)
         else -> unsupported()
@@ -72,7 +72,7 @@ class Reader(
     private fun Menu(state: MenuState = MenuState()) = Menu(::showSettings, ::hidePopup, state)
     private fun SettingsChange(state: SettingsChangeState = SettingsChangeState()) = SettingsChange(::hidePopup, state)
 
-    private fun popupState(model: Any): Any = when (model) {
+    private fun popupState(model: Screen): Any = when (model) {
         is Menu -> model.state
         is SettingsChange -> model.state
         else -> unsupported()

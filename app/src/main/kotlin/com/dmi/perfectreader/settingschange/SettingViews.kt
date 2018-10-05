@@ -10,37 +10,30 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.settingschange.common.SettingListView
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.initOnce
 import org.jetbrains.anko.*
 import kotlin.reflect.KMutableProperty0
 
-class SettingItems<T, IV, PV>(
-        val list: List<T>,
-        val createItemView: (Context) -> IV,
-        val createPreviewView: (Context) -> PV
-)
-
 class PreviewView(val view: View, val withPadding: Boolean = true, val isClickable: Boolean = true)
 
-fun <T, IV, PV> listSetting(
+fun <T, PV> detailSetting(
         context: Context,
-        navigation: SettingsNavigation,
+        model: SettingsChangeMain,
         property: KMutableProperty0<T>,
-        items: SettingItems<T, IV, PV>,
+        previewView: PV,
         @StringRes
         titleResId: Int,
         @StringRes
         subtitleResId: Int? = null
-) : View where IV : View, IV : Bindable<T>, PV : View, PV : Bindable<T> {
-    val previewView = items.createPreviewView(context)
-    previewView.bind(property.get())
+) : View where PV : View, PV : Bindable<T> {
+    previewView.autorun {
+        previewView.bind(property.get())
+    }
 
     return titleSetting(context, PreviewView(previewView), titleResId, subtitleResId).apply {
         onClick {
-            val view = SettingListView(context, property.get(), items.list, items.createItemView)
-            navigation.goDetails(string(titleResId), view)
+            model.goDetails()
         }
     }
 }
@@ -49,11 +42,11 @@ fun floatSetting(
         context: Context,
         property: KMutableProperty0<Float>,
         values: FloatArray,
-        decimalCount: Int = 2,
         @StringRes
         titleResId: Int,
         @StringRes
-        subtitleResId: Int? = null
+        subtitleResId: Int? = null,
+        decimalCount: Int = 2
 ): View {
     val min = values.first()
     val max = values.last()

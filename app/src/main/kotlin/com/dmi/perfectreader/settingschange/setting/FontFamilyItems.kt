@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
-import com.dmi.perfectreader.settingschange.SettingItems
 import com.dmi.util.android.font.AndroidFont
 import com.dmi.util.android.view.Bindable
 import com.dmi.util.android.view.color
@@ -18,8 +17,6 @@ import org.jetbrains.anko.dip
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.singleLine
 import org.jetbrains.anko.textColor
-
-fun fontFamilyItems(context: Context) = SettingItems(context.main.fonts.familyNames, ::FontFamilyItemView, ::FontFamilyPreviewView)
 
 class FontFamilyItemView(context: Context) : TextView(context), Bindable<String> {
     private val fonts: Fonts = context.main.fonts

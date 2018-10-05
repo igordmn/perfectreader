@@ -6,9 +6,9 @@ import com.dmi.perfectreader.Main
 import com.dmi.perfectreader.common.UserData
 import com.dmi.util.android.system.Permissions
 import com.dmi.util.log.Log
-import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
+import com.dmi.util.screen.Screen
 import kotlinx.serialization.Serializable
 import java.io.IOException
 
@@ -21,7 +21,7 @@ class ReaderLoad(
         private val userData: UserData = main.userData,
         private val permissions: Permissions = main.permissions,
         scope: Scope = Scope()
-) : Disposable by scope {
+) : Screen by Screen(scope) {
     var isLoading: Boolean by observable(true)
     var error: LoadError? by observable(null)
     var reader: Reader? by observable(null)
