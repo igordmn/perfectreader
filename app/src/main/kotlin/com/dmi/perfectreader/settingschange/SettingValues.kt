@@ -54,6 +54,26 @@ object SettingValues {
             0.05F, 0.1F, 0.15F, 0.2F, 0.25F, 0.3F, 0.35F, 0.4F, 0.45F, 0.5F,
             0.6F, 0.7F, 0.8F, 0.9F, 1.0F
     )
+
+    val PARAGRAPH_PADDING = floatArrayOf(
+            0F, 1F, 2F, 3F, 4F, 5F, 6F, 7F, 8F,
+            10F, 12F, 16F, 18F, 20F, 22F, 24F, 26F, 28F, 30F, 32F
+    )
+
+    val PARAGRAPH_VERTICAL_MARGIN = floatArrayOf(
+            0F,
+            0.05F, 0.1F, 0.15F, 0.2F, 0.25F, 0.3F, 0.35F, 0.4F, 0.45F, 0.5F,
+            0.6F, 0.7F, 0.8F, 0.9F, 1.0F,
+            1.1F, 1.2F, 1.3F, 1.4F, 1.5F, 1.6F, 1.7F, 1.8F, 1.9F, 2.0F
+    )
+
+    val FIRST_LINE_INDENT = floatArrayOf(
+            0F,
+            0.05F, 0.1F, 0.15F, 0.2F, 0.25F, 0.3F, 0.35F, 0.4F, 0.45F, 0.5F,
+            0.6F, 0.7F, 0.8F, 0.9F, 1.0F,
+            1.1F, 1.2F, 1.3F, 1.4F, 1.5F, 1.6F, 1.7F, 1.8F, 1.9F, 2.0F,
+            2.2F, 2.4F, 2.6F, 2.8F, 3.0F, 3.2F, 3.4F, 3.6F, 3.8F, 4F
+    )
 }
 
 fun chooseSettingValue(values: FloatArray, value: Float, indexOffset: Int): Float = when {

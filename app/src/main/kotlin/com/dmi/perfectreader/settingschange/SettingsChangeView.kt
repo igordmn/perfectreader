@@ -10,6 +10,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
 import androidx.viewpager.widget.ViewPager
 import com.dmi.perfectreader.R
+import com.dmi.perfectreader.book.content.obj.param.TextAlign
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.settingschange.custom.fontStyleView
 import com.dmi.perfectreader.settingschange.detail.FontFamilyViews
@@ -76,8 +77,40 @@ fun settingChangeMainView(context: Context, model: SettingsChangeMain): View {
         })
     }
 
-    fun formatSettings() = TextView(context).apply {
-        text = "formatSettings"
+    fun formatSettings() = NestedScrollView(context).apply {
+        child(params(matchParent, wrapContent), LinearLayoutCompat(context).apply {
+            operator fun View.unaryPlus() = child(params(matchParent, wrapContent), this)
+
+            orientation = LinearLayoutCompat.VERTICAL
+
+            val properties = object {
+                var padding: Float
+                    get() = settings.format.pagePaddingLeftDip
+                    set(value) {
+                        settings.format.pagePaddingLeftDip = value
+                        settings.format.pagePaddingRightDip = value
+                        settings.format.pagePaddingTopDip = value
+                        settings.format.pagePaddingBottomDip = value
+                    }
+
+                var justify: Boolean
+                    get() = settings.format.textAlign == TextAlign.JUSTIFY
+                    set(value) {
+                        settings.format.textAlign = if (value) TextAlign.JUSTIFY else TextAlign.LEFT
+                    }
+            }
+
+            with(settings) {
+                +floatSetting(context, properties::padding, SettingValues.PARAGRAPH_PADDING, R.string.settingsChangeFormatPadding)
+                +floatSetting(context, format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER, R.string.settingsChangeFormatLineHeight)
+                +floatSetting(context, format::letterSpacingEm, SettingValues.TEXT_LETTER_SPACING, R.string.settingsChangeFormatLetterSpacing)
+                +floatSetting(context, format::paragraphVerticalMarginEm, SettingValues.PARAGRAPH_VERTICAL_MARGIN, R.string.settingsChangeFormatParagraphSpacing)
+                +floatSetting(context, format::firstLineIndentEm, SettingValues.FIRST_LINE_INDENT, R.string.settingsChangeFormatFirstLineIndent)
+                +booleanSetting(context, format::hyphenation, R.string.settingsChangeFormatHyphenation)
+                +booleanSetting(context, format::hangingPunctuation, R.string.settingsChangeFormatHangingPunctuation, R.string.settingsChangeFormatHangingPunctuation)
+                +booleanSetting(context, properties::justify,  R.string.settingsChangeFormatJustify)
+            }
+        })
     }
 
     fun themeSettings() = TextView(context).apply {

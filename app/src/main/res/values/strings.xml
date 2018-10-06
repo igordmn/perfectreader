@@ -110,4 +110,14 @@
     <string name="settingsChangeFontHinting">Хинтинг</string>
     <string name="settingsChangeFontHintingDesc">Четкость горизонтальных линий</string>
     <string name="settingsChangeFontAntialiasing">Сглаживание</string>
+
+    <string name="settingsChangeFormatHyphenation">Переносы</string>
+    <string name="settingsChangeFormatPadding">Поля</string>
+    <string name="settingsChangeFormatLineHeight">Межстрочное расстояние</string>
+    <string name="settingsChangeFormatLetterSpacing">Межбуквенное расстояние</string>
+    <string name="settingsChangeFormatParagraphSpacing">Межабзацное расстояние</string>
+    <string name="settingsChangeFormatFirstLineIndent">Красная строка</string>
+    <string name="settingsChangeFormatHangingPunctuation">Висячая пунктуация</string>
+    <string name="settingsChangeFormatHangingPunctuationDesc">Знаки пунктуации за пределами полей</string>
+    <string name="settingsChangeFormatJustify">По ширине</string>
 </resources>
