@@ -46,7 +46,7 @@ class FontFamilyItemView(context: Context) : TextView(context), Bindable<String>
     init {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
         padding = dip(16)
-        minimumHeight = dip(48)
+        minimumHeight = dip(56)
         gravity = Gravity.START or Gravity.CENTER_VERTICAL
         textColor = color(R.color.onBackground)
     }
