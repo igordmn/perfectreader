@@ -124,6 +124,7 @@ class Scope : Disposable {
             start()
             disposables += object : Disposable {
                 override fun dispose() {
+                    job.cancel()
                     subscription.dispose()
                 }
             }
