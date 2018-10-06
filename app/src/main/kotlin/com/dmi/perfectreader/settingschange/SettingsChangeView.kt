@@ -108,7 +108,7 @@ fun settingChangeMainView(context: Context, model: SettingsChangeMain): View {
                 +floatSetting(context, format::firstLineIndentEm, SettingValues.FIRST_LINE_INDENT, R.string.settingsChangeFormatFirstLineIndent)
                 +booleanSetting(context, format::hyphenation, R.string.settingsChangeFormatHyphenation)
                 +booleanSetting(context, format::hangingPunctuation, R.string.settingsChangeFormatHangingPunctuation, R.string.settingsChangeFormatHangingPunctuation)
-                +booleanSetting(context, properties::justify,  R.string.settingsChangeFormatJustify)
+                +booleanSetting(context, properties::justify, R.string.settingsChangeFormatJustify)
             }
         })
     }

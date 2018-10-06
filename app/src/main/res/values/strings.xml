@@ -108,7 +108,7 @@
     <string name="settingsChangeFontBoldness">Жирность</string>
     <string name="settingsChangeFontSkew">Наклон</string>
     <string name="settingsChangeFontHinting">Хинтинг</string>
-    <string name="settingsChangeFontHintingDesc">Четкость горизонтальных линий</string>
+    <string name="settingsChangeFontHintingDesc">Четкость горизонтальных линий (в мелких символах)</string>
     <string name="settingsChangeFontAntialiasing">Сглаживание</string>
 
     <string name="settingsChangeFormatHyphenation">Переносы</string>
