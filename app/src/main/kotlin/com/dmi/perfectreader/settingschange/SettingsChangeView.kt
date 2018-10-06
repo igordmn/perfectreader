@@ -134,5 +134,5 @@ fun settingChangeDetailsView(context: Context, model: SettingsChangeDetails) = L
 
     onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.back(); true }
 
-    child(params(matchParent, matchParent, weight = 1F), details.contentView(context))
+    child(params(matchParent, matchParent, weight = 1F), details.contentView(context, model))
 }

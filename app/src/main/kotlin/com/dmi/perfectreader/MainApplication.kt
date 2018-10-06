@@ -24,6 +24,7 @@ class MainApplication : Application() {
         initMainExceptionCatcher(log)
         initStrictMode()
         initThreadContext(Dispatchers.Main)
+//        TinyDancer.create().show(this)
         main = Main(log, this)
     }
 

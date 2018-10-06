@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="verticalRecyclerViewStyle" format="reference"/>
+
+    <style name="VerticalRecyclerView" parent="android:Widget">
+        <item name="android:scrollbars">vertical</item>
+    </style>
+</resources>

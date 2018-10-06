@@ -6,8 +6,9 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dmi.perfectreader.R
+import com.dmi.perfectreader.settingschange.SettingsChangeDetails
 import com.dmi.util.android.view.Bindable
-import com.dmi.util.android.view.attr
 import com.dmi.util.android.view.child
 import com.dmi.util.android.view.params
 import org.jetbrains.anko.backgroundResource
@@ -15,16 +16,17 @@ import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.onClick
 import org.jetbrains.anko.wrapContent
 import kotlin.math.max
+import kotlin.reflect.KMutableProperty0
 
 class SettingListView<T, V>(
         context: Context,
-        value: T,
+        private val model: SettingsChangeDetails,
+        private val property: KMutableProperty0<T>,
         private val items: List<T>,
         private val createItemView: (Context) -> V
-) : RecyclerView(context) where V : View, V : Bindable<T> {
-    private var activatedPosition = max(0, items.indexOf(value))
-
-    private lateinit var onActivate: ((T, changed: Boolean) -> Unit)
+) : RecyclerView(context, null, R.attr.verticalRecyclerViewStyle) where V : View, V : Bindable<T> {
+    private var activatedPosition = max(0, items.indexOf(property.get()))
+    private val allItemViews = ArrayList<ItemView>()
 
     init {
         setHasFixedSize(true)
@@ -45,8 +47,6 @@ class SettingListView<T, V>(
         scrollToPosition(activatedPosition)
     }
 
-    private val allItemViews = ArrayList<ItemView>()
-
     private inner class ItemView(val original: V) : FrameLayout(context) {
         var position: Int = 0
 
@@ -56,7 +56,7 @@ class SettingListView<T, V>(
             child(params(matchParent, wrapContent), original)
             isClickable = true
             isFocusable = true
-            backgroundResource = attr(android.R.attr.activatedBackgroundIndicator).resourceId
+            backgroundResource = R.drawable.list_item_background
             onClick { activate() }
         }
 
@@ -72,7 +72,11 @@ class SettingListView<T, V>(
             }
             val isChanged = activatedPosition != position
             activatedPosition = position
-            onActivate(items[position], isChanged)
+            if (isChanged) {
+                property.set(items[position])
+            } else {
+//                model.back()
+            }
         }
     }
 }

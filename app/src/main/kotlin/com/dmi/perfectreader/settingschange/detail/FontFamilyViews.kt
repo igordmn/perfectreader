@@ -1,20 +1,23 @@
 package com.dmi.perfectreader.settingschange.detail
 
 import android.content.Context
+import android.graphics.Typeface
 import android.text.TextUtils
 import android.view.Gravity
+import android.view.View
 import android.widget.TextView
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
+import com.dmi.perfectreader.common.Nano
 import com.dmi.perfectreader.main
+import com.dmi.perfectreader.settingschange.SettingsChangeDetails
 import com.dmi.perfectreader.settingschange.SettingsChangeDetailsContent
+import com.dmi.perfectreader.settingschange.common.SettingListView
 import com.dmi.util.android.font.AndroidFont
-import com.dmi.util.android.view.Bindable
-import com.dmi.util.android.view.autorun
-import com.dmi.util.android.view.color
-import com.dmi.util.android.view.withTransparency
+import com.dmi.util.android.view.*
 import com.dmi.util.font.Fonts
-import com.dmi.util.lang.splitIntoTwoLines
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.singleLine
@@ -25,31 +28,43 @@ val FontFamilyViews = SettingsDetailViews(
         R.string.settingsChangeFontFamily,
         SettingsChangeDetailsContent.FONT_FAMILY,
         { FontFamilyPreviewView(it) },
-        { FontFamilyPreviewView(it) }
+        ::fontFamilyListView
+)
+
+fun fontFamilyListView(context: Context, model: SettingsChangeDetails) = SettingListView(
+        context,
+        model,
+        context.main.settings.format::textFontFamily,
+        context.main.fonts.familyNames,
+        ::FontFamilyItemView
 )
 
 class FontFamilyItemView(context: Context) : TextView(context), Bindable<String> {
-    private val fonts: Fonts = context.main.fonts
+    private val fonts = context.main.fonts
+    private val load = ViewLoad(this)
 
     init {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
         padding = dip(16)
-        gravity = Gravity.CENTER
-        textColor = if (isActivated) color(R.color.onSecondary) else color(R.color.onBackground)
+        minimumHeight = dip(48)
+        gravity = Gravity.START or Gravity.CENTER_VERTICAL
+        textColor = color(R.color.onBackground)
     }
 
     override fun bind(model: String) {
         val familyName = model
-        val font = fonts.loadFont(familyName, isBold = false, isItalic = false).font as AndroidFont
-        val text = if (familyName == "") "Default" else familyName
-        val (firstLine, secondLine) = text.splitIntoTwoLines()
-        setText(if (secondLine != null) "$firstLine\n$secondLine" else firstLine)
-        typeface = font.typeface
-    }
+        text = if (familyName == "") "Default" else familyName
+        typeface = Typeface.DEFAULT
 
-    override fun setActivated(activated: Boolean) {
-        super.setActivated(activated)
-        textColor = if (isActivated) color(R.color.onSecondary) else color(R.color.onBackground)
+        load.start {
+            visibility = View.INVISIBLE
+            val font = withContext(Dispatchers.Nano) {
+                fonts.loadFont(familyName, isBold = false, isItalic = false).font as AndroidFont
+            }
+
+            typeface = font.typeface
+            visibility = View.VISIBLE
+        }
     }
 }
 

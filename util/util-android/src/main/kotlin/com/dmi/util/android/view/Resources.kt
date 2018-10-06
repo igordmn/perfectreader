@@ -5,15 +5,15 @@ import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import org.jetbrains.anko.layoutInflater
 import org.jetbrains.anko.withAlpha
 
 fun View.dipFloat(value: Float): Float = value * resources.displayMetrics.density
 fun View.spFloat(value: Float): Float = value * resources.displayMetrics.scaledDensity
 fun View.color(resID: Int) = ContextCompat.getColor(context, resID)
-fun View.drawable(resID: Int): Drawable = DrawableCompat.wrap(VectorDrawableCompat.create(context.resources, resID, context.theme)!!)
+fun View.drawable(resID: Int): Drawable = ResourcesCompat.getDrawable(resources, resID, context.theme)!!
 
 fun View.drawable(resID: Int, tintColor: Int): Drawable = drawable(resID).apply {
     DrawableCompat.setTint(this, tintColor)

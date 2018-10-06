@@ -33,6 +33,10 @@
         <item name="textAppearanceCaption">@style/TextAppearance.MaterialComponents.Caption</item>
         <item name="textAppearanceButton">@style/TextAppearance.MaterialComponents.Button</item>
         <item name="textAppearanceOverline">@style/TextAppearance.MaterialComponents.Overline</item>
+
+        <item name="android:colorEdgeEffect">@color/secondary</item>
+
+        <item name="verticalRecyclerViewStyle">@style/VerticalRecyclerView</item>
     </style>
 
 </resources>
