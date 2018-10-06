@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.settingschange.setting
+package com.dmi.perfectreader.settingschange.custom
 
 import android.content.Context
 import androidx.annotation.StringRes

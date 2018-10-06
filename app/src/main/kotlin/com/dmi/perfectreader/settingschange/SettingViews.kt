@@ -10,6 +10,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
+import com.dmi.perfectreader.settingschange.detail.SettingsDetailViews
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.initOnce
 import org.jetbrains.anko.*
@@ -17,23 +18,16 @@ import kotlin.reflect.KMutableProperty0
 
 class PreviewView(val view: View, val withPadding: Boolean = true, val isClickable: Boolean = true)
 
-fun <T, PV> detailSetting(
+fun detailSetting(
         context: Context,
         model: SettingsChangeMain,
-        property: KMutableProperty0<T>,
-        previewView: PV,
-        @StringRes
-        titleResId: Int,
+        details: SettingsDetailViews,
         @StringRes
         subtitleResId: Int? = null
-) : View where PV : View, PV : Bindable<T> {
-    previewView.autorun {
-        previewView.bind(property.get())
-    }
-
-    return titleSetting(context, PreviewView(previewView), titleResId, subtitleResId).apply {
+) : View {
+    return titleSetting(context, PreviewView(details.previewView(context)), details.titleResId, subtitleResId).apply {
         onClick {
-            model.goDetails()
+            model.goDetails(details.content)
         }
     }
 }

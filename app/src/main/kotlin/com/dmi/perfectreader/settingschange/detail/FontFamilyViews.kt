@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.settingschange.setting
+package com.dmi.perfectreader.settingschange.detail
 
 import android.content.Context
 import android.text.TextUtils
@@ -7,8 +7,10 @@ import android.widget.TextView
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
+import com.dmi.perfectreader.settingschange.SettingsChangeDetailsContent
 import com.dmi.util.android.font.AndroidFont
 import com.dmi.util.android.view.Bindable
+import com.dmi.util.android.view.autorun
 import com.dmi.util.android.view.color
 import com.dmi.util.android.view.withTransparency
 import com.dmi.util.font.Fonts
@@ -17,6 +19,14 @@ import org.jetbrains.anko.dip
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.singleLine
 import org.jetbrains.anko.textColor
+import kotlin.reflect.KProperty0
+
+val FontFamilyViews = SettingsDetailViews(
+        R.string.settingsChangeFontFamily,
+        SettingsChangeDetailsContent.FONT_FAMILY,
+        { FontFamilyPreviewView(it) },
+        { FontFamilyPreviewView(it) }
+)
 
 class FontFamilyItemView(context: Context) : TextView(context), Bindable<String> {
     private val fonts: Fonts = context.main.fonts
@@ -43,7 +53,10 @@ class FontFamilyItemView(context: Context) : TextView(context), Bindable<String>
     }
 }
 
-class FontFamilyPreviewView(context: Context) : TextView(context), Bindable<String> {
+class FontFamilyPreviewView(
+        context: Context,
+        model: KProperty0<String> = context.main.settings.format::textFontFamily
+) : TextView(context) {
     private val fonts: Fonts = context.main.fonts
 
     init {
@@ -51,9 +64,13 @@ class FontFamilyPreviewView(context: Context) : TextView(context), Bindable<Stri
         singleLine = true
         ellipsize = TextUtils.TruncateAt.END
         textColor = color(R.color.onBackground).withTransparency(0.60)
+
+        autorun {
+            bind(model.get())
+        }
     }
 
-    override fun bind(model: String) {
+    private fun bind(model: String) {
         val familyName = model
         val font = fonts.loadFont(familyName, isBold = false, isItalic = false).font as AndroidFont
         this.text = if (familyName == "") "Default" else familyName

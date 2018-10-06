@@ -11,8 +11,9 @@ import androidx.core.widget.NestedScrollView
 import androidx.viewpager.widget.ViewPager
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
-import com.dmi.perfectreader.settingschange.setting.FontFamilyPreviewView
-import com.dmi.perfectreader.settingschange.setting.fontStyleView
+import com.dmi.perfectreader.settingschange.custom.fontStyleView
+import com.dmi.perfectreader.settingschange.detail.FontFamilyViews
+import com.dmi.perfectreader.settingschange.detail.settingViewDetails
 import com.dmi.util.android.screen.ScreensView
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.unsupported
@@ -59,7 +60,7 @@ fun settingChangeMainView(context: Context, model: SettingsChangeMain): View {
             orientation = LinearLayoutCompat.VERTICAL
 
             with(settings) {
-                +detailSetting(context, model, format::textFontFamily, FontFamilyPreviewView(context), R.string.settingsChangeFontFamily)
+                +detailSetting(context, model, FontFamilyViews)
                 +titleSetting(context, fontStyleView(
                         context,
                         format::textFontIsBold, format::textFontIsItalic,
@@ -114,6 +115,8 @@ fun settingChangeMainView(context: Context, model: SettingsChangeMain): View {
 }
 
 fun settingChangeDetailsView(context: Context, model: SettingsChangeDetails) = LinearLayoutExt(context).apply {
+    val details = settingViewDetails(model.content)
+
     orientation = LinearLayoutCompat.VERTICAL
     backgroundColor = color(R.color.background)
 
@@ -121,7 +124,7 @@ fun settingChangeDetailsView(context: Context, model: SettingsChangeDetails) = L
         setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
         backgroundColor = color(android.R.color.transparent)
         navigationIcon = drawable(R.drawable.ic_arrow_back)
-//        this.title = title
+        this.title = string(details.titleResId)
         popupTheme = R.style.Theme_AppCompat_Light
 
         setNavigationOnClickListener {
@@ -131,5 +134,5 @@ fun settingChangeDetailsView(context: Context, model: SettingsChangeDetails) = L
 
     onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.back(); true }
 
-//    child(params(matchParent, matchParent, weight = 1F), content)
+    child(params(matchParent, matchParent, weight = 1F), details.contentView(context))
 }

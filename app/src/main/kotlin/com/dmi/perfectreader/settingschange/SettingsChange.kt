@@ -19,8 +19,8 @@ class SettingsChange(
         else -> unsupported()
     }
 
-    private fun goDetails() {
-        screens.goForward(SettingsChangeDetailsState())
+    private fun goDetails(content: SettingsChangeDetailsContent) {
+        screens.goForward(SettingsChangeDetailsState(content))
     }
 
     private fun backDetails() {
@@ -34,11 +34,13 @@ class SettingsChange(
 
 class SettingsChangeMain(
         val back: () -> Unit,
-        val goDetails: () -> Unit,
+        val goDetails: (content: SettingsChangeDetailsContent) -> Unit,
         val state: SettingsChangeMainState
 ) : Screen by Screen()
 
-class SettingsChangeDetails(val back: () -> Unit, val state: SettingsChangeDetailsState) : Screen by Screen()
+class SettingsChangeDetails(val back: () -> Unit, val state: SettingsChangeDetailsState) : Screen by Screen() {
+    val content = state.content
+}
 
 
 @Serializable
@@ -48,4 +50,8 @@ class SettingsChangeState(var screens: ScreensState = ScreensState.Home(Settings
 class SettingsChangeMainState
 
 @Serializable
-class SettingsChangeDetailsState
+class SettingsChangeDetailsState(val content: SettingsChangeDetailsContent)
+
+enum class SettingsChangeDetailsContent {
+    FONT_FAMILY
+}
