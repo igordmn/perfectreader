@@ -8,6 +8,10 @@ import com.dmi.util.scope.EmittableEvent
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
 import com.dmi.util.system.Display
+import com.dmi.util.system.Nanos
+import com.dmi.util.system.seconds
+import kotlinx.coroutines.delay
+import java.util.concurrent.TimeUnit
 
 /**
  * Show animation for demonstration (for example, when choose animation in settings)
@@ -17,11 +21,12 @@ class DemoAnimatedPages(
         private val pages: Pages,
         private val display: Display,
         private val animator: PageAnimator,
+        private val delayBeforeReverse: Nanos = seconds(0.2),
         scope: Scope = Scope()
 ) : Disposable by scope {
     companion object {
         fun pages(pages: LoadingPages) = object : Pages {
-            override val current: Page? = pages[0]
+            override val current: Page? get() = pages[0]
         }
     }
 
@@ -48,13 +53,19 @@ class DemoAnimatedPages(
                 if (!animation.isStill) {
                     val time = display.waitVSyncTime()
                     animation = animator.update(animation, time)
-                    if (animation.targetPage == 1.0)
-                        animation = animation.copy(targetPage = 0.0)
+                    if (animation.currentPage == 1.0)
+                        reverseAnimation()
                 } else {
                     afterAnimate.wait()
                 }
             }
         }
+    }
+
+    private suspend fun reverseAnimation() {
+        delay(TimeUnit.NANOSECONDS.toMillis(delayBeforeReverse))
+        val time = display.waitVSyncTime()
+        animation = animation.copy(targetPage = 0.0, time = time)
     }
 
     fun reset() {

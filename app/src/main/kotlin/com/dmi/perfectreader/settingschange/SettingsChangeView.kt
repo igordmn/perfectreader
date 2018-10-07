@@ -15,7 +15,7 @@ import com.dmi.perfectreader.main
 import com.dmi.perfectreader.settingschange.custom.fontStyleView
 import com.dmi.perfectreader.settingschange.detail.FontFamilyViews
 import com.dmi.perfectreader.settingschange.detail.ScreenAnimationViews
-import com.dmi.perfectreader.settingschange.detail.settingViewDetails
+import com.dmi.perfectreader.settingschange.detail.SettingsDetailViews
 import com.dmi.util.android.screen.ScreensView
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.unsupported
@@ -25,9 +25,13 @@ import org.jetbrains.anko.*
 
 fun settingsChangeView(context: Context, model: SettingsChange): View {
     fun screenView(screen: Screen): View = when (screen) {
-        is SettingsChangeMain -> settingChangeMainView(context, screen)
-        is SettingsChangeDetails -> settingChangeDetailsView(context, screen)
-        else -> unsupported()
+        is SettingsChangeScreenAnimation -> settingChangeDetailsView(context, screen, ScreenAnimationViews)
+        is SettingsChangeChild -> when (screen.state) {
+            is SettingsChangeMainState -> settingChangeMainView(context, screen)
+            is SettingsChangeFontFamilyState -> settingChangeDetailsView(context, screen, FontFamilyViews)
+            else -> unsupported(screen.state)
+        }
+        else -> unsupported(screen)
     }
 
     fun space() = FrameLayout(context).apply {
@@ -52,7 +56,7 @@ fun settingsChangeView(context: Context, model: SettingsChange): View {
     }
 }
 
-fun settingChangeMainView(context: Context, model: SettingsChangeMain): View {
+fun settingChangeMainView(context: Context, model: SettingsChangeChild): View {
     val settings = context.main.settings
 
     fun fontSettings() = NestedScrollView(context).apply {
@@ -152,13 +156,15 @@ fun settingChangeMainView(context: Context, model: SettingsChangeMain): View {
             tabLayout.setupWithViewPager(this)
         })
 
-        onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.back(); true }
+        onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.goBackward(); true }
     }
 }
 
-fun settingChangeDetailsView(context: Context, model: SettingsChangeDetails) = LinearLayoutExt(context).apply {
-    val details = settingViewDetails(model.content)
-
+fun <M : SettingsChangeChild, D : SettingsDetailViews<M>> settingChangeDetailsView(
+        context: Context,
+        model: M,
+        details: D
+) = LinearLayoutExt(context).apply {
     orientation = LinearLayoutCompat.VERTICAL
     backgroundColor = color(R.color.background)
 
@@ -170,11 +176,11 @@ fun settingChangeDetailsView(context: Context, model: SettingsChangeDetails) = L
         popupTheme = R.style.Theme_AppCompat_Light
 
         setNavigationOnClickListener {
-            model.back()
+            model.goBackward()
         }
     })
 
-    onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.back(); true }
+    onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.goBackward(); true }
 
     child(params(matchParent, matchParent, weight = 1F), details.contentView(context, model))
 }

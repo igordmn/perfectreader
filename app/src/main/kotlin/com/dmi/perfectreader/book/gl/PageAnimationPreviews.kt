@@ -37,7 +37,7 @@ class PageAnimationPreviews(
                 glViewport(0, 0, size.width, size.height)
 
                 frameBuffer.bind {
-                    glClearColor(1F, 1F, 1F, 1F)
+                    glClearColor(0F, 0F, 0F, 0F)
                     glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
                     animation.draw(pageTexture, 0.3F)
                     animation.draw(pageTexture, -0.7F)
@@ -59,15 +59,28 @@ class PageAnimationPreviews(
         val pageBitmap = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888)
         canvas.setBitmap(pageBitmap)
 
-        paint.color = Color.BLACK
-        paint.strokeWidth = dip2px(1F)
-        canvas.drawColor(Color.WHITE)
+        canvas.drawColor(Color.TRANSPARENT)
+
         val width = size.width.toFloat()
         val height = size.height.toFloat()
-        canvas.drawRect(width * 0.15F, height * 0.15F, width * 0.85F, height * 0.25F, paint)
-        canvas.drawRect(width * 0.15F, height * 0.35F, width * 0.85F, height * 0.45F, paint)
-        canvas.drawRect(width * 0.15F, height * 0.55F, width * 0.85F, height * 0.65F, paint)
-        canvas.drawRect(width * 0.15F, height * 0.75F, width * 0.85F, height * 0.85F, paint)
+        val spacing = width * 0.04F
+
+        paint.color = Color.WHITE
+        paint.style = Paint.Style.FILL
+        canvas.drawRect(spacing, spacing, width - spacing, height - spacing, paint)
+
+        paint.color = Color.LTGRAY
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 1F
+        canvas.drawRect(spacing, spacing, width - spacing, height - spacing, paint)
+
+        paint.style = Paint.Style.FILL
+        paint.color = Color.DKGRAY
+        canvas.drawRect(width * 0.20F, height * 0.15F, width * 0.80F, height * 0.25F, paint)
+        canvas.drawRect(width * 0.20F, height * 0.35F, width * 0.80F, height * 0.45F, paint)
+        canvas.drawRect(width * 0.20F, height * 0.55F, width * 0.80F, height * 0.65F, paint)
+        canvas.drawRect(width * 0.20F, height * 0.75F, width * 0.80F, height * 0.85F, paint)
+
         return pageBitmap
     }
 }

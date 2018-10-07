@@ -18,16 +18,16 @@ import kotlin.reflect.KMutableProperty0
 
 class PreviewView(val view: View, val withPadding: Boolean = true, val isClickable: Boolean = true)
 
-fun detailSetting(
+fun <M : SettingsChangeChild> detailSetting(
         context: Context,
-        model: SettingsChangeMain,
-        details: SettingsDetailViews,
+        model: SettingsChangeChild,
+        details: SettingsDetailViews<M>,
         @StringRes
         subtitleResId: Int? = null
 ) : View {
     return titleSetting(context, PreviewView(details.previewView(context)), details.titleResId, subtitleResId).apply {
         onClick {
-            model.goDetails(details.content)
+            model.goForward(details.initialState)
         }
     }
 }

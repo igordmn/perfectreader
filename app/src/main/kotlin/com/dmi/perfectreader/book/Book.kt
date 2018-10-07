@@ -136,7 +136,7 @@ class Book(
     val pages: VisiblePages get() = if (demoAnimatedPages.isMoving) demoAnimatedPages.visible else animatedPages.visible
 
     val percent: Double by scope.cached { locations.locationToPercent(location) }
-    val pageNumber: Int by scope.cached {  locations.locationToPageNumber(location) }
+    val pageNumber: Int by scope.cached { locations.locationToPageNumber(location) }
     val numberOfPages: Int by scope.cached { locations.numberOfPages }
 
     fun showDemoAnimation() = demoAnimatedPages.animate()

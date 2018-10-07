@@ -65,17 +65,17 @@ class Reader(
     private fun createPopup(state: Any): Screen = when (state) {
         is MenuState -> Menu(state)
         is SettingsChangeState -> SettingsChange(state)
-        else -> unsupported()
+        else -> unsupported(state)
     }
 
     private fun Selection(state: SelectionState) = Selection(main, book, ::deselect, state)
     private fun Menu(state: MenuState = MenuState()) = Menu(::showSettings, ::hidePopup, state)
-    private fun SettingsChange(state: SettingsChangeState = SettingsChangeState()) = SettingsChange(::hidePopup, state)
+    private fun SettingsChange(state: SettingsChangeState = SettingsChangeState()) = SettingsChange(::hidePopup, this, state)
 
     private fun popupState(model: Screen): Any = when (model) {
         is Menu -> model.state
         is SettingsChange -> model.state
-        else -> unsupported()
+        else -> unsupported(model)
     }
 
     private fun state(model: Selection) = model.state

@@ -1,5 +1,7 @@
 package com.dmi.perfectreader.settingschange
 
+import com.dmi.perfectreader.book.Book
+import com.dmi.perfectreader.reader.Reader
 import com.dmi.util.lang.unsupported
 import com.dmi.util.screen.Screen
 import com.dmi.util.screen.Screens
@@ -8,39 +10,38 @@ import kotlinx.serialization.Serializable
 
 class SettingsChange(
         val back: () -> Unit,
+        val reader: Reader,
         val state: SettingsChangeState
 ) : Screen by Screen() {
-    var screens = Screens(state.screens, this::Screen)
+    var screens = Screens(state.screens, back, this::Screen)
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun Screen(state: Any): Screen = when (state) {
-        is SettingsChangeMainState -> SettingsChangeMain(this::backDetails, this::goDetails)
-        is SettingsChangeDetailsState -> SettingsChangeDetails(this::backDetails, state)
-        else -> unsupported()
+        is SettingsChangeMainState -> SettingsChangeChild(this, state)
+        is SettingsChangeFontFamilyState -> SettingsChangeChild(this, state)
+        is SettingsChangeScreenAnimationState -> SettingsChangeScreenAnimation(this, state)
+        else -> unsupported(state)
     }
 
-    private fun goDetails(content: SettingsChangeDetailsContent) {
-        screens.goForward(SettingsChangeDetailsState(content))
-    }
-
-    private fun backDetails() {
-        if (screens.size > 1) {
-            screens.goBackward()
-        } else {
-            back()
-        }
-    }
+    fun goForward(state: Any) = screens.goForward(state)
+    fun goBackward() = screens.goBackward()
 }
 
-class SettingsChangeMain(
-        val back: () -> Unit,
-        val goDetails: (content: SettingsChangeDetailsContent) -> Unit
-) : Screen by Screen()
-
-class SettingsChangeDetails(val back: () -> Unit, state: SettingsChangeDetailsState) : Screen by Screen() {
-    val content = state.content
+open class SettingsChangeChild(
+        private val parent: SettingsChange,
+        val state: Any
+) : Screen by Screen() {
+    fun goForward(state: Any) = parent.goForward(state)
+    fun goBackward() = parent.goBackward()
 }
 
+open class SettingsChangeScreenAnimation(
+        private val parent: SettingsChange,
+        state: Any,
+        private val book: Book = parent.reader.book
+) : SettingsChangeChild(parent, state) {
+    fun showDemo() = book.showDemoAnimation()
+}
 
 @Serializable
 class SettingsChangeState(var screens: ScreensState = ScreensState.Home(SettingsChangeMainState()))
@@ -49,9 +50,7 @@ class SettingsChangeState(var screens: ScreensState = ScreensState.Home(Settings
 class SettingsChangeMainState
 
 @Serializable
-class SettingsChangeDetailsState(val content: SettingsChangeDetailsContent)
+class SettingsChangeFontFamilyState
 
-enum class SettingsChangeDetailsContent {
-    FONT_FAMILY,
-    SCREEN_ANIMATION
-}
+@Serializable
+class SettingsChangeScreenAnimationState

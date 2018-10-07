@@ -5,7 +5,15 @@ import com.dmi.util.scope.EmittableEvent
 import kotlinx.serialization.Serializable
 import java.util.*
 
-class Screens(val state: ScreensState, val screen: (childState: Any) -> Screen) : Disposable {
+class Screens(
+        val state: ScreensState,
+        private val back: () -> Unit,
+        val screen: (childState: Any) -> Screen
+) : Disposable {
+    init {
+        require(state.childStates.size >= 1)
+    }
+
     private val childStates = state.childStates
     var current: Screen? = if (childStates.size > 0) screen(childStates.last()) else null
         private set
@@ -23,10 +31,14 @@ class Screens(val state: ScreensState, val screen: (childState: Any) -> Screen) 
     }
 
     fun goBackward() {
-        current?.dispose()
-        childStates.removeAt(childStates.size - 1)
-        this.current = childStates.lastOrNull()?.let(screen)
-        afterGoBackward.emit()
+        if (size > 1) {
+            current?.dispose()
+            childStates.removeAt(childStates.size - 1)
+            this.current = childStates.lastOrNull()?.let(screen)
+            afterGoBackward.emit()
+        } else {
+            back()
+        }
     }
 
     override fun dispose() {

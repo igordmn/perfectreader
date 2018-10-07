@@ -4,8 +4,8 @@ import android.content.Context
 import android.widget.ImageView
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
-import com.dmi.perfectreader.settingschange.SettingsChangeDetails
-import com.dmi.perfectreader.settingschange.SettingsChangeDetailsContent
+import com.dmi.perfectreader.settingschange.SettingsChangeScreenAnimation
+import com.dmi.perfectreader.settingschange.SettingsChangeScreenAnimationState
 import com.dmi.perfectreader.settingschange.common.SettingListView
 import com.dmi.util.android.view.Bindable
 import com.dmi.util.android.view.GridAutoFitLayoutManager
@@ -19,20 +19,18 @@ import kotlin.reflect.KProperty0
 
 val ScreenAnimationViews = SettingsDetailViews(
         R.string.settingsChangeScreenAnimation,
-        SettingsChangeDetailsContent.SCREEN_ANIMATION,
+        SettingsChangeScreenAnimationState(),
         { ScreenAnimationPreviewView(it) },
         ::screenAnimationListView
 )
 
 @Suppress("UNUSED_PARAMETER")
-fun screenAnimationListView(context: Context, model: SettingsChangeDetails) = SettingListView(
+fun screenAnimationListView(context: Context, model: SettingsChangeScreenAnimation) = SettingListView(
         context,
         context.main.settings.format::pageAnimationPath,
         context.main.resources.pageAnimations.map { it.toString() },
         ::ScreenAnimationItemView,
-        onItemClick = {
-            model // todo show demo
-        }
+        onItemClick = model::showDemo
 ).apply {
     layoutManager = GridAutoFitLayoutManager(context, columnWidth = dip(64 + 12 * 2))
     setPaddingRelative(dip(12), 0, dip(12), 0)

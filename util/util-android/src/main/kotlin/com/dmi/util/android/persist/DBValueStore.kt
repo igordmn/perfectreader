@@ -63,7 +63,7 @@ class DBValueStore(
                 is Boolean -> intValue?.let { it == 1L } as T?
                 is String -> textValue as T?
                 is Enum<*> -> textValue?.let { enumValueOrNull(value.javaClass as Class<Enum<*>>, it) } as T?
-                else -> unsupported()
+                else -> unsupported(value)
             }
             if (newValue != null)
                 value = newValue
@@ -89,7 +89,7 @@ class DBValueStore(
                     is Boolean -> saveInt(key, if (value) 1L else 0L)
                     is String -> saveText(key, value)
                     is Enum<*> -> saveText(key, value.toString())
-                    else -> unsupported()
+                    else -> unsupported(value)
                 }
             }
         }
