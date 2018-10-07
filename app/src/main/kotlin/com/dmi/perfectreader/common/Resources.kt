@@ -24,7 +24,7 @@ class Resources(
             return fontsCache[userDirectory]
         }
 
-    val pageAnimations: List<URI> get() = uriHandler.children(URI("assets:///resources/animations"))
+    val pageAnimations: List<URI> get() = uriHandler.children(URI("assets:///resources/animations/"))
 
     val pageAnimationPreviews = PageAnimationPreviews(main)
 }

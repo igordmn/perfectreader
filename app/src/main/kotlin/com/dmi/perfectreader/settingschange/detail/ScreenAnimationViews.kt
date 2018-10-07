@@ -1,29 +1,19 @@
 package com.dmi.perfectreader.settingschange.detail
 
 import android.content.Context
-import android.graphics.Typeface
-import android.view.Gravity
-import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
-import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.common.Nano
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.settingschange.SettingsChangeDetails
 import com.dmi.perfectreader.settingschange.SettingsChangeDetailsContent
 import com.dmi.perfectreader.settingschange.common.SettingListView
-import com.dmi.util.android.font.AndroidFont
 import com.dmi.util.android.view.Bindable
+import com.dmi.util.android.view.GridAutoFitLayoutManager
 import com.dmi.util.android.view.ViewLoad
 import com.dmi.util.android.view.autorun
-import com.dmi.util.android.view.color
 import com.dmi.util.graphic.Size
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.padding
-import org.jetbrains.anko.textColor
 import java.net.URI
 import kotlin.reflect.KProperty0
 
@@ -34,39 +24,34 @@ val ScreenAnimationViews = SettingsDetailViews(
         ::screenAnimationListView
 )
 
+@Suppress("UNUSED_PARAMETER")
 fun screenAnimationListView(context: Context, model: SettingsChangeDetails) = SettingListView(
         context,
-        model,
         context.main.settings.format::pageAnimationPath,
-        context.main.resources.pageAnimations.map { it.path },
-        ::FontFamilyItemView
-)
+        context.main.resources.pageAnimations.map { it.toString() },
+        ::ScreenAnimationItemView
+).apply {
+    layoutManager = GridAutoFitLayoutManager(context, columnWidth = dip(64 + 12 * 2))
+    setPaddingRelative(dip(12), 0, dip(12), 0)
+}
 
-class ScreenAnimationItemView(context: Context) : TextView(context), Bindable<String> {
-    private val fonts = context.main.resources.fonts
+class ScreenAnimationItemView(context: Context) : ImageView(context), Bindable<String> {
+    private val previews = context.main.resources.pageAnimationPreviews
     private val load = ViewLoad(this)
+    private val previewSize = Size(dip(64), dip(64 * 4 / 3F))
 
     init {
-        TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
-        padding = dip(16)
-        minimumHeight = dip(56)
-        gravity = Gravity.START or Gravity.CENTER_VERTICAL
-        textColor = color(R.color.onBackground)
+        minimumWidth = previewSize.width
+        minimumHeight = previewSize.height
+        padding = dip(12)
     }
 
     override fun bind(model: String) {
-        val familyName = model
-        text = if (familyName == "") "Default" else familyName
-        typeface = Typeface.DEFAULT
-
+        val path = URI(model)
+        setImageBitmap(null)
         load.start {
-            visibility = View.INVISIBLE
-            val font = withContext(Dispatchers.Nano) {
-                fonts.loadFont(familyName, isBold = false, isItalic = false).font as AndroidFont
-            }
-
-            typeface = font.typeface
-            visibility = View.VISIBLE
+            val preview = previews.of(path, previewSize)
+            setImageBitmap(preview)
         }
     }
 }

@@ -7,5 +7,5 @@ import java.net.URI
 
 class FileURIHandler: URIHandler {
     override fun open(uri: URI): InputStream = FileInputStream(uri.path)
-    override fun children(uri: URI): List<URI> = File(uri.path).list().map(::URI)
+    override fun children(uri: URI): List<URI> = File(uri.path).list().map { uri.resolve(it) }
 }

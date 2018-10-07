@@ -7,7 +7,6 @@ import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.settingschange.SettingsChangeDetails
 import com.dmi.util.android.view.Bindable
 import com.dmi.util.android.view.child
 import com.dmi.util.android.view.params
@@ -20,10 +19,10 @@ import kotlin.reflect.KMutableProperty0
 
 class SettingListView<T, V>(
         context: Context,
-        private val model: SettingsChangeDetails,
         private val property: KMutableProperty0<T>,
         private val items: List<T>,
-        private val createItemView: (Context) -> V
+        private val createItemView: (Context) -> V,
+        private val onItemSecondClick: () -> Unit = {}
 ) : RecyclerView(context, null, R.attr.verticalRecyclerViewStyle) where V : View, V : Bindable<T> {
     private var activatedPosition = max(0, items.indexOf(property.get()))
     private val allItemViews = ArrayList<ItemView>()
@@ -75,7 +74,7 @@ class SettingListView<T, V>(
             if (isChanged) {
                 property.set(items[position])
             } else {
-                model.back()
+                onItemSecondClick()
             }
         }
     }

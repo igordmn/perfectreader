@@ -33,10 +33,10 @@ val FontFamilyViews = SettingsDetailViews(
 
 fun fontFamilyListView(context: Context, model: SettingsChangeDetails) = SettingListView(
         context,
-        model,
         context.main.settings.format::textFontFamily,
         context.main.resources.fonts.familyNames,
-        ::FontFamilyItemView
+        ::FontFamilyItemView,
+        model.back
 )
 
 class FontFamilyItemView(context: Context) : TextView(context), Bindable<String> {
