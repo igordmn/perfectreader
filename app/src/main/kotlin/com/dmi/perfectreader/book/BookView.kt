@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import com.dmi.perfectreader.book.gl.GLBook
 import com.dmi.perfectreader.book.gl.GLBookModel
+import com.dmi.perfectreader.book.gl.provideGLContext
 import com.dmi.perfectreader.book.render.factory.FramePainter
 import com.dmi.perfectreader.book.render.factory.ImagePainter
 import com.dmi.perfectreader.book.render.factory.PageRenderer
@@ -36,5 +37,6 @@ fun bookView(context: Context, reader: Reader): View {
     glSurface.onSizeChange { size, _ ->
         reader.book.size = size.toFloat()
     }
+    glSurface.provideGLContext()
     return glSurface
 }

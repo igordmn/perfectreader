@@ -75,7 +75,7 @@ class SettingListView<T, V>(
             if (isChanged) {
                 property.set(items[position])
             } else {
-//                model.back()
+                model.back()
             }
         }
     }

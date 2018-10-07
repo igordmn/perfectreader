@@ -16,7 +16,7 @@ class GLBook(
         model: GLBookModel,
         context: Context,
         pageRenderer: PageRenderer,
-        size: Size,
+        private val size: Size,
         uriHandler: ProtocolURIHandler,
         scope: Scope = Scope()
 ) : Disposable by scope {
@@ -25,7 +25,6 @@ class GLBook(
         glEnable(GL_BLEND)
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
         glDepthFunc(GL_LEQUAL)
-        glViewport(0, 0, size.width, size.height)
     }
 
     private val pageTexture by scope.observableDisposable(GLTexture(size))
@@ -38,6 +37,7 @@ class GLBook(
     private val pages by scope.observableDisposable(GLPages(size, quad, model, pageRenderer))
 
     fun draw() {
+        glViewport(0, 0, size.width, size.height)
         glClearColor(1F, 1F, 1F, 1F)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         drawAnimatedPage(pages.right, pages.rightProgress)

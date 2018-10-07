@@ -31,7 +31,7 @@ class GLSurfaceScopedView(
     private val eglContextClientVersion = 2
     private val glSurfaceView = GLSurfaceView(context)
 
-    private val coroutineContext: CoroutineContext = object : CoroutineDispatcher() {
+    val coroutineContext: CoroutineContext = object : CoroutineDispatcher() {
         override fun dispatch(context: CoroutineContext, block: Runnable) = glSurfaceView.queueEvent(block)
     }
 
@@ -93,10 +93,11 @@ class GLSurfaceScopedView(
     }
 
     override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
         job.cancel()
         scope.dispose()
         detached = true
-        super.onDetachedFromWindow()
+        coroutineContext.cancel()
     }
 
     interface Renderer : Disposable {

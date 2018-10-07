@@ -82,7 +82,7 @@ class Book(
     )
 
     private val formatConfig by scope.cached {
-        appFormatConfig(main.applicationContext, main.settings, main.fonts)
+        appFormatConfig(main.applicationContext, main.settings, main.resources.fonts)
     }
 
     private val sized: Sized by scope.cachedDisposable {

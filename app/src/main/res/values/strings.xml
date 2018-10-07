@@ -120,4 +120,6 @@
     <string name="settingsChangeFormatHangingPunctuation">Висячая пунктуация</string>
     <string name="settingsChangeFormatHangingPunctuationDesc">Знаки пунктуации за пределами полей</string>
     <string name="settingsChangeFormatJustify">По ширине</string>
+
+    <string name="settingsChangeScreenAnimation">Анимация</string>
 </resources>

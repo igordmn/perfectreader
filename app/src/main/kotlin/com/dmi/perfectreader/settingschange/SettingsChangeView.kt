@@ -14,6 +14,7 @@ import com.dmi.perfectreader.book.content.obj.param.TextAlign
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.settingschange.custom.fontStyleView
 import com.dmi.perfectreader.settingschange.detail.FontFamilyViews
+import com.dmi.perfectreader.settingschange.detail.ScreenAnimationViews
 import com.dmi.perfectreader.settingschange.detail.settingViewDetails
 import com.dmi.util.android.screen.ScreensView
 import com.dmi.util.android.view.*
@@ -117,8 +118,16 @@ fun settingChangeMainView(context: Context, model: SettingsChangeMain): View {
         text = "themeSettings"
     }
 
-    fun screenSettings() = TextView(context).apply {
-        text = "screenSettings"
+    fun screenSettings() = NestedScrollView(context).apply {
+        child(params(matchParent, wrapContent), LinearLayoutCompat(context).apply {
+            operator fun View.unaryPlus() = child(params(matchParent, wrapContent), this)
+
+            orientation = LinearLayoutCompat.VERTICAL
+
+            with(settings) {
+                +detailSetting(context, model, ScreenAnimationViews)
+            }
+        })
     }
 
     fun controlSettings() = TextView(context).apply {

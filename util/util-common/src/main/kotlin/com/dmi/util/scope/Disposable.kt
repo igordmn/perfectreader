@@ -35,3 +35,11 @@ infix fun Disposable.and(other: Disposable) = object : Disposable {
         this@and.dispose()
     }
 }
+
+fun <T : Disposable> T.use(action: (T) -> Unit) {
+    try {
+        action(this)
+    } finally {
+        dispose()
+    }
+}

@@ -126,6 +126,9 @@ class GLPageAnimation(
         multiplyMM(this, 0, projectionMatrix, 0, viewMatrix, 0)
     }
 
+    /**
+     * @progress from -1.0 to 1.0
+     */
     fun draw(texture: GLTexture, progress: Float) {
         program.bind {
             glEnableVertexAttribArray(positionHandle)

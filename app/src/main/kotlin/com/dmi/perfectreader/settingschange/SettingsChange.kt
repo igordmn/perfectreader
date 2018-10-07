@@ -53,5 +53,6 @@ class SettingsChangeMainState
 class SettingsChangeDetailsState(val content: SettingsChangeDetailsContent)
 
 enum class SettingsChangeDetailsContent {
-    FONT_FAMILY
+    FONT_FAMILY,
+    SCREEN_ANIMATION
 }
