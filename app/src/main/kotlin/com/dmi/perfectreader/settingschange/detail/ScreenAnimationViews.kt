@@ -29,7 +29,10 @@ fun screenAnimationListView(context: Context, model: SettingsChangeDetails) = Se
         context,
         context.main.settings.format::pageAnimationPath,
         context.main.resources.pageAnimations.map { it.toString() },
-        ::ScreenAnimationItemView
+        ::ScreenAnimationItemView,
+        onItemClick = {
+            model // todo show demo
+        }
 ).apply {
     layoutManager = GridAutoFitLayoutManager(context, columnWidth = dip(64 + 12 * 2))
     setPaddingRelative(dip(12), 0, dip(12), 0)

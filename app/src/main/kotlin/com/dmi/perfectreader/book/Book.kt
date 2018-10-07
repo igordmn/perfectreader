@@ -21,10 +21,7 @@ import com.dmi.perfectreader.book.layout.paragraph.hyphenator.TeXHyphenatorResol
 import com.dmi.perfectreader.book.layout.paragraph.hyphenator.TeXPatternsSource
 import com.dmi.perfectreader.book.layout.paragraph.liner.BreakLiner
 import com.dmi.perfectreader.book.layout.paragraph.metrics.PaintTextMetrics
-import com.dmi.perfectreader.book.page.AnimatedPages
-import com.dmi.perfectreader.book.page.LoadingPages
-import com.dmi.perfectreader.book.page.SmoothPageAnimator
-import com.dmi.perfectreader.book.page.VisiblePages
+import com.dmi.perfectreader.book.page.*
 import com.dmi.perfectreader.book.pagination.column.columns
 import com.dmi.perfectreader.book.pagination.page.pages
 import com.dmi.perfectreader.book.pagination.part.parts
@@ -102,20 +99,28 @@ class Book(
                     .pages(size, formatConfig)
             val locations = Locations(content, contentSize, formatConfig, settings)
             val loadingPages = LoadingPages(LoadingPages.pages(sequence, locations, userBook))
+            val animator = SmoothPageAnimator(seconds(0.4))
             val animatedPages = AnimatedPages(
                     size,
                     AnimatedPages.pages(loadingPages),
                     main.display,
-                    speedToTurnPage = dip2px(20F),
-                    animator = SmoothPageAnimator(seconds(0.4))
+                    animator,
+                    speedToTurnPage = dip2px(20F)
             )
-            Sized(locations, loadingPages, animatedPages)
+            val demoAnimatedPages = DemoAnimatedPages(
+                    size,
+                    DemoAnimatedPages.pages(loadingPages),
+                    main.display,
+                    animator
+            )
+            Sized(locations, loadingPages, animatedPages, demoAnimatedPages)
         }
     }
 
     private val locations: Locations get() = sized.locations
     private val loadingPages: LoadingPages get() = sized.loadingPages
     private val animatedPages: AnimatedPages get() = sized.animatedPages
+    private val demoAnimatedPages: DemoAnimatedPages get() = sized.demoAnimatedPages
 
     val selections: BookSelections? by scope.cached {
         val page = animatedPages.visible.left
@@ -127,32 +132,44 @@ class Book(
     }
 
     val location: Location get() = userBook.location
-    val isMoving: Boolean get() = animatedPages.isMoving
-    val pages: VisiblePages get() = animatedPages.visible
+    val isMoving: Boolean get() = animatedPages.isMoving || demoAnimatedPages.isMoving
+    val pages: VisiblePages get() = if (demoAnimatedPages.isMoving) demoAnimatedPages.visible else animatedPages.visible
 
     val percent: Double by scope.cached { locations.locationToPercent(location) }
     val pageNumber: Int by scope.cached {  locations.locationToPageNumber(location) }
     val numberOfPages: Int by scope.cached { locations.numberOfPages }
 
+    fun showDemoAnimation() = demoAnimatedPages.animate()
+
     fun goLocation(location: Location) {
         loadingPages.goLocation(location)
+        demoAnimatedPages.reset()
         animatedPages.reset()
     }
 
     fun goRelative(relativeIndex: Int) {
         loadingPages.goRelative(relativeIndex)
+        demoAnimatedPages.reset()
         animatedPages.reset()
     }
 
     fun goPercent(percent: Double) = goLocation(locations.percentToLocation(percent))
     fun goPageNumber(pageNumber: Int) = goLocation(locations.pageNumberToLocation(pageNumber))
 
-    fun animateRelative(relativeIndex: Int) = animatedPages.animateRelative(relativeIndex)
-    fun scroll() = animatedPages.scroll()
+    fun animateRelative(relativeIndex: Int) {
+        demoAnimatedPages.reset()
+        animatedPages.animateRelative(relativeIndex)
+    }
+
+    fun scroll(): PageScroller {
+        demoAnimatedPages.reset()
+        return animatedPages.scroll()
+    }
 
     private class Sized(
             val locations: Locations,
             val loadingPages: LoadingPages,
-            val animatedPages: AnimatedPages
-    ) : Disposable by loadingPages and animatedPages
+            val animatedPages: AnimatedPages,
+            val demoAnimatedPages: DemoAnimatedPages
+    ) : Disposable by loadingPages and animatedPages and demoAnimatedPages
 }

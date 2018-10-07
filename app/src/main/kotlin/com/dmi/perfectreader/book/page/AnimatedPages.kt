@@ -17,8 +17,8 @@ class AnimatedPages(
         val size: SizeF,
         private val pages: Pages,
         private val display: Display,
-        private val speedToTurnPage: Float, // pixels per second
-        private val animator: PageAnimator,
+        private val animator: PageAnimator, // pixels per second
+        private val speedToTurnPage: Float,
         scope: Scope = Scope()
 ) : Disposable by scope {
     companion object {

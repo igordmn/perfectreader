@@ -14,7 +14,7 @@ class SettingsChange(
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun Screen(state: Any): Screen = when (state) {
-        is SettingsChangeMainState -> SettingsChangeMain(this::backDetails, this::goDetails, state)
+        is SettingsChangeMainState -> SettingsChangeMain(this::backDetails, this::goDetails)
         is SettingsChangeDetailsState -> SettingsChangeDetails(this::backDetails, state)
         else -> unsupported()
     }
@@ -34,11 +34,10 @@ class SettingsChange(
 
 class SettingsChangeMain(
         val back: () -> Unit,
-        val goDetails: (content: SettingsChangeDetailsContent) -> Unit,
-        val state: SettingsChangeMainState
+        val goDetails: (content: SettingsChangeDetailsContent) -> Unit
 ) : Screen by Screen()
 
-class SettingsChangeDetails(val back: () -> Unit, val state: SettingsChangeDetailsState) : Screen by Screen() {
+class SettingsChangeDetails(val back: () -> Unit, state: SettingsChangeDetailsState) : Screen by Screen() {
     val content = state.content
 }
 

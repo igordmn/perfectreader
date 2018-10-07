@@ -36,7 +36,8 @@ fun fontFamilyListView(context: Context, model: SettingsChangeDetails) = Setting
         context.main.settings.format::textFontFamily,
         context.main.resources.fonts.familyNames,
         ::FontFamilyItemView,
-        model.back
+        onItemClick = {},
+        onItemSecondClick = model.back
 )
 
 class FontFamilyItemView(context: Context) : TextView(context), Bindable<String> {

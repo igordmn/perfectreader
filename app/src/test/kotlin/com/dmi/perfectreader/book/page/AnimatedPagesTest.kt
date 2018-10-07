@@ -81,7 +81,7 @@ class AnimatedPagesTest {
         val pages = TestPages(0..10)
         val animatedPages = AnimatedPages(
                 SizeF(100F, 100F), pages, display,
-                speedToTurnPage = 10F, animator = LinearPageAnimator(singlePageTime = 400)
+                animator = LinearPageAnimator(singlePageTime = 400), speedToTurnPage = 10F
         )
 
         animatedPages.isMoving shouldBe false
@@ -126,7 +126,7 @@ class AnimatedPagesTest {
         val pages = TestPages(0..10, 10..20, 20..30, 30..40)
         val animatedPages = AnimatedPages(
                 SizeF(100F, 100F), pages, display,
-                speedToTurnPage = 10F, animator = LinearPageAnimator(singlePageTime = 400)
+                animator = LinearPageAnimator(singlePageTime = 400), speedToTurnPage = 10F
         )
 
         display.currentTime shouldBe 0L
@@ -314,7 +314,7 @@ class AnimatedPagesTest {
         fun speed(singlePageTime: Nanos) = (size.width / singlePageTime.toSeconds()).toFloat()
         val animatedPages = AnimatedPages(
                 size, pages, display,
-                speedToTurnPage = speed(800), animator = LinearPageAnimator(singlePageTime = 400)
+                animator = LinearPageAnimator(singlePageTime = 400), speedToTurnPage = speed(800)
         )
 
         var scroller = animatedPages.scroll()

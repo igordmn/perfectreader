@@ -22,6 +22,7 @@ class SettingListView<T, V>(
         private val property: KMutableProperty0<T>,
         private val items: List<T>,
         private val createItemView: (Context) -> V,
+        private val onItemClick: () -> Unit = {},
         private val onItemSecondClick: () -> Unit = {}
 ) : RecyclerView(context, null, R.attr.verticalRecyclerViewStyle) where V : View, V : Bindable<T> {
     private var activatedPosition = max(0, items.indexOf(property.get()))
@@ -71,11 +72,13 @@ class SettingListView<T, V>(
             }
             val isChanged = activatedPosition != position
             activatedPosition = position
-            if (isChanged) {
+
+            if (isChanged)
                 property.set(items[position])
-            } else {
+
+            onItemClick()
+            if (!isChanged)
                 onItemSecondClick()
-            }
         }
     }
 }
