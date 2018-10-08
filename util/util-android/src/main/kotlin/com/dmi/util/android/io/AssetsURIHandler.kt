@@ -9,7 +9,7 @@ import java.net.URI
 class AssetsURIHandler(private val assetManager: AssetManager) : URIHandler {
     override fun open(uri: URI): InputStream = assetManager.open(uri.path.removePrefix("/"))
 
-    override fun children(uri: URI): List<URI> = assetManager.list(uri.path.removePrefix("/"))!!.map {
+    override fun children(uri: URI): List<URI> = assetManager.list(uri.path.removePrefix("/").removeSuffix("/"))!!.map {
         uri.resolve(it)
     }
 }
