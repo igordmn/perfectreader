@@ -22,7 +22,7 @@ class DemoAnimatedPages(
         private val display: Display,
         private val animator: PageAnimator,
         private val delayBeforeReverse: Nanos = seconds(0.2),
-        scope: Scope = Scope()
+        private val scope: Scope = Scope()
 ) : Disposable by scope {
     companion object {
         fun pages(pages: LoadingPages) = object : Pages {
@@ -47,17 +47,17 @@ class DemoAnimatedPages(
 
     private val afterAnimate = EmittableEvent()
 
-    init {
-        scope.launch {
-            while (true) {
-                if (!animation.isStill) {
-                    val time = display.waitVSyncTime()
-                    animation = animator.update(animation, time)
-                    if (animation.currentPage == 1.0)
-                        reverseAnimation()
-                } else {
-                    afterAnimate.wait()
-                }
+    private var job = job()
+
+    private fun job() = scope.launch {
+        while (true) {
+            if (!animation.isStill) {
+                val time = display.waitVSyncTime()
+                animation = animator.update(animation, time)
+                if (animation.currentPage == 1.0)
+                    reverseAnimation()
+            } else {
+                afterAnimate.wait()
             }
         }
     }
@@ -69,10 +69,14 @@ class DemoAnimatedPages(
     }
 
     fun reset() {
+        job.cancel()
+        job = job()
         animation = animation.reset()
     }
 
     fun animate() {
+        job.cancel()
+        job = job()
         animation = PageAnimation(display.currentTime, targetPage = 1.0)
         afterAnimate.emit()
     }
