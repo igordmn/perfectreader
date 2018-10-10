@@ -4,18 +4,19 @@ import com.dmi.util.android.opengl.GLSurfaceScopedView
 import org.jetbrains.anko.onAttachStateChangeListener
 import kotlin.coroutines.CoroutineContext
 
-private var glContext: CoroutineContext? = null
+@Suppress("ObjectPropertyName")
+private var _glContext: CoroutineContext? = null
 
 fun GLSurfaceScopedView.provideGLContext() {
     onAttachStateChangeListener {
         onViewAttachedToWindow {
-            glContext = coroutineContext
+            _glContext = glContext
         }
 
         onViewDetachedFromWindow {
-            glContext = null
+            _glContext = null
         }
     }
 }
 
-val currentGLContext: CoroutineContext get() = glContext!!
+val currentGLContext: CoroutineContext get() = _glContext!!

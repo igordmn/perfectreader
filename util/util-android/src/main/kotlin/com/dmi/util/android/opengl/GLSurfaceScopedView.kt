@@ -31,7 +31,7 @@ class GLSurfaceScopedView(
     private val eglContextClientVersion = 2
     private val glSurfaceView = GLSurfaceView(context)
 
-    val coroutineContext: CoroutineContext = object : CoroutineDispatcher() {
+    val glContext: CoroutineContext = object : CoroutineDispatcher() {
         override fun dispatch(context: CoroutineContext, block: Runnable) = glSurfaceView.queueEvent(block)
     }
 
@@ -57,12 +57,11 @@ class GLSurfaceScopedView(
         glSurfaceView.setEGLContextFactory(DefaultContextFactory())
         glSurfaceView.setRenderer(OriginalRenderer())
         glSurfaceView.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
-        scope = CopyScope(coroutineContext, Dispatchers.Main)
+        scope = CopyScope(glContext, Dispatchers.Main)
 
         glSurfaceView.queueEvent {
             // if we there, then scope already initialized
-
-            initThreadContext(coroutineContext)
+            initThreadContext(glContext)
             GlobalScope.launch(Dispatchers.Main + job) {
                 initUI()
             }
@@ -97,7 +96,7 @@ class GLSurfaceScopedView(
         job.cancel()
         scope.dispose()
         detached = true
-        coroutineContext.cancel()
+        glContext.cancel()
     }
 
     interface Renderer : Disposable {

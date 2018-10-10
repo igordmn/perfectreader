@@ -19,7 +19,6 @@ import java.nio.ByteOrder
 
 class PageAnimationPreviews(
         private val main: Main,
-        private val dip2px: (Float) -> Float = main.dip2px,
         private val uriHandler: ProtocolURIHandler = main.uriHandler
 ) {
     suspend fun of(path: URI, size: Size): Bitmap {
