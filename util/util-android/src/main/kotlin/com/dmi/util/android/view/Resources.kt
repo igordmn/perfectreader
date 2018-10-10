@@ -19,8 +19,10 @@ fun View.drawable(resID: Int, tintColor: Int): Drawable = drawable(resID).apply 
     DrawableCompat.setTint(this, tintColor)
 }
 
-fun View.string(resID: Int): String = context.getString(resID)
-fun View.string(resID: Int, vararg formatArgs: Any): String = context.getString(resID, *formatArgs)
+fun Context.string(resID: Int): String = getString(resID)
+fun Context.string(resID: Int, vararg formatArgs: Any): String = getString(resID, *formatArgs)
+fun View.string(resID: Int): String = context.string(resID)
+fun View.string(resID: Int, vararg formatArgs: Any): String = context.string(resID, *formatArgs)
 
 fun View.attr(value: Int): TypedValue {
     val ret = TypedValue()

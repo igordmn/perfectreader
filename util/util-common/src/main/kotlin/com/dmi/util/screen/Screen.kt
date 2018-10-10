@@ -12,3 +12,5 @@ fun Screen(scope: Scope) = object : Screen {
 fun Screen() = object : Screen {
     override fun dispose() = Unit
 }
+
+class StateScreen(val state: Any): Screen by Screen()

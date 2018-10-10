@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.settingschange
+package com.dmi.perfectreader.settingschange.common
 
 import android.content.Context
 import android.view.Gravity
@@ -10,7 +10,9 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.settingschange.detail.SettingsDetailViews
+import com.dmi.perfectreader.settingschange.SettingsChange
+import com.dmi.perfectreader.settingschange.SettingsChangeDetailsState
+import com.dmi.perfectreader.settingschange.chooseSettingValue
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.initOnce
 import org.jetbrains.anko.*
@@ -18,16 +20,17 @@ import kotlin.reflect.KMutableProperty0
 
 class PreviewView(val view: View, val withPadding: Boolean = true, val isClickable: Boolean = true)
 
-fun <M : SettingsChangeChild> detailSetting(
+fun detailsSetting(
         context: Context,
-        model: SettingsChangeChild,
-        details: SettingsDetailViews<M>,
+        model: SettingsChange,
+        preview: View,
+        section: SettingSections.Section,
         @StringRes
-        subtitleResId: Int? = null
+        subtitleRes: Int? = null
 ) : View {
-    return titleSetting(context, PreviewView(details.previewView(context)), details.titleResId, subtitleResId).apply {
+    return titleSetting(context, PreviewView(preview), section.nameRes, subtitleRes).apply {
         onClick {
-            model.goForward(details.initialState)
+            model.screens.goForward(SettingsChangeDetailsState(section.id))
         }
     }
 }
@@ -37,9 +40,9 @@ fun floatSetting(
         property: KMutableProperty0<Float>,
         values: FloatArray,
         @StringRes
-        titleResId: Int,
+        titleRes: Int,
         @StringRes
-        subtitleResId: Int? = null,
+        subtitleRes: Int? = null,
         decimalCount: Int = 2
 ): View {
     val min = values.first()
@@ -87,7 +90,7 @@ fun floatSetting(
         })
     }
 
-    return titleSetting(context, PreviewView(view, withPadding = false), titleResId, subtitleResId).apply {
+    return titleSetting(context, PreviewView(view, withPadding = false), titleRes, subtitleRes).apply {
         onClick {
             editNumber.requestFocus()
         }
@@ -98,9 +101,9 @@ fun booleanSetting(
         context: Context,
         property: KMutableProperty0<Boolean>,
         @StringRes
-        titleResId: Int,
+        titleRes: Int,
         @StringRes
-        subtitleResId: Int? = null
+        subtitleRes: Int? = null
 ): View {
     val switch = SwitchCompat(context).apply {
         isClickable = false
@@ -111,7 +114,7 @@ fun booleanSetting(
         }
     }
 
-    return titleSetting(context, PreviewView(switch), titleResId, subtitleResId).apply {
+    return titleSetting(context, PreviewView(switch), titleRes, subtitleRes).apply {
         onClick {
             switch.performClick()
         }
@@ -122,9 +125,9 @@ fun titleSetting(
         context: Context,
         previewView: PreviewView,
         @StringRes
-        titleResId: Int,
+        titleRes: Int,
         @StringRes
-        subtitleResId: Int? = null
+        subtitleRes: Int? = null
 ) = LinearLayoutCompat(context).apply {
     orientation = LinearLayoutCompat.HORIZONTAL
     setPadding(dip(16), 0, if (previewView.withPadding) dip(16) else 0, 0)
@@ -135,13 +138,13 @@ fun titleSetting(
         child(params(wrapContent, wrapContent), TextView(context).apply {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
             textColor = color(R.color.onBackground)
-            text = string(titleResId)
+            text = string(titleRes)
         })
-        if (subtitleResId != null) {
+        if (subtitleRes != null) {
             child(params(wrapContent, wrapContent), TextView(context).apply {
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
                 textColor = color(R.color.onBackground).withTransparency(0.60)
-                text = string(subtitleResId)
+                text = string(subtitleRes)
             })
         }
     })

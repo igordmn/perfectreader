@@ -1,11 +1,9 @@
-package com.dmi.perfectreader.settingschange.detail
+package com.dmi.perfectreader.settingschange.custom
 
 import android.content.Context
 import android.widget.ImageView
-import com.dmi.perfectreader.R
+import com.dmi.perfectreader.book.Book
 import com.dmi.perfectreader.main
-import com.dmi.perfectreader.settingschange.SettingsChangeScreenAnimation
-import com.dmi.perfectreader.settingschange.SettingsChangeScreenAnimationState
 import com.dmi.perfectreader.settingschange.common.SettingListView
 import com.dmi.util.android.view.Bindable
 import com.dmi.util.android.view.GridAutoFitLayoutManager
@@ -17,20 +15,12 @@ import org.jetbrains.anko.padding
 import java.net.URI
 import kotlin.reflect.KProperty0
 
-val ScreenAnimationViews = SettingsDetailViews(
-        R.string.settingsChangeScreenAnimation,
-        SettingsChangeScreenAnimationState(),
-        { ScreenAnimationPreviewView(it) },
-        ::screenAnimationListView
-)
-
-@Suppress("UNUSED_PARAMETER")
-fun screenAnimationListView(context: Context, model: SettingsChangeScreenAnimation) = SettingListView(
+fun screenAnimationDetails(context: Context, book: Book) = SettingListView(
         context,
         context.main.settings.format::pageAnimationPath,
         context.main.resources.pageAnimations.map { it.toString() },
         ::ScreenAnimationItemView,
-        onItemClick = model::showDemo
+        onItemClick = book::showDemoAnimation
 ).apply {
     layoutManager = GridAutoFitLayoutManager(context, columnWidth = dip(64 + 12 * 2))
     setPaddingRelative(dip(12), 0, dip(12), 0)

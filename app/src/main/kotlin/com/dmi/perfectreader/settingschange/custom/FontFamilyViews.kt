@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.settingschange.detail
+package com.dmi.perfectreader.settingschange.custom
 
 import android.content.Context
 import android.graphics.Typeface
@@ -10,8 +10,7 @@ import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.common.Nano
 import com.dmi.perfectreader.main
-import com.dmi.perfectreader.settingschange.SettingsChangeChild
-import com.dmi.perfectreader.settingschange.SettingsChangeFontFamilyState
+import com.dmi.perfectreader.settingschange.SettingsChange
 import com.dmi.perfectreader.settingschange.common.SettingListView
 import com.dmi.util.android.font.AndroidFont
 import com.dmi.util.android.view.*
@@ -24,20 +23,13 @@ import org.jetbrains.anko.singleLine
 import org.jetbrains.anko.textColor
 import kotlin.reflect.KProperty0
 
-val FontFamilyViews = SettingsDetailViews(
-        R.string.settingsChangeFontFamily,
-        SettingsChangeFontFamilyState(),
-        { FontFamilyPreviewView(it) },
-        ::fontFamilyListView
-)
-
-fun fontFamilyListView(context: Context, model: SettingsChangeChild) = SettingListView(
+fun fontFamilyDetails(context: Context, model: SettingsChange) = SettingListView(
         context,
         context.main.settings.format::textFontFamily,
         context.main.resources.fonts.familyNames,
         ::FontFamilyItemView,
         onItemClick = {},
-        onItemSecondClick = model::goBackward
+        onItemSecondClick = model.screens::goBackward
 )
 
 class FontFamilyItemView(context: Context) : TextView(context), Bindable<String> {
