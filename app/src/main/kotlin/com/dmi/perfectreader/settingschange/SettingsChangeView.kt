@@ -13,6 +13,7 @@ import com.dmi.perfectreader.book.content.obj.param.TextAlign
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.settingschange.common.*
 import com.dmi.perfectreader.settingschange.custom.*
+import com.dmi.util.android.opengl.GLContext
 import com.dmi.util.android.screen.ScreensView
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.unsupported
@@ -21,7 +22,7 @@ import com.dmi.util.screen.StateScreen
 import com.google.android.material.tabs.TabLayout
 import org.jetbrains.anko.*
 
-fun settingsChangeView(context: Context, model: SettingsChange): View {
+fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLContext): View {
     val settings = context.main.settings
     val settingsExt = object {
         val format = object {
@@ -92,11 +93,11 @@ fun settingsChangeView(context: Context, model: SettingsChange): View {
 
         val screen = object : Section(R.string.settingsChangeScreen) {
             val animation = object : Section(R.string.settingsChangeScreenAnimation) {
-                override fun view() = screenAnimationDetails(context, model.reader.book)
+                override fun view() = screenAnimationDetails(context, model.reader.book, glContext)
             }
 
             override fun view() = vertical(
-                    detailsSetting(context, model, ScreenAnimationPreviewView(context), animation)
+                    detailsSetting(context, model, ScreenAnimationPreviewView(context, glContext), animation)
             )
         }
 

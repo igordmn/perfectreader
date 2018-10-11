@@ -6,19 +6,20 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.opengl.GLES20.*
 import com.dmi.perfectreader.Main
+import com.dmi.util.android.opengl.GLContext
 import com.dmi.util.android.opengl.GLFrameBuffer
 import com.dmi.util.android.opengl.GLTexture
 import com.dmi.util.android.opengl.bind
 import com.dmi.util.graphic.Size
 import com.dmi.util.io.ProtocolURIHandler
 import com.dmi.util.scope.resourceScope
-import kotlinx.coroutines.withContext
 import java.net.URI
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 class PageAnimationPreviews(
         private val main: Main,
+        private val glContext: GLContext,
         private val uriHandler: ProtocolURIHandler = main.uriHandler
 ) {
     suspend fun of(path: URI, size: Size): Bitmap {
@@ -26,12 +27,12 @@ class PageAnimationPreviews(
 
         val pixelBuffer = ByteBuffer.allocateDirect(size.width * size.height * 4).order(ByteOrder.nativeOrder())
 
-        withContext(currentGLContext) {
+        glContext.perform {
             resourceScope {
+                val animation = glPageAnimation(uriHandler, path, size).use()
                 val pageTexture = GLTexture(size).apply { refreshBy(pageBitmap) }.use()
                 val previewTexture = GLTexture(size).use()
                 val frameBuffer = GLFrameBuffer().apply { bindTo(previewTexture) }.use()
-                val animation = glPageAnimation(uriHandler, path, size).use()
 
                 glViewport(0, 0, size.width, size.height)
 

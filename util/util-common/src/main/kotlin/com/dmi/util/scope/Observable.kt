@@ -1,6 +1,6 @@
 package com.dmi.util.scope
 
-import com.dmi.util.coroutine.wrap
+import com.dmi.util.coroutine.wrapContinuation
 import com.dmi.util.lang.ReadWriteProperty2
 import com.dmi.util.lang.threadLocal
 import com.dmi.util.lang.value
@@ -40,7 +40,7 @@ private class CallContext {
             afterBlock()
         }
 
-        return GlobalScope.launch(context.wrap(::wrapBlock), block = action)
+        return GlobalScope.launch(context.wrapContinuation(::wrapBlock), block = action)
     }
 
 }

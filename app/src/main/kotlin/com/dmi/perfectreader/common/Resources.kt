@@ -4,13 +4,14 @@ import com.dmi.perfectreader.Main
 import com.dmi.perfectreader.book.gl.PageAnimationPreviews
 import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.android.font.androidFontsCache
+import com.dmi.util.android.opengl.GLContext
 import com.dmi.util.font.Fonts
 import com.dmi.util.io.ProtocolURIHandler
 import com.dmi.util.log.Log
 import java.net.URI
 
 class Resources(
-        main: Main,
+        private val main: Main,
         log: Log = main.log,
         private val settings: Settings = main.settings,
         private val protocols: Protocols = main.protocols,
@@ -26,5 +27,5 @@ class Resources(
 
     val pageAnimations: List<URI> get() = uriHandler.children(URI("assets:///resources/animations/"))
 
-    val pageAnimationPreviews = PageAnimationPreviews(main)
+    fun pageAnimationPreviews(glContext: GLContext) = PageAnimationPreviews(main, glContext)
 }

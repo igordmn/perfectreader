@@ -36,10 +36,6 @@ class GLBook(
     private val pageBackground: GLBackground by scope.observableDisposable(GLBackground(size, quad, uriHandler, model))
     private val pages by scope.observableDisposable(GLPages(size, quad, model, pageRenderer))
 
-    init {
-        scope.observableDisposable(model)
-    }
-
     fun draw() {
         glViewport(0, 0, size.width, size.height)
         glClearColor(1F, 1F, 1F, 1F)

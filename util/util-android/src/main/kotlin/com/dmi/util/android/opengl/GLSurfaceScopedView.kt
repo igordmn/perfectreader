@@ -4,23 +4,38 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.opengl.EGL14.EGL_NO_CONTEXT
+import android.opengl.EGL14.eglGetCurrentContext
 import android.opengl.GLES20.*
 import android.opengl.GLSurfaceView
 import android.widget.FrameLayout
 import com.dmi.util.coroutine.initThreadContext
+import com.dmi.util.coroutine.wrapContinuation
 import com.dmi.util.graphic.Size
+import com.dmi.util.lang.doWhileFail
 import com.dmi.util.log.Log
 import com.dmi.util.scope.CopyScope
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.onchange
 import kotlinx.coroutines.*
 import kotlinx.coroutines.android.Main
+import java.util.concurrent.ConcurrentLinkedQueue
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.egl.EGLContext
 import javax.microedition.khronos.egl.EGLDisplay
 import javax.microedition.khronos.opengles.GL10
 import kotlin.coroutines.CoroutineContext
+
+interface GLContext {
+    /**
+     * Perform action in gl context in separate gl thread.
+     * If gl context will be lost during perform, action will be restarted.
+     */
+    suspend fun <T> perform(action: suspend () -> T): T
+}
+
+private class NeedGLTaskRestartException: RuntimeException()
 
 @SuppressLint("ViewConstructor")
 class GLSurfaceScopedView(
@@ -31,8 +46,40 @@ class GLSurfaceScopedView(
     private val eglContextClientVersion = 2
     private val glSurfaceView = GLSurfaceView(context)
 
-    val glContext: CoroutineContext = object : CoroutineDispatcher() {
+    /**
+     * Coroutine context for thread in which later wil be created gl context.
+     * All drawing operations and init graphics perform in this thread
+     */
+    private val threadContext: CoroutineContext = object : CoroutineDispatcher() {
         override fun dispatch(context: CoroutineContext, block: Runnable) = glSurfaceView.queueEvent(block)
+    }
+
+    /**
+     * Similar to threadContext, but tasks will be ran only after gl context creation
+     */
+    private val drawContext: CoroutineContext = object : CoroutineDispatcher() {
+        override fun dispatch(context: CoroutineContext, block: Runnable) {
+            drawTasks.offer(block)
+            glSurfaceView.requestRender()
+        }
+    }
+
+    private val drawTasks = ConcurrentLinkedQueue<Runnable>()
+
+    val glContext: GLContext = object : GLContext {
+        override suspend fun <T> perform(action: suspend () -> T): T {
+            fun wrapBlock(block: () -> Unit) {
+                if (eglGetCurrentContext() == EGL_NO_CONTEXT)
+                    throw NeedGLTaskRestartException()
+                block()
+            }
+
+            return withContext(drawContext.wrapContinuation(::wrapBlock)) {
+                doWhileFail<NeedGLTaskRestartException, T> {
+                    action()
+                }
+            }
+        }
     }
 
     private var scope: CopyScope
@@ -57,11 +104,11 @@ class GLSurfaceScopedView(
         glSurfaceView.setEGLContextFactory(DefaultContextFactory())
         glSurfaceView.setRenderer(OriginalRenderer())
         glSurfaceView.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
-        scope = CopyScope(glContext, Dispatchers.Main)
+        scope = CopyScope(threadContext, Dispatchers.Main)
 
         glSurfaceView.queueEvent {
             // if we there, then scope already initialized
-            initThreadContext(glContext)
+            initThreadContext(threadContext)
             GlobalScope.launch(Dispatchers.Main + job) {
                 initUI()
             }
@@ -96,7 +143,7 @@ class GLSurfaceScopedView(
         job.cancel()
         scope.dispose()
         detached = true
-        glContext.cancel()
+        threadContext.cancel()
     }
 
     interface Renderer : Disposable {
@@ -126,6 +173,12 @@ class GLSurfaceScopedView(
         }
 
         override fun onDrawFrame(gl: GL10) {
+            var task = drawTasks.poll()
+            while (task != null) {
+                task.run()
+                task = drawTasks.poll()
+            }
+
             onchange {
                 renderer?.draw()
             }.subscribeOnce {

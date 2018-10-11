@@ -17,7 +17,7 @@ fun initThreadContext(threadContext: CoroutineContext) {
     threadContextInit = true
 }
 
-fun CoroutineContext.wrap(wrapBlock: (() -> Unit) -> Unit): CoroutineContext {
+fun CoroutineContext.wrapContinuation(wrapBlock: (() -> Unit) -> Unit): CoroutineContext {
     class WrapContinuation<T>(val cont: Continuation<T>) : Continuation<T> by cont {
         override fun resumeWith(result: Result<T>) = wrapBlock {
             cont.resumeWith(result)
@@ -27,7 +27,7 @@ fun CoroutineContext.wrap(wrapBlock: (() -> Unit) -> Unit): CoroutineContext {
     return this + object : AbstractCoroutineContextElement(ContinuationInterceptor), ContinuationInterceptor {
         override fun <T> interceptContinuation(continuation: Continuation<T>): Continuation<T> {
             val wrapped = WrapContinuation(continuation)
-            return this@wrap[ContinuationInterceptor]?.interceptContinuation(wrapped) ?: wrapped
+            return this@wrapContinuation[ContinuationInterceptor]?.interceptContinuation(wrapped) ?: wrapped
         }
     }
 }

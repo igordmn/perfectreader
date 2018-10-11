@@ -22,13 +22,14 @@ import org.jetbrains.anko.padding
 import org.jetbrains.anko.wrapContent
 
 fun readerView(context: Context, model: Reader) = FrameLayout(context).apply {
+    val bookView = bookView(context, model)
+
     fun popupView(context: Context, popup: Any) = when (popup) {
         is Menu -> menuView(context, popup, model.book)
-        is SettingsChange -> settingsChangeView(context, popup)
+        is SettingsChange -> settingsChangeView(context, popup, bookView.glContext)
         else -> unsupported()
     }
-
-    child(params(matchParent, matchParent), bookView(context, model))
+    child(params(matchParent, matchParent), bookView)
     child(params(matchParent, matchParent), controlView(context, model.control))
     bindChild(params(matchParent, matchParent), model::selection, ::selectionView).apply {
         layoutTransition = fadeTransition(300)

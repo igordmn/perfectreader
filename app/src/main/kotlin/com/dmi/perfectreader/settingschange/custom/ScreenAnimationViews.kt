@@ -5,6 +5,7 @@ import android.widget.ImageView
 import com.dmi.perfectreader.book.Book
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.settingschange.common.SettingListView
+import com.dmi.util.android.opengl.GLContext
 import com.dmi.util.android.view.Bindable
 import com.dmi.util.android.view.GridAutoFitLayoutManager
 import com.dmi.util.android.view.ViewLoad
@@ -15,19 +16,23 @@ import org.jetbrains.anko.padding
 import java.net.URI
 import kotlin.reflect.KProperty0
 
-fun screenAnimationDetails(context: Context, book: Book) = SettingListView(
-        context,
-        context.main.settings.format::pageAnimationPath,
-        context.main.resources.pageAnimations.map { it.toString() },
-        ::ScreenAnimationItemView,
-        onItemClick = book::showDemoAnimation
-).apply {
-    layoutManager = GridAutoFitLayoutManager(context, columnWidth = dip(64 + 12 * 2))
-    setPaddingRelative(dip(12), 0, dip(12), 0)
+fun screenAnimationDetails(context: Context, book: Book, glContext: GLContext): SettingListView<String, ScreenAnimationItemView> {
+    fun itemView(context: Context) = ScreenAnimationItemView(context, glContext)
+
+    return SettingListView(
+            context,
+            context.main.settings.format::pageAnimationPath,
+            context.main.resources.pageAnimations.map { it.toString() },
+            ::itemView,
+            onItemClick = book::showDemoAnimation
+    ).apply {
+        layoutManager = GridAutoFitLayoutManager(context, columnWidth = dip(64 + 12 * 2))
+        setPaddingRelative(dip(12), 0, dip(12), 0)
+    }
 }
 
-class ScreenAnimationItemView(context: Context) : ImageView(context), Bindable<String> {
-    private val previews = context.main.resources.pageAnimationPreviews
+class ScreenAnimationItemView(context: Context, glContext: GLContext) : ImageView(context), Bindable<String> {
+    private val previews = context.main.resources.pageAnimationPreviews(glContext)
     private val load = ViewLoad(this)
     private val previewSize = Size(dip(64), dip(64 * 4 / 3F))
 
@@ -49,9 +54,10 @@ class ScreenAnimationItemView(context: Context) : ImageView(context), Bindable<S
 
 class ScreenAnimationPreviewView(
         context: Context,
+        glContext: GLContext,
         model: KProperty0<String> = context.main.settings.format::pageAnimationPath
 ) : ImageView(context) {
-    private val previews = context.main.resources.pageAnimationPreviews
+    private val previews = context.main.resources.pageAnimationPreviews(glContext)
     private val load = ViewLoad(this)
     private val previewSize = Size(dip(24), dip(24 * 4 / 3F))
 
