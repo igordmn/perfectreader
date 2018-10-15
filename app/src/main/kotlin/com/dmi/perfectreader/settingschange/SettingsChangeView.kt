@@ -123,7 +123,15 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
             }
 
             val backgroundColor = object : Place() {
-                override fun view() = themeBackgroundColorDetails(context, model)
+                val hex = object : Place() {
+                    override fun view() = DialogView(context) {
+                        colorHEXDialog(context, model, settings.format::pageBackgroundColor)
+                    }
+                }
+
+                override fun view() = colorDetails(
+                        context, model, R.string.settingsChangeThemeBackgroundColor, settings.format::pageBackgroundColor, hex
+                )
             }
 
             override fun view() = vertical(
@@ -139,7 +147,7 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
                     ) visibleIf { settings.format.pageBackgroundIsImage },
                     detailsSetting(
                             context, model,
-                            themeBackgroundColorPreview(context), backgroundColor, R.string.settingsChangeThemeBackgroundColor
+                            colorPreview(context, settings.format::pageBackgroundColor), backgroundColor, R.string.settingsChangeThemeBackgroundColor
                     ) visibleIf { !settings.format.pageBackgroundIsImage }
             )
         }

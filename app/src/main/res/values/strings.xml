@@ -131,6 +131,7 @@
     <string name="settingsChangeThemeTextShadowColor">Цвет</string>
     <string name="settingsChangeThemeBackground">Фон</string>
     <string name="settingsChangeThemeBackgroundColor">Цвет</string>
+    <string name="settingsChangeColorHEX">HEX</string>
     <string name="settingsChangeThemeBackgroundPicture">Картинка</string>
     <string name="settingsChangeThemeBackgroundContentAwareResize">Масштабирование с учетом содержимого</string>
     <string name="settingsChangeThemeSelection">Выделение</string>

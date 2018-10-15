@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.settingschange.common
 
 import android.content.Context
+import android.view.Menu
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -16,7 +17,8 @@ fun details(
         context: Context,
         model: SettingsChange,
         @StringRes titleRes: Int,
-        content: View
+        content: View,
+        configureMenu: (Menu) -> Unit = {}
 ) = LinearLayoutExt(context).apply {
     orientation = LinearLayoutCompat.VERTICAL
     backgroundColor = color(R.color.background)
@@ -27,6 +29,7 @@ fun details(
         navigationIcon = drawable(R.drawable.ic_arrow_back)
         this.title = string(titleRes)
         popupTheme = R.style.Theme_AppCompat_Light
+        configureMenu(menu)
 
         setNavigationOnClickListener {
             model.screens.goBackward()
