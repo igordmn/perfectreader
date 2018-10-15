@@ -13,6 +13,7 @@ import com.dmi.perfectreader.main
 import com.dmi.perfectreader.settingschange.SettingsChange
 import com.dmi.perfectreader.settingschange.common.PreviewView
 import com.dmi.perfectreader.settingschange.common.SettingListView
+import com.dmi.perfectreader.settingschange.common.details
 import com.dmi.util.android.font.AndroidFont
 import com.dmi.util.android.view.*
 import com.dmi.util.font.Fonts
@@ -24,13 +25,16 @@ import org.jetbrains.anko.singleLine
 import org.jetbrains.anko.textColor
 import kotlin.reflect.KProperty0
 
-fun themeBackgroundColorDetails(context: Context, model: SettingsChange) = SettingListView(
-        context,
-        context.main.settings.format::textFontFamily,
-        context.main.resources.fonts.familyNames,
-        ::ThemeBackgroundColorItemView,
-        onItemClick = {},
-        onItemSecondClick = model.screens::goBackward
+fun themeBackgroundColorDetails(context: Context, model: SettingsChange) = details(
+        context, model, R.string.settingsChangeThemeBackgroundColor,
+        SettingListView(
+                context,
+                context.main.settings.format::textFontFamily,
+                context.main.resources.fonts.familyNames,
+                ::ThemeBackgroundColorItemView,
+                onItemClick = {},
+                onItemSecondClick = model.screens::goBackward
+        )
 )
 
 class ThemeBackgroundColorItemView(context: Context) : TextView(context), Bindable<String> {

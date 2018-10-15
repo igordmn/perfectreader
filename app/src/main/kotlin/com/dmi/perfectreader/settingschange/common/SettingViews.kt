@@ -32,9 +32,11 @@ fun detailsSetting(
         preview: PreviewView,
         place: Places.Place,
         @StringRes
+        titleRes: Int,
+        @StringRes
         subtitleRes: Int? = null
 ) : View {
-    return titleSetting(context, preview, place.nameRes, subtitleRes).apply {
+    return titleSetting(context, preview, titleRes, subtitleRes).apply {
         onClick {
             model.screens.goForward(place.id)
         }
@@ -47,9 +49,11 @@ fun popupSetting(
         preview: PreviewView,
         place: Places.Place,
         @StringRes
+        titleRes: Int,
+        @StringRes
         subtitleRes: Int? = null
 ) : View {
-    return titleSetting(context, preview, place.nameRes, subtitleRes).apply {
+    return titleSetting(context, preview, titleRes, subtitleRes).apply {
         onClick {
             model.popup = place.id
         }

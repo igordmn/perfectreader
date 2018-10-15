@@ -1,19 +1,18 @@
 package com.dmi.perfectreader.settingschange.common
 
 import android.view.View
-import androidx.annotation.StringRes
 
 open class Places {
-    private val sections = ArrayList<Place>()
+    private val places = ArrayList<Place>()
 
-    operator fun get(id: Int): Place = sections[id]
+    operator fun get(id: Int): Place = places[id]
 
     @Suppress("LeakingThis")
-    abstract inner class Place(@StringRes val nameRes: Int) {
-        val id: Int = sections.size
+    abstract inner class Place {
+        val id: Int = places.size
 
         init {
-            sections.add(this)
+            places.add(this)
         }
 
         abstract fun view(): View

@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.viewpager.widget.ViewPager
@@ -63,13 +62,13 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
     }
 
     val places = object : Places() {
-        val font = object : Place(R.string.settingsChangeFont) {
-            val family = object : Place(R.string.settingsChangeFontFamily) {
+        val font = object : Place() {
+            val family = object : Place() {
                 override fun view() = fontFamilyDetails(context, model)
             }
 
             override fun view() = vertical(
-                    detailsSetting(context, model, fontFamilyPreview(context), family),
+                    detailsSetting(context, model, fontFamilyPreview(context), family, R.string.settingsChangeFontFamily),
                     titleSetting(context, fontStyleView(
                             context,
                             settings.format::textFontIsBold, settings.format::textFontIsItalic,
@@ -84,7 +83,7 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
             )
         }
 
-        val format = object : Place(R.string.settingsChangeFormat) {
+        val format = object : Place() {
             override fun view() = vertical(
                     floatSetting(context, settingsExt.format::padding, SettingValues.PARAGRAPH_PADDING, R.string.settingsChangeFormatPadding),
                     floatSetting(context, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER, R.string.settingsChangeFormatLineHeight),
@@ -97,8 +96,8 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
             )
         }
 
-        val theme = object : Place(R.string.settingsChangeTheme) {
-            val backgroundIsPicture = object : Place(R.string.settingsChangeThemeBackground) {
+        val theme = object : Place() {
+            val backgroundIsPicture = object : Place() {
                 private val values = arrayOf(false, true)
                 private val names = values.map(::format).toTypedArray()
 
@@ -110,7 +109,7 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
                 override fun view() = DialogView(context) {
                     val current = values.indexOf(settings.format.pageBackgroundIsImage)
                     AlertDialog.Builder(context)
-                            .setTitle(nameRes)
+                            .setTitle(R.string.settingsChangeThemeBackground)
                             .setSingleChoiceItems(names, current) { _, which ->
                                 settings.format.pageBackgroundIsImage = values[which]
                                 model.popup = null
@@ -119,32 +118,43 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
                 }
             }
 
-            val backgroundPicture = object : Place(R.string.settingsChangeThemeBackgroundPicture) {
+            val backgroundPicture = object : Place() {
                 override fun view() = themeBackgroundPictureDetails(context, model)
             }
 
-            val backgroundColor = object : Place(R.string.settingsChangeThemeBackgroundColor) {
+            val backgroundColor = object : Place() {
                 override fun view() = themeBackgroundColorDetails(context, model)
             }
 
             override fun view() = vertical(
-                    popupSetting(context, model, propertyPreview(context, settings.format::pageBackgroundIsImage, backgroundIsPicture::format), backgroundIsPicture),
-                    detailsSetting(context, model, themeBackgroundPicturePreview(context), backgroundPicture) visibleIf { settings.format.pageBackgroundIsImage },
-                    detailsSetting(context, model, themeBackgroundColorPreview(context), backgroundColor) visibleIf { !settings.format.pageBackgroundIsImage }
+                    popupSetting(
+                            context, model,
+                            propertyPreview(context, settings.format::pageBackgroundIsImage, backgroundIsPicture::format),
+                            backgroundIsPicture,
+                            R.string.settingsChangeThemeBackground
+                    ),
+                    detailsSetting(
+                            context, model,
+                            themeBackgroundPicturePreview(context), backgroundPicture, R.string.settingsChangeThemeBackgroundPicture
+                    ) visibleIf { settings.format.pageBackgroundIsImage },
+                    detailsSetting(
+                            context, model,
+                            themeBackgroundColorPreview(context), backgroundColor, R.string.settingsChangeThemeBackgroundColor
+                    ) visibleIf { !settings.format.pageBackgroundIsImage }
             )
         }
 
-        val screen = object : Place(R.string.settingsChangeScreen) {
-            val animation = object : Place(R.string.settingsChangeScreenAnimation) {
-                override fun view() = screenAnimationDetails(context, model.reader.book, glContext)
+        val screen = object : Place() {
+            val animation = object : Place() {
+                override fun view() = screenAnimationDetails(context, model, model.reader.book, glContext)
             }
 
             override fun view() = vertical(
-                    detailsSetting(context, model, screenAnimationPreview(context, glContext), animation)
+                    detailsSetting(context, model, screenAnimationPreview(context, glContext), animation, R.string.settingsChangeScreenAnimation)
             )
         }
 
-        val control = object : Place(R.string.settingsChangeControl) {
+        val control = object : Place() {
             override fun view() = vertical()
         }
     }
@@ -158,40 +168,21 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
 
         child(params(matchParent, matchParent, weight = 1F), ViewPager(context).apply {
             adapter = ViewPagerAdapter(
-                    string(places.font.nameRes) to places.font::view,
-                    string(places.format.nameRes) to places.format::view,
-                    string(places.theme.nameRes) to places.theme::view,
-                    string(places.screen.nameRes) to places.screen::view,
-                    string(places.control.nameRes) to places.control::view
+                    string(R.string.settingsChangeFont) to places.font::view,
+                    string(R.string.settingsChangeFormat) to places.format::view,
+                    string(R.string.settingsChangeTheme) to places.theme::view,
+                    string(R.string.settingsChangeScreen) to places.screen::view,
+                    string(R.string.settingsChangeControl) to places.control::view
             )
             tabLayout.setupWithViewPager(this)
         })
-    }
-
-    fun details(place: Places.Place) = LinearLayoutExt(context).apply {
-        orientation = LinearLayoutCompat.VERTICAL
-        backgroundColor = color(R.color.background)
-
-        child(params(matchParent, wrapContent, weight = 0F), Toolbar(context).apply {
-            setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
-            backgroundColor = color(android.R.color.transparent)
-            navigationIcon = drawable(R.drawable.ic_arrow_back)
-            this.title = string(place.nameRes)
-            popupTheme = R.style.Theme_AppCompat_Light
-
-            setNavigationOnClickListener {
-                model.screens.goBackward()
-            }
-        })
-
-        child(params(matchParent, matchParent, weight = 1F), place.view())
     }
 
     fun screenView(screen: Screen): View {
         val state = (screen as StateScreen).state
         return when (state) {
             is SettingsChangeMainState -> main()
-            is Id -> details(places[state])
+            is Id -> places[state].view()
             else -> unsupported(state)
         }
     }

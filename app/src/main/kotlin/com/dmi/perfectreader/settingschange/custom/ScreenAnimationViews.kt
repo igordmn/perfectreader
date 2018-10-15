@@ -1,11 +1,15 @@
 package com.dmi.perfectreader.settingschange.custom
 
 import android.content.Context
+import android.view.View
 import android.widget.ImageView
+import com.dmi.perfectreader.R
 import com.dmi.perfectreader.book.Book
 import com.dmi.perfectreader.main
+import com.dmi.perfectreader.settingschange.SettingsChange
 import com.dmi.perfectreader.settingschange.common.PreviewView
 import com.dmi.perfectreader.settingschange.common.SettingListView
+import com.dmi.perfectreader.settingschange.common.details
 import com.dmi.util.android.opengl.GLContext
 import com.dmi.util.android.view.Bindable
 import com.dmi.util.android.view.GridAutoFitLayoutManager
@@ -17,19 +21,27 @@ import org.jetbrains.anko.padding
 import java.net.URI
 import kotlin.reflect.KProperty0
 
-fun screenAnimationDetails(context: Context, book: Book, glContext: GLContext): SettingListView<String, ScreenAnimationItemView> {
+fun screenAnimationDetails(
+        context: Context,
+        model: SettingsChange,
+        book: Book,
+        glContext: GLContext
+): View {
     fun itemView(context: Context) = ScreenAnimationItemView(context, glContext)
 
-    return SettingListView(
-            context,
-            context.main.settings.format::pageAnimationPath,
-            context.main.resources.pageAnimations.map { it.toString() },
-            ::itemView,
-            onItemClick = book::showDemoAnimation
-    ).apply {
-        layoutManager = GridAutoFitLayoutManager(context, columnWidth = dip(64 + 12 * 2))
-        setPaddingRelative(dip(12), 0, dip(12), 0)
-    }
+    return details(
+            context, model, R.string.settingsChangeScreenAnimation,
+            SettingListView(
+                    context,
+                    context.main.settings.format::pageAnimationPath,
+                    context.main.resources.pageAnimations.map { it.toString() },
+                    ::itemView,
+                    onItemClick = book::showDemoAnimation
+            ).apply {
+                layoutManager = GridAutoFitLayoutManager(context, columnWidth = dip(64 + 12 * 2))
+                setPaddingRelative(dip(12), 0, dip(12), 0)
+            }
+    )
 }
 
 class ScreenAnimationItemView(context: Context, glContext: GLContext) : ImageView(context), Bindable<String> {
