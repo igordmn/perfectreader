@@ -39,10 +39,10 @@ class FormatConfig(
         val textSubpixelPositioning: Boolean,
 
         val textShadowEnabled: Boolean,
-        val textShadowOffsetXDip: Float,
-        val textShadowOffsetYDip: Float,
-        val textShadowStrokeWidthDip: Float,
-        val textShadowBlurRadiusDip: Float,
+        val textShadowAngleDegrees: Float,
+        val textShadowOffsetEm: Float,
+        val textShadowSizeEm: Float,
+        val textShadowBlurEm: Float,
         val textShadowColor: Color,
 
         val selectionColor: Color,
@@ -90,10 +90,10 @@ fun appFormatConfig(context: Context, settings: Settings, fonts: Fonts) = Format
         textSubpixelPositioning = settings.format.textSubpixelPositioning,
 
         textShadowEnabled = settings.format.textShadowEnabled,
-        textShadowOffsetXDip = settings.format.textShadowOffsetXDip,
-        textShadowOffsetYDip = settings.format.textShadowOffsetYDip,
-        textShadowStrokeWidthDip = settings.format.textShadowStrokeWidthDip,
-        textShadowBlurRadiusDip = settings.format.textShadowBlurRadiusDip,
+        textShadowAngleDegrees = settings.format.textShadowAngleDegrees,
+        textShadowOffsetEm = settings.format.textShadowOffsetEm,
+        textShadowSizeEm = settings.format.textShadowSizeEm,
+        textShadowBlurEm = settings.format.textShadowBlurEm,
         textShadowColor = Color(settings.format.textShadowColor),
 
         selectionColor = Color(settings.selection.color),

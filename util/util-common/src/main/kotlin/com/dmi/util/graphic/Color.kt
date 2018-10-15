@@ -41,6 +41,8 @@ class Color {
         blue = value and 0xFF
     }
 
+    fun withAlpha(alpha: Int) = Color(alpha, red, green, blue)
+
     override fun equals(other: Any?) = safeEquals(other) { value == it.value }
     override fun hashCode() = value
 }

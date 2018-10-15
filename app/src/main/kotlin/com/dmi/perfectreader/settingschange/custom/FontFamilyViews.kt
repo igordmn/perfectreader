@@ -78,7 +78,7 @@ class FontFamilyPreviewView(
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
         singleLine = true
         ellipsize = TextUtils.TruncateAt.END
-        textColor = color(R.color.onBackground).withTransparency(0.60)
+        textColor = color(R.color.onBackground).withOpacity(0.60)
 
         autorun {
             bind(model.get())

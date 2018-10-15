@@ -90,7 +90,7 @@ class ColorPreviewView(
 ) : TextView(context) {
     private val paint = Paint()
     private var color: Int = property.get()
-    private val strokeWidth = 2F
+    private val strokeWidth = 1F
     private val diameter = dipFloat(24F)
 
     init {

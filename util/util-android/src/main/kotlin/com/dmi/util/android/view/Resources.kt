@@ -32,4 +32,4 @@ fun View.attr(value: Int): TypedValue {
 
 inline fun <reified T> Context.inflate(id: Int): T = layoutInflater.inflate(id, null, false) as T
 
-fun Int.withTransparency(transparency: Double) = withAlpha((transparency * 255).toInt())
+fun Int.withOpacity(transparency: Double) = withAlpha((transparency * 255).toInt())

@@ -132,11 +132,13 @@
     <string name="settingsChangeThemeText">Текст</string>
     <string name="settingsChangeThemeTextGammaCorrection">Гамма-коррекция</string>
     <string name="settingsChangeThemeTextShadow">Тень</string>
+    <string name="settingsChangeThemeTextShadowEnabled">Показывать</string>
+    <string name="settingsChangeThemeTextShadowColor">Цвет</string>
+    <string name="settingsChangeThemeTextShadowOpacity">Непрозрачность</string>
     <string name="settingsChangeThemeTextShadowAngle">Угол</string>
     <string name="settingsChangeThemeTextShadowOffset">Смещение</string>
     <string name="settingsChangeThemeTextShadowSize">Размер</string>
     <string name="settingsChangeThemeTextShadowBlur">Размытие</string>
-    <string name="settingsChangeThemeTextShadowColor">Цвет</string>
     <string name="settingsChangeThemeSelection">Выделение</string>
 
     <string name="settingsChangeScreenAnimation">Анимация</string>

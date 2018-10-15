@@ -5,6 +5,7 @@ import com.dmi.util.collection.binarySearchLower
 import java.lang.Math.max
 import java.lang.Math.min
 
+// todo compute values by formula instead hardcode
 object SettingValues {
     val TEXT_SIZE = floatArrayOf(
             4F,
@@ -74,6 +75,12 @@ object SettingValues {
             1.1F, 1.2F, 1.3F, 1.4F, 1.5F, 1.6F, 1.7F, 1.8F, 1.9F, 2.0F,
             2.2F, 2.4F, 2.6F, 2.8F, 3.0F, 3.2F, 3.4F, 3.6F, 3.8F, 4F
     )
+
+    val TEXT_SHADOW_ANGLE = (-180..180 step 5).map { it.toFloat() }.toFloatArray()
+    val TEXT_SHADOW_OFFSET = (0..25).map { it.toFloat() / 100 }.toFloatArray()
+    val TEXT_SHADOW_SIZE = (0..25).map { it.toFloat() / 100 }.toFloatArray()
+    val TEXT_SHADOW_BLUR = (0..25).map { it.toFloat() / 100 }.toFloatArray()
+    val TEXT_SHADOW_OPACITY = (0..25).map { it.toFloat() / 25 }.toFloatArray()
 }
 
 fun chooseSettingValue(values: FloatArray, value: Float, indexOffset: Int): Float = when {

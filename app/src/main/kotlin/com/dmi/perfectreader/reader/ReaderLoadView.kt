@@ -29,7 +29,7 @@ fun readerLoadView(context: Context, model: ReaderLoad) = FrameLayoutExt(context
             visibility = View.VISIBLE
             gravity = Gravity.CENTER
             text = string(strId)
-            textColor = color(R.color.onBackground).withTransparency(0.60)
+            textColor = color(R.color.onBackground).withOpacity(0.60)
         }
 
         padding = dip(16)

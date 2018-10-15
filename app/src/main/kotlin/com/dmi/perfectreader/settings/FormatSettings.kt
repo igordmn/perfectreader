@@ -28,11 +28,11 @@ class FormatSettings(store: ValueStore) {
     var textSubpixelPositioning by store.value(true)
 
     var textShadowEnabled by store.value(false)
-    var textShadowOffsetXDip by store.value(0F)
-    var textShadowOffsetYDip by store.value(0F)
-    var textShadowStrokeWidthDip by store.value(0F)
-    var textShadowBlurRadiusDip by store.value(1F)
-    var textShadowColor by store.value(Color.GRAY.value)
+    var textShadowAngleDegrees by store.value(0F)
+    var textShadowOffsetEm by store.value(0F)
+    var textShadowSizeEm by store.value(0.1F)
+    var textShadowBlurEm by store.value(0.05F)
+    var textShadowColor by store.value(Color.GRAY.withAlpha(128).value)
 
     var pageAnimationPath by store.value("assets:///resources/animations/curl.xml")
     var pageBackgroundIsImage by store.value(false)

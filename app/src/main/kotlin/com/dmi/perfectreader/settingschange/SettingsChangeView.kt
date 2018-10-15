@@ -19,6 +19,7 @@ import com.dmi.util.android.opengl.GLContext
 import com.dmi.util.android.screen.ScreensView
 import com.dmi.util.android.screen.withPopup
 import com.dmi.util.android.view.*
+import com.dmi.util.graphic.Color
 import com.dmi.util.lang.unsupported
 import com.dmi.util.screen.Screen
 import com.dmi.util.screen.StateScreen
@@ -43,6 +44,13 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
                 get() = settings.format.textAlign == TextAlign.JUSTIFY
                 set(value) {
                     settings.format.textAlign = if (value) TextAlign.JUSTIFY else TextAlign.LEFT
+                }
+
+            var textShadowOpacity: Float
+                get() = Color(settings.format.textShadowColor).alpha / 255F
+                set(value) {
+                    val color = Color(settings.format.textShadowColor)
+                    settings.format.textShadowColor = color.withAlpha((value * 255).toInt()).value
                 }
         }
     }
@@ -110,6 +118,38 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
             )
         }
 
+        val textShadow = object : Place() {
+            val color = colorPlace(settings.format::textShadowColor, R.string.settingsChangeThemeTextShadowColor)
+
+            override fun view() = details(
+                    context, model, R.string.settingsChangeThemeTextShadow,
+                    vertical(
+                            booleanSetting(context, settings.format::textShadowEnabled, R.string.settingsChangeThemeTextShadowEnabled),
+                            detailsSetting(
+                                    context, model,
+                                    colorPreview(context, settings.format::textShadowColor), color, R.string.settingsChangeThemeTextShadowColor
+                            ) visibleIf { settings.format.textShadowEnabled },
+                            floatSetting(
+                                    context, settingsExt.format::textShadowOpacity, SettingValues.TEXT_SHADOW_OPACITY, R.string.settingsChangeThemeTextShadowOpacity
+                            ) visibleIf { settings.format.textShadowEnabled },
+                            floatSetting(
+                                    context, settings.format::textShadowAngleDegrees,
+                                    SettingValues.TEXT_SHADOW_ANGLE, R.string.settingsChangeThemeTextShadowAngle,
+                                    ringValues = true
+                            ) visibleIf { settings.format.textShadowEnabled },
+                            floatSetting(
+                                    context, settings.format::textShadowOffsetEm, SettingValues.TEXT_SHADOW_OFFSET, R.string.settingsChangeThemeTextShadowOffset
+                            ) visibleIf { settings.format.textShadowEnabled },
+                            floatSetting(
+                                    context, settings.format::textShadowSizeEm, SettingValues.TEXT_SHADOW_SIZE, R.string.settingsChangeThemeTextShadowSize
+                            ) visibleIf { settings.format.textShadowEnabled },
+                            floatSetting(
+                                    context, settings.format::textShadowBlurEm, SettingValues.TEXT_SHADOW_BLUR, R.string.settingsChangeThemeTextShadowBlur
+                            ) visibleIf { settings.format.textShadowEnabled }
+                    )
+            )
+        }
+
         val theme = object : Place() {
             val backgroundIsPicture = object : Place() {
                 private val values = arrayOf(false, true)
@@ -165,6 +205,10 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
                     detailsSetting(
                             context, model,
                             colorPreview(context, settings.selection::color), selectionColor, R.string.settingsChangeThemeSelection
+                    ),
+                    detailsSetting(
+                            context, model,
+                            emptyPreview(context), textShadow, R.string.settingsChangeThemeTextShadow
                     ),
                     floatSetting(context, settings.format::pageTextGammaCorrection, SettingValues.GAMMA_CORRECTION, R.string.settingsChangeThemeTextGammaCorrection)
             )

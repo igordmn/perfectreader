@@ -3,6 +3,7 @@ package com.dmi.perfectreader.settingschange.common
 import android.content.Context
 import android.view.Gravity
 import android.view.View
+import android.view.ViewStub
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatImageButton
@@ -19,6 +20,8 @@ import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty0
 
 class PreviewView(val view: View, val withPadding: Boolean = true, val isClickable: Boolean = true)
+
+fun emptyPreview(context: Context) = PreviewView(ViewStub(context))
 
 fun <T> propertyPreview(context: Context, property: KProperty0<T>, format: (value: T) -> String) = PreviewView(TextView(context).apply {
     autorun {
@@ -68,7 +71,8 @@ fun floatSetting(
         titleRes: Int,
         @StringRes
         subtitleRes: Int? = null,
-        decimalCount: Int = 2
+        decimalCount: Int = 2,
+        ringValues: Boolean = false
 ): View {
     val min = values.first()
     val max = values.last()
@@ -78,12 +82,16 @@ fun floatSetting(
         orientation = LinearLayoutCompat.HORIZONTAL
         child(params(dip(48), dip(48)), AppCompatImageButton(context).apply {
             backgroundResource = attr(R.attr.selectableItemBackground).resourceId
-            image = drawable(R.drawable.minus, color(R.color.onBackground).withTransparency(0.60))
+            image = drawable(R.drawable.minus, color(R.color.onBackground).withOpacity(0.60))
             onContinousClick {
-                if (property.get() > min) {
-                    val value = chooseSettingValue(values, property.get(), -1)
-                    property.set(value)
-                    editNumber.floatValue = value
+                val value = editNumber.floatValue
+                if (value > min) {
+                    val newValue = chooseSettingValue(values, value, -1)
+                    property.set(newValue)
+                    editNumber.floatValue = newValue
+                } else if (ringValues) {
+                    property.set(max)
+                    editNumber.floatValue = max
                 }
             }
         })
@@ -92,7 +100,7 @@ fun floatSetting(
             setPadding(0, dip(12), 0, dip(12))
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
             gravity = Gravity.CENTER
-            textColor = color(R.color.onBackground).withTransparency(0.60)
+            textColor = color(R.color.onBackground).withOpacity(0.60)
             this.min = min
             this.max = max
             this.decimalCount = decimalCount
@@ -104,12 +112,16 @@ fun floatSetting(
 
         child(params(dip(48), dip(48)), AppCompatImageButton(context).apply {
             backgroundResource = attr(R.attr.selectableItemBackground).resourceId
-            image = drawable(R.drawable.plus, color(R.color.onBackground).withTransparency(0.60))
+            image = drawable(R.drawable.plus, color(R.color.onBackground).withOpacity(0.60))
             onContinousClick {
-                if (property.get() < max) {
-                    val value = chooseSettingValue(values, property.get(), 1)
-                    property.set(value)
-                    editNumber.floatValue = value
+                val value = editNumber.floatValue
+                if (value < max) {
+                    val newValue = chooseSettingValue(values, value, 1)
+                    property.set(newValue)
+                    editNumber.floatValue = newValue
+                } else if (ringValues) {
+                    property.set(min)
+                    editNumber.floatValue = min
                 }
             }
         })
@@ -168,7 +180,7 @@ fun titleSetting(
         if (subtitleRes != null) {
             child(params(wrapContent, wrapContent), TextView(context).apply {
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
-                textColor = color(R.color.onBackground).withTransparency(0.60)
+                textColor = color(R.color.onBackground).withOpacity(0.60)
                 text = string(subtitleRes)
             })
         }

@@ -3,6 +3,7 @@ package com.dmi.perfectreader.book.content.obj
 import com.dmi.perfectreader.book.content.location.*
 import com.dmi.perfectreader.book.content.obj.param.*
 import java.util.*
+import kotlin.math.PI
 
 private val fontStyleCache = FontStyleCache()
 
@@ -140,10 +141,10 @@ private fun ContentFontStyle.configure(config: FormatConfig): ConfiguredFontStyl
             config.textSubpixelPositioning,
 
             config.textShadowEnabled,
-            config.textShadowOffsetXDip * config.density,
-            config.textShadowOffsetYDip * config.density,
-            config.textShadowStrokeWidthDip * config.density,
-            config.textShadowBlurRadiusDip * config.density,
+            (config.textShadowAngleDegrees * PI / 180).toFloat(),
+            config.textShadowOffsetEm * textSize,
+            config.textShadowSizeEm * textSize,
+            config.textShadowBlurEm * textSize,
             config.textShadowColor,
 
             config.selectionColor

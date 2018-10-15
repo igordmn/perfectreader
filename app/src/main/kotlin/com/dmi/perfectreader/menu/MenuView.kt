@@ -72,7 +72,7 @@ fun menuView(context: Context, model: Menu, book: Book): View {
                 gravity = Gravity.CENTER_VERTICAL
                 setPadding(dip(16), 0, dip(8), dip(16))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
-                textColor = color(R.color.onBackground).withTransparency(0.60)
+                textColor = color(R.color.onBackground).withOpacity(0.60)
                 text = "X — Alice's evidence"
 
                 onClick {
@@ -83,7 +83,7 @@ fun menuView(context: Context, model: Menu, book: Book): View {
             val pageNumber = child(params(wrapContent, wrapContent, weight = 0F), EditNumber(context).apply {
                 setPadding(dip(8), 0, dip(0), dip(16))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
-                textColor = color(R.color.onBackground).withTransparency(0.60)
+                textColor = color(R.color.onBackground).withOpacity(0.60)
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 gravity = Gravity.END
 
@@ -104,7 +104,7 @@ fun menuView(context: Context, model: Menu, book: Book): View {
             child(params(wrapContent, wrapContent, weight = 0F), TextView(context).apply {
                 setPadding(0, 0, dip(16), dip(16))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
-                textColor = color(R.color.onBackground).withTransparency(0.60)
+                textColor = color(R.color.onBackground).withOpacity(0.60)
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 autorun {
                     @SuppressLint("SetTextI18n")
@@ -143,7 +143,7 @@ fun menuView(context: Context, model: Menu, book: Book): View {
                 progress = progress()
             }
             setThumbColor(color(R.color.secondary), color(R.color.secondary))
-            setTrackColor(color(R.color.secondary).withTransparency(0.38))
+            setTrackColor(color(R.color.secondary).withOpacity(0.38))
             setScrubberColor(color(R.color.secondary))
             numericTransformer = numericTransformer()
             setOnProgressChangeListener(onProgressChangeListener())

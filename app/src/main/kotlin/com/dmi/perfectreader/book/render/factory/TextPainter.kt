@@ -8,6 +8,8 @@ import com.dmi.perfectreader.book.layout.obj.LayoutSpaceText
 import com.dmi.perfectreader.book.layout.obj.LayoutText
 import com.dmi.perfectreader.book.layout.paragraph.metrics.configureTextPaint
 import com.dmi.perfectreader.book.layout.paragraph.metrics.configureTextShadowPaint
+import kotlin.math.cos
+import kotlin.math.sin
 
 open class TextPainter {
     private val textPaintCache = PaintCache()
@@ -15,8 +17,8 @@ open class TextPainter {
     fun paintTextShadow(x: Float, y: Float, obj: LayoutText, canvas: Canvas) {
         if (obj.style.shadowEnabled && obj !is LayoutSpaceText) {
             val paint = textPaintCache.forShadow(obj.style)
-            val shadowX = obj.style.shadowOffsetX
-            val shadowY = obj.style.shadowOffsetY
+            val shadowX = obj.style.shadowOffset * cos(obj.style.shadowAngle)
+            val shadowY = obj.style.shadowOffset * sin(obj.style.shadowAngle)
             canvas.drawText(obj.text, 0, obj.text.length, x + shadowX, y + shadowY + obj.baseline, paint)
         }
     }
@@ -51,8 +53,8 @@ open class TextPainter {
                 configureTextPaint(paint, style)
 
                 if (style.shadowEnabled) {
-                    configureTextShadowPaint(paint, style)
-                    paint.maskFilter = if (style.shadowBlurRadius > 0) blurMaskFilter(style.shadowBlurRadius) else null
+                    configureTextShadowPaint(shadowPaint, style)
+                    shadowPaint.maskFilter = if (style.shadowBlurRadius > 0) blurMaskFilter(style.shadowBlurRadius) else null
                 }
 
                 lastStyle = style
