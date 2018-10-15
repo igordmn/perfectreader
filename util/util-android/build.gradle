@@ -58,6 +58,7 @@ dependencies {
     api 'org.jetbrains.anko:anko-appcompat-v7:0.8.3'
     api 'org.jetbrains.anko:anko-sqlite:0.8.3'
     api 'gun0912.ted:tedpermission:2.2.0'
+    api 'com.jaredrummler:colorpicker:1.0.2'
     testImplementation project(':util:util-testCommon')
 }
 

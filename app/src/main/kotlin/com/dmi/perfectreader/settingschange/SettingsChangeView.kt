@@ -123,9 +123,14 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
                 override fun view() = themeBackgroundPictureDetails(context, model)
             }
 
+            val backgroundColor = object : Place(R.string.settingsChangeThemeBackgroundColor) {
+                override fun view() = themeBackgroundColorDetails(context, model)
+            }
+
             override fun view() = vertical(
                     popupSetting(context, model, propertyPreview(context, settings.format::pageBackgroundIsImage, backgroundIsPicture::format), backgroundIsPicture),
-                    detailsSetting(context, model, themeBackgroundPicturePreview(context), backgroundPicture) visibleIf { settings.format.pageBackgroundIsImage }
+                    detailsSetting(context, model, themeBackgroundPicturePreview(context), backgroundPicture) visibleIf { settings.format.pageBackgroundIsImage },
+                    detailsSetting(context, model, themeBackgroundColorPreview(context), backgroundColor) visibleIf { !settings.format.pageBackgroundIsImage }
             )
         }
 
