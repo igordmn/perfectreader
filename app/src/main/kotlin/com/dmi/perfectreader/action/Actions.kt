@@ -83,7 +83,7 @@ class Actions(
         ActionID.CHANGE_PAGE_MARGINS -> NoneAction
         ActionID.CHANGE_TEXT_SIZE -> ChangeSettingAction(SettingActionID.TEXT_SIZE, settings.format::textSizeDip, SettingValues.TEXT_SIZE)
         ActionID.CHANGE_TEXT_LINE_HEIGHT -> ChangeSettingAction(SettingActionID.TEXT_LINE_HEIGHT, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER)
-        ActionID.CHANGE_TEXT_GAMMA -> ChangeSettingAction(SettingActionID.TEXT_GAMMA, settings.format::pageTextGammaCorrection, SettingValues.GAMMA)
+        ActionID.CHANGE_TEXT_GAMMA -> ChangeSettingAction(SettingActionID.TEXT_GAMMA, settings.format::pageTextGammaCorrection, SettingValues.GAMMA_CORRECTION)
         ActionID.CHANGE_TEXT_COLOR_GAMMA -> NoneAction
         ActionID.CHANGE_TEXT_COLOR_CONTRAST -> NoneAction
         ActionID.CHANGE_TEXT_COLOR_BRIGHTNESS -> NoneAction
@@ -95,7 +95,7 @@ class Actions(
         ActionID.INCREASE_PAGE_MARGINS -> NoneAction
         ActionID.INCREASE_TEXT_SIZE -> IncreaseSettingAction(SettingActionID.TEXT_SIZE, settings.format::textSizeDip, SettingValues.TEXT_SIZE)
         ActionID.INCREASE_TEXT_LINE_HEIGHT -> IncreaseSettingAction(SettingActionID.TEXT_LINE_HEIGHT, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER)
-        ActionID.INCREASE_TEXT_GAMMA -> IncreaseSettingAction(SettingActionID.TEXT_GAMMA, settings.format::pageTextGammaCorrection, SettingValues.GAMMA)
+        ActionID.INCREASE_TEXT_GAMMA -> IncreaseSettingAction(SettingActionID.TEXT_GAMMA, settings.format::pageTextGammaCorrection, SettingValues.GAMMA_CORRECTION)
         ActionID.INCREASE_TEXT_COLOR_GAMMA -> NoneAction
         ActionID.INCREASE_TEXT_COLOR_CONTRAST -> NoneAction
         ActionID.INCREASE_TEXT_COLOR_BRIGHTNESS -> NoneAction
@@ -107,7 +107,7 @@ class Actions(
         ActionID.DECREASE_PAGE_MARGINS -> NoneAction
         ActionID.DECREASE_TEXT_SIZE -> DecreaseSettingsAction(SettingActionID.TEXT_SIZE, settings.format::textSizeDip, SettingValues.TEXT_SIZE)
         ActionID.DECREASE_TEXT_LINE_HEIGHT -> DecreaseSettingsAction(SettingActionID.TEXT_LINE_HEIGHT, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER)
-        ActionID.DECREASE_TEXT_GAMMA -> DecreaseSettingsAction(SettingActionID.TEXT_GAMMA, settings.format::pageTextGammaCorrection, SettingValues.GAMMA)
+        ActionID.DECREASE_TEXT_GAMMA -> DecreaseSettingsAction(SettingActionID.TEXT_GAMMA, settings.format::pageTextGammaCorrection, SettingValues.GAMMA_CORRECTION)
         ActionID.DECREASE_TEXT_COLOR_GAMMA -> NoneAction
         ActionID.DECREASE_TEXT_COLOR_CONTRAST -> NoneAction
         ActionID.DECREASE_TEXT_COLOR_BRIGHTNESS -> NoneAction

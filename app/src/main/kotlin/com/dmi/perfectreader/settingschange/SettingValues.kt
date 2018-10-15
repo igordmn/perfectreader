@@ -36,7 +36,7 @@ object SettingValues {
             2.2F, 2.4F, 2.6F, 2.8F, 3.0F, 3.2F, 3.4F, 3.6F, 3.8F, 4.0F
     )
 
-    val GAMMA = floatArrayOf(
+    val GAMMA_CORRECTION = floatArrayOf(
             0.4F, 0.45F, 0.5F, 0.55F, 0.6F, 0.65F, 0.7F, 0.75F, 0.8F, 0.85F, 0.9F, 0.95F,
             1.0F, 1.1F, 1.2F, 1.3F, 1.4F, 1.5F, 1.6F, 1.7F, 1.8F, 1.9F, 2.0F,
             2.1F, 2.2F, 2.3F, 2.4F

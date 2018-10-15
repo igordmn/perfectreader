@@ -138,6 +138,7 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
 
             val backgroundColor = colorPlace(settings.format::pageBackgroundColor, R.string.settingsChangeThemeBackgroundColor)
             val textColor = colorPlace(settings.format::textColor, R.string.settingsChangeThemeText)
+            val selectionColor = colorPlace(settings.selection::color, R.string.settingsChangeThemeSelection)
 
             override fun view() = vertical(
                     popupSetting(
@@ -154,10 +155,18 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
                             context, model,
                             colorPreview(context, settings.format::pageBackgroundColor), backgroundColor, R.string.settingsChangeThemeBackgroundColor
                     ) visibleIf { !settings.format.pageBackgroundIsImage },
+                    booleanSetting(
+                            context, settings.format::pageBackgroundContentAwareResize, R.string.settingsChangeThemeBackgroundContentAwareResize
+                    ) visibleIf { settings.format.pageBackgroundIsImage },
                     detailsSetting(
                             context, model,
                             colorPreview(context, settings.format::textColor), textColor, R.string.settingsChangeThemeText
-                    )
+                    ),
+                    detailsSetting(
+                            context, model,
+                            colorPreview(context, settings.selection::color), selectionColor, R.string.settingsChangeThemeSelection
+                    ),
+                    floatSetting(context, settings.format::pageTextGammaCorrection, SettingValues.GAMMA_CORRECTION, R.string.settingsChangeThemeTextGammaCorrection)
             )
         }
 
