@@ -90,12 +90,12 @@ class ColorPreviewView(
 ) : TextView(context) {
     private val paint = Paint()
     private var color: Int = property.get()
-    private val size = dipFloat(32F)
-    private val radius = dipFloat(24F)
+    private val strokeWidth = 2F
+    private val diameter = dipFloat(24F)
 
     init {
-        minimumWidth = size.toInt()
-        minimumHeight = size.toInt()
+        minimumWidth = diameter.toInt()
+        minimumHeight = diameter.toInt()
 
         autorun {
             color = property.get()
@@ -107,10 +107,10 @@ class ColorPreviewView(
         paint.isAntiAlias = true
         paint.style = Paint.Style.FILL
         paint.color = color
-        canvas.drawCircle(size / 2, size / 2, radius / 2, paint)
+        canvas.drawCircle(diameter / 2, diameter / 2, diameter / 2 - strokeWidth, paint)
         paint.style = Paint.Style.STROKE
         paint.color = Color.BLACK
-        paint.strokeWidth = 2F
-        canvas.drawCircle(size / 2, size / 2, radius / 2, paint)
+        paint.strokeWidth = strokeWidth
+        canvas.drawCircle(diameter / 2, diameter / 2, diameter / 2 - strokeWidth, paint)
     }
 }
