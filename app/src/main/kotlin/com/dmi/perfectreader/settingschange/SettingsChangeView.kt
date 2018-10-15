@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.viewpager.widget.ViewPager
 import com.dmi.perfectreader.R
@@ -54,6 +55,13 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
         })
     }
 
+    infix fun View.visibleIf(condition: () -> Boolean): View {
+        autorun {
+            isVisible = condition()
+        }
+        return this
+    }
+
     val places = object : Places() {
         val font = object : Place(R.string.settingsChangeFont) {
             val family = object : Place(R.string.settingsChangeFontFamily) {
@@ -90,7 +98,7 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
         }
 
         val theme = object : Place(R.string.settingsChangeTheme) {
-            val backgroundIsImage = object : Place(R.string.settingsChangeThemeBackground) {
+            val backgroundIsPicture = object : Place(R.string.settingsChangeThemeBackground) {
                 private val values = arrayOf(false, true)
                 private val names = values.map(::format).toTypedArray()
 
@@ -100,9 +108,10 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
                 }
 
                 override fun view() = DialogView(context) {
+                    val current = values.indexOf(settings.format.pageBackgroundIsImage)
                     AlertDialog.Builder(context)
                             .setTitle(nameRes)
-                            .setItems(names) { _, which ->
+                            .setSingleChoiceItems(names, current) { _, which ->
                                 settings.format.pageBackgroundIsImage = values[which]
                                 model.popup = null
                             }
@@ -110,9 +119,13 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
                 }
             }
 
+            val backgroundPicture = object : Place(R.string.settingsChangeThemeBackgroundPicture) {
+                override fun view() = themeBackgroundPictureDetails(context, model)
+            }
 
             override fun view() = vertical(
-                    popupSetting(context, model, propertyPreview(context, settings.format::pageBackgroundIsImage, backgroundIsImage::format), backgroundIsImage)
+                    popupSetting(context, model, propertyPreview(context, settings.format::pageBackgroundIsImage, backgroundIsPicture::format), backgroundIsPicture),
+                    detailsSetting(context, model, themeBackgroundPicturePreview(context), backgroundPicture) visibleIf { settings.format.pageBackgroundIsImage }
             )
         }
 
