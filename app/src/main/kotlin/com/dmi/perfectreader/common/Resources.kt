@@ -25,6 +25,7 @@ class Resources(
             return fontsCache[userDirectory]
         }
 
+    val backgrounds: List<URI> get() = uriHandler.children(URI("assets:///resources/backgrounds/"))
     val pageAnimations: List<URI> get() = uriHandler.children(URI("assets:///resources/animations/"))
 
     fun pageAnimationPreviews(glContext: GLContext) = PageAnimationPreviews(main, glContext)

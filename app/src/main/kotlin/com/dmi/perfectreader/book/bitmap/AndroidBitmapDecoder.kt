@@ -22,7 +22,7 @@ class AndroidBitmapDecoder(
         openResource(src).use {
             val bitmapOptions = BitmapFactory.Options()
             bitmapOptions.inSampleSize = calculateSampleSize(factWidth, factHeight, width, height)
-            val bitmap = BitmapFactory.decodeStream(it, null, bitmapOptions)
+            val bitmap = BitmapFactory.decodeStream(it, null, bitmapOptions)!!
             return Bitmap.createScaledBitmap(bitmap, width, height, scaleFiltered)
         }
     }
