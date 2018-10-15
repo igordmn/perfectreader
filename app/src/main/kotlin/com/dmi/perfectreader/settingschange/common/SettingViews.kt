@@ -11,26 +11,47 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.settingschange.SettingsChange
-import com.dmi.perfectreader.settingschange.SettingsChangeDetailsState
 import com.dmi.perfectreader.settingschange.chooseSettingValue
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.initOnce
 import org.jetbrains.anko.*
 import kotlin.reflect.KMutableProperty0
+import kotlin.reflect.KProperty0
 
 class PreviewView(val view: View, val withPadding: Boolean = true, val isClickable: Boolean = true)
+
+fun <T> propertyPreview(context: Context, property: KProperty0<T>, format: (value: T) -> String) = PreviewView(TextView(context).apply {
+    autorun {
+        text = format(property.get())
+    }
+})
 
 fun detailsSetting(
         context: Context,
         model: SettingsChange,
-        preview: View,
-        section: SettingSections.Section,
+        preview: PreviewView,
+        place: Places.Place,
         @StringRes
         subtitleRes: Int? = null
 ) : View {
-    return titleSetting(context, PreviewView(preview), section.nameRes, subtitleRes).apply {
+    return titleSetting(context, preview, place.nameRes, subtitleRes).apply {
         onClick {
-            model.screens.goForward(SettingsChangeDetailsState(section.id))
+            model.screens.goForward(place.id)
+        }
+    }
+}
+
+fun popupSetting(
+        context: Context,
+        model: SettingsChange,
+        preview: PreviewView,
+        place: Places.Place,
+        @StringRes
+        subtitleRes: Int? = null
+) : View {
+    return titleSetting(context, preview, place.nameRes, subtitleRes).apply {
+        onClick {
+            model.popup = place.id
         }
     }
 }

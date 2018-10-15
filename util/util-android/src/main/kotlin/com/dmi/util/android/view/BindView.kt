@@ -7,6 +7,7 @@ import android.os.Parcelable
 import android.util.SparseArray
 import android.view.View
 import android.widget.FrameLayout
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.util.set
 import org.jetbrains.anko.matchParent
 import kotlin.reflect.KProperty0
@@ -91,6 +92,31 @@ fun <M : Any, V : View> FrameLayout.bindChild(
 @JvmName("bindChild2")
 fun <M : Any> FrameLayout.bindChild(
         params: FrameLayout.LayoutParams,
+        model: KProperty0<M?>,
+        view: (context: Context, M) -> View,
+        defferStateRestore: Boolean = false
+): FrameLayout {
+    @Suppress("UNUSED_PARAMETER")
+    fun view(context: Context, model: M, old: View?) = view(context, model)
+    return bindChild(params, model, ::view, defferStateRestore)
+}
+
+@JvmName("bindChild3")
+fun <M : Any, V : View> LinearLayoutCompat.bindChild(
+        params: LinearLayoutCompat.LayoutParams,
+        model: KProperty0<M?>,
+        view: (context: Context, M, old: V?) -> V,
+        defferStateRestore: Boolean = false
+): FrameLayout {
+    val container = BindView(context, model, view, defferStateRestore)
+    container.layoutParams = params
+    addView(container)
+    return container
+}
+
+@JvmName("bindChild4")
+fun <M : Any> LinearLayoutCompat.bindChild(
+        params: LinearLayoutCompat.LayoutParams,
         model: KProperty0<M?>,
         view: (context: Context, M) -> View,
         defferStateRestore: Boolean = false

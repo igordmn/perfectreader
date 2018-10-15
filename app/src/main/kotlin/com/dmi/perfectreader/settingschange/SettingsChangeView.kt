@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.KeyEvent
 import android.view.View
 import android.widget.FrameLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
@@ -15,6 +16,7 @@ import com.dmi.perfectreader.settingschange.common.*
 import com.dmi.perfectreader.settingschange.custom.*
 import com.dmi.util.android.opengl.GLContext
 import com.dmi.util.android.screen.ScreensView
+import com.dmi.util.android.screen.withPopup
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.unsupported
 import com.dmi.util.screen.Screen
@@ -52,14 +54,14 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
         })
     }
 
-    val sections = object : SettingSections() {
-        val font = object : Section(R.string.settingsChangeFont) {
-            val family = object : Section(R.string.settingsChangeFontFamily) {
+    val places = object : Places() {
+        val font = object : Place(R.string.settingsChangeFont) {
+            val family = object : Place(R.string.settingsChangeFontFamily) {
                 override fun view() = fontFamilyDetails(context, model)
             }
 
             override fun view() = vertical(
-                    detailsSetting(context, model, FontFamilyPreviewView(context), family),
+                    detailsSetting(context, model, fontFamilyPreview(context), family),
                     titleSetting(context, fontStyleView(
                             context,
                             settings.format::textFontIsBold, settings.format::textFontIsItalic,
@@ -74,7 +76,7 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
             )
         }
 
-        val format = object : Section(R.string.settingsChangeFormat) {
+        val format = object : Place(R.string.settingsChangeFormat) {
             override fun view() = vertical(
                     floatSetting(context, settingsExt.format::padding, SettingValues.PARAGRAPH_PADDING, R.string.settingsChangeFormatPadding),
                     floatSetting(context, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER, R.string.settingsChangeFormatLineHeight),
@@ -87,21 +89,44 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
             )
         }
 
-        val theme = object : Section(R.string.settingsChangeTheme) {
-            override fun view() = vertical()
+        val theme = object : Place(R.string.settingsChangeTheme) {
+            val backgroundIsImage = object : Place(R.string.settingsChangeThemeBackground) {
+                private val values = arrayOf(false, true)
+                private val names = values.map(::format).toTypedArray()
+
+                fun format(isImage: Boolean) = when (isImage) {
+                    false -> context.string(R.string.settingsChangeThemeBackgroundColor)
+                    true -> context.string(R.string.settingsChangeThemeBackgroundPicture)
+                }
+
+                override fun view() = DialogView(context) {
+                    AlertDialog.Builder(context)
+                            .setTitle(nameRes)
+                            .setItems(names) { _, which ->
+                                settings.format.pageBackgroundIsImage = values[which]
+                                model.popup = null
+                            }
+                            .create()
+                }
+            }
+
+
+            override fun view() = vertical(
+                    popupSetting(context, model, propertyPreview(context, settings.format::pageBackgroundIsImage, backgroundIsImage::format), backgroundIsImage)
+            )
         }
 
-        val screen = object : Section(R.string.settingsChangeScreen) {
-            val animation = object : Section(R.string.settingsChangeScreenAnimation) {
+        val screen = object : Place(R.string.settingsChangeScreen) {
+            val animation = object : Place(R.string.settingsChangeScreenAnimation) {
                 override fun view() = screenAnimationDetails(context, model.reader.book, glContext)
             }
 
             override fun view() = vertical(
-                    detailsSetting(context, model, ScreenAnimationPreviewView(context, glContext), animation)
+                    detailsSetting(context, model, screenAnimationPreview(context, glContext), animation)
             )
         }
 
-        val control = object : Section(R.string.settingsChangeControl) {
+        val control = object : Place(R.string.settingsChangeControl) {
             override fun view() = vertical()
         }
     }
@@ -115,17 +140,17 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
 
         child(params(matchParent, matchParent, weight = 1F), ViewPager(context).apply {
             adapter = ViewPagerAdapter(
-                    string(sections.font.nameRes) to sections.font::view,
-                    string(sections.format.nameRes) to sections.format::view,
-                    string(sections.theme.nameRes) to sections.theme::view,
-                    string(sections.screen.nameRes) to sections.screen::view,
-                    string(sections.control.nameRes) to sections.control::view
+                    string(places.font.nameRes) to places.font::view,
+                    string(places.format.nameRes) to places.format::view,
+                    string(places.theme.nameRes) to places.theme::view,
+                    string(places.screen.nameRes) to places.screen::view,
+                    string(places.control.nameRes) to places.control::view
             )
             tabLayout.setupWithViewPager(this)
         })
     }
 
-    fun details(section: SettingSections.Section) = LinearLayoutExt(context).apply {
+    fun details(place: Places.Place) = LinearLayoutExt(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
         backgroundColor = color(R.color.background)
 
@@ -133,7 +158,7 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
             setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
             backgroundColor = color(android.R.color.transparent)
             navigationIcon = drawable(R.drawable.ic_arrow_back)
-            this.title = string(section.nameRes)
+            this.title = string(place.nameRes)
             popupTheme = R.style.Theme_AppCompat_Light
 
             setNavigationOnClickListener {
@@ -141,15 +166,23 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
             }
         })
 
-        child(params(matchParent, matchParent, weight = 1F), section.view())
+        child(params(matchParent, matchParent, weight = 1F), place.view())
     }
 
     fun screenView(screen: Screen): View {
         val state = (screen as StateScreen).state
         return when (state) {
             is SettingsChangeMainState -> main()
-            is SettingsChangeDetailsState -> details(sections[state.id])
+            is Id -> details(places[state])
             else -> unsupported(state)
+        }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun popupView(context: Context, popup: Any): View {
+        return when (popup) {
+            is Id -> places[popup].view()
+            else -> unsupported(popup)
         }
     }
 
@@ -172,5 +205,5 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
 
         onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.screens.goBackward(); true }
         onInterceptKeyDown(KeyEvent.KEYCODE_MENU) { model.back(); true }
-    }
+    }.withPopup(model::popup, ::popupView)
 }

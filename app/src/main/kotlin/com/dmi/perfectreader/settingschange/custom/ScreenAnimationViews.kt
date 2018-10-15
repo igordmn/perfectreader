@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.ImageView
 import com.dmi.perfectreader.book.Book
 import com.dmi.perfectreader.main
+import com.dmi.perfectreader.settingschange.common.PreviewView
 import com.dmi.perfectreader.settingschange.common.SettingListView
 import com.dmi.util.android.opengl.GLContext
 import com.dmi.util.android.view.Bindable
@@ -51,6 +52,8 @@ class ScreenAnimationItemView(context: Context, glContext: GLContext) : ImageVie
         }
     }
 }
+
+fun screenAnimationPreview(context: Context, glContext: GLContext) = PreviewView(ScreenAnimationPreviewView(context, glContext))
 
 class ScreenAnimationPreviewView(
         context: Context,

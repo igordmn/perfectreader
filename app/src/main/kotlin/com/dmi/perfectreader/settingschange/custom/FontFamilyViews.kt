@@ -11,6 +11,7 @@ import com.dmi.perfectreader.R
 import com.dmi.perfectreader.common.Nano
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.settingschange.SettingsChange
+import com.dmi.perfectreader.settingschange.common.PreviewView
 import com.dmi.perfectreader.settingschange.common.SettingListView
 import com.dmi.util.android.font.AndroidFont
 import com.dmi.util.android.view.*
@@ -60,6 +61,8 @@ class FontFamilyItemView(context: Context) : TextView(context), Bindable<String>
         }
     }
 }
+
+fun fontFamilyPreview(context: Context) = PreviewView(FontFamilyPreviewView(context))
 
 class FontFamilyPreviewView(
         context: Context,
