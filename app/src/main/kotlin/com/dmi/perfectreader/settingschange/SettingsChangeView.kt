@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.KeyEvent
 import android.view.View
 import android.widget.FrameLayout
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isVisible
@@ -23,6 +24,7 @@ import com.dmi.util.screen.Screen
 import com.dmi.util.screen.StateScreen
 import com.google.android.material.tabs.TabLayout
 import org.jetbrains.anko.*
+import kotlin.reflect.KMutableProperty0
 
 fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLContext): View {
     val settings = context.main.settings
@@ -62,6 +64,18 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
     }
 
     val places = object : Places() {
+        fun colorPlace(property: KMutableProperty0<Int>, @StringRes titleRes: Int) = object : Place() {
+            val hex = object : Place() {
+                override fun view() = DialogView(context) {
+                    colorHEXDialog(context, model, property)
+                }
+            }
+
+            override fun view() = colorDetails(
+                    context, model, titleRes, property, hex
+            )
+        }
+
         val font = object : Place() {
             val family = object : Place() {
                 override fun view() = fontFamilyDetails(context, model)
@@ -102,8 +116,8 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
                 private val names = values.map(::format).toTypedArray()
 
                 fun format(isImage: Boolean) = when (isImage) {
-                    false -> context.string(R.string.settingsChangeThemeBackgroundColor)
-                    true -> context.string(R.string.settingsChangeThemeBackgroundPicture)
+                    false -> context.string(R.string.settingsChangeThemeBackgroundSelectColor)
+                    true -> context.string(R.string.settingsChangeThemeBackgroundSelectPicture)
                 }
 
                 override fun view() = DialogView(context) {
@@ -122,17 +136,8 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
                 override fun view() = themeBackgroundPictureDetails(context, model)
             }
 
-            val backgroundColor = object : Place() {
-                val hex = object : Place() {
-                    override fun view() = DialogView(context) {
-                        colorHEXDialog(context, model, settings.format::pageBackgroundColor)
-                    }
-                }
-
-                override fun view() = colorDetails(
-                        context, model, R.string.settingsChangeThemeBackgroundColor, settings.format::pageBackgroundColor, hex
-                )
-            }
+            val backgroundColor = colorPlace(settings.format::pageBackgroundColor, R.string.settingsChangeThemeBackgroundColor)
+            val textColor = colorPlace(settings.format::textColor, R.string.settingsChangeThemeText)
 
             override fun view() = vertical(
                     popupSetting(
@@ -148,7 +153,11 @@ fun settingsChangeView(context: Context, model: SettingsChange, glContext: GLCon
                     detailsSetting(
                             context, model,
                             colorPreview(context, settings.format::pageBackgroundColor), backgroundColor, R.string.settingsChangeThemeBackgroundColor
-                    ) visibleIf { !settings.format.pageBackgroundIsImage }
+                    ) visibleIf { !settings.format.pageBackgroundIsImage },
+                    detailsSetting(
+                            context, model,
+                            colorPreview(context, settings.format::textColor), textColor, R.string.settingsChangeThemeText
+                    )
             )
         }
 
