@@ -55,7 +55,6 @@ fun menuView(context: Context, model: Menu, book: Book): View {
             backgroundColor = color(android.R.color.transparent)
             navigationIcon = drawable(R.drawable.ic_arrow_back)
             popupTheme = R.style.Theme_AppCompat_Light
-            title = book.description.name ?: book.description.fileName
             menu.add(R.string.bookMenuSettings).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 icon = drawable(R.drawable.ic_settings, color(R.color.onBackground))
@@ -73,7 +72,10 @@ fun menuView(context: Context, model: Menu, book: Book): View {
                 setPadding(dip(16), 0, dip(8), dip(16))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)
-                text = book.chapter?.name ?: ""
+
+                autorun {
+                    text = model.locationText
+                }
 
                 if (book.tableOfContents != null) {
                     onClick {

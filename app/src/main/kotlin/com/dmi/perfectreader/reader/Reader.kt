@@ -69,7 +69,7 @@ class Reader(
     }
 
     private fun Selection(state: SelectionState) = Selection(main, book, ::deselect, state)
-    private fun Menu(state: MenuState = MenuState()) = Menu(::showSettings, ::hidePopup, state)
+    private fun Menu(state: MenuState = MenuState()) = Menu(book, ::showSettings, ::hidePopup, state)
     private fun SettingsUI(state: SettingsUIState = SettingsUIState()) = SettingsUI(::hidePopup, this, state)
 
     private fun popupState(model: Screen): Any = when (model) {
