@@ -7,6 +7,6 @@ import kotlinx.coroutines.newSingleThreadContext
 private val nano = newSingleThreadContext("nano")
 
 /**
- * For tasks, which executes fast (< 1s), but they slow down device if multiple run simultaneously
+ * For tasks that run fast (< 1s), but that slow down device if multiple run simultaneously
  */
 val Dispatchers.Nano: CoroutineDispatcher get() = nano
