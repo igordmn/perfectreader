@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.settingschange.common
+package com.dmi.perfectreader.settingsui.common
 
 import android.content.Context
 import android.view.Gravity
@@ -11,8 +11,8 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.settingschange.SettingsChange
-import com.dmi.perfectreader.settingschange.chooseSettingValue
+import com.dmi.perfectreader.settingsui.SettingsUI
+import com.dmi.perfectreader.settingsui.chooseSettingValue
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.initOnce
 import org.jetbrains.anko.*
@@ -31,7 +31,7 @@ fun <T> propertyPreview(context: Context, property: KProperty0<T>, format: (valu
 
 fun detailsSetting(
         context: Context,
-        model: SettingsChange,
+        model: SettingsUI,
         preview: PreviewView,
         place: Places.Place,
         @StringRes
@@ -48,7 +48,7 @@ fun detailsSetting(
 
 fun popupSetting(
         context: Context,
-        model: SettingsChange,
+        model: SettingsUI,
         preview: PreviewView,
         place: Places.Place,
         @StringRes

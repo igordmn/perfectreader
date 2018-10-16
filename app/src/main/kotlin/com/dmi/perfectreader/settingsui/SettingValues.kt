@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.settingschange
+package com.dmi.perfectreader.settingsui
 
 import com.dmi.util.collection.binarySearchGreater
 import com.dmi.util.collection.binarySearchLower

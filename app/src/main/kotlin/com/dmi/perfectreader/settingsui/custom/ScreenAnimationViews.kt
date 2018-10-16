@@ -1,14 +1,14 @@
-package com.dmi.perfectreader.settingschange.custom
+package com.dmi.perfectreader.settingsui.custom
 
 import android.content.Context
 import android.widget.ImageView
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.book.Book
 import com.dmi.perfectreader.main
-import com.dmi.perfectreader.settingschange.SettingsChange
-import com.dmi.perfectreader.settingschange.common.PreviewView
-import com.dmi.perfectreader.settingschange.common.SettingListView
-import com.dmi.perfectreader.settingschange.common.details
+import com.dmi.perfectreader.settingsui.SettingsUI
+import com.dmi.perfectreader.settingsui.common.PreviewView
+import com.dmi.perfectreader.settingsui.common.SettingListView
+import com.dmi.perfectreader.settingsui.common.details
 import com.dmi.util.android.opengl.GLContext
 import com.dmi.util.android.view.Bindable
 import com.dmi.util.android.view.GridAutoFitLayoutManager
@@ -21,11 +21,11 @@ import java.net.URI
 
 fun screenAnimationDetails(
         context: Context,
-        model: SettingsChange,
+        model: SettingsUI,
         book: Book,
         glContext: GLContext
 ) = details(
-        context, model, R.string.settingsChangeScreenAnimation,
+        context, model, R.string.settingsUIScreenAnimation,
         SettingListView(
                 context,
                 context.main.settings.format::pageAnimationPath,

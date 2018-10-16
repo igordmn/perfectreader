@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.settingschange.custom
+package com.dmi.perfectreader.settingsui.custom
 
 import android.content.Context
 import android.graphics.Typeface
@@ -10,10 +10,10 @@ import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.common.Nano
 import com.dmi.perfectreader.main
-import com.dmi.perfectreader.settingschange.SettingsChange
-import com.dmi.perfectreader.settingschange.common.PreviewView
-import com.dmi.perfectreader.settingschange.common.SettingListView
-import com.dmi.perfectreader.settingschange.common.details
+import com.dmi.perfectreader.settingsui.SettingsUI
+import com.dmi.perfectreader.settingsui.common.PreviewView
+import com.dmi.perfectreader.settingsui.common.SettingListView
+import com.dmi.perfectreader.settingsui.common.details
 import com.dmi.util.android.font.AndroidFont
 import com.dmi.util.android.view.*
 import com.dmi.util.font.Fonts
@@ -25,8 +25,8 @@ import org.jetbrains.anko.singleLine
 import org.jetbrains.anko.textColor
 import kotlin.reflect.KProperty0
 
-fun fontFamilyDetails(context: Context, model: SettingsChange) = details(
-        context, model, R.string.settingsChangeFontFamily,
+fun fontFamilyDetails(context: Context, model: SettingsUI) = details(
+        context, model, R.string.settingsUIFontFamily,
         SettingListView(
             context,
             context.main.settings.format::textFontFamily,

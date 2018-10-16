@@ -1,11 +1,11 @@
-package com.dmi.perfectreader.settingschange.custom
+package com.dmi.perfectreader.settingsui.custom
 
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.TooltipCompat
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.settingschange.common.PreviewView
+import com.dmi.perfectreader.settingsui.common.PreviewView
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.image

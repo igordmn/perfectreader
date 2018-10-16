@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.settingschange.common
+package com.dmi.perfectreader.settingsui.common
 
 import android.content.Context
 import android.view.Menu
@@ -7,7 +7,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.Toolbar
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.settingschange.SettingsChange
+import com.dmi.perfectreader.settingsui.SettingsUI
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.matchParent
@@ -15,7 +15,7 @@ import org.jetbrains.anko.wrapContent
 
 fun details(
         context: Context,
-        model: SettingsChange,
+        model: SettingsUI,
         @StringRes titleRes: Int,
         content: View,
         configureMenu: (Menu) -> Unit = {}

@@ -5,8 +5,8 @@ import com.dmi.perfectreader.book.Book
 import com.dmi.perfectreader.book.page.PageScroller
 import com.dmi.perfectreader.reader.Reader
 import com.dmi.perfectreader.settings.Settings
-import com.dmi.perfectreader.settingschange.SettingValues
-import com.dmi.perfectreader.settingschange.chooseSettingValue
+import com.dmi.perfectreader.settingsui.SettingValues
+import com.dmi.perfectreader.settingsui.chooseSettingValue
 import com.dmi.util.action.*
 import com.dmi.util.graphic.PositionF
 import com.dmi.util.input.TouchArea

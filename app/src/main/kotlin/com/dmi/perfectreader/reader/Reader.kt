@@ -12,8 +12,8 @@ import com.dmi.perfectreader.menu.Menu
 import com.dmi.perfectreader.menu.MenuState
 import com.dmi.perfectreader.selection.Selection
 import com.dmi.perfectreader.selection.SelectionState
-import com.dmi.perfectreader.settingschange.SettingsChange
-import com.dmi.perfectreader.settingschange.SettingsChangeState
+import com.dmi.perfectreader.settingsui.SettingsUI
+import com.dmi.perfectreader.settingsui.SettingsUIState
 import com.dmi.util.lang.map
 import com.dmi.util.lang.unsupported
 import com.dmi.util.scope.Scope
@@ -55,7 +55,7 @@ class Reader(
     }
 
     private fun showSettings() {
-        popup = SettingsChange()
+        popup = SettingsUI()
     }
 
     private fun hidePopup() {
@@ -64,17 +64,17 @@ class Reader(
 
     private fun createPopup(state: Any): Screen = when (state) {
         is MenuState -> Menu(state)
-        is SettingsChangeState -> SettingsChange(state)
+        is SettingsUIState -> SettingsUI(state)
         else -> unsupported(state)
     }
 
     private fun Selection(state: SelectionState) = Selection(main, book, ::deselect, state)
     private fun Menu(state: MenuState = MenuState()) = Menu(::showSettings, ::hidePopup, state)
-    private fun SettingsChange(state: SettingsChangeState = SettingsChangeState()) = SettingsChange(::hidePopup, this, state)
+    private fun SettingsUI(state: SettingsUIState = SettingsUIState()) = SettingsUI(::hidePopup, this, state)
 
     private fun popupState(model: Screen): Any = when (model) {
         is Menu -> model.state
-        is SettingsChange -> model.state
+        is SettingsUI -> model.state
         else -> unsupported(model)
     }
 

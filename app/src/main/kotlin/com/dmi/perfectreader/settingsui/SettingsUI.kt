@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.settingschange
+package com.dmi.perfectreader.settingsui
 
 import com.dmi.perfectreader.reader.Reader
 import com.dmi.util.scope.Scope
@@ -9,10 +9,10 @@ import com.dmi.util.screen.ScreensState
 import com.dmi.util.screen.StateScreen
 import kotlinx.serialization.Serializable
 
-class SettingsChange(
+class SettingsUI(
         val back: () -> Unit,
         val reader: Reader,
-        val state: SettingsChangeState,
+        val state: SettingsUIState,
         private val scope: Scope = Scope()
 ) : Screen by Screen(scope) {
     val screens by scope.observableDisposable(Screens(state.screens, back, this::Screen))
@@ -23,12 +23,12 @@ class SettingsChange(
 }
 
 @Serializable
-class SettingsChangeState(
-        val screens: ScreensState = ScreensState.Home(SettingsChangeMainState()),
+class SettingsUIState(
+        val screens: ScreensState = ScreensState.Home(SettingsUIMainState()),
         var popup: Any? = null
 )
 
 @Serializable
-class SettingsChangeMainState
+class SettingsUIMainState
 
 typealias Id = Int

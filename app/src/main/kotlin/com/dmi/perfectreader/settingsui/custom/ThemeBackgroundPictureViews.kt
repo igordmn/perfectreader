@@ -1,20 +1,20 @@
-package com.dmi.perfectreader.settingschange.custom
+package com.dmi.perfectreader.settingsui.custom
 
 import android.content.Context
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
-import com.dmi.perfectreader.settingschange.SettingsChange
-import com.dmi.perfectreader.settingschange.common.PreviewView
-import com.dmi.perfectreader.settingschange.common.SettingBitmapView
-import com.dmi.perfectreader.settingschange.common.SettingListView
-import com.dmi.perfectreader.settingschange.common.details
+import com.dmi.perfectreader.settingsui.SettingsUI
+import com.dmi.perfectreader.settingsui.common.PreviewView
+import com.dmi.perfectreader.settingsui.common.SettingBitmapView
+import com.dmi.perfectreader.settingsui.common.SettingListView
+import com.dmi.perfectreader.settingsui.common.details
 import com.dmi.util.android.view.GridAutoFitLayoutManager
 import com.dmi.util.android.view.autorun
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.padding
 
-fun themeBackgroundPictureDetails(context: Context, model: SettingsChange) = details(
-        context, model, R.string.settingsChangeThemeBackgroundPicture,
+fun themeBackgroundPictureDetails(context: Context, model: SettingsUI) = details(
+        context, model, R.string.settingsUIThemeBackgroundPicture,
         SettingListView(
                 context,
                 context.main.settings.format::pageBackgroundPath,

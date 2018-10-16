@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.settingschange.common
+package com.dmi.perfectreader.settingsui.common
 
 import android.content.Context
 import android.graphics.Canvas
@@ -16,7 +16,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.LinearLayoutCompat
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.settingschange.SettingsChange
+import com.dmi.perfectreader.settingsui.SettingsUI
 import com.dmi.util.android.view.*
 import com.jaredrummler.android.colorpicker.ColorPickerView
 import org.jetbrains.anko.matchParent
@@ -26,7 +26,7 @@ import kotlin.reflect.KProperty0
 
 fun colorDetails(
         context: Context,
-        model: SettingsChange,
+        model: SettingsUI,
         @StringRes titleRes: Int,
         property: KMutableProperty0<Int>,
         hex: Places.Place
@@ -41,7 +41,7 @@ fun colorDetails(
             }
         },
         configureMenu = { menu ->
-            menu.add(R.string.settingsChangeColorHEX).apply {
+            menu.add(R.string.settingsUIColorHEX).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 onClick {
                     model.popup = hex.id
@@ -52,7 +52,7 @@ fun colorDetails(
 
 fun colorHEXDialog(
         context: Context,
-        model: SettingsChange,
+        model: SettingsUI,
         property: KMutableProperty0<Int>
 ): AlertDialog {
     val editText = EditText(context).apply {
@@ -69,7 +69,7 @@ fun colorHEXDialog(
         child(params(matchParent, wrapContent, Gravity.CENTER_VERTICAL, weight = 1F), editText)
     }
     return AlertDialog.Builder(context)
-            .setTitle(R.string.settingsChangeColorHEX)
+            .setTitle(R.string.settingsUIColorHEX)
             .setView(view)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 val normalized = "#" + editText.text.toString().toLowerCase().padStart(6, '0')

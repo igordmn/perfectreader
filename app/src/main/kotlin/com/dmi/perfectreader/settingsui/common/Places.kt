@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.settingschange.common
+package com.dmi.perfectreader.settingsui.common
 
 import android.view.View
 
