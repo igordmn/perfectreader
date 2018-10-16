@@ -2,12 +2,12 @@ package com.dmi.perfectreader.settingsui.common
 
 import android.content.Context
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmi.perfectreader.R
 import com.dmi.util.android.view.Bindable
+import com.dmi.util.android.view.BindableViewAdapter
 import com.dmi.util.android.view.child
 import com.dmi.util.android.view.params
 import org.jetbrains.anko.backgroundResource
@@ -31,23 +31,14 @@ class SettingListView<T, V>(
     init {
         setHasFixedSize(true)
         layoutManager = LinearLayoutManager(context)
-        adapter = object : Adapter<ViewHolder>() {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-                return object : ViewHolder(ItemView(createItemView(context))) {}
-            }
-
+        adapter = object : BindableViewAdapter<ItemView>() {
             override fun getItemCount() = items.size
-
-            override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-                @Suppress("UNCHECKED_CAST")
-                val itemView = holder.itemView as SettingListView<T, V>.ItemView
-                itemView.bind(position)
-            }
+            override fun view() = ItemView(createItemView(context))
         }
         scrollToPosition(activatedPosition)
     }
 
-    private inner class ItemView(val original: V) : FrameLayout(context) {
+    private inner class ItemView(val original: V) : FrameLayout(context), Bindable<Int> {
         var position: Int = 0
 
         init {
@@ -60,8 +51,8 @@ class SettingListView<T, V>(
             onClick { activate() }
         }
 
-        fun bind(position: Int) {
-            this.position = position
+        override fun bind(model: Int) {
+            position = model
             isActivated = activatedPosition == position
             original.bind(items[position])
         }
