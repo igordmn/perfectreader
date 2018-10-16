@@ -13,9 +13,10 @@ class BookContentParsers(log: Log, config: ParseConfig) {
     fun parserFor(uri: Uri): BookContentParser {
         val extension = uri.path!!.substringAfterLast('.')
         val source = sourceFor(uri)
+        val fileName = uri.pathSegments.last()
         return when (extension) {
-            "txt" -> TXTContentParser(charsetDetector, source)
-            "fb2" -> FB2ContentParser(charsetDetector, source)
+            "txt" -> TXTContentParser(charsetDetector, source, fileName)
+            "fb2" -> FB2ContentParser(charsetDetector, source, fileName)
             else -> error("Unsupported format")
         }
     }

@@ -5,9 +5,7 @@ import com.dmi.perfectreader.Main
 import com.dmi.perfectreader.book.bitmap.AndroidBitmapDecoder
 import com.dmi.perfectreader.book.bitmap.BitmapDecoder
 import com.dmi.perfectreader.book.bitmap.CachedBitmapDecoder
-import com.dmi.perfectreader.book.content.Content
-import com.dmi.perfectreader.book.content.ContentText
-import com.dmi.perfectreader.book.content.configure
+import com.dmi.perfectreader.book.content.*
 import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.content.obj.param.appFormatConfig
 import com.dmi.perfectreader.book.layout.UniversalObjectLayouter
@@ -122,6 +120,9 @@ class Book(
     private val animatedPages: AnimatedPages get() = sized.animatedPages
     private val demoAnimatedPages: DemoAnimatedPages get() = sized.demoAnimatedPages
 
+    val description: BookDescription get() = content.description
+    val tableOfContents: TableOfContents? get() = content.tableOfContents
+
     val selections: BookSelections? by scope.cached {
         val page = animatedPages.visible.left
         if (page != null) {
@@ -137,11 +138,12 @@ class Book(
 
     val percent: Double by scope.cached { locations.locationToPercent(location) }
     val pageNumber: Int by scope.cached { locations.locationToPageNumber(location) }
+    val chapter: TableOfContents.Chapter? by scope.cached { tableOfContents?.chapterAt(location) }
     val numberOfPages: Int by scope.cached { locations.numberOfPages }
 
     fun showDemoAnimation() = demoAnimatedPages.animate()
 
-    fun goLocation(location: Location) {
+    private fun goLocation(location: Location) {
         loadingPages.goLocation(location)
         demoAnimatedPages.reset()
         animatedPages.reset()
@@ -155,6 +157,7 @@ class Book(
 
     fun goPercent(percent: Double) = goLocation(locations.percentToLocation(percent))
     fun goPageNumber(pageNumber: Int) = goLocation(locations.pageNumberToLocation(pageNumber))
+    fun goChapter(chapter: TableOfContents.Chapter) = goLocation(chapter.location)
 
     fun animateRelative(relativeIndex: Int) {
         demoAnimatedPages.reset()

@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.book.parse.format
 
+import com.dmi.perfectreader.book.content.BookDescription
 import com.dmi.perfectreader.book.content.Content
 import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.content.location.LocationRange
@@ -13,7 +14,8 @@ import com.google.common.io.ByteSource
 
 class TXTContentParser(
         private val charsetDetector: CharsetDetector,
-        private val source: ByteSource
+        private val source: ByteSource,
+        private val fileName: String
 ) : BookContentParser {
     override fun parse(): Content {
         val charset = charsetDetector.detect(source)
@@ -31,7 +33,10 @@ class TXTContentParser(
             }
         }
 
-        return contentBuilder.build()
+        return contentBuilder.build(
+                BookDescription(author = null, name = null, fileName = fileName),
+                tableOfContents = null
+        )
     }
 
     private fun toContentObject(text: String, style: ContentFontStyle, range: LocationRange) = ContentFrame(

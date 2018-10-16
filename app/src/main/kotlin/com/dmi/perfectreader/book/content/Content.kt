@@ -16,8 +16,8 @@ class Content private constructor(
         private val objects: List<ContentObject>,
         private val percentRanges: PercentRanges,
         val length: Double,
-        val title: String = "Alice in wonderland",
-        val author: String = "Lewis Carroll"
+        val description: BookDescription,
+        val tableOfContents: TableOfContents?
 ) {
     init {
         require(objects.isNotEmpty())
@@ -57,6 +57,9 @@ class Content private constructor(
             length += obj.length
         }
 
-        fun build() = Content(objects, percentRanges, length)
+        fun build(
+                description: BookDescription,
+                tableOfContents: TableOfContents?
+        ) = Content(objects, percentRanges, length, description, tableOfContents)
     }
 }
