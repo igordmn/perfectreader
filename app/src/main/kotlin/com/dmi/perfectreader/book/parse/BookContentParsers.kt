@@ -1,18 +1,21 @@
 package com.dmi.perfectreader.book.parse
 
 import android.net.Uri
+import com.dmi.perfectreader.book.parse.format.FB2ContentParser
+import com.dmi.perfectreader.book.parse.format.TXTContentParser
 import com.dmi.util.log.Log
 import com.google.common.io.Files
 import java.io.File
 
-class BookContentParserFactory(log: Log, config: ParseConfig) {
+class BookContentParsers(log: Log, config: ParseConfig) {
     private val charsetDetector = CharsetDetector(log, config.defaultCharset)
 
     fun parserFor(uri: Uri): BookContentParser {
-        val extension = uri.path.substringAfterLast('.')
+        val extension = uri.path!!.substringAfterLast('.')
         val source = sourceFor(uri)
         return when (extension) {
             "txt" -> TXTContentParser(charsetDetector, source)
+            "fb2" -> FB2ContentParser(charsetDetector, source)
             else -> error("Unsupported format")
         }
     }

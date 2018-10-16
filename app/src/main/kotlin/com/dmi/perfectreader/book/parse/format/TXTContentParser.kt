@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.book.parse
+package com.dmi.perfectreader.book.parse.format
 
 import com.dmi.perfectreader.book.content.Content
 import com.dmi.perfectreader.book.content.location.Location
@@ -7,6 +7,8 @@ import com.dmi.perfectreader.book.content.obj.ContentFrame
 import com.dmi.perfectreader.book.content.obj.ContentParagraph
 import com.dmi.perfectreader.book.content.obj.param.ContentFontStyle
 import com.dmi.perfectreader.book.content.obj.param.StyleType
+import com.dmi.perfectreader.book.parse.BookContentParser
+import com.dmi.perfectreader.book.parse.CharsetDetector
 import com.google.common.io.ByteSource
 
 class TXTContentParser(

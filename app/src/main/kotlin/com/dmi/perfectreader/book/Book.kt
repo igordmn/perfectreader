@@ -25,7 +25,7 @@ import com.dmi.perfectreader.book.page.*
 import com.dmi.perfectreader.book.pagination.column.columns
 import com.dmi.perfectreader.book.pagination.page.pages
 import com.dmi.perfectreader.book.pagination.part.parts
-import com.dmi.perfectreader.book.parse.BookContentParserFactory
+import com.dmi.perfectreader.book.parse.BookContentParsers
 import com.dmi.perfectreader.book.parse.settingsParseConfig
 import com.dmi.perfectreader.book.selection.BookSelections
 import com.dmi.perfectreader.common.UserData
@@ -42,9 +42,9 @@ suspend fun book(main: Main, uri: Uri): Book {
     val settings = main.settings
     val userData: UserData = main.userData
     val parseConfig = settingsParseConfig(settings)
-    val bookContentParserFactory = BookContentParserFactory(log, parseConfig)
+    val bookContentParsers = BookContentParsers(log, parseConfig)
     val content: Content = withContext(Dispatchers.IO) {
-        bookContentParserFactory.parserFor(uri).parse()
+        bookContentParsers.parserFor(uri).parse()
     }
     val userBook: UserBook = userBook(userData, uri)
     val bitmapDecoder = CachedBitmapDecoder(AndroidBitmapDecoder(content.openResource))

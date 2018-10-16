@@ -33,6 +33,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:host="*" android:scheme="file" android:mimeType="text/plain"/>
                 <data android:pathPattern=".*\\.txt"/>
+                <data android:pathPattern=".*\\.fb2"/>
             </intent-filter>
         </activity>
 
