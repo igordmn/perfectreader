@@ -10,6 +10,7 @@ import com.dmi.perfectreader.book.content.obj.param.StyleType
 import com.dmi.perfectreader.book.parse.BookContentParser
 import com.dmi.perfectreader.book.parse.CharsetDetector
 import com.google.common.io.ByteSource
+import com.kursx.parser.fb2.FictionBookExt
 
 class FB2ContentParser(
         private val charsetDetector: CharsetDetector,
@@ -17,7 +18,9 @@ class FB2ContentParser(
 ) : BookContentParser {
     override fun parse(): Content {
         val charset = charsetDetector.detect(source)
-
+        val fictionBook = source.openBufferedStream().use {
+            FictionBookExt(it)
+        }
         val contentBuilder = Content.Builder()
         val style = ContentFontStyle(null, null)
 
