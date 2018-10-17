@@ -8,6 +8,7 @@ class Menu(
         val book: Book,
         val showSettings: () -> Unit,
         val showTableOfContents: () -> Unit,
+        val showSearch: () -> Unit,
         val back: () -> Unit,
         val state: MenuState
 ) : Screen by Screen() {

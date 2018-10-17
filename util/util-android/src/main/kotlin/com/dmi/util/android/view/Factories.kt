@@ -1,6 +1,7 @@
 package com.dmi.util.android.view
 
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.widget.LinearLayoutCompat
 
@@ -29,6 +30,12 @@ fun FrameLayout.params(
         gravity: Int = -1
 ) = FrameLayout.LayoutParams(width, height, gravity)
 
+@Suppress("unused")
+fun ViewGroup.params(
+        width: Int,
+        height: Int
+) = ViewGroup.LayoutParams(width, height)
+
 fun <T : View> LinearLayoutCompat.child(
         params: LinearLayoutCompat.LayoutParams,
         view: T
@@ -39,6 +46,14 @@ fun <T : View> LinearLayoutCompat.child(
 
 fun <T : View> FrameLayout.child(
         params: FrameLayout.LayoutParams,
+        view: T
+): T = view.apply {
+    layoutParams = params
+    addView(this)
+}
+
+fun <T : View> ViewGroup.child(
+        params: ViewGroup.LayoutParams,
         view: T
 ): T = view.apply {
     layoutParams = params

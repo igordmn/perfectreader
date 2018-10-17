@@ -10,6 +10,8 @@ import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.control.Control
 import com.dmi.perfectreader.menu.Menu
 import com.dmi.perfectreader.menu.MenuState
+import com.dmi.perfectreader.search.SearchUI
+import com.dmi.perfectreader.search.SearchUIState
 import com.dmi.perfectreader.selection.Selection
 import com.dmi.perfectreader.selection.SelectionState
 import com.dmi.perfectreader.settingsui.SettingsUI
@@ -64,6 +66,11 @@ class Reader(
         popup = TableOfContentsUI()
     }
 
+
+    private fun showSearch() {
+        popup = SearchUI()
+    }
+
     private fun hidePopup() {
         popup = null
     }
@@ -72,6 +79,7 @@ class Reader(
         is MenuState -> Menu(state)
         is SettingsUIState -> SettingsUI(state)
         is TableOfContentsUIState -> TableOfContentsUI(state)
+        is SearchUIState -> SearchUI(state)
         else -> unsupported(state)
     }
 
@@ -80,16 +88,19 @@ class Reader(
             book,
             ::showSettings,
             ::showTableOfContents,
+            ::showSearch,
             ::hidePopup,
             state
     )
     private fun SettingsUI(state: SettingsUIState = SettingsUIState()) = SettingsUI(::hidePopup, this, state)
     private fun TableOfContentsUI(state: TableOfContentsUIState = TableOfContentsUIState()) = TableOfContentsUI(book, ::hidePopup, state)
+    private fun SearchUI(state: SearchUIState = SearchUIState()) = SearchUI(book, ::hidePopup, state)
 
     private fun popupState(model: Screen): Any = when (model) {
         is Menu -> model.state
         is SettingsUI -> model.state
         is TableOfContentsUI -> model.state
+        is SearchUI -> model.state
         else -> unsupported(model)
     }
 

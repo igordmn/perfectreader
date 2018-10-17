@@ -160,6 +160,9 @@ fun menuView(context: Context, model: Menu): View {
                 contentDescription = string(R.string.bookMenuSearch)
                 image = drawable(R.drawable.ic_search, color(R.color.onBackground))
                 TooltipCompat.setTooltipText(this, contentDescription)
+                onClick {
+                    model.showSearch()
+                }
             })
             child(params(dip(0), matchParent, weight = 1F), AppCompatImageButton(context).apply {
                 backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
