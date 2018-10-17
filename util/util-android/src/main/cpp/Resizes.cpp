@@ -46,6 +46,8 @@ extern "C" JNIEXPORT void JNICALL
 Java_com_dmi_util_android_graphics_ResizesKt_resizeSeamCarvingTo(
         JNIEnv *env, jclass, jobject jSource, jobject jDestination
 ) {
+    CAIR_Threads(1);
+
     AndroidBitmapInfo srcInfo;
     AndroidBitmapInfo dstInfo;
     void *srcPixels;
