@@ -143,5 +143,7 @@
 
     <string name="settingsUIScreenAnimation">Анимация</string>
     <string name="tableOfContentsUITitle">Содержание</string>
-    <string name="searchUIHint">Поиск…</string>
+
+    <string name="searchHint">Поиск…</string>
+    <string name="searchNoResultsFound">Ни чего не найдено</string>
 </resources>

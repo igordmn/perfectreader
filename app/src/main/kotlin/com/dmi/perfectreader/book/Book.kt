@@ -142,10 +142,11 @@ class Book(
     val numberOfPages: Int by scope.cached { locations.numberOfPages }
 
     fun pageNumberOf(chapter: TableOfContents.Chapter) = locations.locationToPageNumber(chapter.location)
+    fun pageNumberOf(location: Location) = locations.locationToPageNumber(location)
 
     fun showDemoAnimation() = demoAnimatedPages.animate()
 
-    private fun goLocation(location: Location) {
+    fun goLocation(location: Location) {
         loadingPages.goLocation(location)
         demoAnimatedPages.reset()
         animatedPages.reset()
