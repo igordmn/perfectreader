@@ -20,7 +20,8 @@ class SearchUI(
     private val _results = ArrayList<Result>()
 
     val results: List<Result>? by scope.async(resetOnRecompute = true) {
-        searchQuery
+        if (searchQuery.isEmpty())
+            return@async null
 
         _results.clear()
 
@@ -30,6 +31,8 @@ class SearchUI(
 
         _results
     }
+
+    val isLoading get() = searchQuery.isNotEmpty() && results == null
 
     class Result(val adjacentText: String, val range: LocationRange)
 }

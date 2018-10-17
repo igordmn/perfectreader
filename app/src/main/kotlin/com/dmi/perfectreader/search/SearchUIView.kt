@@ -45,8 +45,9 @@ fun searchUIView(
     }
 
     fun progress(): View = ProgressBar(context).apply {
+        padding = dip(16)
         autorun {
-            isVisible = model.results == null
+            isVisible = model.isLoading
         }
     }
 
