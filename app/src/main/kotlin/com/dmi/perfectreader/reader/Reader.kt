@@ -14,6 +14,8 @@ import com.dmi.perfectreader.selection.Selection
 import com.dmi.perfectreader.selection.SelectionState
 import com.dmi.perfectreader.settingsui.SettingsUI
 import com.dmi.perfectreader.settingsui.SettingsUIState
+import com.dmi.perfectreader.tableofcontentsui.TableOfContentsUI
+import com.dmi.perfectreader.tableofcontentsui.TableOfContentsUIState
 import com.dmi.util.lang.map
 import com.dmi.util.lang.unsupported
 import com.dmi.util.scope.Scope
@@ -58,6 +60,10 @@ class Reader(
         popup = SettingsUI()
     }
 
+    private fun showTableOfContents() {
+        popup = TableOfContentsUI()
+    }
+
     private fun hidePopup() {
         popup = null
     }
@@ -65,16 +71,25 @@ class Reader(
     private fun createPopup(state: Any): Screen = when (state) {
         is MenuState -> Menu(state)
         is SettingsUIState -> SettingsUI(state)
+        is TableOfContentsUIState -> TableOfContentsUI(state)
         else -> unsupported(state)
     }
 
     private fun Selection(state: SelectionState) = Selection(main, book, ::deselect, state)
-    private fun Menu(state: MenuState = MenuState()) = Menu(book, ::showSettings, ::hidePopup, state)
+    private fun Menu(state: MenuState = MenuState()) = Menu(
+            book,
+            ::showSettings,
+            ::showTableOfContents,
+            ::hidePopup,
+            state
+    )
     private fun SettingsUI(state: SettingsUIState = SettingsUIState()) = SettingsUI(::hidePopup, this, state)
+    private fun TableOfContentsUI(state: TableOfContentsUIState = TableOfContentsUIState()) = TableOfContentsUI(book, ::hidePopup, state)
 
     private fun popupState(model: Screen): Any = when (model) {
         is Menu -> model.state
         is SettingsUI -> model.state
+        is TableOfContentsUI -> model.state
         else -> unsupported(model)
     }
 

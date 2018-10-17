@@ -11,6 +11,8 @@ import com.dmi.perfectreader.menu.menuView
 import com.dmi.perfectreader.selection.selectionView
 import com.dmi.perfectreader.settingsui.SettingsUI
 import com.dmi.perfectreader.settingsui.settingsUIView
+import com.dmi.perfectreader.tableofcontentsui.TableOfContentsUI
+import com.dmi.perfectreader.tableofcontentsui.tableOfContentsUIView
 import com.dmi.util.android.view.bindChild
 import com.dmi.util.android.view.child
 import com.dmi.util.android.view.fadeTransition
@@ -25,8 +27,9 @@ fun readerView(context: Context, model: Reader) = FrameLayout(context).apply {
     val bookView = bookView(context, model)
 
     fun popupView(context: Context, popup: Any) = when (popup) {
-        is Menu -> menuView(context, popup, model.book)
+        is Menu -> menuView(context, popup)
         is SettingsUI -> settingsUIView(context, popup, bookView.glContext)
+        is TableOfContentsUI -> tableOfContentsUIView(context, popup)
         else -> unsupported()
     }
     child(params(matchParent, matchParent), bookView)

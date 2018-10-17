@@ -15,13 +15,14 @@ import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.book.Book
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.intRound
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 import org.jetbrains.anko.*
 
-fun menuView(context: Context, model: Menu, book: Book): View {
+fun menuView(context: Context, model: Menu): View {
+    val book = model.book
+
     fun DiscreteSeekBar.progress() = intRound(book.percent * max)
 
     fun DiscreteSeekBar.onProgressChangeListener(): DiscreteSeekBar.OnProgressChangeListener {
@@ -64,12 +65,12 @@ fun menuView(context: Context, model: Menu, book: Book): View {
             }
         })
 
-        child(params(matchParent, wrapContent), LinearLayoutCompat(context).apply {
+        child(params(matchParent, wrapContent, topMargin = -dip(12)), LinearLayoutCompat(context).apply {
             child(params(matchParent, wrapContent, weight = 1F), TextView(context).apply {
                 isClickable = true
                 isFocusable = true
                 gravity = Gravity.CENTER_VERTICAL
-                setPadding(dip(16), 0, dip(8), dip(16))
+                setPadding(dip(16), dip(12), 0, dip(12))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)
 
@@ -78,14 +79,15 @@ fun menuView(context: Context, model: Menu, book: Book): View {
                 }
 
                 if (book.tableOfContents != null) {
+                    backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
                     onClick {
-                        context.toast("Show table of contents")
+                        model.showTableOfContents()
                     }
                 }
             })
 
             val pageNumber = child(params(wrapContent, wrapContent, weight = 0F), EditNumber(context).apply {
-                setPadding(dip(8), 0, dip(0), dip(16))
+                setPadding(dip(16), dip(12), 0, dip(12))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
@@ -106,7 +108,7 @@ fun menuView(context: Context, model: Menu, book: Book): View {
             })
 
             child(params(wrapContent, wrapContent, weight = 0F), TextView(context).apply {
-                setPadding(0, 0, dip(16), dip(16))
+                setPadding(0, dip(12), dip(16), dip(12))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)

@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 class Menu(
         val book: Book,
         val showSettings: () -> Unit,
+        val showTableOfContents: () -> Unit,
         val back: () -> Unit,
         val state: MenuState
 ) : Screen by Screen() {

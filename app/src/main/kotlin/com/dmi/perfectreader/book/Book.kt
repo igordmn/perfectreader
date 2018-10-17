@@ -141,6 +141,8 @@ class Book(
     val chapter: TableOfContents.Chapter? by scope.cached { tableOfContents?.chapterAt(location) }
     val numberOfPages: Int by scope.cached { locations.numberOfPages }
 
+    fun pageNumberOf(chapter: TableOfContents.Chapter) = locations.locationToPageNumber(chapter.location)
+
     fun showDemoAnimation() = demoAnimatedPages.animate()
 
     private fun goLocation(location: Location) {
