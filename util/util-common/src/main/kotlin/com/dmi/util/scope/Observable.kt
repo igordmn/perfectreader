@@ -7,7 +7,7 @@ import com.dmi.util.lang.value
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KMutableProperty0
 
@@ -28,7 +28,12 @@ private class CallContext {
         }
     }
 
-    fun useLaunch(context: CoroutineContext, action: suspend CoroutineScope.() -> Unit, afterBlock: () -> Unit): Job {
+    fun <T> useLaunch(
+            context: CoroutineContext,
+            action: suspend CoroutineScope.() -> T,
+            onresult: (T) -> Unit,
+            afterBlock: () -> Unit
+    ): Job {
         fun wrapBlock(block: () -> Unit) {
             val oldCallContext = callContext
             callContext = this
@@ -40,13 +45,18 @@ private class CallContext {
             afterBlock()
         }
 
-        return GlobalScope.launch(context.wrapContinuation(::wrapBlock), block = action)
+        return GlobalScope.async(context.wrapContinuation(::wrapBlock), block = {
+            val result = action()
+            dontObserve {
+                onresult(result)
+            }
+        })
     }
 
 }
 
-fun <T> observableProperty(property: KMutableProperty0<T>) : ReadWriteProperty2<Any?, T> = value(property).observable()
-fun <T> observable(initial: T) : ReadWriteProperty2<Any?, T> = value(initial).observable()
+fun <T> observableProperty(property: KMutableProperty0<T>): ReadWriteProperty2<Any?, T> = value(property).observable()
+fun <T> observable(initial: T): ReadWriteProperty2<Any?, T> = value(initial).observable()
 
 fun <T> ReadWriteProperty2<Any?, T>.observable() = object : ReadWriteProperty2<Any?, T> {
     private val onchange = EmittableEvent()
@@ -91,10 +101,15 @@ fun <T> onchange(action: () -> T): Pair<T, Event> {
     }
 }
 
-fun subscribeOnchange(context: CoroutineContext, action: suspend CoroutineScope.() -> Unit, onchange: () -> Unit): Pair<Job, Disposable> {
+fun <T> subscribeOnChange(
+        context: CoroutineContext,
+        action: suspend CoroutineScope.() -> T,
+        onresult: (T) -> Unit,
+        onchange: () -> Unit
+): Pair<Job, Disposable> {
     val subscription = Disposables()
     val callContext = CallContext()
-    val job = callContext.useLaunch(context, action, afterBlock = {
+    val job = callContext.useLaunch(context, action, onresult, afterBlock = {
         callContext.dependencies.forEach {
             subscription += it.subscribe(onchange)
         }

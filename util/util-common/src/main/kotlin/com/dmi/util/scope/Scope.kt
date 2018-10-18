@@ -72,6 +72,7 @@ class Scope : Disposable {
             }
     }
 
+    // todo throw exception on recursion
     inner class CachedDelegate<T>(
             private val compute: () -> T,
             private val dispose: (T) -> Unit
@@ -110,6 +111,7 @@ class Scope : Disposable {
         }
     }
 
+    // todo throw exception on recursion
     inner class AsyncComputedDelegate<T>(
             private val context: CoroutineContext,
             private val resetOnRecompute: Boolean,
@@ -131,11 +133,13 @@ class Scope : Disposable {
         }
 
         private fun start() {
-            val (job, subscription) = subscribeOnchange(context, action = {
-                observable = compute()
+            val (job, subscription) = subscribeOnChange(context, action = {
+                compute()
             }, onchange = {
                 stop()
                 start()
+            }, onresult = {
+                observable = it
             })
             this.job = job
             this.subscription = subscription

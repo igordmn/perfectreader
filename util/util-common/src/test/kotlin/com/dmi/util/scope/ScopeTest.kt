@@ -435,4 +435,34 @@ class ScopeTest {
         nested!!.v3 shouldBe 3
         nested!!.x shouldBe 3
     }
+
+    @Test
+    fun `async compute should called once when observed by another`() = runBlocking(context) {
+        class X : Disposable {
+            override fun dispose() = Unit
+        }
+
+        val scope = Scope()
+
+        var callCount = 0
+
+        val x: X? by scope.async(context) {
+            yield()
+            callCount++
+            X()
+        }
+
+        val xx: X? by scope.async(context) {
+            x
+        }
+
+        yield()
+        yield()
+        yield()
+        yield()
+        yield()
+        yield()
+
+        callCount shouldBe 1
+    }
 }
