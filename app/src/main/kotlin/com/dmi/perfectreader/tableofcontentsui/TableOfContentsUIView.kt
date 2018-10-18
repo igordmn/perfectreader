@@ -64,7 +64,9 @@ class ChapterView(
         private val currentIndex: Int,
         private val chapters: List<TableOfContents.PlainChapter>
 ) : LinearLayoutCompat(context), Bindable<Int> {
-    private val chapterView = TextView(context)
+    private val chapterView = TextView(context).apply {
+        setPadding(dip(0), dip(0), dip(16), dip(0))
+    }
     private val pageView = TextView(context)
 
     init {
