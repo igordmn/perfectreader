@@ -72,8 +72,8 @@ class ChapterView(
     init {
         layoutParams = params(matchParent, wrapContent)
 
-        child(params(matchParent, wrapContent, Gravity.CENTER_VERTICAL, weight = 1F), chapterView)
-        child(params(wrapContent, wrapContent, Gravity.END or Gravity.CENTER_VERTICAL, weight = 0F), pageView)
+        child(params(matchParent, wrapContent, Gravity.TOP, weight = 1F), chapterView)
+        child(params(wrapContent, wrapContent, Gravity.END or Gravity.TOP, weight = 0F), pageView)
 
         orientation = LinearLayoutCompat.HORIZONTAL
         isClickable = true

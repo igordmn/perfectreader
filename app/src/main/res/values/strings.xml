@@ -145,5 +145,9 @@
     <string name="tableOfContentsUITitle">Содержание</string>
 
     <string name="searchHint">Поиск…</string>
-    <string name="searchNoResultsFound">Ни чего не найдено</string>
+    <string name="searchNoResultsFound">Ничего не найдено</string>
+    <string name="searchExactMatch">Точное совпадение</string>
+    <string name="searchCaseSensitive">Учет регистра</string>
+    <string name="searchResultsInfo">Найдено %1$s</string>
+    <string name="searchResultsOverMaxInfo">Найдено больше %1$s</string>
 </resources>

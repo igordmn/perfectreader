@@ -55,6 +55,7 @@ fun View.autorun(action: () -> Unit) {
 
         onViewDetachedFromWindow {
             subscription!!.dispose()
+            subscription = null
         }
     }
 }

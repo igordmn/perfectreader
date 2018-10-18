@@ -3,6 +3,7 @@ package com.dmi.perfectreader.book.content.obj
 import com.dmi.perfectreader.book.content.location.*
 import com.dmi.perfectreader.book.content.obj.param.*
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.PI
 
 private val fontStyleCache = FontStyleCache()
@@ -62,7 +63,7 @@ class ContentParagraph(
                 override val range: LocationRange
         ) : Run(lineHeightMultiplier) {
             init {
-                require(text.length > 0)
+                require(text.isNotEmpty())
             }
 
             override val length = text.length.toDouble()

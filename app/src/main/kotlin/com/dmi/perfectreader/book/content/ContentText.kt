@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.book.content
 
 import com.dmi.perfectreader.book.content.location.*
+import com.dmi.perfectreader.book.content.obj.ContentObject
 import com.dmi.perfectreader.book.content.obj.ContentParagraph
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.anko.collections.forEachReversedWithIndex
@@ -28,18 +29,7 @@ class ContentText(private val content: Content) {
         return@runBlocking plainText.toString()
     }
 
-    private fun StringBuilder.appendPlainText(obj: ContentParagraph, range: LocationRange) {
-        for (run in obj.runs) {
-            if (run is ContentParagraph.Run.Text) {
-                val begin = clamp(range.start, run.range)
-                val end = clamp(range.endInclusive, run.range)
-                val beginIndex = run.charIndex(begin)
-                val endIndex = run.charIndex(end)
-                if (endIndex > beginIndex)
-                    append(run.text.substring(beginIndex, endIndex))
-            }
-        }
-    }
+    fun leafs(): LocatedSequence<ContentObject> = contentLeafSequence(content.sequence)
 
     fun wordEndAfter(location: Location): Location? = runBlocking {
         val leafSequence = contentLeafSequence(content.sequence)
@@ -152,4 +142,64 @@ fun typeOf(ch: Char) = when {
     Character.isSpaceChar(ch) || Character.isWhitespace(ch) -> CharType.SPACE
     Character.isLetter(ch) || Character.isDigit(ch) -> CharType.LETTER_OR_DIGIT
     else -> CharType.OTHER
+}
+
+fun StringBuilder.appendPlainText(obj: ContentParagraph, range: LocationRange = obj.range) {
+    for (run in obj.runs) {
+        if (run is ContentParagraph.Run.Text) {
+            val begin = clamp(range.start, run.range)
+            val end = clamp(range.endInclusive, run.range)
+            val beginIndex = run.charIndex(begin)
+            val endIndex = run.charIndex(end)
+            if (endIndex > beginIndex)
+                append(run.text.substring(beginIndex, endIndex))
+        }
+    }
+}
+
+suspend inline fun ContentText.continuousTexts(action: (ContinuousText) -> Unit) {
+    var entry = leafs().get(Location(0.0))
+    while (entry.hasNext) {
+        val obj = entry.item
+        if (obj is ContentParagraph) {
+            obj.continuousTexts {
+                action(it)
+            }
+        }
+        entry = entry.next()
+    }
+}
+
+inline fun ContentParagraph.continuousTexts(action: (ContinuousText) -> Unit) {
+    val runs = ArrayList<ContentParagraph.Run.Text>()
+
+    for (run in this@continuousTexts.runs) {
+        if (run is ContentParagraph.Run.Text) {
+            runs.add(run)
+        } else {
+            if (runs.size > 0)
+                action(ContinuousText(runs))
+            runs.clear()
+        }
+    }
+
+    if (runs.size > 0)
+        action(ContinuousText(runs))
+}
+
+class ContinuousText(private val runs: List<ContentParagraph.Run.Text>) {
+    init {
+        require(runs.isNotEmpty())
+    }
+
+    val range = LocationRange(runs.first().range.start, runs.first().range.endInclusive)
+
+    private val string = StringBuilder().apply {
+        for (run in runs)
+            append(run.text)
+    }.toString()
+
+    override fun toString() = string
+
+    fun rangeOf(indices: IntRange) = textSubRange(string, range, indices.start, indices.endInclusive)
 }
