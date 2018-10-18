@@ -22,7 +22,6 @@ import com.dmi.util.lang.map
 import com.dmi.util.lang.unsupported
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
-import com.dmi.util.scope.observableProperty
 import com.dmi.util.screen.Screen
 import kotlinx.serialization.Serializable
 
@@ -42,7 +41,7 @@ class Reader(
     val control: Control by scope.observableDisposable(Control(main, this))
     var selection: Selection? by scope.observableDisposableProperty(map(state::selection, ::Selection, ::state))
         private set
-    var popup: Screen? by observableProperty(map(state::popup, ::createPopup, ::popupState))
+    var popup: Screen? by scope.observableDisposableProperty(map(state::popup, ::createPopup, ::popupState))
         private set
     var performingAction: PerformingAction? by observable(null)
 
@@ -65,7 +64,6 @@ class Reader(
     private fun showTableOfContents() {
         popup = TableOfContentsUI()
     }
-
 
     private fun showSearch() {
         popup = SearchUI()
