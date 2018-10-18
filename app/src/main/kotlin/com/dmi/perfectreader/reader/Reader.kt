@@ -18,7 +18,7 @@ import com.dmi.perfectreader.settingsui.SettingsUI
 import com.dmi.perfectreader.settingsui.SettingsUIState
 import com.dmi.perfectreader.tableofcontentsui.TableOfContentsUI
 import com.dmi.perfectreader.tableofcontentsui.TableOfContentsUIState
-import com.dmi.util.lang.map
+import com.dmi.util.lang.init
 import com.dmi.util.lang.unsupported
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
@@ -39,9 +39,9 @@ class Reader(
     val actions = Actions(main, this)
     val book: Book by scope.observableDisposable(book)
     val control: Control by scope.observableDisposable(Control(main, this))
-    var selection: Selection? by scope.observableDisposableProperty(map(state::selection, ::Selection, ::state))
+    var selection: Selection? by scope.observableDisposableProperty(init(state::selection, ::Selection, ::state))
         private set
-    var popup: Screen? by scope.observableDisposableProperty(map(state::popup, ::createPopup, ::popupState))
+    var popup: Screen? by scope.observableDisposableProperty(init(state::popup, ::createPopup, ::popupState))
         private set
     var performingAction: PerformingAction? by observable(null)
 
