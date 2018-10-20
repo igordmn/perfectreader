@@ -15,7 +15,8 @@ fun androidFontsCache(log: Log) = FontsCache(
             Fonts(
                     getFileFonts,
                     ::loadAndroidFont,
-                    ::loadDefaultAndroidFont
+                    ::loadDefaultAndroidFont,
+                    ::loadMonospaceAndroidFont
             )
         }
 )
@@ -30,5 +31,16 @@ fun loadDefaultAndroidFont(isBold: Boolean, isItalic: Boolean): StyledFont {
         else -> Typeface.NORMAL
     }
     val font = AndroidFont(Typeface.create(Typeface.SANS_SERIF, style))
+    return StyledFont(font, isFakeBold = false, isFakeItalic = false)
+}
+
+fun loadMonospaceAndroidFont(isBold: Boolean, isItalic: Boolean): StyledFont {
+    val style = when {
+        isBold && isItalic -> Typeface.BOLD_ITALIC
+        isBold -> Typeface.BOLD
+        isItalic -> Typeface.ITALIC
+        else -> Typeface.NORMAL
+    }
+    val font = AndroidFont(Typeface.create(Typeface.MONOSPACE, style))
     return StyledFont(font, isFakeBold = false, isFakeItalic = false)
 }

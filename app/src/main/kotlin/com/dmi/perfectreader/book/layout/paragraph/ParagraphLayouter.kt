@@ -1,11 +1,11 @@
 package com.dmi.perfectreader.book.layout.paragraph
 
 import com.carrotsearch.hppc.FloatArrayList
+import com.dmi.perfectreader.book.content.common.TextAlign
+import com.dmi.perfectreader.book.content.configure.ConfiguredObject
+import com.dmi.perfectreader.book.content.configure.ConfiguredParagraph
+import com.dmi.perfectreader.book.content.configure.ConfiguredParagraph.Run
 import com.dmi.perfectreader.book.content.location.LocationRange
-import com.dmi.perfectreader.book.content.obj.ConfiguredObject
-import com.dmi.perfectreader.book.content.obj.ConfiguredParagraph
-import com.dmi.perfectreader.book.content.obj.ConfiguredParagraph.Run
-import com.dmi.perfectreader.book.content.obj.param.TextAlign
 import com.dmi.perfectreader.book.layout.ObjectLayouter
 import com.dmi.perfectreader.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.book.layout.common.LayoutSpace.Area

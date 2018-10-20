@@ -4,9 +4,9 @@ import com.dmi.perfectreader.location
 import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.content.obj.ContentObject
 import com.dmi.perfectreader.book.content.obj.ContentParagraph
-import com.dmi.perfectreader.book.content.obj.param.ContentFontStyle
-import com.dmi.perfectreader.book.content.obj.param.FormatConfig
-import com.dmi.perfectreader.book.content.obj.param.StyleType
+import com.dmi.perfectreader.book.content.common.ContentFontStyle
+import com.dmi.perfectreader.book.content.obj.common.ContentStyle
+import com.dmi.perfectreader.book.content.common.StyleType
 import com.dmi.perfectreader.range
 import com.dmi.test.shouldBe
 import org.junit.Test
@@ -147,7 +147,7 @@ class ContentTextTest {
         par.wordEndAfter(Location(2.4)) shouldBe location(3)
     }
 
-    fun paragraph(vararg runs: ContentParagraph.Run) =
+    fun paragraph(vararg runs: com.dmi.perfectreader.book.content.obj.ContentParagraph.ContentText.Run) =
             ContentParagraph(StyleType.NORMAL, null, runs.toList(), 0F, null, null, range(0, 1000))
 
     fun textRun(text: String, begin: Int, end: Int) =
@@ -155,6 +155,6 @@ class ContentTextTest {
 
     fun objectRun(begin: Int, end: Int) = ContentParagraph.Run.Object(object : ContentObject(range(begin, end), null) {
         override val length = 0.0
-        override fun configure(config: FormatConfig) = throw UnsupportedOperationException()
+        override fun configure(config: ContentStyle) = throw UnsupportedOperationException()
     }, 1F)
 }

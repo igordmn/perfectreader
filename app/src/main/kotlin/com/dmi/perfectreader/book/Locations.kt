@@ -2,7 +2,8 @@ package com.dmi.perfectreader.book
 
 import com.dmi.perfectreader.book.content.Content
 import com.dmi.perfectreader.book.content.location.Location
-import com.dmi.perfectreader.book.content.obj.param.FormatConfig
+import com.dmi.perfectreader.book.content.obj.common.ContentClass
+import com.dmi.perfectreader.book.content.obj.common.ContentConfig
 import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.lang.intCeil
@@ -13,9 +14,11 @@ import java.lang.Math.*
 class Locations(
         private val content: Content,
         private val contentSize: SizeF,
-        private val formatConfig: FormatConfig,
+        contentConfig: ContentConfig,
         settings: Settings
 ) {
+    private val paragraphConfig = contentConfig.styled[ContentClass.PARAGRAPH]
+    private val style = paragraphConfig.style
     val numberOfPages: Int = approximateNumberOfPages(content, settings)
 
     init {
@@ -48,11 +51,14 @@ class Locations(
     }
 
     private fun approximatePageLength(): Int {
-        val textHeight = formatConfig.textSizeDip * formatConfig.density
-        val letterSpacing = max(-0.6F, formatConfig.letterSpacingEm) * textHeight
-        val wordSpacingMultiplier = formatConfig.wordSpacingMultiplier
-        val lineHeightMultiplier = formatConfig.lineHeightMultiplier
-        val paragraphVerticalMargin = formatConfig.paragraphVerticalMarginEm * textHeight
+        val textHeight = style.textSizeDip * paragraphConfig.density
+        val letterSpacing = max(-0.6F, style.letterSpacingEm) * textHeight
+        val wordSpacingMultiplier = style.wordSpacingMultiplier
+        val lineHeightMultiplier = style.lineHeightMultiplier
+        val margins = style.margins.configure(paragraphConfig)
+        val bottomMargin = margins.bottom.compute(contentSize.height)
+        val topMargin = margins.top.compute(contentSize.height)
+        val paragraphVerticalMargin = max(bottomMargin, topMargin)
 
         val wordLength = 5
         val paragraphLength = 200

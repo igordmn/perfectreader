@@ -1,9 +1,9 @@
 package com.dmi.perfectreader.book.layout
 
 import com.dmi.perfectreader.book.bitmap.BitmapDecoder
-import com.dmi.perfectreader.book.content.obj.ConfiguredImage
-import com.dmi.perfectreader.book.content.obj.param.ConfiguredSize.Dimension.Auto
-import com.dmi.perfectreader.book.content.obj.param.ConfiguredSize.Dimension.Fixed
+import com.dmi.perfectreader.book.content.configure.ConfiguredImage
+import com.dmi.perfectreader.book.content.configure.common.ConfiguredSize.Dimension.Auto
+import com.dmi.perfectreader.book.content.configure.common.ConfiguredSize.Dimension.Fixed
 import com.dmi.perfectreader.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.book.layout.obj.LayoutImage
 import com.dmi.util.graphic.Size

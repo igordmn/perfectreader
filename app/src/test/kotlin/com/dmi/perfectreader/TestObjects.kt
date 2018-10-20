@@ -2,7 +2,7 @@ package com.dmi.perfectreader
 
 import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.content.location.LocationRange
-import com.dmi.perfectreader.book.content.obj.param.ConfiguredFontStyle
+import com.dmi.perfectreader.book.content.configure.common.ConfiguredFontStyle
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
 import com.dmi.util.font.Font
 import com.dmi.util.font.StyledFont

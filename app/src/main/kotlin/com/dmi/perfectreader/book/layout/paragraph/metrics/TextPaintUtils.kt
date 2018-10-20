@@ -3,7 +3,7 @@ package com.dmi.perfectreader.book.layout.paragraph.metrics
 import android.graphics.Paint
 import android.os.Build
 import android.text.TextPaint
-import com.dmi.perfectreader.book.content.obj.param.ConfiguredFontStyle
+import com.dmi.perfectreader.book.content.configure.common.ConfiguredFontStyle
 import com.dmi.util.android.font.AndroidFont
 
 fun configureTextPaint(paint: TextPaint, style: ConfiguredFontStyle) {

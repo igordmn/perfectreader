@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.book.bitmap
 
-import com.dmi.util.ext.cache
+import com.dmi.util.cache.cache
 import java.io.IOException
 
 class CachedBitmapDecoder(private val bitmapDecoder: BitmapDecoder) : BitmapDecoder {

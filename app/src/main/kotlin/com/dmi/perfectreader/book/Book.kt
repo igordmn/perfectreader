@@ -6,8 +6,9 @@ import com.dmi.perfectreader.book.bitmap.AndroidBitmapDecoder
 import com.dmi.perfectreader.book.bitmap.BitmapDecoder
 import com.dmi.perfectreader.book.bitmap.CachedBitmapDecoder
 import com.dmi.perfectreader.book.content.*
+import com.dmi.perfectreader.book.content.obj.common.ContentConfig
+import com.dmi.perfectreader.book.content.common.PageConfig
 import com.dmi.perfectreader.book.content.location.Location
-import com.dmi.perfectreader.book.content.obj.param.appFormatConfig
 import com.dmi.perfectreader.book.layout.UniversalObjectLayouter
 import com.dmi.perfectreader.book.layout.layout
 import com.dmi.perfectreader.book.layout.paragraph.breaker.CompositeBreaker
@@ -28,7 +29,6 @@ import com.dmi.perfectreader.book.parse.settingsParseConfig
 import com.dmi.perfectreader.book.selection.BookSelections
 import com.dmi.perfectreader.common.UserData
 import com.dmi.util.graphic.SizeF
-import com.dmi.util.graphic.shrink
 import com.dmi.util.scope.*
 import com.dmi.util.system.seconds
 import kotlinx.coroutines.Dispatchers
@@ -76,26 +76,21 @@ class Book(
             bitmapDecoder
     )
 
-    private val formatConfig by scope.cached {
-        appFormatConfig(main.applicationContext, main.settings, main.resources.fonts)
-    }
-
     private val sized: Sized by scope.cachedDisposable {
         val size = size
-        val formatConfig = formatConfig
+        val formatConfig = ContentConfig(main)
+        val pageConfig = PageConfig(main, size)
 
         dontObserve {
             val settings = main.settings
             val dip2px = main.dip2px
-            val paddings = formatConfig.pagePaddingsDip * formatConfig.density
-            val contentSize = size.shrink(paddings.left + paddings.right, paddings.top + paddings.bottom)
             val sequence = content.sequence
                     .configure(formatConfig)
-                    .layout(layouter, contentSize)
+                    .layout(layouter, pageConfig.contentSize)
                     .parts()
-                    .columns(contentSize.height)
-                    .pages(size, formatConfig)
-            val locations = Locations(content, contentSize, formatConfig, settings)
+                    .columns(pageConfig.contentSize.height)
+                    .pages(pageConfig)
+            val locations = Locations(content, pageConfig.contentSize, formatConfig, settings)
             val loadingPages = LoadingPages(LoadingPages.pages(sequence, locations, userBook))
             val animator = SmoothPageAnimator(seconds(0.4))
             val animatedPages = AnimatedPages(

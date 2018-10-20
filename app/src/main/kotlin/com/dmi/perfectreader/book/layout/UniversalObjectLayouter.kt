@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.book.layout
 
 import com.dmi.perfectreader.book.bitmap.BitmapDecoder
-import com.dmi.perfectreader.book.content.obj.*
+import com.dmi.perfectreader.book.content.configure.*
 import com.dmi.perfectreader.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
 import com.dmi.perfectreader.book.layout.paragraph.ParagraphLayouter

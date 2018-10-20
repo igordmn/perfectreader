@@ -3,7 +3,7 @@ package com.dmi.perfectreader.book.render.factory
 import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
 import android.text.TextPaint
-import com.dmi.perfectreader.book.content.obj.param.ConfiguredFontStyle
+import com.dmi.perfectreader.book.content.configure.common.ConfiguredFontStyle
 import com.dmi.perfectreader.book.layout.obj.LayoutSpaceText
 import com.dmi.perfectreader.book.layout.obj.LayoutText
 import com.dmi.perfectreader.book.layout.paragraph.metrics.configureTextPaint

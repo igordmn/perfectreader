@@ -40,8 +40,10 @@ class SearchUI(
     private suspend fun search(contentText: ContentText, query: String, maxResults: Int): Results {
         val results = Results.Builder(maxResults)
 
+        println("GGG 1")
         contentText.continuousTexts { text ->
             val textStr = text.toString()
+            println("GGG $textStr")
             textStr.indicesOf(query, ignoreCase = true).forEach {
                 results += Result(
                         adjacentText(textStr, it),

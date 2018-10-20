@@ -1,13 +1,18 @@
 package com.dmi.util.font
 
-import com.dmi.util.ext.cache
+import com.dmi.util.cache.cache
 import com.dmi.util.log.Log
 import java.io.File
 
 class Fonts(
         private val getFileFonts: () -> FileFonts,
         private val loadFont: (File) -> Font,
-        private val loadDefaultFont: (isBold: Boolean, isItalic: Boolean) -> StyledFont
+
+        // todo replace by font file in assets folder
+        private val loadDefaultFont: (isBold: Boolean, isItalic: Boolean) -> StyledFont,
+
+        // todo replace by font file in assets folder
+        private val loadMonospaceFont: (isBold: Boolean, isItalic: Boolean) -> StyledFont
 ) {
     private val fileFonts: FileFonts get() = getFileFonts()
     private val fileToFontCache = cache<File, Font>(softValues = true) {
@@ -18,6 +23,8 @@ class Fonts(
     fun loadFont(familyName: String, isBold: Boolean, isItalic: Boolean): StyledFont {
         if (familyName == "")
             return loadDefaultFont(isBold, isItalic)
+        if (familyName.toLowerCase() == "Monospace")
+            return loadMonospaceFont(isBold, isItalic)
 
         val style = fileFonts[familyName]?.style(isBold, isItalic)
         return if (style != null) {

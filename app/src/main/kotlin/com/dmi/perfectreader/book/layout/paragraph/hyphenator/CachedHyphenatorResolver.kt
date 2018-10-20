@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.book.layout.paragraph.hyphenator
 
-import com.dmi.util.ext.cache
+import com.dmi.util.cache.cache
 import java.util.*
 
 class CachedHyphenatorResolver(private val resolver: HyphenatorResolver) : HyphenatorResolver {

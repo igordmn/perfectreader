@@ -1,13 +1,12 @@
 package com.dmi.perfectreader.book.content.obj
 
-import com.dmi.perfectreader.book.content.obj.param.FormatConfig
+import com.dmi.perfectreader.book.content.configure.ConfiguredObject
 import com.dmi.perfectreader.book.content.location.LocationRange
-import java.io.Serializable
+import com.dmi.perfectreader.book.content.obj.common.ContentConfig
 
-abstract class ContentObject(
-        val range: LocationRange,
-        val textSize: Float?    // используется для вычисления EM единиц (http://www.w3schools.com/cssref/css_units.asp)
-) : Serializable {
+interface ContentObject {
+    val range: LocationRange
+
     /**
      * Используется для определения положения в процентах
      *
@@ -15,7 +14,7 @@ abstract class ContentObject(
      * Для изображений равна 32.
      * Для контейнеров равна сумме дочерних объектов.
      */
-    abstract val length: Double
+    val length: Double
 
     /**
      * - установка неустановленных параметров (например, если textSize = null, то ставится стандартное значение)
@@ -24,9 +23,5 @@ abstract class ContentObject(
      *   эта функция возьмет конкретный шрифт на карте памяти /sdcard/Fonts/RobotoI.ttf)
      * - преобразование dip (device independent pixels) в px
      */
-    abstract fun configure(config: FormatConfig): ConfiguredObject
-
-    protected fun emToDip(value: Float, config: FormatConfig) = (textSize ?: config.textSizeDip) * value
+    fun configure(config: ContentConfig): ConfiguredObject
 }
-
-abstract class ConfiguredObject(val range: LocationRange)

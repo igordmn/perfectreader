@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.book.layout.obj
 
-import com.dmi.perfectreader.book.content.obj.param.ConfiguredFontStyle
+import com.dmi.perfectreader.book.content.configure.common.ConfiguredFontStyle
 import com.dmi.perfectreader.book.content.location.textIndexAt
 import com.dmi.perfectreader.book.content.location.textSubLocation
 import com.dmi.perfectreader.book.content.location.Location

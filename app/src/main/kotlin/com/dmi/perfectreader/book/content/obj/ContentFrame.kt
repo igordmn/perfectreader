@@ -1,100 +1,45 @@
 package com.dmi.perfectreader.book.content.obj
 
-import com.dmi.perfectreader.book.content.obj.param.FormatConfig
-import com.dmi.perfectreader.book.content.obj.param.Length
-import com.dmi.perfectreader.book.content.obj.param.StyleType
+import com.dmi.perfectreader.book.content.configure.ConfiguredFrame
+import com.dmi.perfectreader.book.content.configure.common.ConfiguredLength
 import com.dmi.perfectreader.book.content.location.LocationRange
+import com.dmi.perfectreader.book.content.obj.common.ContentClass
+import com.dmi.perfectreader.book.content.obj.common.ContentConfig
 import com.dmi.util.graphic.Color
 
 class ContentFrame(
-        val styleType: StyleType,
-        val margins: Margins,
-        val paddings: Paddings,
-        val borders: Borders,
-        val background: Background,
         val child: ContentObject,
-        textSize: Float?,
-        range: LocationRange
-) : ContentObject(range, textSize) {
-    companion object {
-        private val DEFAULT_PARAGRAPH_VERTICAL_MARGIN_EM = 0.5F
-    }
-
+        private val cls: ContentClass?,
+        override val range: LocationRange
+) : ContentObject {
     override val length = child.length
 
-    override fun configure(config: FormatConfig) = ConfiguredFrame(
-            margins.configure(config, styleType, textSize),
-            paddings.configure(config),
-            borders.configure(config),
-            background.configure(),
-            child.configure(config),
-            range
-    )
-
-    class Background(val color: Color?) {
-        fun configure() = ConfiguredFrame.Background(color ?: Color.TRANSPARENT)
-    }
-
-    class Margins(val left: Length?, val right: Length?, val top: Length?, val bottom: Length?) {
-        fun configure(config: FormatConfig, styleType: StyleType, textSize: Float?): ConfiguredFrame.Margins {
-            return if (styleType == StyleType.PARAGRAPH) {
-                val verticalMarginMultiplier = config.paragraphVerticalMarginEm / DEFAULT_PARAGRAPH_VERTICAL_MARGIN_EM
-                val defaultVerticalMarginDip = DEFAULT_PARAGRAPH_VERTICAL_MARGIN_EM * (textSize ?: config.textSizeDip)
-
-                ConfiguredFrame.Margins(
-                        (left ?: Length.Absolute(0F)).configure(config),
-                        (right ?: Length.Absolute(0F)).configure(config),
-                        (top ?: Length.Absolute(defaultVerticalMarginDip)).configure(config, verticalMarginMultiplier),
-                        (bottom ?: Length.Absolute(defaultVerticalMarginDip)).configure(config, verticalMarginMultiplier)
-                )
-            } else {
-                ConfiguredFrame.Margins(
-                        (left ?: Length.Absolute(0F)).configure(config),
-                        (right ?: Length.Absolute(0F)).configure(config),
-                        (top ?: Length.Absolute(0F)).configure(config),
-                        (bottom ?: Length.Absolute(0F)).configure(config)
-                )
-            }
-        }
-    }
-
-    class Paddings(val left: Length?, val right: Length?, val top: Length?, val bottom: Length?) {
-        fun configure(config: FormatConfig) = ConfiguredFrame.Paddings(
-                (left ?: Length.Absolute(0F)).configure(config),
-                (right ?: Length.Absolute(0F)).configure(config),
-                (top ?: Length.Absolute(0F)).configure(config),
-                (bottom ?: Length.Absolute(0F)).configure(config)
+    override fun configure(config: ContentConfig): ConfiguredFrame {
+        val styled = config.styled[cls]
+        val style = styled.style
+        val inherited = styled.inherited
+        return ConfiguredFrame(
+                style.margins.configure(styled),
+                paddings,
+                borders,
+                background,
+                child.configure(inherited),
+                range
         )
     }
 
-    class Border(val width: Float?, val color: Color?) {
-        fun configure(config: FormatConfig) = ConfiguredFrame.Border(
-                (width ?: 0F) * config.density,
-                color ?: Color.BLACK
+    companion object {
+        private val paddings = ConfiguredFrame.Paddings(
+                ConfiguredLength.Absolute(0F), ConfiguredLength.Absolute(0F), ConfiguredLength.Absolute(0F), ConfiguredLength.Absolute(0F)
         )
-    }
 
-    class Borders(val left: Border, val right: Border, val top: Border, val bottom: Border) {
-        fun configure(config: FormatConfig) = ConfiguredFrame.Borders(
-                left.configure(config),
-                right.configure(config),
-                top.configure(config),
-                bottom.configure(config)
+        private val borders = ConfiguredFrame.Borders(
+                ConfiguredFrame.Border(0F, Color.TRANSPARENT),
+                ConfiguredFrame.Border(0F, Color.TRANSPARENT),
+                ConfiguredFrame.Border(0F, Color.TRANSPARENT),
+                ConfiguredFrame.Border(0F, Color.TRANSPARENT)
         )
-    }
-}
 
-class ConfiguredFrame(
-        val margins: Margins,
-        val paddings: Paddings,
-        val borders: Borders,
-        val background: Background,
-        val child: ConfiguredObject,
-        range: LocationRange
-) : ConfiguredObject(range) {
-    class Background(val color: Color)
-    class Margins(val left: Length, val right: Length, val top: Length, val bottom: Length)
-    class Paddings(val left: Length, val right: Length, val top: Length, val bottom: Length)
-    class Border(val width: Float, val color: Color)
-    class Borders(val left: Border, val right: Border, val top: Border, val bottom: Border)
+        private val background = ConfiguredFrame.Background(Color.TRANSPARENT)
+    }
 }

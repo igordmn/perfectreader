@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.book.layout.paragraph.metrics
 
-import com.dmi.perfectreader.book.content.obj.param.ConfiguredFontStyle
+import com.dmi.perfectreader.book.content.configure.common.ConfiguredFontStyle
 import com.dmi.util.lang.Reusable
 
 interface TextMetrics {

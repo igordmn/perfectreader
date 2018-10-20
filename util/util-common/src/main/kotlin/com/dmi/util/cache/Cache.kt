@@ -1,8 +1,13 @@
-package com.dmi.util.ext
+package com.dmi.util.cache
 
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
-import com.google.common.cache.LoadingCache
+
+interface Cache<K, V> {
+    operator fun get(key: K): V
+}
+
+private data class KeyHolder<T>(val key: T)
 
 fun <K, V> cache(
         maximumSize: Long = -1,
@@ -10,7 +15,7 @@ fun <K, V> cache(
         weakValues: Boolean = false,
         weakKeys: Boolean = false,
         load: (K) -> V
-): LoadingCache<K, V> {
+): Cache<K, V> {
     val builder = CacheBuilder.newBuilder()
     if (maximumSize >= 0)
         builder.maximumSize(maximumSize)
@@ -20,7 +25,10 @@ fun <K, V> cache(
         builder.weakValues()
     if (weakKeys)
         builder.weakKeys()
-    return builder.build(cacheLoader(load))
+    val guavaCache = builder.build(cacheLoader(load))
+    return object : Cache<K, V> {
+        override fun get(key: K) = guavaCache[KeyHolder(key)]
+    }
 }
 
-fun <K, V> cacheLoader(load: (K) -> V) = CacheLoader.from<K, V> { load(it!!) }
+private fun <K, V> cacheLoader(load: (K) -> V) = CacheLoader.from<KeyHolder<K>, V> { load(it!!.key) }

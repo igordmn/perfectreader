@@ -1,13 +1,7 @@
-package com.dmi.perfectreader.book.content.obj.param
+package com.dmi.perfectreader.book.content.configure.common
 
 import com.dmi.util.font.StyledFont
 import com.dmi.util.graphic.Color
-import java.io.Serializable
-
-class ContentFontStyle(
-        val size: Float?,
-        val color: Color?
-) : Serializable
 
 class ConfiguredFontStyle(
         val styledFont: StyledFont,

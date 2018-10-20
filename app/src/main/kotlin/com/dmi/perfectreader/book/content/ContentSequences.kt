@@ -7,14 +7,14 @@ import com.dmi.perfectreader.book.content.location.map
 import com.dmi.perfectreader.book.content.obj.ContentBox
 import com.dmi.perfectreader.book.content.obj.ContentFrame
 import com.dmi.perfectreader.book.content.obj.ContentObject
-import com.dmi.perfectreader.book.content.obj.param.FormatConfig
+import com.dmi.perfectreader.book.content.obj.common.ContentConfig
+import com.dmi.util.cache.cache
 import com.dmi.util.collection.ListSequenceEntry
-import com.dmi.util.ext.cache
 import com.dmi.util.range.indexOfNearestRange
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-fun LocatedSequence<ContentObject>.configure(config: FormatConfig) = map {
+fun LocatedSequence<ContentObject>.configure(config: ContentConfig) = map {
     withContext(Dispatchers.Default) {
         it.configure(config)
     }

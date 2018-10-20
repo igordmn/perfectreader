@@ -11,7 +11,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.viewpager.widget.ViewPager
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.book.content.obj.param.TextAlign
+import com.dmi.perfectreader.book.content.common.TextAlign
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.settingsui.common.*
 import com.dmi.perfectreader.settingsui.custom.*
@@ -111,7 +111,7 @@ fun settingsUIView(context: Context, model: SettingsUI, glContext: GLContext): V
                     floatSetting(context, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER, R.string.settingsUIFormatLineHeight),
                     floatSetting(context, settings.format::letterSpacingEm, SettingValues.TEXT_LETTER_SPACING, R.string.settingsUIFormatLetterSpacing),
                     floatSetting(context, settings.format::paragraphVerticalMarginEm, SettingValues.PARAGRAPH_VERTICAL_MARGIN, R.string.settingsUIFormatParagraphSpacing),
-                    floatSetting(context, settings.format::firstLineIndentEm, SettingValues.FIRST_LINE_INDENT, R.string.settingsUIFormatFirstLineIndent),
+                    floatSetting(context, settings.format::paragraphFirstLineIndentEm, SettingValues.FIRST_LINE_INDENT, R.string.settingsUIFormatFirstLineIndent),
                     booleanSetting(context, settings.format::hyphenation, R.string.settingsUIFormatHyphenation),
                     booleanSetting(context, settings.format::hangingPunctuation, R.string.settingsUIFormatHangingPunctuation, R.string.settingsUIFormatHangingPunctuationDesc),
                     booleanSetting(context, settingsExt.format::justify, R.string.settingsUIFormatJustify)

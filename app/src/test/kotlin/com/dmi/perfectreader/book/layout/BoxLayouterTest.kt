@@ -1,10 +1,10 @@
 package com.dmi.perfectreader.book.layout
 
-import com.dmi.perfectreader.book.content.obj.ConfiguredBox
-import com.dmi.perfectreader.book.content.obj.ConfiguredObject
-import com.dmi.perfectreader.book.content.obj.param.Align
-import com.dmi.perfectreader.book.content.obj.param.ConfiguredSize
-import com.dmi.perfectreader.book.content.obj.param.Length.Absolute
+import com.dmi.perfectreader.book.content.configure.ConfiguredBox
+import com.dmi.perfectreader.book.content.configure.ConfiguredObject
+import com.dmi.perfectreader.book.content.common.Align
+import com.dmi.perfectreader.book.content.configure.common.ConfiguredSize
+import com.dmi.perfectreader.book.content.configure.common.ConfiguredLength.Absolute
 import com.dmi.perfectreader.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
 import com.dmi.perfectreader.layoutObj
