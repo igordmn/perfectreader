@@ -32,6 +32,11 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:host="*" android:scheme="file" android:mimeType="text/plain"/>
+                <data android:host="*" android:scheme="file" android:mimeType="text/text"/>
+                <data android:host="*" android:scheme="file" android:mimeType="text/txt"/>
+                <data android:host="*" android:scheme="file" android:mimeType="text/fb2+xml"/>
+                <data android:host="*" android:scheme="file" android:mimeType="application/fb2"/>
+                <data android:host="*" android:scheme="file" android:mimeType="application/x-fb2"/>
                 <data android:pathPattern=".*\\.txt"/>
                 <data android:pathPattern=".*\\.fb2"/>
             </intent-filter>
