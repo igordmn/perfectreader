@@ -8,7 +8,6 @@ import com.dmi.perfectreader.main
 import com.dmi.util.android.view.Bindable
 import com.dmi.util.android.view.ViewLoad
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.dip
 import java.net.URI

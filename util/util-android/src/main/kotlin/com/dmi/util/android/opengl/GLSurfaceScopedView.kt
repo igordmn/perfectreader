@@ -18,7 +18,6 @@ import com.dmi.util.scope.CopyScope
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.onchange
 import kotlinx.coroutines.*
-import kotlinx.coroutines.android.Main
 import java.util.concurrent.ConcurrentLinkedQueue
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGLConfig

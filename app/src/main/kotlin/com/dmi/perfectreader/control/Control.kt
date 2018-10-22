@@ -12,7 +12,6 @@ import com.dmi.util.input.HardKey
 import com.dmi.util.input.TouchEvent
 import com.dmi.util.scope.Disposable
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.android.Main
 
 class Control(
         private val main: Main,

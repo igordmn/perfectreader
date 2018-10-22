@@ -5,7 +5,6 @@ import android.view.MotionEvent
 import android.view.View
 import com.dmi.util.graphic.Size
 import kotlinx.coroutines.*
-import kotlinx.coroutines.android.Main
 import org.jetbrains.anko.onClick
 import org.jetbrains.anko.onLayoutChange
 import org.jetbrains.anko.onLongClick

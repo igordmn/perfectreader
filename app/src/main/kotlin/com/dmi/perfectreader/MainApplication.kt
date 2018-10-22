@@ -10,7 +10,6 @@ import com.dmi.util.log.DebugLog
 import com.dmi.util.log.Log
 import com.dmi.util.log.ReleaseLog
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.android.Main
 
 @Suppress("ConstantConditionIf")
 class MainApplication : Application() {

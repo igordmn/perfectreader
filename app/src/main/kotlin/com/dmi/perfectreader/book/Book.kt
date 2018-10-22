@@ -32,7 +32,6 @@ import com.dmi.util.graphic.SizeF
 import com.dmi.util.scope.*
 import com.dmi.util.system.seconds
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
 suspend fun book(main: Main, uri: Uri): Book {

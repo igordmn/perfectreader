@@ -11,7 +11,6 @@ import com.dmi.util.io.parseDOM
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import java.net.URI
 

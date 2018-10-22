@@ -6,7 +6,6 @@ import com.dmi.util.scope.onchange
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.android.Main
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.onAttachStateChangeListener
 
