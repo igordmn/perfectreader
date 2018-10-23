@@ -30,8 +30,7 @@ class CopyScopeTest {
             val read = CountDownLatch(1)
             val wrote = CountDownLatch(1)
 
-            var jobException: Throwable? = null
-            val job = launch(copyContext, onCompletion = { jobException = it }) {
+            val job = launch(copyContext) {
                 val readCopy = object {
                     val scope = Scope()
                     val v5 by scope.cached { copy.v3 }
@@ -75,9 +74,6 @@ class CopyScopeTest {
             wrote.countDown()
 
             job.join()
-            jobException?.let {
-                throw it
-            }
         }
     }
 
@@ -98,8 +94,7 @@ class CopyScopeTest {
 
             val read = CountDownLatch(1)
 
-            var jobException: Throwable? = null
-            val job = launch(copyContext, onCompletion = { jobException = it }) {
+            val job = launch(copyContext) {
                 val readCopy = object {
                     val scope = Scope()
                     val v5 by scope.cached { copy.v3 }
@@ -131,9 +126,6 @@ class CopyScopeTest {
             obj.v2 = 3
 
             job.join()
-            jobException?.let {
-                throw it
-            }
         }
     }
 
@@ -154,8 +146,7 @@ class CopyScopeTest {
 
             val ready = CountDownLatch(2)
 
-            var jobException: Throwable? = null
-            val job = launch(copyContext, onCompletion = { jobException = it }) {
+            val job = launch(copyContext) {
                 val readCopy = object {
                     val scope = Scope()
                     val v5 by scope.cached { copy.v3 }
@@ -182,9 +173,6 @@ class CopyScopeTest {
             }
 
             job.join()
-            jobException?.let {
-                throw it
-            }
         }
     }
 }
