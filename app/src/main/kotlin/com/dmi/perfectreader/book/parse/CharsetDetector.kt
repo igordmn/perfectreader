@@ -4,19 +4,46 @@ import com.dmi.util.log.Log
 import com.google.common.io.ByteSource
 import org.mozilla.universalchardet.UniversalDetector
 import java.nio.charset.Charset
+import java.util.regex.Pattern
 
 class CharsetDetector(
         private val log: Log,
         private val charsetConfig: ParseConfig.Charset
 ) {
+    private val xmlPattern = Pattern.compile("^\\s*<\\?xml.*encoding\\s*=\\s*\"(.*)\".*?>")
+
     companion object {
         private val BUFFER = ByteArray(10000)
         private val mozillaDetector = UniversalDetector(null)
     }
 
-    fun detect(source: ByteSource) = when (charsetConfig) {
+    fun detect(source: ByteSource): Charset = when (charsetConfig) {
         is ParseConfig.Charset.Auto -> autoDetect(source)
         is ParseConfig.Charset.Fixed -> parseCharset(charsetConfig.name)
+    }
+
+    fun detectForXML(source: ByteSource): Charset {
+        return readXMLEncoding(source) ?: detect(source)
+    }
+
+    private fun readXMLEncoding(source: ByteSource): Charset? {
+        source.openStream().bufferedReader().use {
+            val buffer = CharArray(256)
+            val length = it.read(buffer)
+            val str = String(buffer, 0, length)
+            val matcher = xmlPattern.matcher(str)
+
+            return if (matcher.find()) {
+                try {
+                    Charset.forName(matcher.group(1))
+                } catch (e: Exception) {
+                    log.e(e, "Error detecting xml charset")
+                    null
+                }
+            } else {
+                null
+            }
+        }
     }
 
     fun autoDetect(source: ByteSource): Charset {

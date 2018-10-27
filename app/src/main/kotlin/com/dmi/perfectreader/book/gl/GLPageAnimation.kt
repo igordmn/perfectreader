@@ -6,8 +6,8 @@ import com.dmi.util.android.opengl.*
 import com.dmi.util.graphic.Size
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.io.ProtocolURIHandler
-import com.dmi.util.io.getChild
-import com.dmi.util.io.parseDOM
+import com.dmi.util.xml.getChild
+import com.dmi.util.xml.parseXML
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +20,7 @@ suspend fun glPageAnimation(uriHandler: ProtocolURIHandler, uri: URI, size: Size
 }
 
 private suspend fun loadAnimationSource(uriHandler: ProtocolURIHandler, uri: URI): AnimationSource = withContext(Dispatchers.IO) {
-    val animation = uriHandler.open(uri).use(::parseDOM).documentElement
+    val animation = uriHandler.open(uri).use(::parseXML).documentElement
     require(animation.nodeName == "animation") { "Root tag name should be \"animation\"" }
 
     val version = animation.getAttribute("version")

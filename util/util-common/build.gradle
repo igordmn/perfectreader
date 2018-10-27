@@ -13,8 +13,9 @@ dependencies {
     api "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$projectVersions.serialization"
     api 'com.google.guava:guava:26.0-android'
     api 'com.carrotsearch:hppc:0.7.1'
+    api 'commons-io:commons-io:2.6'
+    api 'net.sf.kxml:kxml2:2.3.0'
     api 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
-    api ':fb2parser:'
     testImplementation project(':util:util-testCommon')
 }
 

@@ -9,10 +9,14 @@ import com.dmi.perfectreader.book.content.obj.common.ContentConfig
 
 class ContentBox(
         val children: List<ContentObject>,
-        override val range: LocationRange,
         private val cls: ContentClass?
 ) : ContentObject {
+    init {
+        require(children.isNotEmpty())
+    }
+
     override val length = children.sumByDouble { it.length }
+    override val range = LocationRange(children.first().range.start, children.last().range.endInclusive)
 
     override fun configure(config: ContentConfig): ConfiguredBox {
         val inherited = config.styled[cls].inherited

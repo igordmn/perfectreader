@@ -70,7 +70,7 @@ fun ContentParagraph.wordEndAfter(location: Location): Location? {
             val locationCharIndex = if (location >= range.start) textIndexAt(text, range, location) else 0
             for (charIndex in locationCharIndex + 1..text.length) {
                 if (isWordEnd(run, runIndex, charIndex))
-                    return textSubLocation(text, range, charIndex)
+                    return run.charLocation(charIndex)
             }
         }
     }
@@ -85,7 +85,7 @@ fun ContentParagraph.wordBeginBefore(location: Location): Location? {
             val locationCharIndex = if (location <= range.endInclusive) textIndexAt(text, range, location) else text.length
             for (charIndex in locationCharIndex - 1 downTo 0) {
                 if (isWordBegin(run, runIndex, charIndex))
-                    return textSubLocation(text, range, charIndex)
+                    return run.charLocation(charIndex)
             }
         }
     }

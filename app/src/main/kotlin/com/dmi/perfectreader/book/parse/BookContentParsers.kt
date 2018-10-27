@@ -1,8 +1,8 @@
 package com.dmi.perfectreader.book.parse
 
 import android.net.Uri
-import com.dmi.perfectreader.book.parse.format.FB2ContentParser
 import com.dmi.perfectreader.book.parse.format.TXTContentParser
+import com.dmi.perfectreader.book.parse.format.fb2.FB2ContentParser
 import com.dmi.util.log.Log
 import com.google.common.io.Files
 import java.io.File

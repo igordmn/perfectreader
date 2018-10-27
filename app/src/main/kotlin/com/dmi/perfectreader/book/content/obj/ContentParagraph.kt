@@ -6,6 +6,7 @@ import com.dmi.perfectreader.book.content.configure.common.ConfiguredFontStyle
 import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.content.location.textIndexAt
+import com.dmi.perfectreader.book.content.location.textSubLocation
 import com.dmi.perfectreader.book.content.obj.common.ContentClass
 import com.dmi.perfectreader.book.content.obj.common.ContentConfig
 import com.dmi.util.lang.extra
@@ -15,14 +16,14 @@ import kotlin.math.PI
 class ContentParagraph(
         val locale: Locale?,
         val runs: List<Run>,
-        private val cls: ContentClass?,
-        override val range: LocationRange
+        private val cls: ContentClass?
 ) : ContentObject {
-    override val length = runs.sumByDouble { it.length }
-
     init {
         require(runs.isNotEmpty())
     }
+
+    override val length = runs.sumByDouble { it.length }
+    override val range = LocationRange(runs.first().range.start, runs.last().range.endInclusive)
 
     override fun configure(config: ContentConfig): ConfiguredObject {
         val styled = config.styled[cls]
@@ -79,6 +80,7 @@ class ContentParagraph(
                 )
             }
 
+            fun charLocation(index: Int) = textSubLocation(text, range, index)
             fun charIndex(location: Location) = textIndexAt(text, range, location)
         }
     }

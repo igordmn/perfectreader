@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<root>
+    <employees>
+        <employee name="Олег" nick="x">
+            <ignored1>
+                <ignored2>
+                    <ignored3/>
+                    <ignored3/>
+                    <ignored3/>
+                </ignored2>
+            </ignored1>
+
+            <full-name>Олег Пупкин</full-name>
+            <full-nick>xxx</full-nick>
+            
+            <ignored4>
+                <ignored5/>
+            </ignored4>
+        </employee>
+        <employee name="Jack" />
+    </employees>
+
+    <ignored6/>
+    <city name="Albagrama">
+        <city>
+            <full-name>Bendrol</full-name>
+        </city>
+    </city>
+    <city name="New Albagrama" />
+
+    <body>
+        Very <b very="true"> bold <i> italic </i> text <b>!</b> </b>
+        ...
+    </body>
+</root>

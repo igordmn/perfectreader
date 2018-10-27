@@ -2,17 +2,16 @@ package com.dmi.perfectreader.book.content.obj
 
 import com.dmi.perfectreader.book.content.configure.ConfiguredFrame
 import com.dmi.perfectreader.book.content.configure.common.ConfiguredLength
-import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.content.obj.common.ContentClass
 import com.dmi.perfectreader.book.content.obj.common.ContentConfig
 import com.dmi.util.graphic.Color
 
 class ContentFrame(
         val child: ContentObject,
-        private val cls: ContentClass?,
-        override val range: LocationRange
+        private val cls: ContentClass?
 ) : ContentObject {
     override val length = child.length
+    override val range = child.range
 
     override fun configure(config: ContentConfig): ConfiguredFrame {
         val styled = config.styled[cls]

@@ -9,6 +9,7 @@ import com.dmi.perfectreader.book.content.obj.ContentParagraph
 import com.dmi.perfectreader.book.content.obj.common.ContentClass
 import com.dmi.perfectreader.book.parse.BookContentParser
 import com.dmi.perfectreader.book.parse.CharsetDetector
+import com.dmi.util.io.withoutUtfBom
 import com.google.common.io.ByteSource
 
 class TXTContentParser(
@@ -21,7 +22,8 @@ class TXTContentParser(
         val contentBuilder = Content.Builder()
 
         var begin = 0.0
-        source.openBufferedStream().reader(charset).forEachLine { text ->
+
+        source.openBufferedStream().withoutUtfBom().reader(charset).forEachLine { text ->
             if (text.isNotEmpty()) {
                 val end = begin + text.length
                 val range = LocationRange(Location(begin), Location(end))
@@ -37,7 +39,9 @@ class TXTContentParser(
     }
 
     private fun toContentObject(text: String, range: LocationRange) = ContentFrame(
-            ContentParagraph(null, listOf(ContentParagraph.Run.Text(text, null, range)), ContentClass.PARAGRAPH, range),
-            ContentClass.PARAGRAPH, range
+            ContentParagraph(null, listOf(
+                    ContentParagraph.Run.Text(text, null, range)
+            ), ContentClass.PARAGRAPH),
+            ContentClass.PARAGRAPH
     )
 }
