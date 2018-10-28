@@ -3,7 +3,13 @@ package com.dmi.perfectreader.book.parse.format.fb2.entities
 import com.dmi.util.xml.ElementDesc
 import com.dmi.util.xml.ListDesc
 
-open class Text : ListDesc(
+// todo benchmark with this:
+// ListDesc(nodes)
+// companion object {
+//     private val nodes = listOf("strong" to ::Strong, ...)
+// }
+
+open class Lines : ListDesc(
         "strong" to ::Strong,
         "emphasis" to ::Emphasis,
         "strikethrough" to ::Strikethrough,
@@ -17,14 +23,14 @@ open class Text : ListDesc(
     val lang: String? by attribute("lang")
 }
 
-class Strong : Text()
-class Emphasis : Text()
-class Strikethrough : Text()
-class Sub : Text()
-class Sup : Text()
-class Code : Text()
-class Style : Text()
-class A : Text()
+class Strong : Lines()
+class Emphasis : Lines()
+class Strikethrough : Lines()
+class Sub : Lines()
+class Sup : Lines()
+class Code : Lines()
+class Style : Lines()
+class A : Lines()
 
 class Image : ElementDesc() {
     val href: String? by attribute("href")
@@ -49,12 +55,12 @@ abstract class Box(vararg nodeByName: Pair<String, () -> ElementDesc>) : ListDes
 
 class Poem : Box("stanza" to ::Stanza)
 class Stanza : Box("v" to ::V)
-class V : Text()
+class V : Lines()
 
 class Title : Box()
-class P : Text()
-class Subtitle : Text()
-class TextAuthor : Text()
+class P : Lines()
+class Subtitle : Lines()
+class TextAuthor : Lines()
 class EmptyLine : ElementDesc()
 class Epigraph : Box()
 class Annotation : Box()
