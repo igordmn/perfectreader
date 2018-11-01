@@ -64,9 +64,7 @@ class ChapterView(
         private val currentIndex: Int,
         private val chapters: List<TableOfContents.PlainChapter>
 ) : LinearLayoutCompat(context), Bindable<Int> {
-    private val chapterView = TextView(context).apply {
-        setPadding(dip(0), dip(0), dip(16), dip(0))
-    }
+    private val chapterView = TextView(context)
     private val pageView = TextView(context)
 
     init {
@@ -96,7 +94,8 @@ class ChapterView(
         }
         setTextAppearance(chapterView, style)
         setTextAppearance(pageView, style)
-        chapterView.text = "    ".repeat(chapter.level) + chapter.original.name
+        chapterView.text = chapter.original.name
+        chapterView.setPadding(dip(16) * chapter.level, dip(0), dip(16), dip(0))
         pageView.text = pageNumber.toString()
         chapterView.textColor = color(R.color.onBackground)
         pageView.textColor = color(R.color.onBackground)

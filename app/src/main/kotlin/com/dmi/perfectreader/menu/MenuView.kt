@@ -9,10 +9,8 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.Toolbar
-import androidx.appcompat.widget.TooltipCompat
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
 import com.dmi.util.android.view.*
@@ -56,6 +54,13 @@ fun menuView(context: Context, model: Menu): View {
             backgroundColor = color(android.R.color.transparent)
             navigationIcon = drawable(R.drawable.ic_arrow_back)
             popupTheme = R.style.Theme_AppCompat_Light
+            menu.add(R.string.bookMenuSearch).apply {
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                icon = drawable(R.drawable.ic_search, color(R.color.onBackground))
+                onClick {
+                    model.showSearch()
+                }
+            }
             menu.add(R.string.bookMenuSettings).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 icon = drawable(R.drawable.ic_settings, color(R.color.onBackground))
@@ -138,9 +143,9 @@ fun menuView(context: Context, model: Menu): View {
         child(params(
                 matchParent, matchParent,
                 leftMargin = dip(4),
-                topMargin = dip(8),
+                topMargin = dip(12),
                 rightMargin = dip(4),
-                bottomMargin = dip(0)
+                bottomMargin = dip(12)
         ), DiscreteSeekBar(context).apply {
             min = 0
             max = 100
@@ -153,41 +158,6 @@ fun menuView(context: Context, model: Menu): View {
             setScrubberColor(color(R.color.secondary))
             numericTransformer = numericTransformer()
             setOnProgressChangeListener(onProgressChangeListener())
-        })
-        child(params(matchParent, dip(48)), LinearLayoutCompat(context).apply {
-            child(params(dip(0), matchParent, weight = 1F), AppCompatImageButton(context).apply {
-                backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
-                contentDescription = string(R.string.bookMenuSearch)
-                image = drawable(R.drawable.ic_search, color(R.color.onBackground))
-                TooltipCompat.setTooltipText(this, contentDescription)
-                onClick {
-                    model.showSearch()
-                }
-            })
-            child(params(dip(0), matchParent, weight = 1F), AppCompatImageButton(context).apply {
-                backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
-                contentDescription = string(R.string.bookMenuSwitchTheme)
-                image = drawable(R.drawable.ic_style, color(R.color.onBackground))
-                TooltipCompat.setTooltipText(this, contentDescription)
-            })
-            child(params(dip(0), matchParent, weight = 1F), AppCompatImageButton(context).apply {
-                backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
-                contentDescription = string(R.string.bookMenuAutoScroll)
-                image = drawable(R.drawable.ic_slideshow, color(R.color.onBackground))
-                TooltipCompat.setTooltipText(this, contentDescription)
-            })
-            child(params(dip(0), matchParent, weight = 1F), AppCompatImageButton(context).apply {
-                backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
-                contentDescription = string(R.string.bookMenuTextToSpeech)
-                image = drawable(R.drawable.ic_volume_up, color(R.color.onBackground))
-                TooltipCompat.setTooltipText(this, contentDescription)
-            })
-            child(params(dip(0), matchParent, weight = 1F), AppCompatImageButton(context).apply {
-                backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
-                contentDescription = string(R.string.bookMenuAddBookmark)
-                image = drawable(R.drawable.ic_bookmark_border, color(R.color.onBackground))
-                TooltipCompat.setTooltipText(this, contentDescription)
-            })
         })
     }
 
