@@ -6,6 +6,7 @@ import com.dmi.util.graphic.Color
 
 data class ContentStyle(
         val margins: ContentMargins,
+        val pageBreakBefore: Boolean,
         val firstLineIndentEm: Float,
 
         val textAlign: TextAlign,

@@ -6,7 +6,8 @@ abstract class LayoutObject(
         val width: Float,
         val height: Float,
         val children: List<LayoutChild>,
-        val range: LocationRange
+        val range: LocationRange,
+        val pageBreakBefore: Boolean = false
 ) {
     /**
      * Необходимо для механизма разделения на страницы.

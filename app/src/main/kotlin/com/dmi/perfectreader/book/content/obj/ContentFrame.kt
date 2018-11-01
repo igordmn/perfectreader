@@ -19,7 +19,10 @@ class ContentFrame(
                 ConfiguredFrame.Borders.Zero,
                 ConfiguredFrame.Background.Transparent,
                 child.configure(config),
+                style.pageBreakBefore,
                 range
         )
     }
+
+    override fun toString() = child.toString()
 }

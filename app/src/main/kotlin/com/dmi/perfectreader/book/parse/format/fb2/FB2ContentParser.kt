@@ -86,15 +86,33 @@ class FB2ContentParser(
                 is Annotation -> box(child, ContentClass.EPIGRAPH)
                 is P -> lines(child)
                 is Poem -> box(child)
-                is Stanza -> customized(cls = ContentClass.POEM_STANZA) { frame { box(child) } }
+                is Stanza -> stanza(child)
                 is V -> lines(child, ContentClass.POEM_LINE)
-                is Title -> box(child, ContentClass.H(chapterLevel))
-                is Subtitle -> lines(child, ContentClass.H(chapterLevel))
+                is Title -> title(child)
+                is Subtitle -> lines(child, ContentClass.STRONG)
                 is Cite -> box(child, ContentClass.EPIGRAPH)
                 is TextAuthor -> lines(child, ContentClass.AUTHOR)
                 is EmptyLine -> emptyLine(child)
                 is Table -> table(child)
                 else -> addChild(child)
+            }
+        }
+    }
+
+    private fun SectionBuilder.title(child: Box) {
+        customized(ContentClass.H_BLOCK(chapterLevel)) {
+            frame {
+                customized(ContentClass.H(chapterLevel)) {
+                    box(child)
+                }
+            }
+        }
+    }
+
+    private fun SectionBuilder.stanza(child: Box) {
+        customized(ContentClass.POEM_STANZA) {
+            frame {
+                box(child)
             }
         }
     }

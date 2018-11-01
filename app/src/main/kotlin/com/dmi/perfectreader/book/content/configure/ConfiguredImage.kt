@@ -9,4 +9,6 @@ class ConfiguredImage(
         val sourceScale: Float,
         val scaleFiltered: Boolean,
         override val range: LocationRange
-) : ConfiguredObject
+) : ConfiguredObject {
+    override fun toString() = "<img:$src>"
+}

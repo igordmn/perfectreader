@@ -20,4 +20,6 @@ class ContentImage(
                 range
         )
     }
+
+    override fun toString() = "<img:$src>"
 }

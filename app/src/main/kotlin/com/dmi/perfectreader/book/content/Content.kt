@@ -72,8 +72,10 @@ class Content private constructor(
             val objects = ArrayList<ContentObject>()
             copy(objects = objects).apply()
             objects.trimToSize()
-            if (objects.isNotEmpty())
-                obj(ContentFrame(ContentBox(objects), this.cls))
+            if (objects.isNotEmpty()) {
+                val child = if (objects.size == 1) objects.first() else ContentBox(objects)
+                obj(ContentFrame(child, this.cls))
+            }
         }
     }
 
@@ -81,7 +83,7 @@ class Content private constructor(
         private val objects = ArrayList<ContentObject>()
         private val chapters = ArrayList<TableOfContents.Chapter>()
 
-        fun root(locale: Locale?) = SectionBuilder(objects, chapters, locale = locale, cls = null, chapterLevel = 0)
+        fun root(locale: Locale?) = SectionBuilder(objects, chapters, locale = locale, cls = null, chapterLevel = -1)
 
         fun build(description: BookDescription) = Content(
                 ContentObjects(objects), description, tableOfContents()

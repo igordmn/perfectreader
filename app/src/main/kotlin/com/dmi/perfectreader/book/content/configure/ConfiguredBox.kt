@@ -9,4 +9,6 @@ class ConfiguredBox(
         val contentAlign: Align,
         val children: List<ConfiguredObject>,
         override val range: LocationRange
-) : ConfiguredObject
+) : ConfiguredObject {
+    override fun toString() = children.joinToString("; ")
+}

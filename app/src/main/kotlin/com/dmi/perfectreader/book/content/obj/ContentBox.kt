@@ -22,4 +22,6 @@ class ContentBox(
             children.map { it.configure(config) },
             range
     )
+
+    override fun toString() = children.joinToString("; ")
 }

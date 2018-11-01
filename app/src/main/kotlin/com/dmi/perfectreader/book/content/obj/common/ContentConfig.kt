@@ -40,6 +40,7 @@ data class ContentConfig(
                             ContentLength.Em(settings.format.paragraphVerticalMarginEm),
                             ContentLength.Em(settings.format.paragraphVerticalMarginEm)
                     ),
+                    pageBreakBefore = false,
                     firstLineIndentEm = settings.format.paragraphFirstLineIndentEm,
 
                     textAlign = settings.format.textAlign,
@@ -106,7 +107,8 @@ data class ContentConfig(
                 firstLineIndentEm = 0F,
                 margins = margins multiplyHorizontal 2.66F,
                 textFontIsBold = true,
-                textSizeDip = textSizeDip * 1F
+                textSizeDip = textSizeDip * 1F,
+                pageBreakBefore = true
         )
         ContentClass.H4 -> copy(
                 firstLineIndentEm = 0F,
@@ -119,6 +121,15 @@ data class ContentConfig(
                 margins = margins multiplyHorizontal 4.66F,
                 textFontIsBold = true,
                 textSizeDip = textSizeDip * 0.67F
+        )
+        ContentClass.H0_BLOCK -> copy(
+                pageBreakBefore = true
+        )
+        ContentClass.H1_BLOCK -> copy(
+                pageBreakBefore = true
+        )
+        ContentClass.H2_BLOCK -> copy(
+                pageBreakBefore = true
         )
         ContentClass.CODE_BLOCK -> copy(
                 textAlign = TextAlign.LEFT,
@@ -156,6 +167,7 @@ data class ContentConfig(
                 ),
                 textAlign = TextAlign.RIGHT
         )
+        else -> this
     }
 
     private infix fun ContentMargins.multiplyHorizontal(multiplier: Float) = copy(

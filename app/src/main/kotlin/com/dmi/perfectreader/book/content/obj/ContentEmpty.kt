@@ -7,4 +7,5 @@ import com.dmi.perfectreader.book.content.obj.common.ContentConfig
 class ContentEmpty(override val range: LocationRange) : ContentObject {
     override val length: Double = 1.0
     override fun configure(config: ContentConfig) = ConfiguredEmpty(range)
+    override fun toString() = "<Empty>"
 }

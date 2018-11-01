@@ -7,7 +7,8 @@ class LayoutPart(
         val obj: LayoutObject,
         val top: Edge,
         val bottom: Edge,
-        val range: LocationRange
+        val range: LocationRange,
+        val pageBreakBefore: Boolean = false
 ) {
     val height = bottom.offset - top.offset
 

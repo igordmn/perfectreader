@@ -44,6 +44,8 @@ class ContentParagraph(
         )
     }
 
+    override fun toString() = runs.joinToString()
+
     sealed class Run {
         abstract val range: LocationRange
         abstract val length: Double
@@ -58,6 +60,8 @@ class ContentParagraph(
                     obj.configure(config),
                     lineHeightMultiplier = 1F
             )
+
+            override fun toString()= "[$obj]"
         }
 
         class Text(
@@ -83,6 +87,8 @@ class ContentParagraph(
 
             fun charLocation(index: Int) = textSubLocation(text, range, index)
             fun charIndex(location: Location) = textIndexAt(text, range, location)
+
+            override fun toString() = text
         }
     }
 

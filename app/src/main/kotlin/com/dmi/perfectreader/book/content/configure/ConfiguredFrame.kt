@@ -10,6 +10,7 @@ class ConfiguredFrame(
         val borders: Borders,
         val background: Background,
         val child: ConfiguredObject,
+        val pageBreakBefore: Boolean,
         override val range: LocationRange
 ) : ConfiguredObject {
     class Background(val color: Color)  {

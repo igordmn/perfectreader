@@ -10,8 +10,9 @@ class LayoutFrame(
         val borders: Borders,
         val background: Background,
         val child: LayoutChild,
+        pageBreakBefore: Boolean,
         range: LocationRange
-) : LayoutObject(width, height, listOf(child), range) {
+) : LayoutObject(width, height, listOf(child), range, pageBreakBefore) {
     override fun canBeSeparated() = true
     override fun internalMargins() = internalMargins
 

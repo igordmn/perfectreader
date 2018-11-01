@@ -46,6 +46,7 @@ class FrameLayouter(
                         toLayoutBorders(obj.borders),
                         toLayoutBackground(obj.background),
                         LayoutChild(marginLeft + borderLeft + paddingLeft, marginTop + borderTop + paddingTop, layoutObj),
+                        obj.pageBreakBefore,
                         obj.range
                 )
             }

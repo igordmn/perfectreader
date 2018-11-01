@@ -35,7 +35,7 @@ class LayoutColumnSequence(
         var column = this@addTopParts
 
         var part = firstPart
-        while (part.hasPrevious) {
+        while (part.hasPrevious && !part.item.pageBreakBefore) {
             part = part.previous()
 
             val enlargedColumn = part mergeColumn column
@@ -54,8 +54,12 @@ class LayoutColumnSequence(
         var column = this@addBottomParts
 
         var part = lastPart
+
         while (part.hasNext) {
             part = part.next()
+
+            if (part.item.pageBreakBefore)
+                break
 
             val enlargedColumn = column mergePart part
 

@@ -19,7 +19,9 @@ class ConfiguredParagraph(
         override val range: LocationRange
 ) : ConfiguredObject {
     sealed class Run(val lineHeightMultiplier: Float) {
-        class Object(val obj: ConfiguredObject, lineHeightMultiplier: Float) : Run(lineHeightMultiplier)
+        class Object(val obj: ConfiguredObject, lineHeightMultiplier: Float) : Run(lineHeightMultiplier) {
+            override fun toString()= "[$obj]"
+        }
 
         class Text(
                 val text: String,
@@ -29,6 +31,9 @@ class ConfiguredParagraph(
         ) : Run(lineHeightMultiplier) {
             fun charRange(beginIndex: Int, endIndex: Int) = textSubRange(text, range, beginIndex, endIndex)
             fun charLocation(index: Int) = textSubLocation(text, range, index)
+            override fun toString() = text
         }
     }
+
+    override fun toString() = runs.joinToString()
 }
