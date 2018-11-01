@@ -2,64 +2,91 @@ package com.dmi.perfectreader.book.content
 
 import com.dmi.perfectreader.book.content.location.LocatedSequence
 import com.dmi.perfectreader.book.content.location.Location
-import com.dmi.perfectreader.book.content.location.percentOf
-import com.dmi.perfectreader.book.content.location.sublocation
+import com.dmi.perfectreader.book.content.location.LocationRange
+import com.dmi.perfectreader.book.content.obj.ContentBox
+import com.dmi.perfectreader.book.content.obj.ContentFrame
 import com.dmi.perfectreader.book.content.obj.ContentObject
-import com.dmi.util.range.PercentRanges
-import com.dmi.util.range.globalPercent
-import com.dmi.util.range.indexOfNearestRange
-import com.dmi.util.range.localPercent
+import com.dmi.perfectreader.book.content.obj.ContentParagraph
+import com.dmi.perfectreader.book.content.obj.common.ContentClass
+import com.dmi.perfectreader.book.content.obj.common.ContentCompositeClass
 import java.io.FileNotFoundException
 import java.util.*
+import kotlin.collections.ArrayList
 
+// todo handle empty books
 class Content private constructor(
-        private val objects: List<ContentObject>,
-        private val percentRanges: PercentRanges,
-        val length: Double,
+        private val objects: ContentObjects,
         val description: BookDescription,
         val tableOfContents: TableOfContents?
 ) {
-    init {
-        require(objects.isNotEmpty())
-        require(objects.size == percentRanges.size)
-    }
-
+    val length: Double get() = objects.length
+    val sequence: LocatedSequence<ContentObject> = ContentObjectSequence(objects.list)
     val openResource = { _: String -> throw FileNotFoundException() }
 
-    val sequence: LocatedSequence<ContentObject> = ContentObjectSequence(objects)
+    fun locationToPercent(location: Location): Double = objects.locationToPercent(location)
+    fun percentToLocation(percent: Double): Location = objects.percentToLocation(percent)
 
-    fun locationToPercent(location: Location): Double {
-        val index = objects.indexOfNearestRange({ range }, location)
-        val locationRange = objects[index].range
-        val percentRange = percentRanges[index]
-        // todo PR-576 В Content, если проценты объектов не друг за другом, при вычислении будет ошибка
-        val objLocalPercent = locationRange.percentOf(location)
-        return percentRange.globalPercent(objLocalPercent)
-    }
+    data class SectionBuilder(
+            private val objects: ArrayList<ContentObject>,
+            private val chapters: ArrayList<TableOfContents.Chapter>,
+            private val locale: Locale?,
+            private val cls: ContentCompositeClass?,
+            val chapterLevel: Int
+    ) {
+        fun obj(obj: ContentObject?) {
+            if (obj != null)
+                objects.add(obj)
+        }
 
-    fun percentToLocation(percent: Double): Location {
-        val index = percentRanges.indexOfNearest(percent)
-        val locationRange = objects[index].range
-        val percentRange = percentRanges[index]
-        // todo PR-576 В Content, если проценты объектов не друг за другом, при вычислении будет ошибка
-        val objLocalPercent = percentRange.localPercent(percent)
-        return locationRange.sublocation(objLocalPercent)
+        fun chapter(name: String, location: Location, apply: SectionBuilder.() -> Unit) {
+            val childChapters = ArrayList<TableOfContents.Chapter>()
+            val chapter = TableOfContents.Chapter(name, location, childChapters)
+            chapters.add(chapter)
+            copy(chapters = childChapters, chapterLevel = chapterLevel + 1).apply()
+        }
+
+        fun customized(cls: ContentClass? = null, locale: Locale? = null, apply: SectionBuilder.() -> Unit) {
+            val builder = if (cls == null && locale == null) {
+                this
+            } else {
+                val newCls = if (cls != null) ContentCompositeClass(this.cls, cls) else this.cls
+                val newLocale = locale ?: this.locale
+                copy(locale = newLocale, cls = newCls, chapterLevel = chapterLevel)
+            }
+            builder.apply()
+        }
+
+        fun paragraph(apply: ContentParagraph.Builder.() -> Unit) {
+            val paragraph = ContentParagraph.Builder(cls = cls, locale = locale)
+            paragraph.apply()
+            obj(paragraph.build())
+        }
+
+        fun paragraph(text: String, range: LocationRange) {
+            obj(ContentParagraph(
+                    listOf(ContentParagraph.Run.Text(text, cls, range)), cls, locale
+            ))
+        }
+
+        fun frame(apply: SectionBuilder.() -> Unit) {
+            val objects = ArrayList<ContentObject>()
+            copy(objects = objects).apply()
+            objects.trimToSize()
+            if (objects.isNotEmpty())
+                obj(ContentFrame(ContentBox(objects), this.cls))
+        }
     }
 
     class Builder {
-        private val objects = ArrayList<ContentObject>(1024)
-        private val percentRanges = PercentRanges()
-        private var length = 0.0
+        private val objects = ArrayList<ContentObject>()
+        private val chapters = ArrayList<TableOfContents.Chapter>()
 
-        fun add(obj: ContentObject) {
-            objects.add(obj)
-            percentRanges.add(obj.length)
-            length += obj.length
-        }
+        fun root(locale: Locale?) = SectionBuilder(objects, chapters, locale = locale, cls = null, chapterLevel = 0)
 
-        fun build(
-                description: BookDescription,
-                tableOfContents: TableOfContents?
-        ) = Content(objects, percentRanges, length, description, tableOfContents)
+        fun build(description: BookDescription) = Content(
+                ContentObjects(objects), description, tableOfContents()
+        )
+
+        private fun tableOfContents() = if (chapters.isNotEmpty()) TableOfContents(chapters) else null
     }
 }

@@ -1,15 +1,16 @@
 package com.dmi.perfectreader.book.layout
 
-import com.dmi.perfectreader.book.content.location.Location
-import com.dmi.perfectreader.book.content.location.LocationRange
-import com.dmi.perfectreader.book.content.location.subrange
+import com.dmi.perfectreader.book.content.common.DefaultHangingConfig
+import com.dmi.perfectreader.book.content.common.HangingConfig
+import com.dmi.perfectreader.book.content.common.TextAlign
+import com.dmi.perfectreader.book.content.configure.ConfiguredEmpty
 import com.dmi.perfectreader.book.content.configure.ConfiguredObject
 import com.dmi.perfectreader.book.content.configure.ConfiguredParagraph
 import com.dmi.perfectreader.book.content.configure.ConfiguredParagraph.Run
 import com.dmi.perfectreader.book.content.configure.common.ConfiguredFontStyle
-import com.dmi.perfectreader.book.content.common.DefaultHangingConfig
-import com.dmi.perfectreader.book.content.common.HangingConfig
-import com.dmi.perfectreader.book.content.common.TextAlign
+import com.dmi.perfectreader.book.content.location.Location
+import com.dmi.perfectreader.book.content.location.LocationRange
+import com.dmi.perfectreader.book.content.location.subrange
 import com.dmi.perfectreader.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.book.layout.common.LayoutSpace.Area
 import com.dmi.perfectreader.book.layout.obj.LayoutLine
@@ -1096,7 +1097,7 @@ class ParagraphLayouterTest {
                 override fun layout(obj: ConfiguredObject, space: LayoutSpace) = configuredToLayoutObject[obj]!!
             }
 
-    fun configuredObj() = object : ConfiguredObject(rootRange()) {}
+    fun configuredObj() = ConfiguredEmpty(rootRange())
 
     fun layoutObj(width: Float = 0F, height: Float = 0F) =
             object : LayoutObject(width, height, emptyList(), rootRange()) {}

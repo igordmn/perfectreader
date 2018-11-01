@@ -20,4 +20,8 @@ interface ConfiguredLength : Serializable {
 
         override fun compute(percentBase: Float) = percent * percentBase
     }
+
+    companion object {
+        val Zero = Absolute(0F)
+    }
 }

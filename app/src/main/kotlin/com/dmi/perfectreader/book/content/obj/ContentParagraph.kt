@@ -8,15 +8,19 @@ import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.content.location.textIndexAt
 import com.dmi.perfectreader.book.content.location.textSubLocation
 import com.dmi.perfectreader.book.content.obj.common.ContentClass
+import com.dmi.perfectreader.book.content.obj.common.ContentCompositeClass
 import com.dmi.perfectreader.book.content.obj.common.ContentConfig
-import com.dmi.util.lang.extra
+import com.dmi.perfectreader.book.content.obj.common.ContentStyle
+import com.dmi.util.cache.Cache
+import com.dmi.util.lang.extraCache
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.PI
 
 class ContentParagraph(
-        val locale: Locale?,
         val runs: List<Run>,
-        private val cls: ContentClass?
+        private val cls: ContentCompositeClass?,
+        private val locale: Locale?
 ) : ContentObject {
     init {
         require(runs.isNotEmpty())
@@ -26,16 +30,13 @@ class ContentParagraph(
     override val range = LocationRange(runs.first().range.start, runs.last().range.endInclusive)
 
     override fun configure(config: ContentConfig): ConfiguredObject {
-        val styled = config.styled[cls]
-        val style = styled.style
-        val inherited = styled.inherited
-
+        val style = config.style(cls)
         val firstLineIndentDip = style.textSizeDip * style.firstLineIndentEm
 
         return ConfiguredParagraph(
-                if (styled.ignoreDeclaredLocale) styled.defaultLocale else locale ?: styled.defaultLocale,
-                runs.map { it.configure(inherited) },
-                firstLineIndentDip * styled.density,
+                config.locale(declared = locale),
+                runs.map { it.configure(config) },
+                firstLineIndentDip * config.density,
                 style.textAlign,
                 style.hyphenation,
                 style.hangingConfig,
@@ -61,7 +62,7 @@ class ContentParagraph(
 
         class Text(
                 val text: String,
-                private val cls: ContentClass?,
+                private val cls: ContentCompositeClass?,
                 override val range: LocationRange
         ) : Run() {
             init {
@@ -71,11 +72,11 @@ class ContentParagraph(
             override val length = text.length.toDouble()
 
             override fun configure(config: ContentConfig): ConfiguredParagraph.Run.Text {
-                val styled = config.styled[cls]
+                val style = config.style(cls)
                 return ConfiguredParagraph.Run.Text(
                         text,
-                        styled.configuredFontStyle,
-                        styled.style.lineHeightMultiplier,
+                        config.configuredFontStyle[style],
+                        style.lineHeightMultiplier,
                         range
                 )
             }
@@ -84,13 +85,45 @@ class ContentParagraph(
             fun charIndex(location: Location) = textIndexAt(text, range, location)
         }
     }
+
+    data class Builder(
+            private val runs: ArrayList<ContentParagraph.Run> = ArrayList(),
+            private val cls: ContentCompositeClass?,
+            private val locale: Locale?
+    ) {
+        fun text(text: String, range: LocationRange) {
+            run(ContentParagraph.Run.Text(text, cls, range))
+        }
+
+        fun obj(obj: ContentObject?) {
+            if (obj != null)
+                run(ContentParagraph.Run.Object(obj))
+        }
+
+        private fun run(run: ContentParagraph.Run) {
+            runs.add(run)
+        }
+
+        fun customized(cls: ContentClass? = null, apply: Builder.() -> Unit) {
+            val builder = if (cls == null) {
+                this
+            } else {
+                val newCls = ContentCompositeClass(this.cls, cls)
+                copy(cls = newCls)
+            }
+            builder.apply()
+        }
+
+        fun build() = if (runs.isNotEmpty()) ContentParagraph(runs, cls, locale) else null
+    }
 }
 
-val ContentConfig.configuredFontStyle: ConfiguredFontStyle by extra {
-    val style = style
+val ContentConfig.configuredFontStyle: Cache<ContentStyle, ConfiguredFontStyle> by extraCache(ContentConfig::computeConfiguredFontStyle)
+
+fun ContentConfig.computeConfiguredFontStyle(style: ContentStyle): ConfiguredFontStyle {
     val textSize = style.textSizeDip * density
 
-    ConfiguredFontStyle(
+    return ConfiguredFontStyle(
             fonts.loadFont(style.textFontFamily, style.textFontIsBold, style.textFontIsItalic),
 
             textSize,

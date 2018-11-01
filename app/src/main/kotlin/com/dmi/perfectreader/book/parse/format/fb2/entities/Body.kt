@@ -9,7 +9,7 @@ import com.dmi.util.xml.ListDesc
 //     private val nodes = listOf("strong" to ::Strong, ...)
 // }
 
-open class Lines : ListDesc(
+abstract class Inline : ListDesc(
         "strong" to ::Strong,
         "emphasis" to ::Emphasis,
         "strikethrough" to ::Strikethrough,
@@ -23,49 +23,59 @@ open class Lines : ListDesc(
     val lang: String? by attribute("lang")
 }
 
-class Strong : Lines()
-class Emphasis : Lines()
-class Strikethrough : Lines()
-class Sub : Lines()
-class Sup : Lines()
-class Code : Lines()
-class Style : Lines()
-class A : Lines()
+class Strong : Inline()
+class Emphasis : Inline()
+class Strikethrough : Inline()
+class Sub : Inline()
+class Sup : Inline()
+class Code : Inline()
+class Style : Inline()
+class A : Inline()
 
 class Image : ElementDesc() {
     val href: String? by attribute("href")
 }
 
 abstract class Box(vararg nodeByName: Pair<String, () -> ElementDesc>) : ListDesc(
-        "epigraph" to ::Epigraph,
         "image" to ::Image,
+        "epigraph" to ::Epigraph,
         "annotation" to ::Annotation,
         "p" to ::P,
         "poem" to ::Poem,
+        "stanza" to ::Stanza,
+        "v" to ::V,
         "title" to ::Title,
         "subtitle" to ::Subtitle,
-        "empty-line" to ::EmptyLine,
-        "text-author" to ::TextAuthor,
-        "table" to ::Table,
         "cite" to ::Cite,
+        "text-author" to ::TextAuthor,
+        "empty-line" to ::EmptyLine,
+        "table" to ::Table,
         *nodeByName
 ) {
     val lang: String? by attribute("lang")
 }
 
-class Poem : Box("stanza" to ::Stanza)
-class Stanza : Box("v" to ::V)
-class V : Lines()
+abstract class Lines : Inline()
 
+class Poem : Box()
+class Stanza : Box()
 class Title : Box()
-class P : Lines()
-class Subtitle : Lines()
-class TextAuthor : Lines()
-class EmptyLine : ElementDesc()
 class Epigraph : Box()
 class Annotation : Box()
 class Cite : Box()
+
+class V : Lines()
+class P : Lines()
+class Subtitle : Lines()
+class TextAuthor : Lines()
+
+class EmptyLine : ElementDesc()
 class Table : ElementDesc()
 
-open class Section : Box("section" to ::Section)
+open class Section : Box("section" to ::Section) {
+    // todo add support of multiple elements in ElementDesc with same name
+    // now you cannot use class "ListDesc" or fun "nodes" with fun "element" if name is the same
+    val title: Title? by lazy { find { it is Title } as Title? }
+}
+
 class Body : Section()

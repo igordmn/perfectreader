@@ -3,6 +3,7 @@ package com.dmi.perfectreader.book.layout
 import com.dmi.perfectreader.book.bitmap.BitmapDecoder
 import com.dmi.perfectreader.book.content.configure.*
 import com.dmi.perfectreader.book.layout.common.LayoutSpace
+import com.dmi.perfectreader.book.layout.obj.LayoutEmpty
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
 import com.dmi.perfectreader.book.layout.paragraph.ParagraphLayouter
 import com.dmi.perfectreader.book.layout.paragraph.liner.Liner
@@ -25,6 +26,7 @@ class UniversalObjectLayouter(
         is ConfiguredBox -> boxLayouter.layout(obj, space)
         is ConfiguredFrame -> frameLayouter.layout(obj, space)
         is ConfiguredImage -> imageLayouter.layout(obj, space)
+        is ConfiguredEmpty -> LayoutEmpty(obj.range)
         else -> throw UnsupportedOperationException()
     }
 }

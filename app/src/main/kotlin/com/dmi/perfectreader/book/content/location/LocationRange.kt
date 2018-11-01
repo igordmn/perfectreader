@@ -16,7 +16,4 @@ fun LocationRange.subrange(beginPercent: Double, endPercent: Double): LocationRa
     return LocationRange(sublocation(beginPercent), sublocation(endPercent))
 }
 
-fun LocationRange.percentOf(location: Location): Double {
-    require(location in start..endInclusive)
-    return (location.offset - start.offset) / (endInclusive.offset - start.offset)
-}
+fun LocationRange.percentOf(location: Location): Double = (location.offset - start.offset) / (endInclusive.offset - start.offset)

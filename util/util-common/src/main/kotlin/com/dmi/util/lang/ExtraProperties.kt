@@ -1,5 +1,6 @@
 package com.dmi.util.lang
 
+import com.dmi.util.cache.cache
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import java.util.*
@@ -22,3 +23,6 @@ fun <R, T> extra(create: R.() -> T) = object : ReadOnlyProperty<R, T> {
         }
     }
 }
+
+@Suppress("UNCHECKED_CAST")
+fun <R, K, V> extraCache(load: R.(K) -> V) = extra<R, com.dmi.util.cache.Cache<K,V>> { cache { load(it) } }

@@ -15,8 +15,8 @@ class ContentImage(
         return ConfiguredImage(
                 ConfiguredSize(ConfiguredSize.Dimension.Auto(), ConfiguredSize.Dimension.Auto()),
                 src,
-                config.style.imageSourceScale,
-                config.style.imageScaleFiltered,
+                config.imageSourceScale,
+                config.imageScaleFiltered,
                 range
         )
     }

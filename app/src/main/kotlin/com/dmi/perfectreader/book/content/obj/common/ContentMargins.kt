@@ -7,10 +7,10 @@ data class ContentMargins(val left: ContentLength, val right: ContentLength, val
         val Zero = ContentMargins(ContentLength.Zero, ContentLength.Zero, ContentLength.Zero, ContentLength.Zero)
     }
     
-    fun configure(config: ContentConfig) = ConfiguredFrame.Margins(
-            left.configure(config),
-            right.configure(config),
-            top.configure(config),
-            bottom.configure(config)
+    fun configure(config: ContentConfig, style: ContentStyle) = ConfiguredFrame.Margins(
+            left.configure(config, style),
+            right.configure(config, style),
+            top.configure(config, style),
+            bottom.configure(config, style)
     )
 }

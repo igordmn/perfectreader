@@ -34,10 +34,5 @@ data class ContentStyle(
         val textShadowBlurEm: Float,
         val textShadowColor: Color,
 
-        val selectionColor: Color,
-
-        val imageSourceScale: Float,
-        val imageScaleFiltered: Boolean
-) {
-    fun inherit() = copy(margins = ContentMargins.Zero, firstLineIndentEm = 0F)
-}
+        val selectionColor: Color
+)

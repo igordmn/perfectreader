@@ -2,7 +2,6 @@ package com.dmi.perfectreader.book
 
 import com.dmi.perfectreader.book.content.Content
 import com.dmi.perfectreader.book.content.location.Location
-import com.dmi.perfectreader.book.content.obj.common.ContentClass
 import com.dmi.perfectreader.book.content.obj.common.ContentConfig
 import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.graphic.SizeF
@@ -14,11 +13,10 @@ import java.lang.Math.*
 class Locations(
         private val content: Content,
         private val contentSize: SizeF,
-        contentConfig: ContentConfig,
+        private val contentConfig: ContentConfig,
         settings: Settings
 ) {
-    private val paragraphConfig = contentConfig.styled[ContentClass.PARAGRAPH]
-    private val style = paragraphConfig.style
+    private val style = contentConfig.style(null)
     val numberOfPages: Int = approximateNumberOfPages(content, settings)
 
     init {
@@ -51,11 +49,11 @@ class Locations(
     }
 
     private fun approximatePageLength(): Int {
-        val textHeight = style.textSizeDip * paragraphConfig.density
+        val textHeight = style.textSizeDip * contentConfig.density
         val letterSpacing = max(-0.6F, style.letterSpacingEm) * textHeight
         val wordSpacingMultiplier = style.wordSpacingMultiplier
         val lineHeightMultiplier = style.lineHeightMultiplier
-        val margins = style.margins.configure(paragraphConfig)
+        val margins = style.margins.configure(contentConfig, style)
         val bottomMargin = margins.bottom.compute(contentSize.height)
         val topMargin = margins.top.compute(contentSize.height)
         val paragraphVerticalMargin = max(bottomMargin, topMargin)

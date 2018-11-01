@@ -16,11 +16,11 @@ import java.util.*
 data class ContentConfig(
         val density: Float,
         val fonts: Fonts,
-        val defaultLocale: Locale,
-        val ignoreDeclaredLocale: Boolean,
-        val paragraphVerticalMarginEm: Float,
-        val paragraphFirstLineIndentEm: Float,
-        val style: ContentStyle
+        private val defaultLocale: Locale,
+        private val ignoreDeclaredLocale: Boolean,
+        val imageSourceScale: Float,
+        val imageScaleFiltered: Boolean,
+        private val defaultStyle: ContentStyle
 ) {
     constructor(
             main: Main,
@@ -31,11 +31,16 @@ data class ContentConfig(
             fonts = main.resources.fonts,
             defaultLocale = defaultLocale(context, settings),
             ignoreDeclaredLocale = settings.analyze.ignoreDeclaredLanguage,
-            paragraphVerticalMarginEm = settings.format.paragraphVerticalMarginEm,
-            paragraphFirstLineIndentEm = settings.format.paragraphFirstLineIndentEm,
-            style = ContentStyle(
-                    margins = ContentMargins.Zero,
-                    firstLineIndentEm = 0F,
+            imageSourceScale = if (settings.image.sourceScaleByDpi) context.displayMetrics.density else settings.image.sourceScale,
+            imageScaleFiltered = settings.image.scaleFiltered,
+            defaultStyle = ContentStyle(
+                    margins = ContentMargins(
+                            ContentLength.Percent(0F),
+                            ContentLength.Percent(0F),
+                            ContentLength.Em(settings.format.paragraphVerticalMarginEm),
+                            ContentLength.Em(settings.format.paragraphVerticalMarginEm)
+                    ),
+                    firstLineIndentEm = settings.format.paragraphFirstLineIndentEm,
 
                     textAlign = settings.format.textAlign,
                     letterSpacingEm = settings.format.letterSpacingEm,
@@ -64,94 +69,99 @@ data class ContentConfig(
                     textShadowBlurEm = settings.format.textShadowBlurEm,
                     textShadowColor = Color(settings.format.textShadowColor),
 
-                    selectionColor = Color(settings.selection.color),
-
-                    imageSourceScale = if (settings.image.sourceScaleByDpi) context.displayMetrics.density else settings.image.sourceScale,
-                    imageScaleFiltered = settings.image.scaleFiltered
+                    selectionColor = Color(settings.selection.color)
             )
     )
 
-    private fun style(cls: ContentClass?): ContentStyle = when (cls) {
-        null -> style
-        ContentClass.PARAGRAPH -> style.copy(
-                margins = ContentMargins(
-                        ContentLength.Percent(0F),
-                        ContentLength.Percent(0F),
-                        ContentLength.Em(paragraphVerticalMarginEm),
-                        ContentLength.Em(paragraphVerticalMarginEm)
-                ),
-                firstLineIndentEm = paragraphFirstLineIndentEm
+    fun locale(declared: Locale?) = if (ignoreDeclaredLocale || declared == null) defaultLocale else declared
+
+    fun style(cls: ContentCompositeClass?): ContentStyle = cachedStyle(cls)
+    private fun cachedStyle(cls: ContentCompositeClass?) = cls?.let(cachedStyle::get) ?: defaultStyle
+    private val cachedStyle: Cache<ContentCompositeClass, ContentStyle> = cache(load = ::computeStyle)
+    private fun computeStyle(cls: ContentCompositeClass) = cachedStyle(cls.parent).apply(cls.cls)
+
+    private fun ContentStyle.apply(cls: ContentClass) = when (cls) {
+        ContentClass.STRONG -> copy(textFontIsBold = true)
+        ContentClass.EMPHASIS -> copy(textFontIsItalic = true)
+        ContentClass.H0 -> copy(
+                firstLineIndentEm = 0F,
+                margins = margins multiplyHorizontal 1.34F,
+                textFontIsBold = true,
+                textAlign = TextAlign.CENTER,
+                textSizeDip = textSizeDip * 2F
         )
-        ContentClass.BOLD -> style.copy(textFontIsBold = true)
-        ContentClass.ITALIC -> style.copy(textFontIsItalic = true)
-        ContentClass.H1 -> style.copy(
-                margins = hMargins(1.34F),
-                textFontIsBold = true, textAlign = TextAlign.CENTER, textSizeDip = style.textSizeDip * 2F
+        ContentClass.H1 -> copy(
+                firstLineIndentEm = 0F,
+                margins = margins multiplyHorizontal 1.66F,
+                textFontIsBold = true,
+                textSizeDip = textSizeDip * 1.5F
         )
-        ContentClass.H2 -> style.copy(
-                margins = hMargins(1.66F),
-                textFontIsBold = true, textAlign = TextAlign.LEFT, textSizeDip = style.textSizeDip * 1.5F
+        ContentClass.H2 -> copy(
+                firstLineIndentEm = 0F,
+                margins = margins multiplyHorizontal 2F,
+                textFontIsBold = true,
+                textSizeDip = textSizeDip * 1.17F
         )
-        ContentClass.H3 -> style.copy(
-                margins = hMargins(2F),
-                textFontIsBold = true, textAlign = TextAlign.LEFT, textSizeDip = style.textSizeDip * 1.17F
+        ContentClass.H3 -> copy(
+                firstLineIndentEm = 0F,
+                margins = margins multiplyHorizontal 2.66F,
+                textFontIsBold = true,
+                textSizeDip = textSizeDip * 1F
         )
-        ContentClass.H4 -> style.copy(
-                margins = hMargins(2.66F),
-                textFontIsBold = true, textAlign = TextAlign.LEFT, textSizeDip = style.textSizeDip * 1F
+        ContentClass.H4 -> copy(
+                firstLineIndentEm = 0F,
+                margins = margins multiplyHorizontal 3.34F,
+                textFontIsBold = true,
+                textSizeDip = textSizeDip * 0.83F
         )
-        ContentClass.H5 -> style.copy(
-                margins = hMargins(3.34F),
-                textFontIsBold = true, textAlign = TextAlign.LEFT, textSizeDip = style.textSizeDip * 0.83F
+        ContentClass.H5 -> copy(
+                firstLineIndentEm = 0F,
+                margins = margins multiplyHorizontal 4.66F,
+                textFontIsBold = true,
+                textSizeDip = textSizeDip * 0.67F
         )
-        ContentClass.H6 -> style.copy(
-                margins = hMargins(4.66F),
-                textFontIsBold = true, textAlign = TextAlign.LEFT, textSizeDip = style.textSizeDip * 0.67F
+        ContentClass.CODE_BLOCK -> copy(
+                textAlign = TextAlign.LEFT,
+                textSizeDip = textSizeDip * 0.8F
         )
-        ContentClass.POEM_STANZA -> style.copy(
-                margins = ContentMargins(
-                        ContentLength.Percent(10F),
-                        ContentLength.Percent(10F),
-                        ContentLength.Em(paragraphVerticalMarginEm),
-                        ContentLength.Em(paragraphVerticalMarginEm)
+        ContentClass.CODE_LINE -> copy(
+                firstLineIndentEm = 0F,
+                margins = ContentMargins.Zero,
+                textFontFamily = "Monospace"
+        )
+        ContentClass.POEM_STANZA -> copy(
+                textAlign = TextAlign.LEFT,
+                margins = margins.copy(
+                        left = ContentLength.Percent(0.05F),
+                        right = ContentLength.Percent(0.05F)
+                )
+        )
+        ContentClass.POEM_LINE -> copy(
+                margins = ContentMargins.Zero,
+                textFontIsItalic = true,
+                lineHeightMultiplier = 1.2F
+        )
+        ContentClass.EPIGRAPH -> copy(
+                margins = margins.copy(
+                        left = ContentLength.Percent(0.05F),
+                        right = ContentLength.Percent(0.05F)
                 ),
                 textFontIsItalic = true
         )
-        ContentClass.EPIGRAPH -> style.copy(
-                margins = ContentMargins(
-                        ContentLength.Percent(10F),
-                        ContentLength.Percent(10F),
-                        ContentLength.Em(paragraphVerticalMarginEm),
-                        ContentLength.Em(paragraphVerticalMarginEm)
-                ),
-                textFontIsItalic = true
-        )
-        ContentClass.TEXT_AUTHOR -> style.copy(
-                margins = ContentMargins(
-                        ContentLength.Percent(10F),
-                        ContentLength.Percent(10F),
-                        ContentLength.Em(paragraphVerticalMarginEm * 0.5F),
-                        ContentLength.Em(paragraphVerticalMarginEm)
+        ContentClass.AUTHOR -> copy(
+                firstLineIndentEm = 0F,
+                margins = margins.copy(
+                        left = ContentLength.Percent(0.05F),
+                        right = ContentLength.Percent(0.05F)
                 ),
                 textAlign = TextAlign.RIGHT
         )
-        ContentClass.CODE -> style.copy(textAlign = TextAlign.LEFT, textFontFamily = "Monospace")
     }
 
-    private fun hMargins(multiplier: Float) = ContentMargins(
-            ContentLength.Zero,
-            ContentLength.Zero,
-            ContentLength.Em(paragraphVerticalMarginEm * multiplier),
-            ContentLength.Em(paragraphVerticalMarginEm * multiplier)
+    private infix fun ContentMargins.multiplyHorizontal(multiplier: Float) = copy(
+            top = top * multiplier,
+            bottom = bottom * multiplier
     )
-
-    val styled: Cache<ContentClass?, ContentConfig> = cache { cls: ContentClass? ->
-        copy(style = style(cls))
-    }
-
-    val inherited: ContentConfig by lazy {
-        copy(style = style.inherit())
-    }
 }
 
 private fun defaultLocale(context: Context, settings: Settings) =

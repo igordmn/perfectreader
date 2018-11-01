@@ -8,6 +8,7 @@ import com.dmi.perfectreader.book.content.location.textSubLocation
 import com.dmi.perfectreader.book.content.location.textSubRange
 import java.util.*
 
+// todo support locale for separate runs
 class ConfiguredParagraph(
         val locale: Locale,
         val runs: List<Run>,
@@ -19,6 +20,7 @@ class ConfiguredParagraph(
 ) : ConfiguredObject {
     sealed class Run(val lineHeightMultiplier: Float) {
         class Object(val obj: ConfiguredObject, lineHeightMultiplier: Float) : Run(lineHeightMultiplier)
+
         class Text(
                 val text: String,
                 val style: ConfiguredFontStyle,

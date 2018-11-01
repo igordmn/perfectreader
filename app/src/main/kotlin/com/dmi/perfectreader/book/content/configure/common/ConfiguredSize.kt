@@ -22,7 +22,7 @@ data class ConfiguredSize(val width: Dimension, val height: Dimension) {
 
     data class Limits(val min: ConfiguredLength, val max: ConfiguredLength) {
         companion object {
-            val NONE: Limits = Limits(ConfiguredLength.Absolute(0F), ConfiguredLength.Absolute(Float.POSITIVE_INFINITY))
+            val NONE: Limits = Limits(ConfiguredLength.Zero, ConfiguredLength.Absolute(Float.POSITIVE_INFINITY))
         }
 
         fun clampCompute(value: Float, percentBase: Float) = clamp(
