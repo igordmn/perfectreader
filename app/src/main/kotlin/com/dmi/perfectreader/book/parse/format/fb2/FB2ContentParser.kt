@@ -102,7 +102,7 @@ class FB2ContentParser(
     ) {
         for (child in box) {
             when (child) {
-                is Image -> obj(child.toContent())
+                is Image -> image(child)
                 is Epigraph -> box(child, ContentClass.EPIGRAPH)
                 is Annotation -> box(child, ContentClass.EPIGRAPH)
                 is P -> lines(child)
@@ -116,6 +116,14 @@ class FB2ContentParser(
                 is EmptyLine -> emptyLine(child)
                 is Table -> table(child)
                 else -> addChild(child)
+            }
+        }
+    }
+
+    private fun SectionBuilder.image(image: Image) {
+        customized(cls = ContentClass.IMAGE_BLOCK) {
+            frame {
+                obj(image.toContent())
             }
         }
     }

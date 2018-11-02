@@ -10,6 +10,7 @@ enum class ContentClass {
     POEM_STANZA,
     POEM_LINE,
     EPIGRAPH,
+    IMAGE_BLOCK,
     AUTHOR;
 
     companion object {

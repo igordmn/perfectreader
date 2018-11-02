@@ -1,11 +1,11 @@
 package com.dmi.perfectreader.book.layout
 
-import com.dmi.perfectreader.book.layout.common.LayoutSpace
-import com.dmi.perfectreader.book.layout.common.LayoutSpace.Area
 import com.dmi.perfectreader.book.content.common.Align
 import com.dmi.perfectreader.book.content.configure.ConfiguredBox
 import com.dmi.perfectreader.book.content.configure.ConfiguredObject
 import com.dmi.perfectreader.book.content.configure.common.ConfiguredSize
+import com.dmi.perfectreader.book.layout.common.LayoutSpace
+import com.dmi.perfectreader.book.layout.common.LayoutSpace.Area
 import com.dmi.perfectreader.book.layout.obj.LayoutBox
 import com.dmi.perfectreader.book.layout.obj.LayoutChild
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
@@ -36,8 +36,8 @@ class BoxLayouter(
                 return LayoutBox(width, computeHeight(y), renderChildren, obj.range)
             }
 
-            fun computeWidth() = size.width.compute(space.width.percentBase, { computeAutoWidth() })
-            fun computeHeight(wrapHeight: Float) = size.height.compute(space.height.percentBase, { wrapHeight })
+            fun computeWidth() = size.width.compute(space.width.percentBase, ::computeAutoWidth)
+            fun computeHeight(wrapHeight: Float) = size.height.compute(space.height.percentBase) { wrapHeight }
 
             fun ConfiguredSize.Dimension.compute(percentBase: Float, getAutoValue: () -> Float) = when (this) {
                 is ConfiguredSize.Dimension.Fixed -> compute(percentBase)
@@ -83,7 +83,7 @@ class BoxLayouter(
             }
 
             fun childFixedDimension(size: Float) = LayoutSpace.Dimension(size, Area.Fixed(size))
-            fun childWrapDimension(maxSize: Float) = LayoutSpace.Dimension(0F, Area.WrapContent(maxSize))
+            fun childWrapDimension(maxSize: Float) = LayoutSpace.Dimension(maxSize, Area.WrapContent(maxSize))
 
             fun childX(objWidth: Float, boxWidth: Float) =
                 when (obj.contentAlign) {

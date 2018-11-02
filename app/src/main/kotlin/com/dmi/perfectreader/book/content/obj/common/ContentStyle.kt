@@ -1,10 +1,12 @@
 package com.dmi.perfectreader.book.content.obj.common
 
+import com.dmi.perfectreader.book.content.common.Align
 import com.dmi.perfectreader.book.content.common.HangingConfig
 import com.dmi.perfectreader.book.content.common.TextAlign
 import com.dmi.util.graphic.Color
 
 data class ContentStyle(
+        val boxAlign: Align,
         val margins: ContentMargins,
         val pageBreakBefore: Boolean,
         val firstLineIndentEm: Float,

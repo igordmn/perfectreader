@@ -74,8 +74,7 @@ class Content private constructor(
             copy(objects = objects).apply()
             objects.trimToSize()
             if (objects.isNotEmpty()) {
-                val child = if (objects.size == 1) objects.first() else ContentBox(objects)
-                obj(ContentFrame(child, this.cls))
+                obj(ContentFrame(ContentBox(objects, cls), cls))
             }
         }
     }

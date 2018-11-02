@@ -2,6 +2,7 @@ package com.dmi.perfectreader.book.content.obj.common
 
 import android.content.Context
 import com.dmi.perfectreader.Main
+import com.dmi.perfectreader.book.content.common.Align
 import com.dmi.perfectreader.book.content.common.DefaultHangingConfig
 import com.dmi.perfectreader.book.content.common.NoneHangingConfig
 import com.dmi.perfectreader.book.content.common.TextAlign
@@ -35,6 +36,7 @@ data class ContentConfig(
             ignoreDeclaredLocale = settings.analyze.ignoreDeclaredLanguage,
             imageScale = imageScale(settings.image),
             defaultStyle = ContentStyle(
+                    boxAlign = Align.LEFT,
                     margins = ContentMargins(
                             ContentLength.Percent(0F),
                             ContentLength.Percent(0F),
@@ -134,6 +136,9 @@ data class ContentConfig(
         ContentClass.H2_BLOCK -> copy(
                 pageBreakBefore = true
         )
+        ContentClass.H3_BLOCK -> this
+        ContentClass.H4_BLOCK -> this
+        ContentClass.H5_BLOCK -> this
         ContentClass.CODE_BLOCK -> copy(
                 textAlign = TextAlign.LEFT,
                 textSizeDip = textSizeDip * 0.8F
@@ -170,7 +175,9 @@ data class ContentConfig(
                 ),
                 textAlign = TextAlign.RIGHT
         )
-        else -> this
+        ContentClass.IMAGE_BLOCK -> copy(
+                boxAlign = Align.CENTER
+        )
     }
 
     private infix fun ContentMargins.multiplyHorizontal(multiplier: Float) = copy(
