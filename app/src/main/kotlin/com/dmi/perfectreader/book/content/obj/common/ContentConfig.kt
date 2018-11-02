@@ -95,12 +95,14 @@ data class ContentConfig(
                 firstLineIndentEm = 0F,
                 margins = margins multiplyHorizontal 1.66F,
                 textFontIsBold = true,
+                textAlign = TextAlign.CENTER,
                 textSizeDip = textSizeDip * 1.5F
         )
         ContentClass.H2 -> copy(
                 firstLineIndentEm = 0F,
                 margins = margins multiplyHorizontal 2F,
                 textFontIsBold = true,
+                textAlign = TextAlign.CENTER,
                 textSizeDip = textSizeDip * 1.17F
         )
         ContentClass.H3 -> copy(
