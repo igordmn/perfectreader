@@ -10,7 +10,7 @@ class Author : ElementDesc() {
 }
 
 class CoverPage : ElementDesc() {
-    private val image: Image? by element("image", ::Image)
+    val image: Image? by element("image", ::Image)
 }
 
 class TitleInfo : ElementDesc() {

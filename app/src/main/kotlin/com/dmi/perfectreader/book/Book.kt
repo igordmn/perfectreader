@@ -44,7 +44,7 @@ suspend fun book(main: Main, uri: Uri): Book {
         bookContentParsers.parserFor(uri).parse()
     }
     val userBook: UserBook = userBook(userData, uri)
-    val bitmapDecoder = CachedBitmapDecoder(AndroidBitmapDecoder(content.openResource))
+    val bitmapDecoder = CachedBitmapDecoder(AndroidBitmapDecoder(content.resource))
     val text = ContentText(content)
     return Book(main, text, userBook, content, bitmapDecoder)
 }

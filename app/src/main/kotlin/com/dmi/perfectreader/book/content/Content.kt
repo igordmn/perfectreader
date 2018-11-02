@@ -9,8 +9,8 @@ import com.dmi.perfectreader.book.content.obj.ContentObject
 import com.dmi.perfectreader.book.content.obj.ContentParagraph
 import com.dmi.perfectreader.book.content.obj.common.ContentClass
 import com.dmi.perfectreader.book.content.obj.common.ContentCompositeClass
+import com.google.common.io.ByteSource
 import java.io.FileNotFoundException
-import java.io.InputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -19,7 +19,7 @@ class Content private constructor(
         private val objects: ContentObjects,
         val description: BookDescription,
         val tableOfContents: TableOfContents?,
-        val openResource: (src: String) -> InputStream
+        val resource: (src: String) -> ByteSource
 ) {
     val length: Double get() = objects.length
     val sequence: LocatedSequence<ContentObject> = ContentObjectSequence(objects.list)
@@ -87,9 +87,9 @@ class Content private constructor(
 
         fun build(
                 description: BookDescription,
-                openResource: (src: String) -> InputStream = { throw FileNotFoundException() }
+                resource: (src: String) -> ByteSource = { throw FileNotFoundException() }
         ) = Content(
-                ContentObjects(objects), description, tableOfContents(), openResource
+                ContentObjects(objects), description, tableOfContents(), resource
         )
 
         private fun tableOfContents() = if (chapters.isNotEmpty()) TableOfContents(chapters) else null

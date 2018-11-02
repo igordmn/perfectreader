@@ -51,10 +51,14 @@ class FB2ContentParser(
         for (body in fictionBook.bodies)
             root.section(body)
 
-        return content.build(description, ::loadImage)
+        return content.build(description, ::imageResource)
     }
 
-    private fun loadImage(src: String): InputStream {
+    private fun imageResource(src: String) = object : ByteSource() {
+        override fun openStream() = openImage(src)
+    }
+
+    private fun openImage(src: String): InputStream {
         val id = src.removePrefix("#")
 
         fun charset() = charsetDetector.detectForXML(source)
