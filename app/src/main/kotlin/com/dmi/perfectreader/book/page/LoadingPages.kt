@@ -136,7 +136,7 @@ class LoadingPages(
         checkLoad()
     }
 
-    private fun isNextContinuous(): Boolean = buffer[0]?.item?.isNextContinous ?: true
+    private fun isNextContinuous(): Boolean = buffer[0]?.item?.isNextContinuous ?: true
 
     operator fun get(index: Int): Page? = if (index in (-maxRelativeIndex..maxRelativeIndex)) buffer[index]?.item else null
 

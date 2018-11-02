@@ -37,6 +37,11 @@ class TableOfContents(val chapters: List<Chapter>) {
 
     fun chapterAt(location: Location): Chapter? = locationToChapter.floorEntry(location)?.value
 
-    class Chapter(val name: String, val location: Location, val children: List<Chapter> = emptyList())
+    class Chapter(val name: String, val location: Location, val children: List<Chapter> = emptyList()) {
+        init {
+            require(name.isNotEmpty())
+        }
+    }
+
     class PlainChapter(val original: Chapter, val level: Int)
 }
