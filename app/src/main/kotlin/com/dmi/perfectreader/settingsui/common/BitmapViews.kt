@@ -35,6 +35,7 @@ class SettingBitmapView(context: Context, size: Int) : ImageView(context), Binda
         }
     }
 
+    // todo use inSampleSize for faster loading and low memory consumption
     private fun loadBitmap(path: URI): Bitmap = uriHandler.open(path).use {
         val original = BitmapFactory.decodeStream(it)
         val aspectRatio = original.width.toFloat() / original.height

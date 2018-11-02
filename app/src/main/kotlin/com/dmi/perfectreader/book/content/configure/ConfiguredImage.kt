@@ -6,9 +6,14 @@ import com.dmi.perfectreader.book.content.location.LocationRange
 class ConfiguredImage(
         val size: ConfiguredSize,
         val src: String?,
-        val sourceScale: Float,
-        val scaleFiltered: Boolean,
+        val scale: Scale,
         override val range: LocationRange
 ) : ConfiguredObject {
     override fun toString() = "<img:$src>"
+
+    class Scale(
+            val value: Float,
+            val incFilter: Boolean,
+            val decFilter: Boolean
+    )
 }

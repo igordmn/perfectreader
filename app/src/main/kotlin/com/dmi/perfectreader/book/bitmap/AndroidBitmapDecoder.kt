@@ -8,7 +8,7 @@ import java.io.InputStream
 class AndroidBitmapDecoder(
         private val openResource: (path: String) -> InputStream
 ) : BitmapDecoder {
-    override fun loadDimensions(src: String): Size {
+    override fun loadSize(src: String): Size {
         openResource(src).use {
             val bitmapOptions = BitmapFactory.Options()
             bitmapOptions.inJustDecodeBounds = true
@@ -18,7 +18,7 @@ class AndroidBitmapDecoder(
     }
 
     override fun decode(src: String, width: Int, height: Int, scaleFiltered: Boolean): Bitmap {
-        val (factWidth, factHeight) = loadDimensions(src)
+        val (factWidth, factHeight) = loadSize(src)
         openResource(src).use {
             val bitmapOptions = BitmapFactory.Options()
             bitmapOptions.inSampleSize = calculateSampleSize(factWidth, factHeight, width, height)

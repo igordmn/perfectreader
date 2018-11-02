@@ -5,6 +5,9 @@ import com.dmi.perfectreader.Main
 import com.dmi.perfectreader.book.content.common.DefaultHangingConfig
 import com.dmi.perfectreader.book.content.common.NoneHangingConfig
 import com.dmi.perfectreader.book.content.common.TextAlign
+import com.dmi.perfectreader.book.content.obj.ContentImage
+import com.dmi.perfectreader.settings.AnalyzeSettings
+import com.dmi.perfectreader.settings.ImageSettings
 import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.cache.Cache
 import com.dmi.util.cache.cache
@@ -18,8 +21,7 @@ data class ContentConfig(
         val fonts: Fonts,
         private val defaultLocale: Locale,
         private val ignoreDeclaredLocale: Boolean,
-        val imageSourceScale: Float,
-        val imageScaleFiltered: Boolean,
+        val imageScale: ContentImage.Scale,
         private val defaultStyle: ContentStyle
 ) {
     constructor(
@@ -29,10 +31,9 @@ data class ContentConfig(
     ) : this(
             density = main.applicationContext.displayMetrics.density,
             fonts = main.resources.fonts,
-            defaultLocale = defaultLocale(context, settings),
+            defaultLocale = defaultLocale(context, settings.analyze),
             ignoreDeclaredLocale = settings.analyze.ignoreDeclaredLanguage,
-            imageSourceScale = if (settings.image.sourceScaleByDpi) context.displayMetrics.density else settings.image.sourceScale,
-            imageScaleFiltered = settings.image.scaleFiltered,
+            imageScale = imageScale(settings.image),
             defaultStyle = ContentStyle(
                     margins = ContentMargins(
                             ContentLength.Percent(0F),
@@ -178,11 +179,17 @@ data class ContentConfig(
     )
 }
 
-private fun defaultLocale(context: Context, settings: Settings) =
-        if (settings.analyze.defaultLanguageIsSystem) {
+private fun defaultLocale(context: Context, settings: AnalyzeSettings) =
+        if (settings.defaultLanguageIsSystem) {
             systemLocale(context)
         } else {
-            Locale(settings.analyze.defaultLanguage)
+            Locale(settings.defaultLanguage)
         }
 
 private fun systemLocale(context: Context) = Locale(context.resources.configuration.locale.language)
+
+private fun imageScale(settings: ImageSettings) = if (settings.scaleByDpi) {
+    ContentImage.Scale.ByDPI(settings.scaleByDpiInteger, settings.scaleIncFiltered, settings.scaleDecFiltered)
+} else {
+    ContentImage.Scale.Fixed(settings.scaleFixed, settings.scaleIncFiltered, settings.scaleDecFiltered)
+}

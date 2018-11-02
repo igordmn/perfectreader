@@ -142,7 +142,7 @@ class ParagraphLayouter(
                                 Area.WrapContent(maxWidth)
                         ),
                         LayoutSpace.Dimension(
-                                0F,
+                                space.height.percentBase,
                                 Area.WrapContent(maxHeight)
                         )
                 )
