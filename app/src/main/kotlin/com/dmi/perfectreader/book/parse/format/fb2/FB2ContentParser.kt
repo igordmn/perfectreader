@@ -188,11 +188,11 @@ class FB2ContentParser(
 
     private fun ContentParagraph.Builder.text(text: Text) = text(text.data, text.range())
 
-    private fun SectionBuilder.section(section: Section) {
+    private fun SectionBuilder.section(section: Section, addChapter: Boolean = true) {
         val title = section.title
         if (title != null) {
             val chapterName = title.plainText()
-            if (chapterName.isNotEmpty()) {
+            if (chapterName.isNotEmpty() && addChapter) {
                 chapter(chapterName, title.begin()) {
                     sectionContent(section)
                 }

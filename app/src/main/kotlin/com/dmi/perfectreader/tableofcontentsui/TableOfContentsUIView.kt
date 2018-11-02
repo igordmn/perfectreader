@@ -44,10 +44,12 @@ fun tableOfContentsUIView(
     backgroundColor = color(R.color.background)
 
     child(params(matchParent, wrapContent, weight = 0F), Toolbar(context).apply {
+        val description = book.description
         setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
         backgroundColor = color(android.R.color.transparent)
         navigationIcon = drawable(R.drawable.ic_arrow_back)
-        this.title = string(R.string.tableOfContentsUITitle)
+        this.title = description.name ?: ""
+        this.subtitle = description.author ?: ""
 
         setNavigationOnClickListener {
             model.back()

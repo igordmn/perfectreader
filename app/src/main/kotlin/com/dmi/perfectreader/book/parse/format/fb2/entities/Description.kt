@@ -6,7 +6,15 @@ class Author : ElementDesc() {
     private val firstName: String? by element("first-name")
     private val lastName: String? by element("last-name")
 
-    fun fullName(): String = (firstName?.trim() ?: "") + (lastName?.trim() ?: "")
+    fun fullName(): String {
+        val firstName = firstName?.trim() ?: ""
+        val lastName = lastName?.trim() ?: ""
+        return when {
+            firstName.isEmpty() -> lastName
+            lastName.isEmpty() -> firstName
+            else -> "$firstName $lastName"
+        }
+    }
 }
 
 class CoverPage : ElementDesc() {
