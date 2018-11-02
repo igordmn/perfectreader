@@ -30,14 +30,15 @@ fun tableOfContentsUIView(
         val currentIndex = chapters.indexOfFirst { it.original == currentChapter }
 
         setHasFixedSize(true)
-        layoutManager = LinearLayoutManager(context)
+        val layoutManager = LinearLayoutManager(context)
+        this.layoutManager = layoutManager
         adapter = object : BindableViewAdapter<ChapterView>() {
             override fun getItemCount() = chapters.size
             override fun view() = ChapterView(context, model, book, currentIndex, chapters)
         }
 
         if (currentIndex >= 0)
-            scrollToPosition(currentIndex)
+            layoutManager.scrollToPositionWithOffset(currentIndex, dip(80))
     }
 
     orientation = LinearLayoutCompat.VERTICAL

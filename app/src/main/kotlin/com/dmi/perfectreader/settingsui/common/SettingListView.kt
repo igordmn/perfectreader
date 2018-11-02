@@ -10,10 +10,7 @@ import com.dmi.util.android.view.Bindable
 import com.dmi.util.android.view.BindableViewAdapter
 import com.dmi.util.android.view.child
 import com.dmi.util.android.view.params
-import org.jetbrains.anko.backgroundResource
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.onClick
-import org.jetbrains.anko.wrapContent
+import org.jetbrains.anko.*
 import kotlin.math.max
 import kotlin.reflect.KMutableProperty0
 
@@ -30,12 +27,13 @@ class SettingListView<T, V>(
 
     init {
         setHasFixedSize(true)
-        layoutManager = LinearLayoutManager(context)
+        val layoutManager = LinearLayoutManager(context)
+        this.layoutManager = layoutManager
         adapter = object : BindableViewAdapter<ItemView>() {
             override fun getItemCount() = items.size
             override fun view() = ItemView(createItemView(context))
         }
-        scrollToPosition(activatedPosition)
+        layoutManager.scrollToPositionWithOffset(activatedPosition, dip(80))
     }
 
     private inner class ItemView(val original: V) : FrameLayout(context), Bindable<Int> {
