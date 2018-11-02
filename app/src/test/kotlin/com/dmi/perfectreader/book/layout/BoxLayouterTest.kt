@@ -1,10 +1,11 @@
 package com.dmi.perfectreader.book.layout
 
+import com.dmi.perfectreader.book.content.common.Align
 import com.dmi.perfectreader.book.content.configure.ConfiguredBox
 import com.dmi.perfectreader.book.content.configure.ConfiguredObject
-import com.dmi.perfectreader.book.content.common.Align
-import com.dmi.perfectreader.book.content.configure.common.ConfiguredSize
 import com.dmi.perfectreader.book.content.configure.common.ConfiguredLength.Absolute
+import com.dmi.perfectreader.book.content.configure.common.ConfiguredSize
+import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.book.layout.obj.LayoutObject
 import com.dmi.perfectreader.layoutObj
@@ -328,7 +329,15 @@ class BoxLayouterTest {
     val LayoutObject.childYs: List<Float>
         get() = children.map { it.y }
 
-    inner class FixedObject(val width: Float, val height: Float) : ConfiguredObject(range())
-    inner class FillObject : ConfiguredObject(range())
-    inner class PercentObject(val percent: Float) : ConfiguredObject(range())
+    inner class FixedObject(val width: Float, val height: Float) : ConfiguredObject {
+        override val range: LocationRange = range()
+    }
+
+    inner class FillObject : ConfiguredObject {
+        override val range: LocationRange = range()
+    }
+
+    inner class PercentObject(val percent: Float) : ConfiguredObject {
+        override val range: LocationRange = range()
+    }
 }
