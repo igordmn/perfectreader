@@ -56,22 +56,24 @@ class LoadingPagesTest {
                 require(value.offset in 0.0..end)
                 field = value
             }
+
         override var pageNumber
             get() = locationToPageNumber(location)
             set(value) {
                 require(pageNumber in 1..numberOfPages)
                 location = pageNumberToLocation(value)
             }
+
         override val sequence = object : LocatedSequence<Page> {
             override suspend fun get(location: Location) = TestSequenceEntry(location.offset)
         }.map { resumeLoad.wait(); it }
 
-        private inner class TestSequenceEntry(private val start: Double) : SequenceEntry<Page> {
+        private inner class TestSequenceEntry(private val start: Double, isNextContinuous: Boolean = true) : SequenceEntry<Page> {
             val end = min(this@TestPages.end, start + pageSize)
-            override val item: Page = testPage(start..end)
+            override val item: Page = testPage(start..end, isNextContinuous)
             override val hasPrevious: Boolean = start > 0.0
             override val hasNext: Boolean = end < this@TestPages.end
-            override suspend fun previous() = TestSequenceEntry(max(0.0, start - pageSize + previousOverlap))
+            override suspend fun previous() = TestSequenceEntry(max(0.0, start - pageSize + previousOverlap), isNextContinuous = false)
             override suspend fun next() = TestSequenceEntry(end)
         }
 

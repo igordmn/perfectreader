@@ -15,10 +15,16 @@ class LayoutColumnSequence(
 ) : LocatedSequence<LayoutColumn> {
     private val lastColumnMinHeight = columnHeight / 2
 
-    override suspend fun get(location: Location): Entry<LayoutColumn> = makeCurrent(partSequence.get(location))
+    override suspend fun get(location: Location): ColumnEntry = makeCurrent(partSequence.get(location))
 
-    private suspend fun makeCurrent(initialPart: Entry<LayoutPart>) = initialColumn(initialPart).addBottomParts().addTopPartsForLastColumn()
-    private suspend fun makePrevious(initialPart: Entry<LayoutPart>) = initialColumn(initialPart).addTopParts().addBottomParts()
+    private suspend fun makeCurrent(initialPart: Entry<LayoutPart>) = initialColumn(initialPart)
+            .addBottomParts()
+            .addTopPartsForLastColumn()
+
+    private suspend fun makePrevious(initialPart: Entry<LayoutPart>) = initialColumn(initialPart)
+            .addTopParts()
+            .addBottomParts(isContinuous = false)
+
     private suspend fun makeNext(initialPart: Entry<LayoutPart>) = initialColumn(initialPart).addBottomParts()
 
     private fun initialColumn(part: Entry<LayoutPart>) = ColumnEntry(singlePartColumn(part.item), part, part)
@@ -50,13 +56,16 @@ class LayoutColumnSequence(
         column
     }
 
-    private suspend fun ColumnEntry.addBottomParts(): ColumnEntry = withContext(Dispatchers.Default) {
+    private suspend fun ColumnEntry.addBottomParts(isContinuous: Boolean = true): ColumnEntry = withContext(Dispatchers.Default) {
         var column = this@addBottomParts
 
         var part = lastPart
 
         while (part.hasNext) {
             part = part.next()
+
+            if (column.item.isNextContinuous && !isContinuous)
+                column = column.asNotContinuous()
 
             if (part.item.pageBreakBefore)
                 break
@@ -85,7 +94,7 @@ class LayoutColumnSequence(
             column.lastPart
     )
 
-    private inner class ColumnEntry(
+    inner class ColumnEntry(
             override val item: LayoutColumn,
             val firstPart: Entry<LayoutPart>,
             val lastPart: Entry<LayoutPart>
@@ -95,6 +104,7 @@ class LayoutColumnSequence(
 
         override suspend fun previous(): Entry<LayoutColumn> = makePrevious(firstPart.previous())
         override suspend fun next(): Entry<LayoutColumn> = makeNext(lastPart.next())
+        fun asNotContinuous() = ColumnEntry(item.copy(isNextContinuous = false), firstPart, lastPart)
 
         val height = item.height
     }

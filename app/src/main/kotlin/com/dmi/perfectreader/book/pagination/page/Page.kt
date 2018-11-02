@@ -12,6 +12,7 @@ class Page(
         val textGammaCorrection: Float
 ) {
     val range: LocationRange get() = column.range
+    val isNextContinous: Boolean get() = column.isNextContinuous
 
     class Paddings(val left: Float, val right: Float, val top: Float, val bottom: Float) {
         operator fun times(value: Float) = Paddings(left * value, right * value, top * value, bottom * value)

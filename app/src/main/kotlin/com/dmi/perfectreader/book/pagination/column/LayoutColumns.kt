@@ -7,24 +7,20 @@ fun singlePartColumn(part: LayoutPart) = LayoutColumn(listOf(part), part.height,
 
 infix fun LayoutColumn.merge(part: LayoutPart): LayoutColumn {
     val last = this.parts.lastOrNull()
-    val parts = if (last == null) {
-        listOf(part)
-    } else if (last.obj == part.obj) {
-        this.parts.dropLast(1) + listOf(last merge part)
-    } else {
-        this.parts.dropLast(1) + listOf(last.extendToEnd(), part.extendToBegin())
+    val parts = when {
+        last == null -> listOf(part)
+        last.obj == part.obj -> this.parts.dropLast(1) + listOf(last merge part)
+        else -> this.parts.dropLast(1) + listOf(last.extendToEnd(), part.extendToBegin())
     }
     return LayoutColumn(parts, heightSumOf(parts), LocationRange(range.start, part.range.endInclusive))
 }
 
 infix fun LayoutPart.merge(column: LayoutColumn): LayoutColumn {
     val first = column.parts.firstOrNull()
-    val parts = if (first == null) {
-        listOf(this)
-    } else if (first.obj == obj) {
-        listOf(this merge first) + column.parts.drop(1)
-    } else {
-        listOf(this.extendToEnd(), first.extendToBegin()) + column.parts.drop(1)
+    val parts = when {
+        first == null -> listOf(this)
+        first.obj == obj -> listOf(this merge first) + column.parts.drop(1)
+        else -> listOf(this.extendToEnd(), first.extendToBegin()) + column.parts.drop(1)
     }
     return LayoutColumn(parts, heightSumOf(parts), LocationRange(range.start, column.range.endInclusive))
 }
