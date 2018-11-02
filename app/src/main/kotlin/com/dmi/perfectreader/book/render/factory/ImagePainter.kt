@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import com.dmi.perfectreader.book.bitmap.BitmapDecoder
 import com.dmi.perfectreader.book.layout.obj.LayoutImage
+import kotlinx.io.IOException
 
 class ImagePainter(private val bitmapDecoder: BitmapDecoder) {
     companion object {
@@ -15,7 +16,11 @@ class ImagePainter(private val bitmapDecoder: BitmapDecoder) {
 
     fun paint(x: Float, y: Float, obj: LayoutImage, canvas: Canvas) {
         val bitmap = if (obj.src != null) {
-            bitmapDecoder.decode(obj.src, obj.bitmapWidth, obj.bitmapHeight, obj.scaleFiltered)
+            try {
+                bitmapDecoder.decode(obj.src, obj.bitmapWidth, obj.bitmapHeight, obj.scaleFiltered)
+            } catch (e: IOException) {
+                EMPTY
+            }
         } else {
             EMPTY
         }

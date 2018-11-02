@@ -10,6 +10,7 @@ import com.dmi.perfectreader.book.content.obj.ContentParagraph
 import com.dmi.perfectreader.book.content.obj.common.ContentClass
 import com.dmi.perfectreader.book.content.obj.common.ContentCompositeClass
 import java.io.FileNotFoundException
+import java.io.InputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -17,11 +18,11 @@ import kotlin.collections.ArrayList
 class Content private constructor(
         private val objects: ContentObjects,
         val description: BookDescription,
-        val tableOfContents: TableOfContents?
+        val tableOfContents: TableOfContents?,
+        val openResource: (src: String) -> InputStream
 ) {
     val length: Double get() = objects.length
     val sequence: LocatedSequence<ContentObject> = ContentObjectSequence(objects.list)
-    val openResource = { _: String -> throw FileNotFoundException() }
 
     fun locationToPercent(location: Location): Double = objects.locationToPercent(location)
     fun percentToLocation(percent: Double): Location = objects.percentToLocation(percent)
@@ -85,8 +86,11 @@ class Content private constructor(
 
         fun root(locale: Locale?) = SectionBuilder(objects, chapters, locale = locale, cls = null, chapterLevel = -1)
 
-        fun build(description: BookDescription) = Content(
-                ContentObjects(objects), description, tableOfContents()
+        fun build(
+                description: BookDescription,
+                openResource: (src: String) -> InputStream = { throw FileNotFoundException() }
+        ) = Content(
+                ContentObjects(objects), description, tableOfContents(), openResource
         )
 
         private fun tableOfContents() = if (chapters.isNotEmpty()) TableOfContents(chapters) else null

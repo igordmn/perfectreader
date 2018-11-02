@@ -9,6 +9,7 @@ import java.io.Reader
 
 class Binary : ElementDesc() {
     val id: String? by attribute("id")
+    val data: String by text()
 }
 
 class FictionBook : ElementDesc() {

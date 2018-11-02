@@ -7,6 +7,7 @@ import com.dmi.perfectreader.book.content.configure.common.ConfiguredSize.Dimens
 import com.dmi.perfectreader.book.layout.common.LayoutSpace
 import com.dmi.perfectreader.book.layout.obj.LayoutImage
 import com.dmi.util.graphic.Size
+import kotlinx.io.IOException
 import java.lang.Math.round
 
 class ImageLayouter(
@@ -16,9 +17,13 @@ class ImageLayouter(
         return object {
             fun layout(): LayoutImage {
                 val (imageWidth, imageHeight) = if (obj.src != null) {
-                    (bitmapDecoder.loadDimensions(obj.src) * obj.sourceScale).toInt()
+                    try {
+                        (bitmapDecoder.loadDimensions(obj.src) * obj.sourceScale).toInt()
+                    } catch (e: IOException) {
+                        Size(1, 1)
+                    }
                 } else {
-                    Size(0, 0)
+                    Size(1, 1)
                 }
                 val (width, height) = configureDimensions(imageHeight, imageWidth)
                 return LayoutImage(width.toFloat(), height.toFloat(), width, height, obj.scaleFiltered, obj.src, obj.range)

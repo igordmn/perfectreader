@@ -6,6 +6,7 @@ import com.dmi.util.lang.required
 import kotlinx.io.Reader
 import org.kxml2.io.KXmlParser
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParser.FEATURE_PROCESS_NAMESPACES
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -194,6 +195,7 @@ abstract class ElementDesc : XMLDesc() {
 fun <T : ElementDesc> parseDesc(reader: Reader, name: String, desc: () -> T): T {
     val parser = KXmlParser()
     parser.setInput(reader)
+    parser.setFeature(FEATURE_PROCESS_NAMESPACES, true)
 
     val document = object : ElementDesc() {
         val root: T by element(name, desc).required()

@@ -15,7 +15,11 @@ import com.dmi.perfectreader.book.parse.format.fb2.entities.*
 import com.dmi.perfectreader.book.parse.format.fb2.entities.Annotation
 import com.dmi.util.xml.Text
 import com.dmi.util.xml.XMLDesc
+import com.google.common.base.CharMatcher
+import com.google.common.io.BaseEncoding
 import com.google.common.io.ByteSource
+import java.io.FileNotFoundException
+import java.io.InputStream
 import java.util.*
 
 // todo support empty paragraphs (with text = "")
@@ -47,15 +51,32 @@ class FB2ContentParser(
         for (body in fictionBook.bodies)
             root.section(body)
 
-        return content.build(description)
+        return content.build(description, ::loadImage)
+    }
+
+    private fun loadImage(src: String): InputStream {
+        val id = src.removePrefix("#")
+
+        fun charset() = charsetDetector.detectForXML(source)
+
+        fun fictionBookMeta(): FictionBookMeta = source
+                .openBufferedStream()
+                .reader(charset())
+                .use(::parseFictionBookMeta)
+
+        fun findBinary() = fictionBookMeta().binaries.find { it.id == id }
+        val binary = findBinary() ?: throw FileNotFoundException()
+
+        return BaseEncoding
+                .base64()
+                .decode(CharMatcher.whitespace().removeFrom(binary.data))
+                .inputStream()
     }
 
     private fun Image.toContent(): ContentImage? {
         val href = href
         return if (href != null) {
-            val id = href.removePrefix("#")
-            val src = "book://$id"
-            ContentImage(src, range())
+            ContentImage(href, range())
         } else {
             null
         }
@@ -202,7 +223,7 @@ class FB2ContentParser(
                     else -> Unit
                 }
 
-                isFirst =false
+                isFirst = false
             }
         }
 
