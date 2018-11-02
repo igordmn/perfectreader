@@ -5,8 +5,8 @@ import com.dmi.perfectreader.book.content.location.percentOf
 import com.dmi.perfectreader.book.content.location.sublocation
 import com.dmi.perfectreader.book.content.obj.ContentObject
 import com.dmi.util.range.PercentRanges
+import com.dmi.util.range.definitelySearchRangeIndex
 import com.dmi.util.range.globalPercent
-import com.dmi.util.range.indexOfNearestRange
 import com.dmi.util.range.localPercent
 
 class ContentObjects(
@@ -20,7 +20,7 @@ class ContentObjects(
     }
 
     fun locationToPercent(location: Location): Double {
-        val index = list.indexOfNearestRange({ range }, location)
+        val index = list.definitelySearchRangeIndex({ range }, location)
         val locationRange = list[index].range
         val percentRange = percentRanges[index]
         val objLocalPercent = locationRange.percentOf(location).coerceIn(0.0..1.0)
@@ -28,7 +28,7 @@ class ContentObjects(
     }
 
     fun percentToLocation(percent: Double): Location {
-        val index = percentRanges.indexOfNearest(percent)
+        val index = percentRanges.definitelySearchRangeIndex(percent)
         val locationRange = list[index].range
         val percentRange = percentRanges[index]
         val objLocalPercent = percentRange.localPercent(percent)

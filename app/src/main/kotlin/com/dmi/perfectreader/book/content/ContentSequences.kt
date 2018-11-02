@@ -10,7 +10,7 @@ import com.dmi.perfectreader.book.content.obj.ContentObject
 import com.dmi.perfectreader.book.content.obj.common.ContentConfig
 import com.dmi.util.cache.cache
 import com.dmi.util.collection.ListSequenceEntry
-import com.dmi.util.range.indexOfNearestRange
+import com.dmi.util.range.definitelySearchRangeIndex
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -39,7 +39,7 @@ fun contentLeafSequence(rootSequence: LocatedSequence<ContentObject>) = rootSequ
             leafsCache[it]
         },
         indexOf = {
-            indexOfNearestRange({ range }, it)
+            definitelySearchRangeIndex({ range }, it)
         }
 )
 
@@ -50,5 +50,5 @@ class ContentObjectSequence(private val objects: List<ContentObject>) : LocatedS
 
     override suspend fun get(location: Location) = ListSequenceEntry(objects, indexOf(location))
 
-    private fun indexOf(location: Location) = objects.indexOfNearestRange({ range }, location)
+    private fun indexOf(location: Location) = objects.definitelySearchRangeIndex({ range }, location)
 }

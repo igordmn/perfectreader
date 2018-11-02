@@ -1,12 +1,10 @@
 package com.dmi.util.range
 
-import java.util.*
-
-class PercentRanges {
+class PercentRanges : AbstractList<ClosedRange<Double>>() {
     private val lengthBegins = ArrayList<Double>(1024)
     private var lengthEnd = 0.0
 
-    var size: Int = 0
+    override var size: Int = 0
         private set
 
     fun add(length: Double) {
@@ -15,12 +13,9 @@ class PercentRanges {
         size++
     }
 
-    fun beginOf(index: Int) = lengthBegins[index] / lengthEnd
-    fun endOf(index: Int) = if (index < size - 1) lengthBegins[index + 1] / lengthEnd else 1.0
-
-    fun indexOfNearest(percent: Percent) = indexOfNearestRange({ get(it) }, percent, 0, size)
-
-    operator fun get(index: Int) = beginOf(index)..endOf(index)
+    override operator fun get(index: Int) = beginOf(index)..endOf(index)
+    private fun beginOf(index: Int) = lengthBegins[index] / lengthEnd
+    private fun endOf(index: Int) = if (index < size - 1) lengthBegins[index + 1] / lengthEnd else 1.0
 }
 
 typealias Percent = Double

@@ -22,34 +22,41 @@ class RangesTest {
                 50000..90000
         )
 
-        fun nearestTo(point: Int): IntRange = ranges[
-                ranges.indexOfNearestRange({ this }, point)
+        fun searchOf(point: Int): IntRange = ranges[
+                ranges.definitelySearchRangeIndex({ this }, point)
         ]
 
         // expect
-        nearestTo(0) shouldBe 10..20
-        nearestTo(10) shouldBe 10..20
-        nearestTo(19) shouldBe 10..20
-        nearestTo(20) shouldBe 10..20
-        nearestTo(25) shouldBe 10..20
-        nearestTo(29) shouldBe 10..20
-        nearestTo(30) shouldBe 30..40
-        nearestTo(39) shouldBe 30..40
-        nearestTo(40) shouldBe 30..40
-        nearestTo(99) shouldBe 30..40
-        nearestTo(100) shouldBe 100..200
-        nearestTo(199) shouldBe 100..200
-        nearestTo(200) shouldBe 200..300
-        nearestTo(299) shouldBe 200..300
-        nearestTo(300) shouldBe 300..400
-        nearestTo(9999) shouldBe 300..400
-        nearestTo(10000) shouldBe 10000..10001
-        nearestTo(10001) shouldBe 10001..20000
-        nearestTo(10002) shouldBe 10001..20000
-        nearestTo(49999) shouldBe 31000..50000
-        nearestTo(50000) shouldBe 50000..90000
-        nearestTo(89999) shouldBe 50000..90000
-        nearestTo(90000) shouldBe 50000..90000
-        nearestTo(900000) shouldBe 50000..90000
+        searchOf(0) shouldBe 10..20
+        searchOf(10) shouldBe 10..20
+        searchOf(19) shouldBe 10..20
+        searchOf(20) shouldBe 30..40
+        searchOf(25) shouldBe 30..40
+        searchOf(29) shouldBe 30..40
+        searchOf(30) shouldBe 30..40
+        searchOf(39) shouldBe 30..40
+        searchOf(40) shouldBe 100..200
+        searchOf(99) shouldBe 100..200
+        searchOf(100) shouldBe 100..200
+        searchOf(199) shouldBe 100..200
+        searchOf(200) shouldBe 200..300
+        searchOf(299) shouldBe 200..300
+        searchOf(300) shouldBe 300..400
+        searchOf(400) shouldBe 10000..10001
+        searchOf(9999) shouldBe 10000..10001
+        searchOf(10000) shouldBe 10000..10001
+        searchOf(10001) shouldBe 10001..20000
+        searchOf(10002) shouldBe 10001..20000
+        searchOf(19999) shouldBe 10001..20000
+        searchOf(20000) shouldBe 21000..30000
+        searchOf(20999) shouldBe 21000..30000
+        searchOf(21000) shouldBe 21000..30000
+        searchOf(29999) shouldBe 21000..30000
+        searchOf(30000) shouldBe 31000..50000
+        searchOf(49999) shouldBe 31000..50000
+        searchOf(50000) shouldBe 50000..90000
+        searchOf(89999) shouldBe 50000..90000
+        searchOf(90000) shouldBe 50000..90000
+        searchOf(900000) shouldBe 50000..90000
     }
 }
