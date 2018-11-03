@@ -23,7 +23,7 @@ class RangesTest {
         )
 
         fun searchOf(point: Int): IntRange = ranges[
-                ranges.definitelySearchRangeIndex({ this }, point)
+                ranges.definitelySearchRangeIndex({ this }, location = point)
         ]
 
         // expect
