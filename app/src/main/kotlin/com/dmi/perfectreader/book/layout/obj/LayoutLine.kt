@@ -14,8 +14,7 @@ class LayoutLine(
     override fun toString(): String = children
             .map { it.obj }
             .filter { it is LayoutText }
-            .map { it.toString() }
-            .joinToString("")
+            .joinToString("") { it.toString() }
 
     override fun internalMargins() = internalMargins
 }

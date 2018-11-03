@@ -41,4 +41,14 @@ abstract class LayoutObject(
             null
         }
     }
+
+    fun forEachChildRecursive(x: Float, y: Float, action: (x: Float, y: Float, obj: LayoutObject) -> Unit) {
+        for (child in children) {
+            val objX = x + child.x
+            val objY = y + child.y
+            val obj = child.obj
+            action(objX, objY, obj)
+            obj.forEachChildRecursive(objX, objY, action)
+        }
+    }
 }

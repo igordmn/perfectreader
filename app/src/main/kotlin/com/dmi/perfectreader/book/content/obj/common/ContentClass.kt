@@ -11,7 +11,8 @@ enum class ContentClass {
     POEM_LINE,
     EPIGRAPH,
     IMAGE_BLOCK,
-    AUTHOR;
+    AUTHOR,
+    FOOTER;
 
     companion object {
         fun H(level: Int) = when (level) {

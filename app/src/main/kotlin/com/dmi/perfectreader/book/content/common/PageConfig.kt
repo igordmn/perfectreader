@@ -18,6 +18,20 @@ class PageConfig(
                 settings.format.pagePaddingTopDip,
                 settings.format.pagePaddingBottomDip
         ) * density,
-        val contentSize: SizeF = size.shrink(paddings.left + paddings.right, paddings.top + paddings.bottom),
+        val footer: Footer? = if (settings.format.pageFooter) Footer(main) else null,
+        footerExtraSpace: Float = if (footer != null) (footer.height + footer.paddingBottom) else 0F,
+        val contentSize: SizeF = size.shrink(paddings.left + paddings.right, paddings.top + paddings.bottom + footerExtraSpace),
         val textGammaCorrection: Float = settings.format.pageTextGammaCorrection
-)
+) {
+    class Footer(
+            main: Main,
+            settings: Settings = main.settings,
+            density: Float = main.applicationContext.displayMetrics.density,
+            val height: Float = settings.format.pageFooterHeightEm * settings.format.textSizeDip * density,
+            val itemDistance: Float = 20 * density,
+            val paddingBottom: Float = settings.format.pageFooterPaddingBottomPercent * settings.format.pagePaddingBottomDip * density,
+            val pageNumber: Boolean = settings.format.pageFooterPageNumber,
+            val numberOfPages: Boolean = settings.format.pageFooterNumberOfPages,
+            val chapter: Boolean = settings.format.pageFooterChapter
+    )
+}

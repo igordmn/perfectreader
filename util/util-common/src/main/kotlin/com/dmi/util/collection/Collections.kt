@@ -7,7 +7,14 @@ inline fun <reified K : Enum<K>, V> enumMapOf(vararg pairs: Pair<K, V>) =
 
 
 inline fun <T> Array<out T>.sumByFloat(selector: (T) -> Float): Float {
-    var sum: Float = 0.0F
+    var sum = 0.0F
+    for (element in this) {
+        sum += selector(element)
+    }
+    return sum
+}
+inline fun <T> Iterable<T>.sumByFloat(selector: (T) -> Float): Float {
+    var sum = 0.0F
     for (element in this) {
         sum += selector(element)
     }

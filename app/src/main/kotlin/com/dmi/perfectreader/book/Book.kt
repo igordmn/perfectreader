@@ -6,9 +6,9 @@ import com.dmi.perfectreader.book.bitmap.AndroidBitmapDecoder
 import com.dmi.perfectreader.book.bitmap.BitmapDecoder
 import com.dmi.perfectreader.book.bitmap.CachedBitmapDecoder
 import com.dmi.perfectreader.book.content.*
-import com.dmi.perfectreader.book.content.obj.common.ContentConfig
 import com.dmi.perfectreader.book.content.common.PageConfig
 import com.dmi.perfectreader.book.content.location.Location
+import com.dmi.perfectreader.book.content.obj.common.ContentConfig
 import com.dmi.perfectreader.book.layout.UniversalObjectLayouter
 import com.dmi.perfectreader.book.layout.layout
 import com.dmi.perfectreader.book.layout.paragraph.breaker.CompositeBreaker
@@ -77,19 +77,19 @@ class Book(
 
     private val sized: Sized by scope.cachedDisposable {
         val size = size
-        val formatConfig = ContentConfig(main)
+        val contentConfig = ContentConfig(main)
         val pageConfig = PageConfig(main, size)
 
         dontObserve {
             val settings = main.settings
             val dip2px = main.dip2px
+            val locations = Locations(content, pageConfig.contentSize, contentConfig, settings)
             val sequence = content.sequence
-                    .configure(formatConfig)
+                    .configure(contentConfig)
                     .layout(layouter, pageConfig.contentSize)
                     .parts()
                     .columns(pageConfig.contentSize.height)
-                    .pages(pageConfig)
-            val locations = Locations(content, pageConfig.contentSize, formatConfig, settings)
+                    .pages(pageConfig, locations, tableOfContents, description, layouter, contentConfig)
             val loadingPages = LoadingPages(LoadingPages.pages(sequence, locations, userBook))
             val animator = SmoothPageAnimator(seconds(0.4))
             val animatedPages = AnimatedPages(

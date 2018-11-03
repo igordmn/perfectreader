@@ -8,14 +8,15 @@ import com.dmi.perfectreader.book.content.location.textSubLocation
 import java.util.*
 import java.util.Collections.emptyList
 
-open class LayoutText(width: Float,
-                      height: Float,
-                      val text: CharSequence,
-                      val locale: Locale,
-                      val baseline: Float,
-                      val charOffsets: FloatArray,
-                      val style: ConfiguredFontStyle,
-                      range: LocationRange
+open class LayoutText(
+        width: Float,
+        height: Float,
+        val text: CharSequence,
+        val locale: Locale,
+        val baseline: Float,
+        val charOffsets: FloatArray,
+        val style: ConfiguredFontStyle,
+        range: LocationRange
 ) : LayoutObject(width, height, emptyList<LayoutChild>(), range) {
     val charCount = text.length
 
@@ -30,7 +31,7 @@ open class LayoutText(width: Float,
     }
 
     fun charLocation(index: Int) = textSubLocation(text, range, index)
-    fun charIndex(location: Location)= textIndexAt(text, range, location)
+    fun charIndex(location: Location) = textIndexAt(text, range, location)
 
     override fun toString() = text.toString()
 }

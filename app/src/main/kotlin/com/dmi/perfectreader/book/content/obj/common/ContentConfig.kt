@@ -23,6 +23,7 @@ data class ContentConfig(
         private val defaultLocale: Locale,
         private val ignoreDeclaredLocale: Boolean,
         val imageScale: ContentImage.Scale,
+        private val footerTextSizePercent: Float,
         private val defaultStyle: ContentStyle
 ) {
     constructor(
@@ -35,6 +36,7 @@ data class ContentConfig(
             defaultLocale = defaultLocale(context, settings.analyze),
             ignoreDeclaredLocale = settings.analyze.ignoreDeclaredLanguage,
             imageScale = imageScale(settings.image),
+            footerTextSizePercent = settings.format.pageFooterTextSizePercent,
             defaultStyle = ContentStyle(
                     boxAlign = Align.LEFT,
                     margins = ContentMargins(
@@ -177,6 +179,10 @@ data class ContentConfig(
         )
         ContentClass.IMAGE_BLOCK -> copy(
                 boxAlign = Align.CENTER
+        )
+        ContentClass.FOOTER -> copy(
+                firstLineIndentEm = 0F,
+                textSizeDip = textSizeDip * footerTextSizePercent
         )
     }
 

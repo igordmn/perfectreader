@@ -44,4 +44,12 @@ class FormatSettings(store: ValueStore) {
     var pagePaddingRightDip by store.value(20F)
     var pagePaddingTopDip by store.value(20F)
     var pagePaddingBottomDip by store.value(20F)
+
+    var pageFooter by store.value(true)
+    var pageFooterTextSizePercent by store.value(0.8F)
+    var pageFooterHeightEm by store.value(1.4F)
+    var pageFooterPaddingBottomPercent by store.value(-0.2F)
+    var pageFooterPageNumber by store.value(true)
+    var pageFooterNumberOfPages by store.value(true)
+    var pageFooterChapter by store.value(true)
 }
