@@ -12,7 +12,7 @@ class Menu(
         val back: () -> Unit,
         val state: MenuState
 ) : Screen by Screen() {
-    val locationText: String get() = if (book.percent == 0.0) bookName else chapterName
+    val locationText: String get() = if (book.pageNumber == 0) bookName else chapterName
     private val bookName: String get() = book.description.name ?: book.description.fileName
     private val chapterName: String get() = book.chapter?.name ?: bookName
 }
