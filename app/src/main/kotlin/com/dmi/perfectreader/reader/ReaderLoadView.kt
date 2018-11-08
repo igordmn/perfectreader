@@ -37,8 +37,6 @@ fun readerLoadView(context: Context, model: ReaderLoad) = FrameLayoutExt(context
             when (model.error) {
                 null -> visibility = View.GONE
                 is LoadError.IO -> showError(R.string.bookOpenError)
-                is LoadError.NeedOpenThroughFileManager -> showError(R.string.bookNeedOpenThroughFileManager)
-                is LoadError.NeedStoragePermissions -> showError(R.string.bookNeedStoragePermissions)
             }
         }
     })

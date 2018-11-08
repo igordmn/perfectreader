@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="appName">Perfect Reader</string>
-    <string name="bookNeedOpenThroughFileManager">Пожалуйста, откройте книгу через файловый менеджер</string>
+    <string name="needStoragePermissions">Приложению необходимо предоставить права</string>
     <string name="bookOpenError">Ошибка при открытии книги</string>
-    <string name="bookNeedStoragePermissions">Для открытия книги, нужно предоставить права приложению</string>
     <string name="bookMenuBookmarks">Закладки</string>
     <string name="bookMenuGoto">Перейти</string>
     <string name="bookMenuSettings">Настройки</string>

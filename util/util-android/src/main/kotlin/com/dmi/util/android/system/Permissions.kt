@@ -9,7 +9,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class Permissions(private val context: Context) {
-    suspend fun askStorage(): Boolean = suspendCoroutine { cont ->
+    suspend fun askReadStorage(): Boolean = suspendCoroutine { cont ->
         TedPermission.with(context)
                 .setPermissionListener(object : PermissionListener {
                     override fun onPermissionGranted() {
@@ -20,7 +20,7 @@ class Permissions(private val context: Context) {
                         cont.resume(false)
                     }
                 })
-                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .check()
     }
 }

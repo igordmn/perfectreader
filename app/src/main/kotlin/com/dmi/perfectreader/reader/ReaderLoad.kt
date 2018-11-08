@@ -1,10 +1,7 @@
 package com.dmi.perfectreader.reader
 
-import android.content.Intent
 import android.net.Uri
 import com.dmi.perfectreader.Main
-import com.dmi.perfectreader.common.UserData
-import com.dmi.util.android.system.Permissions
 import com.dmi.util.log.Log
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
@@ -14,12 +11,10 @@ import java.io.IOException
 
 class ReaderLoad(
         private val main: Main,
-        private val intent: Intent,
+        private val uri: Uri,
         val back: () -> Unit,
         val state: ReaderLoadState,
         private val log: Log = main.log,
-        private val userData: UserData = main.userData,
-        private val permissions: Permissions = main.permissions,
         scope: Scope = Scope()
 ) : Screen by Screen(scope) {
     var isLoading: Boolean by observable(true)
@@ -29,16 +24,7 @@ class ReaderLoad(
     init {
         scope.launch {
             try {
-                val uri = bookURI(intent)
-                if (uri != null) {
-                    if (permissions.askStorage()) {
-                        reader = reader(main, uri, state.reader)
-                    } else {
-                        error = LoadError.NeedStoragePermissions()
-                    }
-                } else {
-                    error = LoadError.NeedOpenThroughFileManager()
-                }
+                reader = reader(main, uri, state.reader)
             } catch (e: IOException) {
                 log.e(e, "Book load error")
                 error = LoadError.IO()
@@ -47,20 +33,8 @@ class ReaderLoad(
         }
     }
 
-    private suspend fun bookURI(intent: Intent): Uri? {
-        val requestedURI = intent.data
-        return if (requestedURI != null) {
-            userData.saveLastBookFile(requestedURI)
-            requestedURI
-        } else {
-            userData.loadLastBookURI()
-        }
-    }
-
     sealed class LoadError : Exception() {
         class IO : LoadError()
-        class NeedOpenThroughFileManager : LoadError()
-        class NeedStoragePermissions : LoadError()
     }
 }
 

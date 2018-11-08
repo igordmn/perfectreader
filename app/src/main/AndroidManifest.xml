@@ -20,7 +20,8 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="@string/appName">
+            android:label="@string/appName"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
