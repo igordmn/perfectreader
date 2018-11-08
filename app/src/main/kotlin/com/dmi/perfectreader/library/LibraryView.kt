@@ -77,7 +77,7 @@ fun libraryView(context: Context, model: Library) = LinearLayoutExt(context).app
         }
     }
 
-    fun noResults(): View = TextView(context).apply {
+    fun emptyFolder(): View = TextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
         padding = dip(16)
         textColor = color(R.color.onBackground).withOpacity(0.60)
@@ -91,7 +91,7 @@ fun libraryView(context: Context, model: Library) = LinearLayoutExt(context).app
     child(params(matchParent, matchParent, weight = 1F), FrameLayout(context).apply {
         child(params(matchParent, matchParent), folders())
         child(params(wrapContent, wrapContent, Gravity.CENTER), progress())
-        child(params(wrapContent, wrapContent, Gravity.CENTER), noResults())
+        child(params(wrapContent, wrapContent, Gravity.CENTER), emptyFolder())
     })
 
     onInterceptKeyDown(KeyEvent.KEYCODE_BACK) {
