@@ -1,9 +1,9 @@
 package com.dmi.perfectreader.control
 
-import com.dmi.perfectreader.Main
 import com.dmi.perfectreader.action.ActionID
 import com.dmi.perfectreader.action.Actions
 import com.dmi.perfectreader.reader.Reader
+import com.dmi.perfectreader.reader.ReaderContext
 import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.action.TouchActionPerformer
 import com.dmi.util.graphic.SizeF
@@ -14,16 +14,16 @@ import com.dmi.util.scope.Disposable
 import kotlinx.coroutines.Dispatchers
 
 class Control(
-        private val main: Main,
+        private val context: ReaderContext,
         private val reader: Reader,
         private val actions: Actions = reader.actions,
-        private val settings: Settings = main.settings
+        private val settings: Settings = context.main.settings
 ): Disposable {
     private var gestureDetector: GestureDetector? = null
 
     fun resize(size: SizeF) {
         gestureDetector?.cancel()
-        gestureDetector = gestureDetector(size, main, reader)
+        gestureDetector = gestureDetector(size, context, reader)
     }
 
     override fun dispose() {
@@ -50,15 +50,15 @@ class Control(
     }
 }
 
-fun gestureDetector(size: SizeF, main: Main, reader: Reader): GestureDetector {
-    val settings = main.settings
-    val actionProvider = ReaderActionProvider(size, main.density, settings, reader)
+fun gestureDetector(size: SizeF, context: ReaderContext, reader: Reader): GestureDetector {
+    val settings = context.main.settings
+    val actionProvider = ReaderActionProvider(size, context.main.density, settings, reader)
     val listener = TouchActionPerformer(actionProvider)
     return GestureDetector(
             Dispatchers.Main,
             listener,
             settings.control.touches.doubleTapEnabled,
-            settings.control.touches.tapMaxOffset * main.density,
+            settings.control.touches.tapMaxOffset * context.main.density,
             settings.control.touches.longTapTimeout,
             settings.control.touches.doubleTapTimeout
     )

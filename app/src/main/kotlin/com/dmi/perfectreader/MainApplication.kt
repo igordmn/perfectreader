@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 
 @Suppress("ConstantConditionIf")
 class MainApplication : Application() {
-    lateinit var main: Main
+    lateinit var context: MainContext
         private set
 
     override fun onCreate() {
@@ -24,7 +24,7 @@ class MainApplication : Application() {
         initStrictMode()
         initThreadContext(Dispatchers.Main)
 //        TinyDancer.create().show(this)
-        main = Main(log, this)
+        context = MainContext(log, this)
     }
 
     private fun initLog() = if (BuildConfig.DEBUG) {
@@ -60,4 +60,4 @@ class MainApplication : Application() {
     }
 }
 
-val Context.main: Main get() = (applicationContext as MainApplication).main
+val Context.main: MainContext get() = (applicationContext as MainApplication).context

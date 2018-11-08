@@ -16,12 +16,12 @@ import com.dmi.util.graphic.Size
 typealias BookView = GLSurfaceScopedView
 
 fun ViewBuild.bookView(reader: Reader): BookView {
-    val main = context.main
-    val glSurface = GLSurfaceScopedView(context, main.log) {
-        val model = GLBookModel(it, main.settings, reader, reader.book)
+    val mainContext = context.main
+    val glSurface = GLSurfaceScopedView(context, mainContext.log) {
+        val model = GLBookModel(it, mainContext.settings, reader, reader.book)
         val bitmapDecoder = reader.book.bitmapDecoder
         val pageRenderer = PageRenderer(FramePainter(), ImagePainter(bitmapDecoder), TextPainter())
-        val uriHandler = main.uriHandler
+        val uriHandler = mainContext.uriHandler
 
         val createRenderer = { size: Size ->
             val glBook = GLBook(model, context, pageRenderer, size, uriHandler)

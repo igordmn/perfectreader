@@ -1,9 +1,9 @@
 package com.dmi.perfectreader.action
 
-import com.dmi.perfectreader.Main
 import com.dmi.perfectreader.book.Book
 import com.dmi.perfectreader.book.page.PageScroller
 import com.dmi.perfectreader.reader.Reader
+import com.dmi.perfectreader.reader.ReaderContext
 import com.dmi.perfectreader.settings.Settings
 import com.dmi.perfectreader.settingsui.SettingValues
 import com.dmi.perfectreader.settingsui.chooseSettingValue
@@ -16,10 +16,10 @@ import java.lang.Math.round
 import kotlin.reflect.KMutableProperty0
 
 class Actions(
-        private val main: Main,
+        private val context: ReaderContext,
         private val reader: Reader,
-        private val density: Float = main.density,
-        private val settings: Settings = main.settings
+        private val density: Float = context.main.density,
+        private val settings: Settings = context.main.settings
 ) {
     private val book: Book get() = reader.book
 

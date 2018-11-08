@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.book
 
 import android.net.Uri
-import com.dmi.perfectreader.Main
 import com.dmi.perfectreader.book.bitmap.AndroidBitmapDecoder
 import com.dmi.perfectreader.book.bitmap.BitmapDecoder
 import com.dmi.perfectreader.book.bitmap.CachedBitmapDecoder
@@ -26,22 +25,23 @@ import com.dmi.perfectreader.book.pagination.page.pages
 import com.dmi.perfectreader.book.pagination.part.parts
 import com.dmi.perfectreader.book.selection.BookSelections
 import com.dmi.perfectreader.common.UserData
+import com.dmi.perfectreader.reader.ReaderContext
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.scope.*
 import com.dmi.util.system.seconds
 
-suspend fun book(main: Main, uri: Uri): Book {
-    val userData: UserData = main.userData
-    val bookParsers = main.bookParsers
+suspend fun book(context: ReaderContext, uri: Uri): Book {
+    val userData: UserData = context.main.userData
+    val bookParsers = context.main.bookParsers
     val content: Content = bookParsers[uri].content()
     val userBook: UserBook = userBook(userData, uri)
     val bitmapDecoder = CachedBitmapDecoder(AndroidBitmapDecoder(content.resource))
     val text = ContentText(content)
-    return Book(main, text, userBook, content, bitmapDecoder)
+    return Book(context, text, userBook, content, bitmapDecoder)
 }
 
 class Book(
-        private val main: Main,
+        private val context: ReaderContext,
         val text: ContentText,
         private val userBook: UserBook,
         private val content: Content,
@@ -57,8 +57,8 @@ class Book(
                     ObjectBreaker(),
                     WordBreaker(
                             CachedHyphenatorResolver(
-                                    TeXHyphenatorResolver(main.log,
-                                            TeXPatternsSource(main.applicationContext)
+                                    TeXHyphenatorResolver(context.main.log,
+                                            TeXPatternsSource(context.main.android)
                                     )
                             )
                     )
@@ -68,12 +68,12 @@ class Book(
 
     private val sized: Sized by scope.cachedDisposable {
         val size = size
-        val contentConfig = ContentConfig(main)
-        val pageConfig = PageConfig(main, size)
+        val contentConfig = ContentConfig(context.main)
+        val pageConfig = PageConfig(context.main, size)
 
         dontObserve {
-            val settings = main.settings
-            val dip2px = main.dip2px
+            val settings = context.main.settings
+            val dip2px = context.main.dip2px
             val locations = Locations(content, pageConfig.contentSize, contentConfig, settings)
             val sequence = content.sequence
                     .configure(contentConfig)
@@ -86,14 +86,14 @@ class Book(
             val animatedPages = AnimatedPages(
                     size,
                     AnimatedPages.pages(loadingPages),
-                    main.display,
+                    context.main.display,
                     animator,
                     speedToTurnPage = dip2px(20F)
             )
             val demoAnimatedPages = DemoAnimatedPages(
                     size,
                     DemoAnimatedPages.pages(loadingPages),
-                    main.display,
+                    context.main.display,
                     animator
             )
             Sized(locations, loadingPages, animatedPages, demoAnimatedPages)

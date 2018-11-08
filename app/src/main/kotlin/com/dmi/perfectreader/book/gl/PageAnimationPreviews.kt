@@ -5,7 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.opengl.GLES20.*
-import com.dmi.perfectreader.Main
+import com.dmi.perfectreader.MainContext
 import com.dmi.util.android.opengl.GLContext
 import com.dmi.util.android.opengl.GLFrameBuffer
 import com.dmi.util.android.opengl.GLTexture
@@ -18,9 +18,9 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 class PageAnimationPreviews(
-        private val main: Main,
+        private val context: MainContext,
         private val glContext: GLContext,
-        private val uriHandler: ProtocolURIHandler = main.uriHandler
+        private val uriHandler: ProtocolURIHandler = context.uriHandler
 ) {
     suspend fun of(path: URI, size: Size): Bitmap {
         val pageBitmap = pageBitmap(size)

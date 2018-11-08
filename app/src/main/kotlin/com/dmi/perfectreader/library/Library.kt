@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.library
 
 import android.net.Uri
-import com.dmi.perfectreader.Main
+import com.dmi.perfectreader.MainContext
 import com.dmi.perfectreader.book.content.BookDescription
 import com.dmi.util.scope.ObservableStack
 import com.dmi.util.scope.Scope
@@ -10,11 +10,11 @@ import com.dmi.util.screen.Screen
 import kotlinx.serialization.Serializable
 
 class Library(
-        val main: Main,
+        val context: MainContext,
         val close: () -> Unit,
         val openBook: (uri: Uri) -> Unit,
         val state: LibraryState,
-        private val root: Item.Folder = androidRoot(main),
+        private val root: Item.Folder = androidRoot(context),
         private val scope: Scope = Scope()
 ) : Screen by Screen(scope) {
     val folders = ObservableStack<Item.Folder>().apply {

@@ -1,11 +1,11 @@
 package com.dmi.perfectreader.selection
 
-import com.dmi.perfectreader.Main
 import com.dmi.perfectreader.book.Book
 import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.selection.BookSelections
 import com.dmi.perfectreader.book.selection.BookSelections.Handle
 import com.dmi.perfectreader.book.selection.BookSelections.Handles
+import com.dmi.perfectreader.reader.ReaderContext
 import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.graphic.Position
 import com.dmi.util.graphic.PositionF
@@ -19,13 +19,13 @@ import java.lang.Math.max
 import java.lang.Math.min
 
 class Selection(
-        private val main: Main,
+        private val context: ReaderContext,
         private val book: Book,
         val deselect: () -> Unit,
         val state: SelectionState,
-        dip2px: (Float) -> Float = main.dip2px,
-        private val settings: Settings = main.settings,
-        private val textActions: TextActions = TextActions(main),
+        dip2px: (Float) -> Float = context.main.dip2px,
+        private val settings: Settings = context.main.settings,
+        private val textActions: TextActions = context.textActions,
         scope: Scope = Scope()
 ) : Disposable by scope {
     private val bottomActionsOffset = dip2px(24F)

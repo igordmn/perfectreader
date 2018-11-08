@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.book.content.obj.common
 
 import android.content.Context
-import com.dmi.perfectreader.Main
+import com.dmi.perfectreader.MainContext
 import com.dmi.perfectreader.book.content.common.Align
 import com.dmi.perfectreader.book.content.common.DefaultHangingConfig
 import com.dmi.perfectreader.book.content.common.NoneHangingConfig
@@ -27,13 +27,13 @@ data class ContentConfig(
         private val defaultStyle: ContentStyle
 ) {
     constructor(
-            main: Main,
-            context: Context = main.applicationContext,
-            settings: Settings = main.settings
+            context: MainContext,
+            androidContext: Context = context.android,
+            settings: Settings = context.settings
     ) : this(
-            density = main.applicationContext.displayMetrics.density,
-            fonts = main.resources.fonts,
-            defaultLocale = defaultLocale(context, settings.analyze),
+            density = context.android.displayMetrics.density,
+            fonts = context.resources.fonts,
+            defaultLocale = defaultLocale(androidContext, settings.analyze),
             ignoreDeclaredLocale = settings.analyze.ignoreDeclaredLanguage,
             imageScale = imageScale(settings.image),
             footerTextSizePercent = settings.format.pageFooterTextSizePercent,

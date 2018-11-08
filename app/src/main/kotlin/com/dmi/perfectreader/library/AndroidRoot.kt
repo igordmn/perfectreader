@@ -7,7 +7,7 @@ import android.provider.MediaStore.Files.FileColumns.*
 import android.util.SparseArray
 import androidx.core.database.getStringOrNull
 import androidx.core.util.set
-import com.dmi.perfectreader.Main
+import com.dmi.perfectreader.MainContext
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.book.parse.BookParsers
 import com.dmi.util.android.view.string
@@ -25,27 +25,27 @@ private class ContentTree {
 // todo benchmark with many files, and add caching if it is slow or consuming a lot of memory
 // todo add external sd card
 fun androidRoot(
-        main: Main,
-        context: Context = main.applicationContext
-) = Library.Item.Folder(context.string(R.string.libraryFolders), -1) {
+        context: MainContext,
+        androidContext: Context = context.android
+) = Library.Item.Folder(androidContext.string(R.string.libraryFolders), -1) {
     //    loadItems(main, "internal", id = 0) + loadItems(main, "external", id = 0)
-    loadItems(main, "external", id = 0)
+    loadItems(context, "external", id = 0)
 }
 
 private suspend fun loadItems(
-        main: Main,
+        context: MainContext,
         volumeName: String,
         id: Int,
-        context: Context = main.applicationContext,
-        parsers: BookParsers = main.bookParsers
+        androidContext: Context = context.android,
+        parsers: BookParsers = context.bookParsers
 ): List<Library.Item> = withContext(Dispatchers.IO) {
-    entries(context, volumeName)
+    entries(androidContext, volumeName)
             .toTree(id)
             .removeUnsupported(parsers).removeEmpty()
             .calculateDeepCount()
             .children
             .map {
-                it.toItem(main, volumeName)
+                it.toItem(context, volumeName)
             }
 }
 
@@ -125,9 +125,9 @@ private fun ContentTree.calculateDeepCount(): ContentTree {
 }
 
 private suspend fun ContentTree.toItem(
-        main: Main,
+        context: MainContext,
         volumeName: String,
-        parsers: BookParsers = main.bookParsers
+        parsers: BookParsers = context.bookParsers
 ): Library.Item {
     val entry = entry!!
     return if (entry.size > 0) {
@@ -140,7 +140,7 @@ private suspend fun ContentTree.toItem(
         Library.Item.Book(entry.uri, entry.size, description)
     } else {
         val name = entry.uri.lastPathSegment!!
-        suspend fun items() = loadItems(main, volumeName, entry.id)
+        suspend fun items() = loadItems(context, volumeName, entry.id)
         Library.Item.Folder(name, deepChildCount, ::items)
     }
 }

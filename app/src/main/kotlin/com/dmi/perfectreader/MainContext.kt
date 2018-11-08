@@ -17,19 +17,19 @@ import com.dmi.util.system.Display
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.anko.displayMetrics
 
-class Main(val log: Log, val applicationContext: Context) {
-    val databases = Databases(log, applicationContext)
+class MainContext(val log: Log, val android: Context) {
+    val databases = Databases(log, android)
     val userData = UserData(databases.default)
     val settings = runBlocking { settings(databases.default) }
     val protocols = Protocols()
-    val density = applicationContext.displayMetrics.density
+    val density = android.displayMetrics.density
     val dip2px = { value: Float -> value * density }
     val uriHandler = ProtocolURIHandler(mapOf(
             "file" to FileURIHandler(),
-            "assets" to AssetsURIHandler(applicationContext.assets)
+            "assets" to AssetsURIHandler(android.assets)
     ))
     val display: Display = AndroidDisplay
-    val permissions = Permissions(applicationContext)
+    val permissions = Permissions(android)
     val resources = Resources(this)
     val bookParsers = BookParsers(log)
 }

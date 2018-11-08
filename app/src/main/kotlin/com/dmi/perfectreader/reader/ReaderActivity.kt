@@ -10,12 +10,13 @@ import kotlinx.serialization.cbor.CBOR.Companion.dump
 import kotlinx.serialization.cbor.CBOR.Companion.load
 
 class ReaderActivity : ActivityExt<ReaderLoad>() {
-    override fun createModel(stateData: ByteArray?) = ReaderLoad(main, intent.data!!, ::close, loadState(stateData))
+    override fun createModel(stateData: ByteArray?) = ReaderLoad(readerContext(), intent.data!!, ::close, loadState(stateData))
     override fun saveModel(model: ReaderLoad) = saveState(model.state)
     override fun ViewBuild.view(model: ReaderLoad) = readerLoadView(model)
     private fun loadState(stateData: ByteArray?): ReaderLoadState = if (stateData != null) load(stateData) else ReaderLoadState()
     private fun saveState(state: ReaderLoadState): ByteArray = dump(state)
     private fun close() = finish()
+    private fun readerContext() = ReaderContext(main, this)
 
     companion object {
         fun open(context: Context, uri: Uri): Unit = context.startActivity(

@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.reader
 
 import android.net.Uri
-import com.dmi.perfectreader.Main
 import com.dmi.util.log.Log
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
@@ -10,11 +9,11 @@ import kotlinx.serialization.Serializable
 import java.io.IOException
 
 class ReaderLoad(
-        private val main: Main,
+        private val context: ReaderContext,
         private val uri: Uri,
         val close: () -> Unit,
         val state: ReaderLoadState,
-        private val log: Log = main.log,
+        private val log: Log = context.main.log,
         scope: Scope = Scope()
 ) : Screen by Screen(scope) {
     var isLoading: Boolean by observable(true)
@@ -24,7 +23,7 @@ class ReaderLoad(
     init {
         scope.launch {
             try {
-                reader = reader(main, uri, close, state.reader)
+                reader = reader(context, uri, close, state.reader)
             } catch (e: IOException) {
                 log.e(e, "Book load error")
                 error = LoadError.IO()

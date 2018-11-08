@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.reader
 
 import android.net.Uri
-import com.dmi.perfectreader.Main
 import com.dmi.perfectreader.action.Actions
 import com.dmi.perfectreader.action.PerformingAction
 import com.dmi.perfectreader.book.Book
@@ -25,21 +24,21 @@ import com.dmi.util.scope.observable
 import com.dmi.util.screen.Screen
 import kotlinx.serialization.Serializable
 
-suspend fun reader(main: Main, uri: Uri, close: () -> Unit, state: ReaderState): Reader {
-    val book = book(main, uri)
-    return Reader(main, book, close, state)
+suspend fun reader(context: ReaderContext, uri: Uri, close: () -> Unit, state: ReaderState): Reader {
+    val book = book(context, uri)
+    return Reader(context, book, close, state)
 }
 
 class Reader(
-        private val main: Main,
+        private val context: ReaderContext,
         book: Book,
         private val close: () -> Unit,
         val state: ReaderState,
         scope: Scope = Scope()
 ) : Screen by Screen(scope) {
-    val actions = Actions(main, this)
+    val actions = Actions(context, this)
     val book: Book by scope.observableDisposable(book)
-    val control: Control by scope.observableDisposable(Control(main, this))
+    val control: Control by scope.observableDisposable(Control(context, this))
     var selection: Selection? by scope.observableDisposableProperty(init(state::selection, ::Selection, ::state))
         private set
     var popup: Screen? by scope.observableDisposableProperty(init(state::popup, ::createPopup, ::popupState))
@@ -82,7 +81,7 @@ class Reader(
         else -> unsupported(state)
     }
 
-    private fun Selection(state: SelectionState) = Selection(main, book, ::deselect, state)
+    private fun Selection(state: SelectionState) = Selection(context, book, ::deselect, state)
     private fun Menu(state: MenuState = MenuState()) = Menu(
             book,
             ::showSettings,
