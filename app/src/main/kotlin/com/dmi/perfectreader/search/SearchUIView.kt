@@ -26,8 +26,7 @@ import com.dmi.util.android.view.*
 import com.rubengees.easyheaderfooteradapter.EasyHeaderFooterAdapter
 import org.jetbrains.anko.*
 
-fun searchUIView(
-        context: Context,
+fun ViewBuild.searchUIView(
         model: SearchUI
 ): View = LinearLayoutCompat(context).apply {
     val book = model.book

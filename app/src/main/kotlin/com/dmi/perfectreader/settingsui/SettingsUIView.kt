@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.settingsui
 
-import android.content.Context
 import android.view.KeyEvent
 import android.view.View
 import android.widget.FrameLayout
@@ -27,7 +26,7 @@ import com.google.android.material.tabs.TabLayout
 import org.jetbrains.anko.*
 import kotlin.reflect.KMutableProperty0
 
-fun settingsUIView(context: Context, model: SettingsUI, glContext: GLContext): View {
+fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
     val settings = context.main.settings
     val settingsExt = object {
         val format = object {
@@ -74,22 +73,22 @@ fun settingsUIView(context: Context, model: SettingsUI, glContext: GLContext): V
     val places = object : Places() {
         fun colorPlace(property: KMutableProperty0<Int>, @StringRes titleRes: Int) = object : Place() {
             val hex = object : Place() {
-                override fun view() = DialogView(context) {
+                override fun ViewBuild.view() = DialogView(context) {
                     colorHEXDialog(context, model, property)
                 }
             }
 
-            override fun view() = colorDetails(
+            override fun ViewBuild.view() = colorDetails(
                     context, model, titleRes, property, hex
             )
         }
 
         val font = object : Place() {
             val family = object : Place() {
-                override fun view() = fontFamilyDetails(context, model)
+                override fun ViewBuild.view() = fontFamilyDetails(context, model)
             }
 
-            override fun view() = vertical(
+            override fun ViewBuild.view() = vertical(
                     detailsSetting(context, model, fontFamilyPreview(context), family, R.string.settingsUIFontFamily),
                     titleSetting(context, fontStyleView(
                             context,
@@ -106,7 +105,7 @@ fun settingsUIView(context: Context, model: SettingsUI, glContext: GLContext): V
         }
 
         val format = object : Place() {
-            override fun view() = vertical(
+            override fun ViewBuild.view() = vertical(
                     floatSetting(context, settingsExt.format::padding, SettingValues.PARAGRAPH_PADDING, R.string.settingsUIFormatPadding),
                     floatSetting(context, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER, R.string.settingsUIFormatLineHeight),
                     floatSetting(context, settings.format::letterSpacingEm, SettingValues.TEXT_LETTER_SPACING, R.string.settingsUIFormatLetterSpacing),
@@ -121,7 +120,7 @@ fun settingsUIView(context: Context, model: SettingsUI, glContext: GLContext): V
         val textShadow = object : Place() {
             val color = colorPlace(settings.format::textShadowColor, R.string.settingsUIThemeTextShadowColor)
 
-            override fun view() = details(
+            override fun ViewBuild.view() = details(
                     context, model, R.string.settingsUIThemeTextShadow,
                     vertical(
                             booleanSetting(context, settings.format::textShadowEnabled, R.string.settingsUIThemeTextShadowEnabled),
@@ -160,7 +159,7 @@ fun settingsUIView(context: Context, model: SettingsUI, glContext: GLContext): V
                     true -> context.string(R.string.settingsUIThemeBackgroundSelectPicture)
                 }
 
-                override fun view() = DialogView(context) {
+                override fun ViewBuild.view() = DialogView(context) {
                     val current = values.indexOf(settings.format.pageBackgroundIsImage)
                     AlertDialog.Builder(context)
                             .setTitle(R.string.settingsUIThemeBackground)
@@ -173,14 +172,14 @@ fun settingsUIView(context: Context, model: SettingsUI, glContext: GLContext): V
             }
 
             val backgroundPicture = object : Place() {
-                override fun view() = themeBackgroundPictureDetails(context, model)
+                override fun ViewBuild.view() = themeBackgroundPictureDetails(context, model)
             }
 
             val backgroundColor = colorPlace(settings.format::pageBackgroundColor, R.string.settingsUIThemeBackgroundColor)
             val textColor = colorPlace(settings.format::textColor, R.string.settingsUIThemeText)
             val selectionColor = colorPlace(settings.selection::color, R.string.settingsUIThemeSelection)
 
-            override fun view() = vertical(
+            override fun ViewBuild.view() = vertical(
                     popupSetting(
                             context, model,
                             propertyPreview(context, settings.format::pageBackgroundIsImage, backgroundIsPicture::format),
@@ -216,16 +215,16 @@ fun settingsUIView(context: Context, model: SettingsUI, glContext: GLContext): V
 
         val screen = object : Place() {
             val animation = object : Place() {
-                override fun view() = screenAnimationDetails(context, model, model.reader.book, glContext)
+                override fun ViewBuild.view() = screenAnimationDetails(context, model, model.reader.book, glContext)
             }
 
-            override fun view() = vertical(
+            override fun ViewBuild.view() = vertical(
                     detailsSetting(context, model, screenAnimationPreview(context, glContext), animation, R.string.settingsUIScreenAnimation)
             )
         }
 
         val control = object : Place() {
-            override fun view() = vertical()
+            override fun ViewBuild.view() = vertical()
         }
     }
 
@@ -238,29 +237,29 @@ fun settingsUIView(context: Context, model: SettingsUI, glContext: GLContext): V
 
         child(params(matchParent, matchParent, weight = 1F), ViewPager(context).apply {
             adapter = ViewPagerAdapter(
-                    string(R.string.settingsUIFont) to places.font::view,
-                    string(R.string.settingsUIFormat) to places.format::view,
-                    string(R.string.settingsUITheme) to places.theme::view,
-                    string(R.string.settingsUIScreen) to places.screen::view,
-                    string(R.string.settingsUIControl) to places.control::view
+                    string(R.string.settingsUIFont) to places.font.viewRef,
+                    string(R.string.settingsUIFormat) to places.format.viewRef,
+                    string(R.string.settingsUITheme) to places.theme.viewRef,
+                    string(R.string.settingsUIScreen) to places.screen.viewRef,
+                    string(R.string.settingsUIControl) to places.control.viewRef
             )
             tabLayout.setupWithViewPager(this)
         })
     }
 
-    fun screenView(screen: Screen): View {
+    fun ViewBuild.screenView(screen: Screen): View {
         val state = (screen as StateScreen).state
         return when (state) {
             is SettingsUIMainState -> main()
-            is Id -> places[state].view()
+            is Id -> places[state].view(this)
             else -> unsupported(state)
         }
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun popupView(context: Context, popup: Any): View {
+    fun ViewBuild.popupView(popup: Any): View {
         return when (popup) {
-            is Id -> places[popup].view()
+            is Id -> places[popup].view(this)
             else -> unsupported(popup)
         }
     }
@@ -277,12 +276,12 @@ fun settingsUIView(context: Context, model: SettingsUI, glContext: GLContext): V
         dontSendTouchToParent()
 
         child(params(matchParent, matchParent, weight = 1F), space())
-        child(params(matchParent, dip(320), weight = 0F), ScreensView(context, model.screens, ::screenView).apply {
+        child(params(matchParent, dip(320), weight = 0F), ScreensView(context, model.screens, ViewBuild::screenView).apply {
             backgroundColor = color(R.color.background)
             elevation = dipFloat(8F)
         })
 
         onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.screens.goBackward(); true }
         onInterceptKeyDown(KeyEvent.KEYCODE_MENU) { model.back(); true }
-    }.withPopup(model::popup, ::popupView)
+    }.withPopup(model::popup, ViewBuild::popupView)
 }

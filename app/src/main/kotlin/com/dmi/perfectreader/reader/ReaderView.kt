@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.reader
 
-import android.content.Context
 import android.view.Gravity
 import android.widget.FrameLayout
 import com.dmi.perfectreader.action.performingActionView
@@ -15,35 +14,32 @@ import com.dmi.perfectreader.settingsui.SettingsUI
 import com.dmi.perfectreader.settingsui.settingsUIView
 import com.dmi.perfectreader.tableofcontentsui.TableOfContentsUI
 import com.dmi.perfectreader.tableofcontentsui.tableOfContentsUIView
-import com.dmi.util.android.view.bindChild
-import com.dmi.util.android.view.child
-import com.dmi.util.android.view.fadeTransition
-import com.dmi.util.android.view.params
+import com.dmi.util.android.view.*
 import com.dmi.util.lang.unsupported
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.wrapContent
 
-fun readerView(context: Context, model: Reader) = FrameLayout(context).apply {
-    val bookView = bookView(context, model)
+fun ViewBuild.readerView(model: Reader) = FrameLayout(context).apply {
+    val bookView = bookView(model)
 
-    fun popupView(context: Context, popup: Any) = when (popup) {
-        is Menu -> menuView(context, popup)
-        is SettingsUI -> settingsUIView(context, popup, bookView.glContext)
-        is TableOfContentsUI -> tableOfContentsUIView(context, popup)
-        is SearchUI -> searchUIView(context, popup)
+    fun ViewBuild.popupView(popup: Any) = when (popup) {
+        is Menu -> menuView(popup)
+        is SettingsUI -> settingsUIView(popup, bookView.glContext)
+        is TableOfContentsUI -> tableOfContentsUIView(popup)
+        is SearchUI -> searchUIView(popup)
         else -> unsupported()
     }
     child(params(matchParent, matchParent), bookView)
     child(params(matchParent, matchParent), controlView(context, model.control))
-    bindChild(params(matchParent, matchParent), model::selection, ::selectionView).apply {
+    bindChild(params(matchParent, matchParent), model::selection, ViewBuild::selectionView).apply {
         layoutTransition = fadeTransition(300)
     }
-    bindChild(params(matchParent, matchParent), model::popup, ::popupView).apply {
+    bindChild(params(matchParent, matchParent), model::popup, ViewBuild::popupView).apply {
         layoutTransition = fadeTransition(300)
     }
-    bindChild(params(wrapContent, wrapContent, Gravity.CENTER_HORIZONTAL), model::performingAction, ::performingActionView).apply {
+    bindChild(params(wrapContent, wrapContent, Gravity.CENTER_HORIZONTAL), model::performingAction, ViewBuild::performingActionView).apply {
         layoutTransition = fadeTransition(300)
         padding = dip(48)
     }

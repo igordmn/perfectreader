@@ -21,9 +21,7 @@ import com.dmi.util.lang.unsupported
 import com.google.common.io.ByteSource
 import org.jetbrains.anko.*
 
-
-
-fun libraryView(context: Context, model: Library) = LinearLayoutExt(context).apply {
+fun ViewBuild.libraryView(model: Library) = LinearLayoutExt(context).apply {
     orientation = LinearLayoutCompat.VERTICAL
 
     child(params(matchParent, wrapContent, weight = 0F), BreadCrumbsView(context).apply {

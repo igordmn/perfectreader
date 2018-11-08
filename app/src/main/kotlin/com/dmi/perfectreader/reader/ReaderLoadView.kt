@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.reader
 
-import android.content.Context
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
@@ -12,12 +11,12 @@ import com.dmi.perfectreader.reader.ReaderLoad.LoadError
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.*
 
-fun readerLoadView(context: Context, model: ReaderLoad) = FrameLayoutExt(context).apply {
+fun ViewBuild.readerLoadView(model: ReaderLoad) = FrameLayoutExt(context).apply {
     keepScreenOn = true
     isFocusable = true
     isFocusableInTouchMode = true
 
-    bindChild(params(matchParent, matchParent, Gravity.CENTER), model::reader, ::readerView, defferStateRestore = true)
+    bindChild(params(matchParent, matchParent, Gravity.CENTER), model::reader, ViewBuild::readerView, defferStateRestore = true)
     child(params(wrapContent, wrapContent, Gravity.CENTER), ProgressBar(context).apply {
         autorun {
             visibility = if (model.isLoading) View.VISIBLE else View.GONE

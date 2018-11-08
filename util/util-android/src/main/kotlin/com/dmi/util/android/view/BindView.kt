@@ -16,7 +16,7 @@ import kotlin.reflect.KProperty0
 class BindView<M, V: View>(
         context: Context,
         private val model: KProperty0<M?>,
-        private val view: (context: Context, M, old: V?) -> V,
+        private val view: ViewBuild.(M, old: V?) -> V,
         private val defferStateRestore: Boolean
 ) : FrameLayout(context) {
     private var restoredState: Bundle? = null
@@ -30,7 +30,7 @@ class BindView<M, V: View>(
                     removeView(getChildAt(0))
                 null
             } else {
-                val created = view(context, value, old)
+                val created = ViewBuild(context).view(value, old)
                 created.isSaveFromParentEnabled = false
                 if (restoredState != null) {
                     created.restoreState(restoredState!!)
@@ -76,7 +76,7 @@ class BindView<M, V: View>(
 fun <M : Any, V : View> FrameLayout.bindChild(
         params: FrameLayout.LayoutParams,
         model: KProperty0<M?>,
-        view: (context: Context, M, old: V?) -> V,
+        view: ViewBuild.(M, old: V?) -> V,
         /**
          * restore state even if child view created after some time.
          * for example, use this when need restore state of loading view
@@ -93,19 +93,19 @@ fun <M : Any, V : View> FrameLayout.bindChild(
 fun <M : Any> FrameLayout.bindChild(
         params: FrameLayout.LayoutParams,
         model: KProperty0<M?>,
-        view: (context: Context, M) -> View,
+        view: ViewBuild.(M) -> View,
         defferStateRestore: Boolean = false
 ): FrameLayout {
     @Suppress("UNUSED_PARAMETER")
-    fun view(context: Context, model: M, old: View?) = view(context, model)
-    return bindChild(params, model, ::view, defferStateRestore)
+    fun ViewBuild.view(model: M, old: View?) = view(model)
+    return bindChild(params, model, ViewBuild::view, defferStateRestore)
 }
 
 @JvmName("bindChild3")
 fun <M : Any, V : View> LinearLayoutCompat.bindChild(
         params: LinearLayoutCompat.LayoutParams,
         model: KProperty0<M?>,
-        view: (context: Context, M, old: V?) -> V,
+        view: ViewBuild.(M, old: V?) -> V,
         defferStateRestore: Boolean = false
 ): FrameLayout {
     val container = BindView(context, model, view, defferStateRestore)
@@ -118,10 +118,10 @@ fun <M : Any, V : View> LinearLayoutCompat.bindChild(
 fun <M : Any> LinearLayoutCompat.bindChild(
         params: LinearLayoutCompat.LayoutParams,
         model: KProperty0<M?>,
-        view: (context: Context, M) -> View,
+        view: ViewBuild.(M) -> View,
         defferStateRestore: Boolean = false
 ): FrameLayout {
     @Suppress("UNUSED_PARAMETER")
-    fun view(context: Context, model: M, old: View?) = view(context, model)
-    return bindChild(params, model, ::view, defferStateRestore)
+    fun ViewBuild.view(model: M, old: View?) = view(model)
+    return bindChild(params, model, ViewBuild::view, defferStateRestore)
 }

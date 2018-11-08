@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 
-class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, () -> View>) : PagerAdapter() {
+class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, ViewBuild.() -> View>) : PagerAdapter() {
     private val items = titlesWithCreateViews.map { Item(it.first, it.second) }
 
     private val savedStates = Array<Bundle?>(titlesWithCreateViews.size) { null }
@@ -16,7 +16,7 @@ class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, () -> Vi
     override fun getCount() = items.size
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val view = items[position].createView()
+        val view = items[position].createView(ViewBuild(container.context))
         val state = savedStates[position]
         if (state != null)
             view.restoreState(state)
@@ -78,5 +78,5 @@ class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, () -> Vi
         }
     }
 
-    private class Item(val title: CharSequence, val createView: () -> View)
+    private class Item(val title: CharSequence, val createView: ViewBuild.() -> View)
 }

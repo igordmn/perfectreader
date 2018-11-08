@@ -8,6 +8,7 @@ import android.util.SparseArray
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.util.set
+import com.dmi.util.android.view.ViewBuild
 import com.dmi.util.android.view.restoreState
 import com.dmi.util.android.view.saveState
 import com.dmi.util.scope.Disposables
@@ -19,7 +20,7 @@ import java.util.*
 class ScreensView(
         context: Context,
         private val model: Screens,
-        private val screenView: (Screen) -> View
+        private val screenView: ViewBuild.(Screen) -> View
 ) : FrameLayout(context) {
     private val backstackStates = LinkedList<Bundle?>()
     private var currentRestoredState: Bundle? = null
@@ -41,13 +42,13 @@ class ScreensView(
                 backstackStates.push(currentView.saveState())
                 removeView(currentView)
             }
-            addView(screenView(model.current!!))
+            addView(ViewBuild(context).screenView(model.current!!))
         }
 
         subscriptions += model.afterGoBackward.subscribe {
             removeView(currentView()!!)
             if (model.size > 0) {
-                val view = screenView(model.current!!)
+                val view = ViewBuild(context).screenView(model.current!!)
                 addView(view)
                 val previousState = if (backstackStates.isNotEmpty()) backstackStates.pop() else null
                 if (previousState != null)
@@ -72,7 +73,7 @@ class ScreensView(
         require(childCount == 0)
         val modelCurrent = model.current
         if (modelCurrent != null) {
-            val view = screenView(modelCurrent)
+            val view = ViewBuild(context).screenView(modelCurrent)
             addView(view)
         }
     }

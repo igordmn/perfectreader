@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.book
 
-import android.content.Context
 import com.dmi.perfectreader.book.gl.GLBook
 import com.dmi.perfectreader.book.gl.GLBookModel
 import com.dmi.perfectreader.book.render.factory.FramePainter
@@ -10,12 +9,13 @@ import com.dmi.perfectreader.book.render.factory.TextPainter
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.reader.Reader
 import com.dmi.util.android.opengl.GLSurfaceScopedView
+import com.dmi.util.android.view.ViewBuild
 import com.dmi.util.android.view.onSizeChange
 import com.dmi.util.graphic.Size
 
 typealias BookView = GLSurfaceScopedView
 
-fun bookView(context: Context, reader: Reader): BookView {
+fun ViewBuild.bookView(reader: Reader): BookView {
     val main = context.main
     val glSurface = GLSurfaceScopedView(context, main.log) {
         val model = GLBookModel(it, main.settings, reader, reader.book)

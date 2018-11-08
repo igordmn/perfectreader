@@ -14,19 +14,19 @@ abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatAc
 
     protected abstract fun createModel(stateData: ByteArray?): M
     protected abstract fun saveModel(model: M): ByteArray
-    protected abstract fun view(model: M): View
+    protected abstract fun ViewBuild.view(model: M): View
 
     protected fun recreateModel() {
         model.dispose()
         model = createModel(null)
-        setContentView(view(model))
+        setContentView(ViewBuild(this).view(model))
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         model = createModel(savedInstanceState?.getByteArray("model"))
-        view = view(model)
+        view = ViewBuild(this).view(model)
         val viewState = savedInstanceState?.getBundle("view")
         viewState?.let(view::restoreState)
         setContentView(view)

@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.selection
 
-import android.content.Context
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +13,7 @@ import com.dmi.util.android.view.*
 import com.google.android.material.card.MaterialCardView
 import org.jetbrains.anko.*
 
-fun selectionView(context: Context, model: Selection) = FrameLayoutExt(context).apply {
+fun ViewBuild.selectionView(model: Selection) = FrameLayoutExt(context).apply {
     fun updateActions(container: ViewGroup, actions: View) {
         actions.visibility = if (model.actionsIsVisible) View.VISIBLE else View.GONE
         val position = model.actionsPosition(container.size, actions.size)

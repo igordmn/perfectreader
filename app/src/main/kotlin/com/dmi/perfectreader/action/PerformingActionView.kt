@@ -12,15 +12,15 @@ import org.jetbrains.anko.dip
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.wrapContent
 
-fun performingActionView(context: Context, model: PerformingAction, old: PerformingActionView?): PerformingActionView {
+fun ViewBuild.performingActionView(model: PerformingAction, old: PerformingActionView?): PerformingActionView {
     val view = old ?: PerformingActionView(context)
     view.set(model)
     return view
 }
 
 class PerformingActionView(context: Context) : FrameLayout(context) {
-    private lateinit var name: TextView
-    private lateinit var value: TextView
+    private val name: TextView
+    private val value: TextView
 
     init {
         child(params(wrapContent, wrapContent), MaterialCardView(context).apply {

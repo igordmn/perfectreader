@@ -5,13 +5,14 @@ import android.content.Intent
 import android.net.Uri
 import com.dmi.perfectreader.main
 import com.dmi.util.android.view.ActivityExt
+import com.dmi.util.android.view.ViewBuild
 import kotlinx.serialization.cbor.CBOR.Companion.dump
 import kotlinx.serialization.cbor.CBOR.Companion.load
 
 class ReaderActivity : ActivityExt<ReaderLoad>() {
     override fun createModel(stateData: ByteArray?) = ReaderLoad(main, intent.data!!, ::close, loadState(stateData))
     override fun saveModel(model: ReaderLoad) = saveState(model.state)
-    override fun view(model: ReaderLoad) = readerLoadView(this, model)
+    override fun ViewBuild.view(model: ReaderLoad) = readerLoadView(model)
     private fun loadState(stateData: ByteArray?): ReaderLoadState = if (stateData != null) load(stateData) else ReaderLoadState()
     private fun saveState(state: ReaderLoadState): ByteArray = dump(state)
     private fun close() = finish()

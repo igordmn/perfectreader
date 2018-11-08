@@ -17,8 +17,7 @@ import com.dmi.perfectreader.book.content.TableOfContents
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.*
 
-fun tableOfContentsUIView(
-        context: Context,
+fun ViewBuild.tableOfContentsUIView(
         model: TableOfContentsUI
 ): View = LinearLayoutCompat(context).apply {
     val book = model.book
