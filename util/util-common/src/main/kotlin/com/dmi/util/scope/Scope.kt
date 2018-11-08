@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KMutableProperty0
 
-// todo catch async exceptions
 class Scope : Disposable {
     private val disposables = Disposables()
     private val job = Job()
@@ -135,7 +134,14 @@ class Scope : Disposable {
 
         private fun start() {
             val (job, subscription) = subscribeOnChange(context, action = {
-                compute()
+                // todo exceptions throwing here not break calling thread (probably because of GlobalScope)
+                // after fix remove try/catch
+                try {
+                    compute()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    throw e
+                }
             }, onchange = {
                 stop()
                 start()

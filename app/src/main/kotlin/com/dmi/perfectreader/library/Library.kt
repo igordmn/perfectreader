@@ -26,12 +26,7 @@ class Library(
 
     // todo remove catch, fix throwing exceptions in scope.async
     val items: List<Item>? by scope.async {
-        try {
-            currentFolder.items().let(sort::apply)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            throw e
-        }
+        currentFolder.items().let(sort::apply)
     }
     private val currentFolder: Item.Folder get() = folders[currentIndex]
 
