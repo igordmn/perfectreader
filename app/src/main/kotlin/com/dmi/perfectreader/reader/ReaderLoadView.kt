@@ -43,7 +43,7 @@ fun readerLoadView(context: Context, model: ReaderLoad) = FrameLayoutExt(context
 
     onInterceptKeyDown(KeyEvent.KEYCODE_BACK) {
         if (model.reader == null) {
-            model.back()
+            model.close()
             true
         } else {
             false

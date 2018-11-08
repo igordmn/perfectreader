@@ -54,6 +54,9 @@ fun menuView(context: Context, model: Menu): View {
             backgroundColor = color(android.R.color.transparent)
             navigationIcon = drawable(R.drawable.ic_arrow_back)
             popupTheme = R.style.Theme_AppCompat_Light
+            setNavigationOnClickListener {
+                model.close()
+            }
             menu.add(R.string.bookMenuSearch).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 icon = drawable(R.drawable.ic_search, color(R.color.onBackground))

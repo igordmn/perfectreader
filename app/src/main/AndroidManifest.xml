@@ -31,8 +31,7 @@
         <activity
             android:name=".reader.ReaderActivity"
             android:configChanges="orientation|screenSize"
-            android:label="@string/appName"
-            android:launchMode="singleTask">
+            android:label="@string/appName">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>

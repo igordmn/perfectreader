@@ -12,7 +12,7 @@ import java.io.IOException
 class ReaderLoad(
         private val main: Main,
         private val uri: Uri,
-        val back: () -> Unit,
+        val close: () -> Unit,
         val state: ReaderLoadState,
         private val log: Log = main.log,
         scope: Scope = Scope()
@@ -24,7 +24,7 @@ class ReaderLoad(
     init {
         scope.launch {
             try {
-                reader = reader(main, uri, state.reader)
+                reader = reader(main, uri, close, state.reader)
             } catch (e: IOException) {
                 log.e(e, "Book load error")
                 error = LoadError.IO()

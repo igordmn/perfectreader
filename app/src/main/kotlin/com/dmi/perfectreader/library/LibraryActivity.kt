@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.library
 
-import android.content.Intent
 import android.net.Uri
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.reader.ReaderActivity
@@ -17,11 +16,5 @@ class LibraryActivity : ActivityExt<Library>() {
     private fun saveState(state: LibraryState): ByteArray = dump(state)
     private fun back() = finish()
 
-    private fun openBook(uri: Uri) {
-        startActivity(
-                Intent(this, ReaderActivity::class.java).apply {
-                    data = uri
-                }
-        )
-    }
+    private fun openBook(uri: Uri) = ReaderActivity.open(this, uri)
 }

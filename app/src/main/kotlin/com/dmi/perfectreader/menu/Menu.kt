@@ -10,6 +10,7 @@ class Menu(
         val showTableOfContents: () -> Unit,
         val showSearch: () -> Unit,
         val back: () -> Unit,
+        val close: () -> Unit,
         val state: MenuState
 ) : Screen by Screen() {
     val locationText: String get() = if (book.pageNumber == 0) bookName else chapterName
