@@ -33,7 +33,7 @@ class BindView<M, V: View>(
                 val created = view(context, value, old)
                 created.isSaveFromParentEnabled = false
                 if (restoredState != null) {
-                    created.simpleRestoreState(restoredState!!)
+                    created.restoreState(restoredState!!)
                     restoredState = null
                 }
 
@@ -53,7 +53,7 @@ class BindView<M, V: View>(
 
     override fun dispatchSaveInstanceState(container: SparseArray<Parcelable>) {
         if (id != NO_ID && childCount > 0) {
-            container[id] = getChildAt(0).simpleSaveState()
+            container[id] = getChildAt(0).saveState()
         }
     }
 

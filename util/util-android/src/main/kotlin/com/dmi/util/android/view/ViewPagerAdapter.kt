@@ -19,7 +19,7 @@ class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, () -> Vi
         val view = items[position].createView()
         val state = savedStates[position]
         if (state != null)
-            view.simpleRestoreState(state)
+            view.restoreState(state)
         container.addView(view)
         savedStates[position] = null
         instantiated[position] = view
@@ -28,7 +28,7 @@ class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, () -> Vi
 
     override fun destroyItem(container: ViewGroup, position: Int, view: Any) {
         view as View
-        val state = view.simpleSaveState()
+        val state = view.saveState()
         container.removeView(view)
         savedStates[position] = state
         instantiated[position] = null
@@ -44,7 +44,7 @@ class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, () -> Vi
             val view = instantiated[i]
             if (view != null) {
                 require(itemState == null)
-                itemState = view.simpleSaveState()
+                itemState = view.saveState()
             }
             array.add(itemState)
         }
@@ -71,7 +71,7 @@ class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, () -> Vi
             val instantiated = instantiated[i]
             if (instantiated != null) {
                 if (itemState != null)
-                    instantiated.simpleRestoreState(itemState)
+                    instantiated.restoreState(itemState)
             } else {
                 savedStates[i] = itemState
             }

@@ -8,8 +8,8 @@ import android.util.SparseArray
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.util.set
-import com.dmi.util.android.view.simpleRestoreState
-import com.dmi.util.android.view.simpleSaveState
+import com.dmi.util.android.view.restoreState
+import com.dmi.util.android.view.saveState
 import com.dmi.util.scope.Disposables
 import com.dmi.util.screen.Screen
 import com.dmi.util.screen.Screens
@@ -38,7 +38,7 @@ class ScreensView(
         subscriptions += model.afterGoForward.subscribe {
             val currentView = currentView()
             if (currentView != null) {
-                backstackStates.push(currentView.simpleSaveState())
+                backstackStates.push(currentView.saveState())
                 removeView(currentView)
             }
             addView(screenView(model.current!!))
@@ -51,12 +51,12 @@ class ScreensView(
                 addView(view)
                 val previousState = if (backstackStates.isNotEmpty()) backstackStates.pop() else null
                 if (previousState != null)
-                    view.simpleRestoreState(previousState)
+                    view.restoreState(previousState)
             }
         }
 
         if (currentRestoredState != null) {
-            currentView()?.simpleRestoreState(currentRestoredState!!)
+            currentView()?.restoreState(currentRestoredState!!)
             currentRestoredState = null
         }
     }
@@ -86,7 +86,7 @@ class ScreensView(
         if (id != NO_ID) {
             container[id] = Bundle().apply {
                 putParcelableArray("backstack", backstackStates.toTypedArray())
-                putParcelable("current", currentView()?.simpleSaveState())
+                putParcelable("current", currentView()?.saveState())
             }
         }
     }

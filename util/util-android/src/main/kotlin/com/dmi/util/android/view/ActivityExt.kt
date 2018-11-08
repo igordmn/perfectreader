@@ -28,7 +28,7 @@ abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatAc
         model = createModel(savedInstanceState?.getByteArray("model"))
         view = view(model)
         val viewState = savedInstanceState?.getBundle("view")
-        viewState?.let(view::simpleRestoreState)
+        viewState?.let(view::restoreState)
         setContentView(view)
     }
 
@@ -40,7 +40,7 @@ abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatAc
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putByteArray("model", saveModel(model))
-        outState.putBundle("view", view.simpleSaveState())
+        outState.putBundle("view", view.saveState())
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
