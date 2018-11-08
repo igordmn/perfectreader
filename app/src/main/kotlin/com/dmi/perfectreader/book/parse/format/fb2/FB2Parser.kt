@@ -9,40 +9,39 @@ import com.dmi.perfectreader.book.content.obj.ContentEmpty
 import com.dmi.perfectreader.book.content.obj.ContentImage
 import com.dmi.perfectreader.book.content.obj.ContentParagraph
 import com.dmi.perfectreader.book.content.obj.common.ContentClass
-import com.dmi.perfectreader.book.parse.BookContentParser
+import com.dmi.perfectreader.book.parse.BookParser
 import com.dmi.perfectreader.book.parse.CharsetDetector
 import com.dmi.perfectreader.book.parse.format.fb2.entities.*
 import com.dmi.perfectreader.book.parse.format.fb2.entities.Annotation
+import com.dmi.util.io.ByteSource
+import com.dmi.util.io.withoutUtfBom
 import com.dmi.util.xml.Text
 import com.dmi.util.xml.XMLDesc
 import com.google.common.base.CharMatcher
 import com.google.common.io.BaseEncoding
 import com.google.common.io.ByteSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
-import java.io.InputStream
 import java.util.*
 
 // todo support empty paragraphs (with text = "")
-class FB2ContentParser(
+class FB2Parser(
         private val charsetDetector: CharsetDetector,
         private val source: ByteSource,
         private val fileName: String
-) : BookContentParser {
-    override fun parse(): Content {
+) : BookParser {
+    override suspend fun content(): Content = withContext(Dispatchers.IO) {
         // xml parser doesn't detect charset automatically
         val charset = charsetDetector.detectForXML(source)
 
         val fictionBook: FictionBook = source
                 .openBufferedStream()
+                .withoutUtfBom()
                 .reader(charset)
                 .use(::parseFictionBook)
 
-        val description = run {
-            val titleInfo = fictionBook.description?.titleInfo
-            val author = titleInfo?.compositeAuthorName()
-            val name = titleInfo?.bookTitle
-            BookDescription(author, name, fileName)
-        }
+        val description = description(fictionBook.description)
 
         val content = Content.Builder()
         val root = content.root(
@@ -51,27 +50,40 @@ class FB2ContentParser(
         for (body in fictionBook.bodies)
             root.section(body)
 
-        return content.build(description, ::imageResource)
+        content.build(description, ::imageResource)
     }
 
-    private fun imageResource(src: String) = object : ByteSource() {
-        override fun openStream() = openImage(src)
+    override suspend fun description(): BookDescription = withContext(Dispatchers.IO) {
+        val charset = charsetDetector.detectForXML(source)
+        val description: Description? = source
+                .openBufferedStream()
+                .reader(charset)
+                .use(::parseFictionBookDescription)
+        description(description)
     }
 
-    private fun openImage(src: String): InputStream {
+    private fun description(xmlDescription: Description?): BookDescription {
+        val titleInfo = xmlDescription?.titleInfo
+        val author = titleInfo?.compositeAuthorName()
+        val name = titleInfo?.bookTitle
+        val cover = titleInfo?.coverpage?.image?.href?.let(::imageResource)
+        return BookDescription(author, name, fileName, cover)
+    }
+
+    override suspend fun descriptionOnFail() = BookDescription(author = null, name = null, fileName = fileName, cover = null)
+
+    private fun imageResource(src: String) = ByteSource {
         val id = src.removePrefix("#")
 
-        fun charset() = charsetDetector.detectForXML(source)
-
-        fun fictionBookMeta(): FictionBookMeta = source
+        fun fictionBookBinaries() = source
                 .openBufferedStream()
-                .reader(charset())
-                .use(::parseFictionBookMeta)
+                .reader()
+                .use(::parseFictionBookBinaries)
 
-        fun findBinary() = fictionBookMeta().binaries.find { it.id == id }
+        fun findBinary() = fictionBookBinaries().find { it.id == id }
         val binary = findBinary() ?: throw FileNotFoundException()
 
-        return BaseEncoding
+        BaseEncoding
                 .base64()
                 .decode(CharMatcher.whitespace().removeFrom(binary.data))
                 .inputStream()

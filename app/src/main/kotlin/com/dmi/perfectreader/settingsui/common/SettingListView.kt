@@ -31,7 +31,7 @@ class SettingListView<T, V>(
         this.layoutManager = layoutManager
         adapter = object : BindableViewAdapter<ItemView>() {
             override fun getItemCount() = items.size
-            override fun view() = ItemView(createItemView(context))
+            override fun view(viewType: Int) = ItemView(createItemView(context))
         }
         layoutManager.scrollToPositionWithOffset(activatedPosition, dip(80))
     }

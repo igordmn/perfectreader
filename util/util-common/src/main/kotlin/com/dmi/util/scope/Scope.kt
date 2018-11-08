@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KMutableProperty0
 
+// todo catch async exceptions
 class Scope : Disposable {
     private val disposables = Disposables()
     private val job = Job()

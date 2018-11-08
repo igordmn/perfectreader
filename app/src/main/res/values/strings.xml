@@ -149,4 +149,18 @@
     <string name="searchCaseSensitive">Учет регистра</string>
     <string name="searchResultsInfo">Найдено %1$s</string>
     <string name="searchResultsOverMaxInfo">Найдено больше %1$s</string>
+
+    <string name="libraryEmptyFolder">Пустая папка</string>
+    <string name="libraryFolders">Папки</string>
+    <string name="libraryFoldersInternal">Память</string>
+    <string name="libraryFoldersExternal">SD карта</string>
+
+    <plurals name="libraryFolderBookCount">
+        <item quantity="zero">Нет книг</item>
+        <item quantity="one">%d книга</item>
+        <item quantity="two">%d книги</item>
+        <item quantity="few">%d книги</item>
+        <item quantity="many">%d книг</item>
+        <item quantity="other">%d книг</item>
+    </plurals>
 </resources>

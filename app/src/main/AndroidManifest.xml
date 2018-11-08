@@ -3,7 +3,6 @@
           package="com.dmi.perfectreader">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -45,6 +44,13 @@
                 <data android:pathPattern=".*\\.txt"/>
                 <data android:pathPattern=".*\\.fb2"/>
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".library.LibraryActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/appName"
+            android:launchMode="singleTask">
         </activity>
 
     </application>

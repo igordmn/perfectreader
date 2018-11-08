@@ -31,6 +31,8 @@ class ImageLayouter(
 
         fun Size.scaled(): Size = (this * obj.scale.value).toInt()
 
+        // todo max size not working correctly. check on large images with difference aspect ratios
+        // see com.dmi.util.android.graphics.toBitmap for correct resize
         fun Size.factSize(): Size {
             val source = this
             with(obj.size) {

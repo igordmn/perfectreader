@@ -1,6 +1,7 @@
 package com.dmi.perfectreader
 
 import android.content.Context
+import com.dmi.perfectreader.book.parse.BookParsers
 import com.dmi.perfectreader.common.Databases
 import com.dmi.perfectreader.common.Protocols
 import com.dmi.perfectreader.common.Resources
@@ -30,4 +31,5 @@ class Main(val log: Log, val applicationContext: Context) {
     val display: Display = AndroidDisplay
     val permissions = Permissions(applicationContext)
     val resources = Resources(this)
+    val bookParsers = BookParsers(log)
 }

@@ -6,10 +6,7 @@ import org.mozilla.universalchardet.UniversalDetector
 import java.nio.charset.Charset
 import java.util.regex.Pattern
 
-class CharsetDetector(
-        private val log: Log,
-        private val charsetConfig: ParseConfig.Charset
-) {
+class CharsetDetector(private val log: Log) {
     private val xmlPattern = Pattern.compile("^\\s*<\\?xml.*encoding\\s*=\\s*\"(.*)\".*?>")
 
     companion object {
@@ -17,10 +14,7 @@ class CharsetDetector(
         private val mozillaDetector = UniversalDetector(null)
     }
 
-    fun detect(source: ByteSource): Charset = when (charsetConfig) {
-        is ParseConfig.Charset.Auto -> autoDetect(source)
-        is ParseConfig.Charset.Fixed -> parseCharset(charsetConfig.name)
-    }
+    fun detect(source: ByteSource): Charset = autoDetect(source)
 
     fun detectForXML(source: ByteSource): Charset {
         return readXMLEncoding(source) ?: detect(source)

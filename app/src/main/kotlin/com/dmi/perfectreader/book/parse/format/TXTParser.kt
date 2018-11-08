@@ -4,17 +4,19 @@ import com.dmi.perfectreader.book.content.BookDescription
 import com.dmi.perfectreader.book.content.Content
 import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.content.location.LocationRange
-import com.dmi.perfectreader.book.parse.BookContentParser
+import com.dmi.perfectreader.book.parse.BookParser
 import com.dmi.perfectreader.book.parse.CharsetDetector
 import com.dmi.util.io.withoutUtfBom
 import com.google.common.io.ByteSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class TXTContentParser(
+class TXTParser(
         private val charsetDetector: CharsetDetector,
         private val source: ByteSource,
         private val fileName: String
-) : BookContentParser {
-    override fun parse(): Content {
+) : BookParser {
+    override suspend fun content(): Content = withContext(Dispatchers.IO) {
         val charset = charsetDetector.detect(source)
         val content = Content.Builder()
         val root = content.root(locale = null)
@@ -32,6 +34,9 @@ class TXTContentParser(
             }
         }
 
-        return content.build(BookDescription(author = null, name = null, fileName = fileName))
+        content.build(description())
     }
+
+    override suspend fun description() = BookDescription(author = null, name = null, fileName = fileName, cover = null)
+    override suspend fun descriptionOnFail() = description()
 }

@@ -17,12 +17,16 @@ class FictionBook : ElementDesc() {
     val bodies: List<Body> by elements("body", ::Body)
 }
 
-class FictionBookMeta : ElementDesc() {
+class FictionBookDescription : ElementDesc() {
     val description: Description? by element("description", ::Description)
+}
+
+class FictionBookBinaries : ElementDesc() {
     val binaries: List<Binary> by elements("binary", ::Binary)
 }
 
 fun parseFictionBook(reader: Reader): FictionBook = parseDesc(reader, "FictionBook", ::FictionBook)
-fun parseFictionBookMeta(reader: Reader): FictionBookMeta = parseDesc(reader, "FictionBook", ::FictionBookMeta)
+fun parseFictionBookDescription(reader: Reader): Description? = parseDesc(reader, "FictionBook", ::FictionBookDescription).description
+fun parseFictionBookBinaries(reader: Reader): List<Binary> = parseDesc(reader, "FictionBook", ::FictionBookBinaries).binaries
 
 fun Text.range() = LocationRange(Location(index.toDouble()), Location(index.toDouble() + data.length))

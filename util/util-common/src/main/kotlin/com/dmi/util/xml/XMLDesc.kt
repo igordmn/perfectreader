@@ -10,6 +10,8 @@ import org.xmlpull.v1.XmlPullParser.FEATURE_PROCESS_NAMESPACES
 import java.util.*
 import kotlin.collections.ArrayList
 
+// todo when nothing to parse (all XMLDesc is bound already), stop parsing
+
 abstract class XMLDesc {
     /**
      * index of xml node in whole xml tree

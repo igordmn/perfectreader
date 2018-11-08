@@ -37,7 +37,7 @@ fun searchUIView(
         layoutManager = LinearLayoutManager(context)
         val adapter = EasyHeaderFooterAdapter(object : BindableViewAdapter<SearchResultView>() {
             override fun getItemCount() = model.results?.list?.size ?: 0
-            override fun view() = SearchResultView(context, model, book) { model.results!!.list[it] }
+            override fun view(viewType: Int) = SearchResultView(context, model, book) { model.results!!.list[it] }
         }).apply {
             header = TextView(context).apply {
                 setPadding(dip(16), dip(12), dip(16), dip(12))

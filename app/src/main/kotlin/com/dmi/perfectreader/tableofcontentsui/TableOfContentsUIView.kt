@@ -34,7 +34,7 @@ fun tableOfContentsUIView(
         this.layoutManager = layoutManager
         adapter = object : BindableViewAdapter<ChapterView>() {
             override fun getItemCount() = chapters.size
-            override fun view() = ChapterView(context, model, book, currentIndex, chapters)
+            override fun view(viewType: Int) = ChapterView(context, model, book, currentIndex, chapters)
         }
 
         if (currentIndex >= 0)
@@ -106,6 +106,8 @@ class ChapterView(
         if (isCurrent) {
             chapterView.typeface = Typeface.create(chapterView.typeface, Typeface.BOLD)
             pageView.typeface = Typeface.create(pageView.typeface, Typeface.BOLD)
+            chapterView.textColor = color(R.color.secondary)
+            pageView.textColor = color(R.color.secondary)
         }
 
         onClick {

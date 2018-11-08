@@ -24,25 +24,16 @@ import com.dmi.perfectreader.book.page.*
 import com.dmi.perfectreader.book.pagination.column.columns
 import com.dmi.perfectreader.book.pagination.page.pages
 import com.dmi.perfectreader.book.pagination.part.parts
-import com.dmi.perfectreader.book.parse.BookContentParsers
-import com.dmi.perfectreader.book.parse.settingsParseConfig
 import com.dmi.perfectreader.book.selection.BookSelections
 import com.dmi.perfectreader.common.UserData
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.scope.*
 import com.dmi.util.system.seconds
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 suspend fun book(main: Main, uri: Uri): Book {
-    val log = main.log
-    val settings = main.settings
     val userData: UserData = main.userData
-    val parseConfig = settingsParseConfig(settings)
-    val bookContentParsers = BookContentParsers(log, parseConfig)
-    val content: Content = withContext(Dispatchers.IO) {
-        bookContentParsers.parserFor(uri).parse()
-    }
+    val bookParsers = main.bookParsers
+    val content: Content = bookParsers[uri].content()
     val userBook: UserBook = userBook(userData, uri)
     val bitmapDecoder = CachedBitmapDecoder(AndroidBitmapDecoder(content.resource))
     val text = ContentText(content)
