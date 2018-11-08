@@ -59,6 +59,7 @@ fun ViewBuild.libraryView(model: Library) = LinearLayoutExt(context).apply {
                 is Library.Item.Book -> viewTypes.book
             }
         }
+        id = generateId()
         this.layoutManager = LinearLayoutManager(context)
         this.adapter = adapter
 

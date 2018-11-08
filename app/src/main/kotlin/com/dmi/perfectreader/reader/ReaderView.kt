@@ -34,12 +34,15 @@ fun ViewBuild.readerView(model: Reader) = FrameLayout(context).apply {
     child(params(matchParent, matchParent), bookView)
     child(params(matchParent, matchParent), controlView(context, model.control))
     bindChild(params(matchParent, matchParent), model::selection, ViewBuild::selectionView).apply {
+        id = generateId()
         layoutTransition = fadeTransition(300)
     }
     bindChild(params(matchParent, matchParent), model::popup, ViewBuild::popupView).apply {
+        id = generateId()
         layoutTransition = fadeTransition(300)
     }
     bindChild(params(wrapContent, wrapContent, Gravity.CENTER_HORIZONTAL), model::performingAction, ViewBuild::performingActionView).apply {
+        id = generateId()
         layoutTransition = fadeTransition(300)
         padding = dip(48)
     }

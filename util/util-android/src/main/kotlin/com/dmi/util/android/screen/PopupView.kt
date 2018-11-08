@@ -10,9 +10,12 @@ import org.jetbrains.anko.matchParent
 import kotlin.reflect.KProperty0
 
 fun <M : Any> View.withPopup(
+        viewBuild: ViewBuild,
         property: KProperty0<M?>,
         createView: ViewBuild.(model: M) -> View
 ) = FrameLayout(context).apply {
     child(params(matchParent, matchParent), this@withPopup)
-    bindChild(params(matchParent, matchParent), property, createView)
+    bindChild(params(matchParent, matchParent), property, createView).apply {
+        id = viewBuild.generateId()
+    }
 }

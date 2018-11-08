@@ -5,7 +5,7 @@ import com.dmi.perfectreader.book.content.ContentText
 import com.dmi.perfectreader.book.content.continuousTexts
 import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.util.scope.Scope
-import com.dmi.util.scope.observable
+import com.dmi.util.scope.observableProperty
 import com.dmi.util.screen.Screen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,7 +17,7 @@ class SearchUI(
         val state: SearchUIState,
         private val scope: Scope = Scope()
 ) : Screen by Screen(scope) {
-    var searchQuery: String by observable("")
+    var searchQuery: String by observableProperty(state::searchQuery)
     val searchQueryMaxLength = 200
     private val maxResults = 10000
 
@@ -40,10 +40,8 @@ class SearchUI(
     private suspend fun search(contentText: ContentText, query: String, maxResults: Int): Results {
         val results = Results.Builder(maxResults)
 
-        println("GGG 1")
         contentText.continuousTexts { text ->
             val textStr = text.toString()
-            println("GGG $textStr")
             textStr.indicesOf(query, ignoreCase = true).forEach {
                 results += Result(
                         adjacentText(textStr, it),
@@ -124,4 +122,4 @@ data class AdjacentText(val text: String, val queryIndices: IntRange) {
 }
 
 @Serializable
-class SearchUIState
+data class SearchUIState(var searchQuery: String = "")

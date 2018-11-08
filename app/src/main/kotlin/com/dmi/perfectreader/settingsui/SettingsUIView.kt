@@ -8,7 +8,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
-import androidx.viewpager.widget.ViewPager
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.book.content.common.TextAlign
 import com.dmi.perfectreader.main
@@ -54,7 +53,8 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
         }
     }
 
-    fun vertical(vararg list: View) = NestedScrollView(context).apply {
+    fun ViewBuild.vertical(vararg list: View) = NestedScrollView(context).apply {
+        id = generateId()
         child(params(matchParent, wrapContent), LinearLayoutCompat(context).apply {
             orientation = LinearLayoutCompat.VERTICAL
             list.forEach {
@@ -228,14 +228,15 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
         }
     }
 
-    fun main(): View = LinearLayoutExt(context).apply {
+    fun ViewBuild.main(): View = LinearLayoutExt(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
 
         val tabLayout = child(params(matchParent, wrapContent, weight = 0F), TabLayout(context).apply {
             tabMode = TabLayout.MODE_SCROLLABLE
         })
 
-        child(params(matchParent, matchParent, weight = 1F), ViewPager(context).apply {
+        child(params(matchParent, matchParent, weight = 1F), ViewPagerSaveable(context).apply {
+            id = generateId()
             adapter = ViewPagerAdapter(
                     string(R.string.settingsUIFont) to places.font.viewRef,
                     string(R.string.settingsUIFormat) to places.format.viewRef,
@@ -277,11 +278,12 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
 
         child(params(matchParent, matchParent, weight = 1F), space())
         child(params(matchParent, dip(320), weight = 0F), ScreensView(context, model.screens, ViewBuild::screenView).apply {
+            id = generateId()
             backgroundColor = color(R.color.background)
             elevation = dipFloat(8F)
         })
 
         onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.screens.goBackward(); true }
         onInterceptKeyDown(KeyEvent.KEYCODE_MENU) { model.back(); true }
-    }.withPopup(model::popup, ViewBuild::popupView)
+    }.withPopup(this, model::popup, ViewBuild::popupView)
 }

@@ -160,11 +160,8 @@ fun StringBuilder.appendPlainText(obj: ContentParagraph, range: LocationRange = 
 suspend inline fun ContentText.continuousTexts(action: (ContinuousText) -> Unit) {
     var entry = leafs().get(Location(0.0))
 
-    println("GGG 2")
     while (entry.hasNext) {
-        println("GGG 3")
         val obj = entry.item
-        println("GGG $obj")
         if (obj is ContentParagraph) {
             obj.continuousTexts {
                 action(it)
