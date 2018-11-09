@@ -18,4 +18,9 @@ class LibraryActivity : ActivityExt<Library>() {
     private fun back() = finish()
 
     private fun openBook(uri: Uri) = ReaderActivity.open(this, uri)
+
+    override fun onStart() {
+        super.onStart()
+        model.refresh()
+    }
 }

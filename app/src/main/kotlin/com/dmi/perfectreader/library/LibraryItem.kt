@@ -3,17 +3,16 @@ package com.dmi.perfectreader.library
 import android.content.Context
 import android.text.format.Formatter
 import android.view.Gravity
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
 import com.dmi.util.android.graphics.toBitmap
 import com.dmi.util.android.view.*
 import com.dmi.util.graphic.Size
+import com.dmi.util.lang.unsupported
 import com.google.common.io.ByteSource
 import org.jetbrains.anko.*
 
@@ -90,6 +89,16 @@ class BookItemView(
         textColor = color(R.color.onBackground).withOpacity(0.60)
     }
 
+    private val readProgress = ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal).apply {
+        max = 10000
+    }
+
+    private var ProgressBar.progressPercent: Double
+        get() = unsupported()
+        set(value) {
+            progress = (value * max).toInt()
+        }
+
     init {
         child(params(matchParent, wrapContent), LinearLayoutCompat(context).apply {
             setPadding(dip(16), dip(8), dip(16), dip(8))
@@ -108,6 +117,7 @@ class BookItemView(
                     }
                 })
                 child(params(matchParent, wrapContent), author)
+                child(params(matchParent, wrapContent), readProgress)
             })
         })
     }
@@ -121,6 +131,8 @@ class BookItemView(
         author.text = book.description.author
         author.isGone = book.description.author == null
         fileSize.text = Formatter.formatShortFileSize(context, book.fileSize)
+        readProgress.progressPercent = book.readPercent ?: 0.0
+        readProgress.isVisible = book.readPercent != null
         cover.bind(BookCover.Content(book.description.cover, name))
 
         onClick {

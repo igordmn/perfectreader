@@ -29,7 +29,6 @@ class Library(
     var currentIndex: Int by observable(0)
     var sort: Sort by observable(Sort(Sort.Field.Name, Sort.Method.ASC))
 
-    // todo remove catch, fix throwing exceptions in scope.async
     val items: List<Item>? by scope.async {
         currentFolder.items().let(sort::apply)
     }
@@ -72,7 +71,7 @@ class Library(
                 val uri: Uri,
                 val fileSize: Long,
                 val description: BookDescription,
-                val readPercent: Double = 0.0
+                val readPercent: Double?
         ) : Item()
     }
 

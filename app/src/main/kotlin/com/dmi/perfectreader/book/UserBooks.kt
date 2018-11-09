@@ -34,5 +34,6 @@ class UserBooks(private val db: SQLiteDatabase) {
         }
     }
 
+    // todo remove percent, add endPagePercent. or use location everywhere as end page location
     class Book(val location: Location, val percent: Double)
 }

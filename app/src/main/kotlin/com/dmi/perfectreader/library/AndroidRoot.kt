@@ -9,6 +9,7 @@ import androidx.core.database.getStringOrNull
 import androidx.core.util.set
 import com.dmi.perfectreader.MainContext
 import com.dmi.perfectreader.R
+import com.dmi.perfectreader.book.UserBooks
 import com.dmi.perfectreader.book.parse.BookParsers
 import com.dmi.util.android.view.string
 import kotlinx.coroutines.Dispatchers
@@ -128,7 +129,8 @@ private fun ContentTree.calculateDeepCount(): ContentTree {
 private suspend fun ContentTree.toItem(
         context: MainContext,
         volumeName: String,
-        parsers: BookParsers = context.bookParsers
+        parsers: BookParsers = context.bookParsers,
+        userBooks: UserBooks = context.userBooks
 ): Library.Item {
     val entry = entry!!
     return if (entry.size > 0) {
@@ -138,7 +140,9 @@ private suspend fun ContentTree.toItem(
         } catch (e: Exception) {
             parser.descriptionOnFail()
         }
-        Library.Item.Book(entry.uri, entry.size, description)
+        val userBook = userBooks.load(entry.uri)
+        val readPercent = userBook?.percent
+        Library.Item.Book(entry.uri, entry.size, description, readPercent)
     } else {
         val name = entry.uri.lastPathSegment!!
         suspend fun items() = loadItems(context, volumeName, entry.id)
