@@ -3,7 +3,6 @@ package com.dmi.perfectreader.library
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
-import android.widget.ProgressBar
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toolbar
@@ -14,6 +13,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.dmi.perfectreader.R
 import com.dmi.util.android.screen.withPopup
 import com.dmi.util.android.view.*
@@ -126,13 +126,6 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
-    fun progress(): View = ProgressBar(context).apply {
-        padding = dip(16)
-        autorun {
-            isVisible = model.items == null
-        }
-    }
-
     fun emptyFolder(): View = TextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
         padding = dip(16)
@@ -158,11 +151,21 @@ fun ViewBuild.libraryView(model: Library): View {
             child(params(matchParent, wrapContent, SCROLL_FLAG_SCROLL or SCROLL_FLAG_ENTER_ALWAYS), topBar())
         })
 
-        val recycler = child(params(matchParent, matchParent, behavior = AppBarLayout.ScrollingViewBehavior()), folders())
+        val folders = folders()
 
-        child(params(wrapContent, wrapContent, Gravity.CENTER), progress())
+        child(params(matchParent, matchParent, behavior = AppBarLayout.ScrollingViewBehavior()), SwipeRefreshLayout(context).apply {
+            child(params(matchParent, matchParent), folders)
+            setOnRefreshListener {
+                model.refresh()
+            }
+            autorun {
+                if (model.items == null)
+                    isRefreshing = false
+            }
+        })
+
         child(params(wrapContent, wrapContent, Gravity.CENTER), emptyFolder())
 
-        removeElevationOnScroll(recycler, toolbar)
+        removeElevationOnScroll(folders, toolbar)
     }.withPopup(this, model::popup, ViewBuild::popupView)
 }

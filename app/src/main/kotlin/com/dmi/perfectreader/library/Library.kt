@@ -49,6 +49,10 @@ class Library(
         }
     }
 
+    fun refresh() {
+        currentIndex = currentIndex
+    }
+
     fun back() {
         if (currentIndex < folders.size - 1) {
             currentIndex++
