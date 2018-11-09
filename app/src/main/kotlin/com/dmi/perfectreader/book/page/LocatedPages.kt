@@ -10,15 +10,18 @@ import com.dmi.util.scope.observable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 suspend fun locatedPages(uri: Uri, userBooks: UserBooks): LocatedPagesReadOnly {
     suspend fun load() = userBooks.load(uri)
 
     fun save(locations: Locations, location: Location) {
         GlobalScope.launch(Dispatchers.IO) {
-            userBooks.save(uri, UserBooks.Book(
+            userBooks.save(UserBooks.Book(
+                    uri = uri,
                     location = location,
-                    percent = locations.locationToPercent(location)
+                    percent = locations.locationToPercent(location),
+                    lastReadTime = Date()
             ))
         }
     }

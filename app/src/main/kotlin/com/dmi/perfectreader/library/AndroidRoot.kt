@@ -126,28 +126,33 @@ private fun ContentTree.calculateDeepCount(): ContentTree {
     return this
 }
 
-private suspend fun ContentTree.toItem(
-        context: MainContext,
-        volumeName: String,
-        parsers: BookParsers = context.bookParsers,
-        userBooks: UserBooks = context.userBooks
-): Library.Item {
+private suspend fun ContentTree.toItem(context: MainContext, volumeName: String): Library.Item {
     val entry = entry!!
     return if (entry.size > 0) {
-        val parser = parsers[entry.uri]
-        val description = try {
-            parser.description()
-        } catch (e: Exception) {
-            parser.descriptionOnFail()
-        }
-        val userBook = userBooks.load(entry.uri)
-        val readPercent = userBook?.percent
-        Library.Item.Book(entry.uri, entry.size, description, readPercent)
+        loadBookItem(context, entry.uri, entry.size)
     } else {
         val name = entry.uri.lastPathSegment!!
         suspend fun items() = loadItems(context, volumeName, entry.id)
         Library.Item.Folder(name, deepChildCount, ::items)
     }
+}
+
+suspend fun loadBookItem(
+        context: MainContext,
+        uri: Uri,
+        size: Long,
+        parsers: BookParsers = context.bookParsers,
+        userBooks: UserBooks = context.userBooks
+): Library.Item.Book {
+    val parser = parsers[uri]
+    val description = try {
+        parser.description()
+    } catch (e: Exception) {
+        parser.descriptionOnFail()
+    }
+    val userBook = userBooks.load(uri)
+    val readPercent = userBook?.percent
+    return Library.Item.Book(uri, size, description, readPercent)
 }
 
 private fun <V> SparseArray<V>.getOrPut(key: Int, create: () -> V): V {

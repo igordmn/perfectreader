@@ -2,6 +2,7 @@ package com.dmi.perfectreader.library
 
 import android.net.Uri
 import com.dmi.perfectreader.MainContext
+import com.dmi.perfectreader.book.UserBooks
 import com.dmi.perfectreader.book.content.BookDescription
 import com.dmi.util.android.view.Id
 import com.dmi.util.lang.unsupported
@@ -18,9 +19,16 @@ class Library(
         val openBook: (uri: Uri) -> Unit,
         val state: LibraryState,
         private val root: Item.Folder = androidRoot(context),
+        private val userBooks: UserBooks = context.userBooks,
         private val scope: Scope = Scope()
 ) : Screen by Screen(scope) {
     var popup: Id? by observableProperty(state::popup)
+
+    val recentBooks: List<Item.Book>? by scope.async {
+        userBooks.lastBooks(count = 5).map {
+            loadBookItem(context, it.uri, 0)
+        }
+    }
 
     val folders = ObservableStack<Item.Folder>().apply {
         push(root)

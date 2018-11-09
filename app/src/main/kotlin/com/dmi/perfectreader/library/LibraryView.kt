@@ -59,6 +59,23 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
+    fun recentBooks() = RecyclerView(context, null, R.attr.verticalRecyclerViewStyle).apply {
+        setPadding(dip(8), dip(16), dip(8), dip(16))
+
+        val adapter = object : BindableViewAdapter<LibraryItemView>() {
+            override fun getItemCount() = model.recentBooks?.size ?: 0
+            override fun view(viewType: Int) = LibraryRecentBook(context, model) { model.recentBooks!![it] }
+        }
+        id = generateId()
+        layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        this.adapter = adapter
+
+        autorun {
+            visibility = if (model.recentBooks != null) View.VISIBLE else View.INVISIBLE
+            adapter.notifyDataSetChanged()
+        }
+    }
+
     fun addressBar() = BreadCrumbsView(context).apply {
         subscribe(
                 model.folders,
@@ -93,6 +110,7 @@ fun ViewBuild.libraryView(model: Library): View {
 
     fun topBar() = LinearLayoutCompat(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
+        child(params(matchParent, wrapContent), recentBooks())
         child(params(matchParent, wrapContent), addressBar())
         child(params(matchParent, wrapContent, topMargin = dip(-12)), toolbar())
     }
