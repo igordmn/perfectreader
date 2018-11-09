@@ -1,11 +1,11 @@
 package com.dmi.perfectreader.book.page
 
 import com.dmi.perfectreader.book.Locations
-import com.dmi.perfectreader.book.UserBook
 import com.dmi.perfectreader.book.content.location.LocatedSequence
 import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.pagination.page.Page
 import com.dmi.util.lang.unsupported
+import com.dmi.util.lang.value
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
@@ -18,16 +18,12 @@ class LoadingPages(
         private val scope: Scope = Scope()
 ) : Disposable by scope {
     companion object {
-        fun pages(sequence: LocatedSequence<Page>, locations: Locations, userBook: UserBook) = object : LoadingPages.Pages {
-            override var location: Location
-                get() = userBook.location
-                set(value) {
-                    userBook.location = value
-                }
+        fun pages(sequence: LocatedSequence<Page>, locations: Locations, pages: LocatedPages) = object : LoadingPages.Pages {
+            override var location: Location by value(pages::location)
             override var pageNumber: Int
-                get() = locations.locationToPageNumber(userBook.location)
+                get() = locations.locationToPageNumber(pages.location)
                 set(value) {
-                    userBook.location = locations.pageNumberToLocation(value)
+                    pages.location = locations.pageNumberToLocation(value)
                 }
             override val numberOfPages: Int get() = locations.numberOfPages
             override val sequence: LocatedSequence<Page> get() = sequence

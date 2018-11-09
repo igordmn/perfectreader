@@ -57,7 +57,7 @@ private fun applyScripts(context: Context, database: SQLiteDatabase, scriptPaths
 
 private fun readSQLCommands(context: Context, scriptPath: String): List<String> {
     context.assets.open(scriptPath).use { stream ->
-        return readLines(InputStreamReader(stream, Charsets.UTF_8))
+        return readLines(InputStreamReader(stream, Charsets.UTF_8)).filter { it.isNotEmpty() }
     }
 }
 

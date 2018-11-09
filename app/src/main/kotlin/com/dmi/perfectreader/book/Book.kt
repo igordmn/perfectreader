@@ -24,26 +24,25 @@ import com.dmi.perfectreader.book.pagination.column.columns
 import com.dmi.perfectreader.book.pagination.page.pages
 import com.dmi.perfectreader.book.pagination.part.parts
 import com.dmi.perfectreader.book.selection.BookSelections
-import com.dmi.perfectreader.common.UserData
 import com.dmi.perfectreader.reader.ReaderContext
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.scope.*
 import com.dmi.util.system.seconds
 
 suspend fun book(context: ReaderContext, uri: Uri): Book {
-    val userData: UserData = context.main.userData
+    val userBooks = context.main.userBooks
+    val locatedPagesReadOnly = locatedPages(uri, userBooks)
     val bookParsers = context.main.bookParsers
     val content: Content = bookParsers[uri].content()
-    val userBook: UserBook = userBook(userData, uri)
     val bitmapDecoder = CachedBitmapDecoder(AndroidBitmapDecoder(content.resource))
     val text = ContentText(content)
-    return Book(context, text, userBook, content, bitmapDecoder)
+    return Book(context, text, locatedPagesReadOnly, content, bitmapDecoder)
 }
 
 class Book(
         private val context: ReaderContext,
         val text: ContentText,
-        private val userBook: UserBook,
+        private val locatedPagesReadOnly: LocatedPagesReadOnly,
         private val content: Content,
         val bitmapDecoder: BitmapDecoder,
         scope: Scope = Scope()
@@ -81,7 +80,8 @@ class Book(
                     .parts()
                     .columns(pageConfig.contentSize.height)
                     .pages(pageConfig, locations, tableOfContents, description, layouter, contentConfig)
-            val loadingPages = LoadingPages(LoadingPages.pages(sequence, locations, userBook))
+            val locatedPages = locatedPagesReadOnly.saveable(locations)
+            val loadingPages = LoadingPages(LoadingPages.pages(sequence, locations, locatedPages))
             val animator = SmoothPageAnimator(seconds(0.4))
             val animatedPages = AnimatedPages(
                     size,
@@ -117,7 +117,7 @@ class Book(
         }
     }
 
-    val location: Location get() = userBook.location
+    val location: Location get() = locatedPagesReadOnly.location
     val isMoving: Boolean get() = animatedPages.isMoving || demoAnimatedPages.isMoving
     val pages: VisiblePages get() = if (demoAnimatedPages.isMoving) demoAnimatedPages.visible else animatedPages.visible
 

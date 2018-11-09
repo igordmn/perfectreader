@@ -1,11 +1,11 @@
 package com.dmi.perfectreader
 
 import android.content.Context
+import com.dmi.perfectreader.book.UserBooks
 import com.dmi.perfectreader.book.parse.BookParsers
 import com.dmi.perfectreader.common.Databases
 import com.dmi.perfectreader.common.Protocols
 import com.dmi.perfectreader.common.Resources
-import com.dmi.perfectreader.common.UserData
 import com.dmi.perfectreader.settings.settings
 import com.dmi.util.android.io.AssetsURIHandler
 import com.dmi.util.android.system.AndroidDisplay
@@ -19,7 +19,7 @@ import org.jetbrains.anko.displayMetrics
 
 class MainContext(val log: Log, val android: Context) {
     val databases = Databases(log, android)
-    val userData = UserData(databases.default)
+    val userBooks = UserBooks(databases.default)
     val settings = runBlocking { settings(databases.default) }
     val protocols = Protocols()
     val density = android.displayMetrics.density
