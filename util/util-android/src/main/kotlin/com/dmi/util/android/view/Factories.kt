@@ -8,8 +8,8 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
 
-@Suppress("unused")
 fun LinearLayoutCompat.params(
         width: Int,
         height: Int,
@@ -27,7 +27,6 @@ fun LinearLayoutCompat.params(
     this.bottomMargin = bottomMargin
 }
 
-@Suppress("unused")
 fun FrameLayout.params(
         width: Int,
         height: Int,
@@ -43,7 +42,6 @@ fun FrameLayout.params(
     this.bottomMargin = bottomMargin
 }
 
-@Suppress("unused")
 fun ConstraintLayout.params(
         width: Int,
         height: Int,
@@ -58,7 +56,6 @@ fun ConstraintLayout.params(
     this.bottomMargin = bottomMargin
 }
 
-@Suppress("unused")
 fun CoordinatorLayout.params(
         width: Int,
         height: Int,
@@ -69,36 +66,28 @@ fun CoordinatorLayout.params(
     this.behavior = behavior
 }
 
-@Suppress("unused")
 fun AppBarLayout.params(
         width: Int,
         height: Int,
-        scrollFlags: Int
+        scrollFlags: Int = 1
 ) = AppBarLayout.LayoutParams(width, height).apply {
     this.scrollFlags = scrollFlags
 }
 
-@Suppress("unused")
+fun CollapsingToolbarLayout.params(
+        width: Int,
+        height: Int,
+        mode: Int = 0,
+        parallaxMultiplier: Float = 0F
+) = CollapsingToolbarLayout.LayoutParams(width, height).apply {
+    this.collapseMode = mode
+    this.parallaxMultiplier = parallaxMultiplier
+}
+
 fun ViewGroup.params(
         width: Int,
         height: Int
 ) = ViewGroup.LayoutParams(width, height)
-
-fun <T : View> LinearLayoutCompat.child(
-        params: LinearLayoutCompat.LayoutParams,
-        view: T
-): T = view.apply {
-    layoutParams = params
-    addView(this)
-}
-
-fun <T : View> FrameLayout.child(
-        params: FrameLayout.LayoutParams,
-        view: T
-): T = view.apply {
-    layoutParams = params
-    addView(this)
-}
 
 fun <T : View> ViewGroup.child(
         params: ViewGroup.LayoutParams,

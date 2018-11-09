@@ -17,11 +17,16 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.dmi.perfectreader.R
 import com.dmi.util.android.screen.withPopup
 import com.dmi.util.android.view.*
+import com.dmi.util.lang.max
 import com.dmi.util.lang.unsupported
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
 import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_PARALLAX
 import org.jetbrains.anko.*
+
+
 
 fun ViewBuild.libraryView(model: Library): View {
     val places = object : Places() {
@@ -60,7 +65,7 @@ fun ViewBuild.libraryView(model: Library): View {
     }
 
     fun recentBooks() = RecyclerView(context, null, R.attr.verticalRecyclerViewStyle).apply {
-        setPadding(dip(8), dip(16), dip(8), dip(16))
+        setPadding(dip(8), dip(8), dip(8), dip(8))
 
         val adapter = object : BindableViewAdapter<LibraryItemView>() {
             override fun getItemCount() = model.recentBooks?.size ?: 0
@@ -71,7 +76,7 @@ fun ViewBuild.libraryView(model: Library): View {
         this.adapter = adapter
 
         autorun {
-            visibility = if (model.recentBooks != null) View.VISIBLE else View.INVISIBLE
+            isVisible = model.recentBooks != null
             adapter.notifyDataSetChanged()
         }
     }
@@ -108,11 +113,10 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
-    fun topBar() = LinearLayoutCompat(context).apply {
+    fun collapsingBar() = LinearLayoutCompat(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
         child(params(matchParent, wrapContent), recentBooks())
-        child(params(matchParent, wrapContent), addressBar())
-        child(params(matchParent, wrapContent, topMargin = dip(-12)), toolbar())
+        child(params(matchParent, wrapContent), toolbar())
     }
 
     fun folders() = RecyclerView(context, null, R.attr.verticalRecyclerViewStyle).apply {
@@ -139,7 +143,7 @@ fun ViewBuild.libraryView(model: Library): View {
         this.adapter = adapter
 
         autorun {
-            isVisible = model.items != null
+            isVisible = model.items != null && model.items!!.isNotEmpty()
             adapter.notifyDataSetChanged()
         }
     }
@@ -163,16 +167,25 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
-    return CoordinatorLayout(context).apply {
-        val toolbar = child(params(matchParent, wrapContent), AppBarLayout(context).apply {
-            elevation = dipFloat(4F)
-            child(params(matchParent, wrapContent, SCROLL_FLAG_SCROLL or SCROLL_FLAG_ENTER_ALWAYS), topBar())
+    val apply = CoordinatorLayout(context).apply {
+        child(params(matchParent, wrapContent), AppBarLayout(context).apply {
+            val collapsing = child(
+                    params(matchParent, wrapContent, scrollFlags = SCROLL_FLAG_SCROLL or SCROLL_FLAG_EXIT_UNTIL_COLLAPSED),
+                    CollapsingToolbarLayout(context).apply {
+                        child(params(matchParent, wrapContent, mode = COLLAPSE_MODE_PARALLAX, parallaxMultiplier = 0.7F), collapsingBar())
+                        scrimVisibleHeightTrigger = 100000000
+                    }
+            )
+            child(params(matchParent, wrapContent, scrollFlags = SCROLL_FLAG_SCROLL), addressBar())
+            setFadingScrimOnHide(collapsing)
         })
 
-        val folders = folders()
-
         child(params(matchParent, matchParent, behavior = AppBarLayout.ScrollingViewBehavior()), SwipeRefreshLayout(context).apply {
-            child(params(matchParent, matchParent), folders)
+            child(params(matchParent, matchParent), folders())
+
+//            setProgressViewEndTarget(true, target)
+//            setProgressViewOffset(true, start, end);
+
             setOnRefreshListener {
                 model.refresh()
             }
@@ -183,7 +196,15 @@ fun ViewBuild.libraryView(model: Library): View {
         })
 
         child(params(wrapContent, wrapContent, Gravity.CENTER), emptyFolder())
+    }
+    return apply.withPopup(this, model::popup, ViewBuild::popupView)
+}
 
-        removeElevationOnScroll(folders, toolbar)
-    }.withPopup(this, model::popup, ViewBuild::popupView)
+private fun AppBarLayout.setFadingScrimOnHide(collapsing: CollapsingToolbarLayout) {
+    val minScrimActivation = dip(16)
+    collapsing.setContentScrimColor(color(R.color.secondaryVariant).withOpacity(0.00))
+    addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+        val collapsePercent = max(0, -verticalOffset - minScrimActivation).toFloat() / (collapsing.height - minScrimActivation)
+        collapsing.setContentScrimColor(color(R.color.secondaryVariant).withOpacity(0.60 * collapsePercent))
+    })
 }

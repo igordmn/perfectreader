@@ -3,7 +3,6 @@ package com.dmi.perfectreader.library
 import android.content.Context
 import android.view.Gravity
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,7 +13,7 @@ import com.dmi.util.android.view.*
 import org.jetbrains.anko.*
 import java.util.*
 
-class BreadCrumbsView(context: Context) : FrameLayout(context) {
+class BreadCrumbsView(context: Context) : HorizontalScrollView(context) {
     private val textViews = ArrayDeque<TextView>()
     private val dividers = ArrayDeque<View>()
     private val container = LinearLayoutCompat(context).apply {
@@ -24,10 +23,8 @@ class BreadCrumbsView(context: Context) : FrameLayout(context) {
     }
 
     init {
-        child(params(matchParent, matchParent), HorizontalScrollView(context).apply {
-            child(params(matchParent, matchParent), container)
-            isHorizontalScrollBarEnabled = false
-        })
+        child(params(matchParent, matchParent), container)
+        isHorizontalScrollBarEnabled = false
     }
 
     val size: Int get() = textViews.size
@@ -48,7 +45,7 @@ class BreadCrumbsView(context: Context) : FrameLayout(context) {
         }
 
         val textView = TextView(context).apply {
-            setPadding(dip(8), dip(12), dip(8), dip(12))
+            setPadding(dip(8), dip(16), dip(8), dip(16))
             text = name
             setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Overline)
             textColor = color(R.color.onBackground)
@@ -57,6 +54,8 @@ class BreadCrumbsView(context: Context) : FrameLayout(context) {
         }
         textViews.push(textView)
         container.addView(textView)
+
+        scrollToEnd()
     }
 
     fun pop() {
@@ -69,4 +68,13 @@ class BreadCrumbsView(context: Context) : FrameLayout(context) {
     private fun divider() = ImageView(context).apply {
         image = drawable(R.drawable.ic_arrow_right, color(R.color.onBackground).withOpacity(0.38))
     }
+}
+
+private fun HorizontalScrollView.scrollToEnd() {
+    addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+        override fun onLayoutChange(view: View, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
+            removeOnLayoutChangeListener(this)
+            fullScroll(View.FOCUS_RIGHT)
+        }
+    })
 }

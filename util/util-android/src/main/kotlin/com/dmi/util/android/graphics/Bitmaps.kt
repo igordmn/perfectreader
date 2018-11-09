@@ -27,4 +27,4 @@ suspend fun InputStream.toBitmap(maxSize: Size): Bitmap = use { stream ->
     }
 }
 
-suspend fun ByteSource.toBitmap(maxSize: Size): Bitmap = openStream().use { it.toBitmap(maxSize) }
+suspend fun ByteSource.toBitmap(maxSize: Size): Bitmap = openStream().toBitmap(maxSize)
