@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.library
 
+import android.graphics.Color
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
@@ -116,6 +117,11 @@ fun ViewBuild.libraryView(model: Library): View {
     fun collapsingBar() = LinearLayoutCompat(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
         child(params(matchParent, wrapContent), recentBooks())
+        child(params(matchParent, dip(1)), View(context).apply {
+//            backgroundColor = color(android.R.color.darker_gray)
+//            backgroundResource = attr(android.R.attr.divider).resourceId
+            backgroundResource = attr(android.R.attr.listDivider).resourceId
+        })
         child(params(matchParent, wrapContent), toolbar())
     }
 
@@ -202,9 +208,9 @@ fun ViewBuild.libraryView(model: Library): View {
 
 private fun AppBarLayout.setFadingScrimOnHide(collapsing: CollapsingToolbarLayout) {
     val minScrimActivation = dip(16)
-    collapsing.setContentScrimColor(color(R.color.secondaryVariant).withOpacity(0.00))
+    collapsing.setContentScrimColor(Color.TRANSPARENT)
     addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
         val collapsePercent = max(0, -verticalOffset - minScrimActivation).toFloat() / (collapsing.height - minScrimActivation)
-        collapsing.setContentScrimColor(color(R.color.secondaryVariant).withOpacity(0.60 * collapsePercent))
+        collapsing.setContentScrimColor(Color.BLACK.withOpacity(0.60 * collapsePercent))
     })
 }
