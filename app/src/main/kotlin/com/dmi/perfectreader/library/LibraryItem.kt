@@ -94,10 +94,9 @@ class BookItemView(
         child(params(matchParent, wrapContent), LinearLayoutCompat(context).apply {
             setPadding(dip(16), dip(8), dip(16), dip(8))
             orientation = LinearLayoutCompat.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
 
-            child(params(wrapContent, wrapContent, weight = 0F), cover)
-            child(params(matchParent, wrapContent, weight = 1F), LinearLayoutCompat(context).apply {
+            child(params(wrapContent, wrapContent, weight = 0F, gravity = Gravity.CENTER_VERTICAL), cover)
+            child(params(matchParent, wrapContent, weight = 1F, gravity = Gravity.CENTER_VERTICAL), LinearLayoutCompat(context).apply {
                 orientation = LinearLayoutCompat.VERTICAL
                 setPadding(dip(16), 0, 0, 0)
 
