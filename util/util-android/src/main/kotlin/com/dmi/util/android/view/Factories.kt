@@ -1,16 +1,19 @@
 package com.dmi.util.android.view
 
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import com.google.android.material.appbar.AppBarLayout
 
 @Suppress("unused")
 fun LinearLayoutCompat.params(
         width: Int,
         height: Int,
-        gravity: Int = -1,
+        gravity: Int = Gravity.NO_GRAVITY,
         weight: Float = 0F,
         leftMargin: Int = 0,
         topMargin: Int = 0,
@@ -28,7 +31,7 @@ fun LinearLayoutCompat.params(
 fun FrameLayout.params(
         width: Int,
         height: Int,
-        gravity: Int = -1,
+        gravity: Int = Gravity.NO_GRAVITY,
         leftMargin: Int = 0,
         topMargin: Int = 0,
         rightMargin: Int = 0,
@@ -53,6 +56,26 @@ fun ConstraintLayout.params(
     this.topMargin = topMargin
     this.rightMargin = rightMargin
     this.bottomMargin = bottomMargin
+}
+
+@Suppress("unused")
+fun CoordinatorLayout.params(
+        width: Int,
+        height: Int,
+        gravity: Int = Gravity.NO_GRAVITY,
+        behavior: CoordinatorLayout.Behavior<*>? = null
+) = CoordinatorLayout.LayoutParams(width, height).apply {
+    this.gravity = gravity
+    this.behavior = behavior
+}
+
+@Suppress("unused")
+fun AppBarLayout.params(
+        width: Int,
+        height: Int,
+        scrollFlags: Int
+) = AppBarLayout.LayoutParams(width, height).apply {
+    this.scrollFlags = scrollFlags
 }
 
 @Suppress("unused")

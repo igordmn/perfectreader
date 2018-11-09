@@ -3,12 +3,12 @@ package com.dmi.perfectreader.library
 import android.content.Context
 import android.text.format.Formatter
 import android.view.Gravity
-import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
@@ -21,6 +21,9 @@ import com.dmi.util.android.screen.withPopup
 import com.dmi.util.android.view.*
 import com.dmi.util.graphic.Size
 import com.dmi.util.lang.unsupported
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
 import com.google.common.io.ByteSource
 import org.jetbrains.anko.*
 
@@ -153,20 +156,18 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
-    return LinearLayoutExt(context).apply {
-        orientation = LinearLayoutCompat.VERTICAL
-        child(params(matchParent, wrapContent, weight = 0F), topBar())
-
-        child(params(matchParent, matchParent, weight = 1F), FrameLayout(context).apply {
-            child(params(matchParent, matchParent), folders())
-            child(params(wrapContent, wrapContent, Gravity.CENTER), progress())
-            child(params(wrapContent, wrapContent, Gravity.CENTER), emptyFolder())
+    return CoordinatorLayout(context).apply {
+        val toolbar = child(params(matchParent, wrapContent), AppBarLayout(context).apply {
+            elevation = dipFloat(4F)
+            child(params(matchParent, wrapContent, SCROLL_FLAG_SCROLL or SCROLL_FLAG_ENTER_ALWAYS), topBar())
         })
 
-        onInterceptKeyDown(KeyEvent.KEYCODE_BACK) {
-            model.back()
-            true
-        }
+        val recycler = child(params(matchParent, matchParent, behavior = AppBarLayout.ScrollingViewBehavior()), folders())
+
+        child(params(wrapContent, wrapContent, Gravity.CENTER), progress())
+        child(params(wrapContent, wrapContent, Gravity.CENTER), emptyFolder())
+
+        removeElevationOnScroll(recycler, toolbar)
     }.withPopup(this, model::popup, ViewBuild::popupView)
 }
 
