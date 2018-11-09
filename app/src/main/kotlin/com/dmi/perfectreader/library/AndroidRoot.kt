@@ -41,7 +41,8 @@ private suspend fun loadItems(
 ): List<Library.Item> = withContext(Dispatchers.IO) {
     entries(androidContext, volumeName)
             .toTree(id)
-            .removeUnsupported(parsers).removeEmpty()
+            .removeUnsupported(parsers)
+            .removeEmpty()
             .calculateDeepCount()
             .children
             .map {
