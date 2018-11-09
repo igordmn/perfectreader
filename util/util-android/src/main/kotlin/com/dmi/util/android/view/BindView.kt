@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.util.set
+import com.dmi.util.scope.dontObserve
 import org.jetbrains.anko.matchParent
 import kotlin.reflect.KProperty0
 
@@ -25,29 +26,32 @@ class BindView<M, V: View>(
         var old: V? = null
         autorun {
             val value = model.get()
-            old = if (value == null) {
-                if (childCount > 0)
-                    removeView(getChildAt(0))
-                null
-            } else {
-                val created = ViewBuild(context).view(value, old)
-                created.isSaveFromParentEnabled = false
-                if (restoredState != null) {
-                    created.restoreState(restoredState!!)
-                    restoredState = null
-                }
 
-                if (created !== old) {
+            dontObserve {
+                old = if (value == null) {
                     if (childCount > 0)
                         removeView(getChildAt(0))
-                    created.layoutParams = params(matchParent, matchParent)
-                    addView(created)
-                }
-                created
-            }
+                    null
+                } else {
+                    val created = ViewBuild(context).view(value, old)
+                    created.isSaveFromParentEnabled = false
+                    if (restoredState != null) {
+                        created.restoreState(restoredState!!)
+                        restoredState = null
+                    }
 
-            if (!defferStateRestore)
-                restoredState = null
+                    if (created !== old) {
+                        if (childCount > 0)
+                            removeView(getChildAt(0))
+                        created.layoutParams = params(matchParent, matchParent)
+                        addView(created)
+                    }
+                    created
+                }
+
+                if (!defferStateRestore)
+                    restoredState = null
+            }
         }
     }
 

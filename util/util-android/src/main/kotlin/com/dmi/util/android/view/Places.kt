@@ -1,12 +1,13 @@
-package com.dmi.perfectreader.settingsui.common
+package com.dmi.util.android.view
 
 import android.view.View
-import com.dmi.util.android.view.ViewBuild
+
+typealias Id = Int
 
 open class Places {
     private val places = ArrayList<Place>()
 
-    operator fun get(id: Int): Place = places[id]
+    operator fun get(id: Id): Place = places[id]
 
     @Suppress("LeakingThis")
     abstract inner class Place {

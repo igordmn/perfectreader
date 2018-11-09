@@ -167,6 +167,9 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                                 settings.format.pageBackgroundIsImage = values[which]
                                 model.popup = null
                             }
+                            .setOnDismissListener {
+                                model.popup = null
+                            }
                             .create()
                 }
             }

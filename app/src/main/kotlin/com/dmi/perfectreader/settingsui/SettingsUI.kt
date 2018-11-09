@@ -30,5 +30,3 @@ class SettingsUIState(
 
 @Serializable
 class SettingsUIMainState
-
-typealias Id = Int

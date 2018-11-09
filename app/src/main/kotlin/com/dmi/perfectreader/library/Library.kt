@@ -3,9 +3,12 @@ package com.dmi.perfectreader.library
 import android.net.Uri
 import com.dmi.perfectreader.MainContext
 import com.dmi.perfectreader.book.content.BookDescription
+import com.dmi.util.android.view.Id
+import com.dmi.util.lang.unsupported
 import com.dmi.util.scope.ObservableStack
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
+import com.dmi.util.scope.observableProperty
 import com.dmi.util.screen.Screen
 import kotlinx.serialization.Serializable
 
@@ -17,12 +20,14 @@ class Library(
         private val root: Item.Folder = androidRoot(context),
         private val scope: Scope = Scope()
 ) : Screen by Screen(scope) {
+    var popup: Id? by observableProperty(state::popup)
+
     val folders = ObservableStack<Item.Folder>().apply {
         push(root)
     }
 
     var currentIndex: Int by observable(0)
-    var sort: Sort by observable(Sort.Name(Sort.Method.ASC))
+    var sort: Sort by observable(Sort(Sort.Field.Name, Sort.Method.ASC))
 
     // todo remove catch, fix throwing exceptions in scope.async
     val items: List<Item>? by scope.async {
@@ -67,19 +72,7 @@ class Library(
         ) : Item()
     }
 
-    sealed class Sort(private val method: Method) {
-        class Name(private val method: Method) : Sort(method) {
-            override fun books(list: List<Item.Book>) = method.apply(list) { it.description.name ?: it.description.fileName }
-        }
-
-        class Author(private val method: Method) : Sort(method) {
-            override fun books(list: List<Item.Book>) = method.apply(list) { it.description.author ?: it.description.fileName }
-        }
-
-        class Size(private val method: Method) : Sort(method) {
-            override fun books(list: List<Item.Book>) = method.apply(list) { it.fileSize }
-        }
-
+    class Sort(val field: Field, val method: Method) {
         fun apply(list: List<Item>): List<Item> {
             val folders = ArrayList<Item.Folder>()
             val books = ArrayList<Item.Book>()
@@ -91,11 +84,44 @@ class Library(
                 }
             }
 
-            return folders(folders) + books(books)
+            return folders(folders) + field.books(method, books)
         }
 
         private fun folders(list: List<Item.Folder>) = method.apply(list) { it.name }
-        protected abstract fun books(list: List<Item.Book>): List<Item.Book>
+
+        sealed class Field {
+            abstract fun books(method: Method, list: List<Item.Book>): List<Item.Book>
+
+            object Name : Field() {
+                override fun books(method: Method, list: List<Item.Book>) = method.apply(list) {
+                    it.description.name ?: it.description.fileName
+                }
+            }
+
+            object Author : Field() {
+                override fun books(method: Method, list: List<Item.Book>) = method.apply(list) {
+                    SortItem(it.description.author, it.description.name ?: it.description.fileName)
+                }
+
+                private class SortItem(val author: String?, val name: String) : Comparable<SortItem> {
+                    override fun compareTo(other: SortItem): Int = when {
+                        author != null && other.author == null -> -1
+                        author == null && other.author != null -> 1
+                        author != null && other.author != null -> author.compareTo(other.author)
+                        author == null && other.author == null -> name.compareTo(other.name)
+                        else -> unsupported()
+                    }
+                }
+            }
+
+            object Size : Field() {
+                override fun books(method: Method, list: List<Item.Book>) = method.apply(list) { it.fileSize }
+            }
+
+            object ReadPercent : Field() {
+                override fun books(method: Method, list: List<Item.Book>) = method.apply(list) { it.readPercent }
+            }
+        }
 
         enum class Method {
             ASC {
@@ -112,4 +138,4 @@ class Library(
 }
 
 @Serializable
-data class LibraryState(val x: Int)
+class LibraryState(var popup: Id? = null)

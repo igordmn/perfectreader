@@ -74,9 +74,11 @@ fun colorHEXDialog(
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 val normalized = "#" + editText.text.toString().toLowerCase().padStart(6, '0')
                 property.set(Color.parseColor(normalized))
-                model.popup = null
             }
             .setNegativeButton(android.R.string.cancel) { _, _ -> }
+            .setOnDismissListener {
+                model.popup = null
+            }
             .create()
 }
 

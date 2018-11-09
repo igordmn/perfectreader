@@ -162,4 +162,13 @@
         <item quantity="many">%d книг</item>
         <item quantity="other">%d книг</item>
     </plurals>
+
+    <string name="librarySearch">Поиск</string>
+    <string name="librarySort">Сортировка</string>
+    <string name="librarySortName">Название</string>
+    <string name="librarySortAuthor">Автор</string>
+    <string name="librarySortSize">Размер</string>
+    <string name="librarySortReadPercent">Прочитано</string>
+    <string name="librarySortAsc">По возрастанию</string>
+    <string name="librarySortDesc">По убыванию</string>
 </resources>
