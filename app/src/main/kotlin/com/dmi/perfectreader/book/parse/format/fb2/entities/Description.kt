@@ -28,15 +28,9 @@ class TitleInfo : ElementDesc() {
     val lang: String? by element("lang")
 
     fun compositeAuthorName(): String? {
-        val result = authors.joinToString(", ") { it.fullName() }.limit(60)
+        val result = authors.joinToString(", ") { it.fullName() }
         return if (result.isNotEmpty()) result else null
     }
-}
-
-private fun String.limit(max: Int) = if (length > max) {
-    substring(0, max) + "…"
-} else {
-    this
 }
 
 class Description : ElementDesc() {

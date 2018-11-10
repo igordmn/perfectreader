@@ -1,6 +1,7 @@
 package com.dmi.perfectreader.library
 
 import android.content.Context
+import android.text.TextUtils
 import android.text.format.Formatter
 import android.view.Gravity
 import android.widget.*
@@ -28,6 +29,8 @@ class FolderItemView(
 ) : LibraryItemView(context) {
     private val name = TextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
+        ellipsize = TextUtils.TruncateAt.END
+        maxEms = 70
     }
     private val count = TextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
@@ -75,11 +78,15 @@ class BookItemView(
 
     private val name = TextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
+        ellipsize = TextUtils.TruncateAt.END
+        maxEms = 70
     }
 
     private val author = TextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
         textColor = color(R.color.onBackground).withOpacity(0.60)
+        ellipsize = TextUtils.TruncateAt.END
+        maxEms = 70
     }
 
     private val fileSize = TextView(context).apply {
