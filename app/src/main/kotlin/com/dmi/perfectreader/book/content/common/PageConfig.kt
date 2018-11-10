@@ -18,7 +18,7 @@ class PageConfig(
                 settings.format.pagePaddingTopDip,
                 settings.format.pagePaddingBottomDip
         ) * density,
-        val footer: Footer? = if (settings.format.pageFooter) Footer(context) else null,
+        val footer: Footer? = if (settings.format.pageFooterEnabled) Footer(context) else null,
         footerExtraSpace: Float = if (footer != null) (footer.height + footer.paddingBottom) else 0F,
         val contentSize: SizeF = size.shrink(paddings.left + paddings.right, paddings.top + paddings.bottom + footerExtraSpace),
         val textGammaCorrection: Float = settings.format.pageTextGammaCorrection

@@ -141,6 +141,19 @@
     <string name="settingsUIThemeSelection">Выделение</string>
 
     <string name="settingsUIScreenAnimation">Анимация</string>
+    <string name="settingsUIScreenFooter">Колонтитул</string>
+    <string name="settingsUIScreenFooterPageNumber">Номер страницы</string>
+    <string name="settingsUIScreenFooterNumberOfPages">Количество страниц</string>
+    <string name="settingsUIScreenFooterChapter">Глава</string>
+    <string name="settingsUIScreenFooterHide">Скрывать</string>
+    <plurals name="settingsUIScreenFooterCount">
+        <item quantity="zero">Нет элементов</item>
+        <item quantity="one">%d элемент</item>
+        <item quantity="two">%d элемента</item>
+        <item quantity="few">%d элементов</item>
+        <item quantity="many">%d элементов</item>
+        <item quantity="other">%d элементов</item>
+    </plurals>
 
     <string name="searchHint">Поиск…</string>
     <string name="searchNoResultsFound">Ничего не найдено</string>

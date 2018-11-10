@@ -45,7 +45,7 @@ class FormatSettings(store: ValueStore) {
     var pagePaddingTopDip by store.value(20F)
     var pagePaddingBottomDip by store.value(20F)
 
-    var pageFooter by store.value(true)
+    var pageFooterEnabled by store.value(true)
     var pageFooterTextSizePercent by store.value(0.8F)
     var pageFooterHeightEm by store.value(1.4F)
     var pageFooterPaddingBottomPercent by store.value(-0.2F)
@@ -76,3 +76,14 @@ var FormatSettings.textShadowOpacity: Float
         val color = Color(textShadowColor)
         textShadowColor = color.withAlpha((value * 255).toInt()).value
     }
+
+var FormatSettings.pageFooterElements: PageFooterElements
+    get() = PageFooterElements(pageFooterPageNumber, pageFooterNumberOfPages, pageFooterChapter)
+    set(value) {
+        pageFooterPageNumber = value.pageNumber
+        pageFooterNumberOfPages = value.numberOfPages
+        pageFooterChapter = value.chapter
+        pageFooterEnabled = value.pageNumber || value.numberOfPages || value.chapter
+    }
+
+class PageFooterElements(val pageNumber: Boolean, val numberOfPages: Boolean, val chapter: Boolean)

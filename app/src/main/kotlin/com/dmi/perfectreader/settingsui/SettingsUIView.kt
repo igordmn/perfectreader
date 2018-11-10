@@ -10,9 +10,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
-import com.dmi.perfectreader.settings.pagePadding
-import com.dmi.perfectreader.settings.textJustify
-import com.dmi.perfectreader.settings.textShadowOpacity
+import com.dmi.perfectreader.settings.*
 import com.dmi.perfectreader.settingsui.common.*
 import com.dmi.perfectreader.settingsui.custom.*
 import com.dmi.util.android.opengl.GLContext
@@ -197,8 +195,48 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                 override fun ViewBuild.view() = screenAnimationDetails(context, model, model.reader.book, glContext)
             }
 
+            val footerElements = object : Place() {
+                private fun BooleanArray.toElements() = PageFooterElements(this[0], this[1], this[2])
+                private fun PageFooterElements.toArray() = booleanArrayOf(pageNumber, numberOfPages, chapter)
+                private val names = arrayOf(
+                        R.string.settingsUIScreenFooterPageNumber,
+                        R.string.settingsUIScreenFooterNumberOfPages,
+                        R.string.settingsUIScreenFooterChapter
+                ).map { context.string(it) }.toTypedArray()
+
+                fun format(footerElements: PageFooterElements): String {
+                    val count = footerElements.toArray().count { it }
+                    return if (count == 0) {
+                        context.string(R.string.settingsUIScreenFooterHide)
+                    } else {
+                        context.resources.getQuantityString(R.plurals.settingsUIScreenFooterCount, count, count)
+                    }
+                }
+
+                override fun ViewBuild.view() = DialogView(context) {
+                    val checked = settings.format.pageFooterElements.toArray()
+                    AlertDialog.Builder(context)
+                            .setTitle(R.string.settingsUIScreenFooter)
+                            .setPositiveButton(android.R.string.ok) { _, _ -> }
+                            .setMultiChoiceItems(names, checked) { _, which, isChecked ->
+                                checked[which] = isChecked
+                            }
+                            .setOnDismissListener {
+                                model.popup = null
+                                settings.format.pageFooterElements = checked.toElements()
+                            }
+                            .create()
+                }
+            }
+
             override fun ViewBuild.view() = vertical(
-                    detailsSetting(context, model, screenAnimationPreview(context, glContext), animation, R.string.settingsUIScreenAnimation)
+                    detailsSetting(context, model, screenAnimationPreview(context, glContext), animation, R.string.settingsUIScreenAnimation),
+                    popupSetting(
+                            context, model,
+                            propertyPreview(context, settings.format::pageFooterElements, footerElements::format),
+                            footerElements,
+                            R.string.settingsUIScreenFooter
+                    )
             )
         }
 
