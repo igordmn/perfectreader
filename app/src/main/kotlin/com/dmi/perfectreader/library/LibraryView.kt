@@ -184,9 +184,6 @@ fun ViewBuild.libraryView(model: Library): View {
         child(params(matchParent, matchParent, behavior = AppBarLayout.ScrollingViewBehavior()), SwipeRefreshLayout(context).apply {
             child(params(matchParent, matchParent), folders())
 
-//            setProgressViewEndTarget(true, target)
-//            setProgressViewOffset(true, start, end);
-
             setOnRefreshListener {
                 model.refresh()
             }
