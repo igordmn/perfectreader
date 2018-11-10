@@ -117,11 +117,6 @@ fun ViewBuild.libraryView(model: Library): View {
     fun collapsingBar() = LinearLayoutCompat(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
         child(params(matchParent, wrapContent), recentBooks())
-        child(params(matchParent, dip(1)), View(context).apply {
-//            backgroundColor = color(android.R.color.darker_gray)
-//            backgroundResource = attr(android.R.attr.divider).resourceId
-            backgroundResource = attr(android.R.attr.listDivider).resourceId
-        })
         child(params(matchParent, wrapContent), toolbar())
     }
 
