@@ -28,4 +28,5 @@ class Settings(store: ValueStore) {
     val navigation by store.group(::NavigationSettings)
     val selection by store.group(::SelectionSettings)
     val system by store.group(::SystemSettings)
+    val screen by store.group(::ScreenSettings)
 }

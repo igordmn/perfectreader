@@ -141,6 +141,9 @@
     <string name="settingsUIThemeSelection">Выделение</string>
 
     <string name="settingsUIScreenAnimation">Анимация</string>
+    <string name="settingsUIScreenTimeout">Время отключения экрана</string>
+    <string name="settingsUIScreenTimeoutSystem">Системное</string>
+
     <string name="settingsUIScreenFooter">Колонтитул</string>
     <string name="settingsUIScreenFooterPageNumber">Номер страницы</string>
     <string name="settingsUIScreenFooterNumberOfPages">Количество страниц</string>
@@ -184,4 +187,13 @@
     <string name="librarySortReadPercent">Прочитано</string>
     <string name="librarySortAsc">По возрастанию</string>
     <string name="librarySortDesc">По убыванию</string>
+
+    <plurals name="minutes">
+        <item quantity="zero">%d минут</item>
+        <item quantity="one">%d минута</item>
+        <item quantity="two">%d минуты</item>
+        <item quantity="few">%d минут</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
 </resources>

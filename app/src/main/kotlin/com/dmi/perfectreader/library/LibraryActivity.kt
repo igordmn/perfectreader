@@ -8,7 +8,6 @@ import com.dmi.util.android.view.ViewBuild
 import kotlinx.serialization.cbor.CBOR.Companion.dump
 import kotlinx.serialization.cbor.CBOR.Companion.load
 
-
 class LibraryActivity : ActivityExt<Library>() {
     override fun createModel(stateData: ByteArray?) = Library(main, ::back, ::openBook, loadState(stateData))
     override fun saveModel(model: Library) = saveState(model.state)

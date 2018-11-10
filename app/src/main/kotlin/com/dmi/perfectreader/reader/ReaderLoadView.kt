@@ -12,7 +12,6 @@ import com.dmi.util.android.view.*
 import org.jetbrains.anko.*
 
 fun ViewBuild.readerLoadView(model: ReaderLoad) = FrameLayoutExt(context).apply {
-    keepScreenOn = true
     isFocusable = true
     isFocusableInTouchMode = true
 

@@ -7,8 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.dmi.util.scope.Disposable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlin.coroutines.CoroutineContext
 
-abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatActivity() {
+private typealias Listener = () -> Unit
+
+abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatActivity(), CoroutineScope {
+    private lateinit var job: Job
+    override val coroutineContext: CoroutineContext get() = Dispatchers.Main + job
+
+    private var onUserInteraction: Listener? = null
     protected lateinit var model: M
     protected lateinit var view: View
 
@@ -24,6 +34,7 @@ abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatAc
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
+        job = Job()
         super.onCreate(savedInstanceState)
         model = createModel(savedInstanceState?.getByteArray("model"))
         view = ViewBuild(this).view(model)
@@ -34,6 +45,7 @@ abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatAc
 
     override fun onDestroy() {
         model.dispose()
+        job.cancel()
         super.onDestroy()
     }
 
@@ -41,6 +53,15 @@ abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatAc
         super.onSaveInstanceState(outState)
         outState.putByteArray("model", saveModel(model))
         outState.putBundle("view", view.saveState())
+    }
+
+    fun onUserInteraction(listener: Listener) {
+        onUserInteraction = listener
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        onUserInteraction?.invoke()
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {

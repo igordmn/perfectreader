@@ -5,6 +5,7 @@ import android.widget.FrameLayout
 import com.dmi.perfectreader.action.performingActionView
 import com.dmi.perfectreader.book.bookView
 import com.dmi.perfectreader.control.controlView
+import com.dmi.perfectreader.main
 import com.dmi.perfectreader.menu.Menu
 import com.dmi.perfectreader.menu.menuView
 import com.dmi.perfectreader.search.SearchUI
@@ -14,14 +15,14 @@ import com.dmi.perfectreader.settingsui.SettingsUI
 import com.dmi.perfectreader.settingsui.settingsUIView
 import com.dmi.perfectreader.tableofcontentsui.TableOfContentsUI
 import com.dmi.perfectreader.tableofcontentsui.tableOfContentsUIView
+import com.dmi.util.android.system.screenTimeout
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.unsupported
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.wrapContent
+import org.jetbrains.anko.*
 
 fun ViewBuild.readerView(model: Reader) = FrameLayout(context).apply {
+    val activity = this@readerView.context as ActivityExt<*>
+
     val bookView = bookView(model)
 
     fun ViewBuild.popupView(popup: Any) = when (popup) {
@@ -45,5 +46,15 @@ fun ViewBuild.readerView(model: Reader) = FrameLayout(context).apply {
         id = generateId()
         layoutTransition = fadeTransition(300)
         padding = dip(48)
+    }
+
+    autorun {
+        activity.screenTimeout = if (model.popup == null) context.main.settings.screen.timeout else -1
+    }
+
+    onAttachStateChangeListener {
+        onViewDetachedFromWindow {
+            activity.screenTimeout = -1
+        }
     }
 }

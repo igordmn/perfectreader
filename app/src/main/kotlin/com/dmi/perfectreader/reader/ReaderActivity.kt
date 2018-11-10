@@ -3,9 +3,15 @@ package com.dmi.perfectreader.reader
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
+import android.view.WindowManager
 import com.dmi.perfectreader.main
 import com.dmi.util.android.view.ActivityExt
 import com.dmi.util.android.view.ViewBuild
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.serialization.cbor.CBOR.Companion.dump
 import kotlinx.serialization.cbor.CBOR.Companion.load
 

@@ -33,7 +33,6 @@ fun ViewBuild.bookView(reader: Reader): BookView {
         }
         createRenderer
     }
-    glSurface.keepScreenOn = true
     glSurface.onSizeChange { size, _ ->
         reader.book.size = size.toFloat()
     }

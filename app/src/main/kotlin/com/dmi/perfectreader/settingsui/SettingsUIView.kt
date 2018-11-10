@@ -20,6 +20,9 @@ import com.dmi.util.android.view.*
 import com.dmi.util.lang.unsupported
 import com.dmi.util.screen.Screen
 import com.dmi.util.screen.StateScreen
+import com.dmi.util.system.Nanos
+import com.dmi.util.system.minutes
+import com.dmi.util.system.toMinutes
 import com.google.android.material.tabs.TabLayout
 import org.jetbrains.anko.*
 import kotlin.reflect.KMutableProperty0
@@ -137,9 +140,9 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                     val current = values.indexOf(settings.format.pageBackgroundIsImage)
                     AlertDialog.Builder(context)
                             .setTitle(R.string.settingsUIThemeBackground)
-                            .setSingleChoiceItems(names, current) { _, which ->
+                            .setSingleChoiceItems(names, current) { dialog, which ->
                                 settings.format.pageBackgroundIsImage = values[which]
-                                model.popup = null
+                                dialog.dismiss()
                             }
                             .setOnDismissListener {
                                 model.popup = null
@@ -195,6 +198,35 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                 override fun ViewBuild.view() = screenAnimationDetails(context, model, model.reader.book, glContext)
             }
 
+            val timeout = object : Place() {
+                private val values = arrayOf(-1L, minutes(1.0), minutes(2.0), minutes(5.0), minutes(10.0), minutes(30.0))
+                private val names = values.map(::format).toTypedArray()
+
+                fun format(time: Nanos) = when (time) {
+                    -1L -> context.string(R.string.settingsUIScreenTimeoutSystem)
+                    else -> {
+                        val minutes = time.toMinutes().toInt()
+                        context.resources.getQuantityString(R.plurals.minutes, minutes, minutes)
+                    }
+                }
+
+                override fun ViewBuild.view() = DialogView(context) {
+                    var current = values.indexOf(settings.screen.timeout)
+                    if (current < 0)
+                        current = 0
+                    AlertDialog.Builder(context)
+                            .setTitle(R.string.settingsUIScreenTimeout)
+                            .setSingleChoiceItems(names, current) { dialog, which ->
+                                settings.screen.timeout = values[which]
+                                dialog.dismiss()
+                            }
+                            .setOnDismissListener {
+                                model.popup = null
+                            }
+                            .create()
+                }
+            }
+
             val footerElements = object : Place() {
                 private fun BooleanArray.toElements() = PageFooterElements(this[0], this[1], this[2])
                 private fun PageFooterElements.toArray() = booleanArrayOf(pageNumber, numberOfPages, chapter)
@@ -231,6 +263,12 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
 
             override fun ViewBuild.view() = vertical(
                     detailsSetting(context, model, screenAnimationPreview(context, glContext), animation, R.string.settingsUIScreenAnimation),
+                    popupSetting(
+                            context, model,
+                            propertyPreview(context, settings.screen::timeout, timeout::format),
+                            timeout,
+                            R.string.settingsUIScreenTimeout
+                    ),
                     popupSetting(
                             context, model,
                             propertyPreview(context, settings.format::pageFooterElements, footerElements::format),
