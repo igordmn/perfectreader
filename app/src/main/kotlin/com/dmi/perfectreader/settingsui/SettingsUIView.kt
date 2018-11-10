@@ -9,15 +9,16 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.book.content.common.TextAlign
 import com.dmi.perfectreader.main
+import com.dmi.perfectreader.settings.pagePadding
+import com.dmi.perfectreader.settings.textJustify
+import com.dmi.perfectreader.settings.textShadowOpacity
 import com.dmi.perfectreader.settingsui.common.*
 import com.dmi.perfectreader.settingsui.custom.*
 import com.dmi.util.android.opengl.GLContext
 import com.dmi.util.android.screen.ScreensView
 import com.dmi.util.android.screen.withPopup
 import com.dmi.util.android.view.*
-import com.dmi.util.graphic.Color
 import com.dmi.util.lang.unsupported
 import com.dmi.util.screen.Screen
 import com.dmi.util.screen.StateScreen
@@ -27,31 +28,6 @@ import kotlin.reflect.KMutableProperty0
 
 fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
     val settings = context.main.settings
-    val settingsExt = object {
-        val format = object {
-            var padding: Float
-                get() = settings.format.pagePaddingLeftDip
-                set(value) {
-                    settings.format.pagePaddingLeftDip = value
-                    settings.format.pagePaddingRightDip = value
-                    settings.format.pagePaddingTopDip = value
-                    settings.format.pagePaddingBottomDip = value
-                }
-
-            var justify: Boolean
-                get() = settings.format.textAlign == TextAlign.JUSTIFY
-                set(value) {
-                    settings.format.textAlign = if (value) TextAlign.JUSTIFY else TextAlign.LEFT
-                }
-
-            var textShadowOpacity: Float
-                get() = Color(settings.format.textShadowColor).alpha / 255F
-                set(value) {
-                    val color = Color(settings.format.textShadowColor)
-                    settings.format.textShadowColor = color.withAlpha((value * 255).toInt()).value
-                }
-        }
-    }
 
     fun ViewBuild.vertical(vararg list: View) = NestedScrollView(context).apply {
         id = generateId()
@@ -106,14 +82,14 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
 
         val format = object : Place() {
             override fun ViewBuild.view() = vertical(
-                    floatSetting(context, settingsExt.format::padding, SettingValues.PARAGRAPH_PADDING, R.string.settingsUIFormatPadding),
+                    floatSetting(context, settings.format::pagePadding, SettingValues.PARAGRAPH_PADDING, R.string.settingsUIFormatPadding),
                     floatSetting(context, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER, R.string.settingsUIFormatLineHeight),
                     floatSetting(context, settings.format::letterSpacingEm, SettingValues.TEXT_LETTER_SPACING, R.string.settingsUIFormatLetterSpacing),
                     floatSetting(context, settings.format::paragraphVerticalMarginEm, SettingValues.PARAGRAPH_VERTICAL_MARGIN, R.string.settingsUIFormatParagraphSpacing),
                     floatSetting(context, settings.format::paragraphFirstLineIndentEm, SettingValues.FIRST_LINE_INDENT, R.string.settingsUIFormatFirstLineIndent),
                     booleanSetting(context, settings.format::hyphenation, R.string.settingsUIFormatHyphenation),
                     booleanSetting(context, settings.format::hangingPunctuation, R.string.settingsUIFormatHangingPunctuation, R.string.settingsUIFormatHangingPunctuationDesc),
-                    booleanSetting(context, settingsExt.format::justify, R.string.settingsUIFormatJustify)
+                    booleanSetting(context, settings.format::textJustify, R.string.settingsUIFormatJustify)
             )
         }
 
@@ -129,7 +105,7 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                                     colorPreview(context, settings.format::textShadowColor), color, R.string.settingsUIThemeTextShadowColor
                             ) visibleIf { settings.format.textShadowEnabled },
                             floatSetting(
-                                    context, settingsExt.format::textShadowOpacity, SettingValues.TEXT_SHADOW_OPACITY, R.string.settingsUIThemeTextShadowOpacity
+                                    context, settings.format::textShadowOpacity, SettingValues.TEXT_SHADOW_OPACITY, R.string.settingsUIThemeTextShadowOpacity
                             ) visibleIf { settings.format.textShadowEnabled },
                             floatSetting(
                                     context, settings.format::textShadowAngleDegrees,

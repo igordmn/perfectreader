@@ -53,3 +53,26 @@ class FormatSettings(store: ValueStore) {
     var pageFooterNumberOfPages by store.value(true)
     var pageFooterChapter by store.value(true)
 }
+
+var FormatSettings.pagePadding: Float
+    get() = pagePaddingLeftDip
+    set(value) {
+        pagePaddingLeftDip = value
+        pagePaddingRightDip = value
+        pagePaddingTopDip = value
+        pagePaddingBottomDip = value
+    }
+
+var FormatSettings.textJustify: Boolean
+    get() = textAlign == TextAlign.JUSTIFY
+    set(value) {
+        textAlign = if (value) TextAlign.JUSTIFY else TextAlign.LEFT
+    }
+
+
+var FormatSettings.textShadowOpacity: Float
+    get() = Color(textShadowColor).alpha / 255F
+    set(value) {
+        val color = Color(textShadowColor)
+        textShadowColor = color.withAlpha((value * 255).toInt()).value
+    }
