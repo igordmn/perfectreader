@@ -31,7 +31,7 @@ fun ViewBuild.searchUIView(
 ): View = LinearLayoutCompat(context).apply {
     val book = model.book
 
-    fun results(): View = RecyclerView(context).apply {
+    fun results(): View = RecyclerView(context, null, R.attr.verticalRecyclerViewStyle).apply {
         setHasFixedSize(true)
         layoutManager = LinearLayoutManager(context)
         val adapter = EasyHeaderFooterAdapter(object : BindableViewAdapter<SearchResultView>() {

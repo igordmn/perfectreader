@@ -22,7 +22,7 @@ fun ViewBuild.tableOfContentsUIView(
 ): View = LinearLayoutCompat(context).apply {
     val book = model.book
 
-    fun content(): View = RecyclerView(context).apply {
+    fun content(): View = RecyclerView(context, null, R.attr.verticalRecyclerViewStyle).apply {
         val tableOfContents = book.tableOfContents!!
         val chapters = tableOfContents.allChapters
         val currentChapter = book.chapter

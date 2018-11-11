@@ -2,6 +2,7 @@ package com.dmi.perfectreader.library
 
 import android.graphics.Color
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
 import android.widget.SearchView
@@ -9,7 +10,6 @@ import android.widget.TextView
 import android.widget.Toolbar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -168,7 +168,7 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
-    val apply = CoordinatorLayout(context).apply {
+    return CoordinatorLayoutExt(context).apply {
         child(params(matchParent, wrapContent), AppBarLayout(context).apply {
             val collapsing = child(
                     params(matchParent, wrapContent, scrollFlags = SCROLL_FLAG_SCROLL or SCROLL_FLAG_EXIT_UNTIL_COLLAPSED),
@@ -194,8 +194,12 @@ fun ViewBuild.libraryView(model: Library): View {
         })
 
         child(params(wrapContent, wrapContent, Gravity.CENTER), emptyFolder())
-    }
-    return apply.withPopup(this, model::popup, ViewBuild::popupView)
+
+        onInterceptKeyDown(KeyEvent.KEYCODE_BACK) {
+            model.back()
+            true
+        }
+    }.withPopup(this, model::popup, ViewBuild::popupView)
 }
 
 private fun AppBarLayout.setFadingScrimOnHide(collapsing: CollapsingToolbarLayout) {
