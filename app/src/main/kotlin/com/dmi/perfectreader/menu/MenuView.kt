@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.menu
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Typeface
 import android.view.Gravity
 import android.view.KeyEvent
@@ -74,10 +73,11 @@ fun ViewBuild.menuView(model: Menu): View {
         })
 
         child(params(matchParent, wrapContent, topMargin = -dip(12)), LinearLayoutCompat(context).apply {
+            orientation = LinearLayoutCompat.HORIZONTAL
+
             child(params(matchParent, wrapContent, weight = 1F), TextView(context).apply {
                 isClickable = true
                 isFocusable = true
-                gravity = Gravity.CENTER_VERTICAL
                 setPadding(dip(16), dip(12), 0, dip(12))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)

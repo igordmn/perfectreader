@@ -254,6 +254,7 @@ class FB2Parser(
         return StringBuilder()
                 .apply { appendText(this@plainText) }
                 .toString()
+                .trim()
     }
 
     private fun XMLDesc.range() = LocationRange(begin(), end())

@@ -13,7 +13,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 fun LinearLayoutCompat.params(
         width: Int,
         height: Int,
-        gravity: Int = Gravity.NO_GRAVITY,
+        gravity: Int = -1,
         weight: Float = 0F,
         leftMargin: Int = 0,
         topMargin: Int = 0,
@@ -30,7 +30,7 @@ fun LinearLayoutCompat.params(
 fun FrameLayout.params(
         width: Int,
         height: Int,
-        gravity: Int = Gravity.NO_GRAVITY,
+        gravity: Int = -1,
         leftMargin: Int = 0,
         topMargin: Int = 0,
         rightMargin: Int = 0,

@@ -107,7 +107,7 @@
     <string name="settingsUIFontBoldness">Жирность</string>
     <string name="settingsUIFontSkew">Наклон</string>
     <string name="settingsUIFontHinting">Хинтинг</string>
-    <string name="settingsUIFontHintingDesc">Четкость горизонтальных линий (в мелких символах)</string>
+    <string name="settingsUIFontHintingDesc">Четкие символы при небольшом разрешении</string>
     <string name="settingsUIFontAntialiasing">Сглаживание</string>
 
     <string name="settingsUIFormatHyphenation">Переносы</string>
