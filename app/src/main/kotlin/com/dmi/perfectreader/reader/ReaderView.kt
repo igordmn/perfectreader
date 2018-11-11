@@ -1,6 +1,8 @@
 package com.dmi.perfectreader.reader
 
+import android.app.Activity
 import android.view.Gravity
+import android.view.View
 import android.widget.FrameLayout
 import com.dmi.perfectreader.action.performingActionView
 import com.dmi.perfectreader.book.bookView
@@ -21,8 +23,6 @@ import com.dmi.util.lang.unsupported
 import org.jetbrains.anko.*
 
 fun ViewBuild.readerView(model: Reader) = FrameLayout(context).apply {
-    val activity = this@readerView.context as ActivityExt<*>
-
     val bookView = bookView(model)
 
     fun ViewBuild.popupView(popup: Any) = when (popup) {
@@ -41,12 +41,25 @@ fun ViewBuild.readerView(model: Reader) = FrameLayout(context).apply {
     bindChild(params(matchParent, matchParent), model::popup, ViewBuild::popupView).apply {
         id = generateId()
         layoutTransition = fadeTransition(300)
+        fitsSystemWindows = true
+        systemUiVisibility = 0
     }
     bindChild(params(wrapContent, wrapContent, Gravity.CENTER_HORIZONTAL), model::performingAction, ViewBuild::performingActionView).apply {
         id = generateId()
         layoutTransition = fadeTransition(300)
         padding = dip(48)
+        fitsSystemWindows = true
     }
+
+    applyTimeout(model)
+    applyFullscreen(model)
+
+    isClickable = true
+    isFocusableInTouchMode = true
+}
+
+private fun View.applyTimeout(model: Reader) {
+    val activity = context as ActivityExt<*>
 
     autorun {
         activity.screenTimeout = if (model.popup == null) context.main.settings.screen.timeout else -1
@@ -55,6 +68,39 @@ fun ViewBuild.readerView(model: Reader) = FrameLayout(context).apply {
     onAttachStateChangeListener {
         onViewDetachedFromWindow {
             activity.screenTimeout = -1
+        }
+    }
+}
+
+private fun View.applyFullscreen(model: Reader) {
+    fun Activity.hideSystemUI() {
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN)
+    }
+
+    fun Activity.showSystemUI() {
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+    }
+
+    val activity = context as ActivityExt<*>
+
+    autorun {
+        if (model.popup == null) {
+            activity.hideSystemUI()
+        } else {
+            activity.showSystemUI()
+        }
+    }
+
+    setOnSystemUiVisibilityChangeListener { visibility ->
+        if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0 && model.popup == null) {
+            model.showMenu()
         }
     }
 }

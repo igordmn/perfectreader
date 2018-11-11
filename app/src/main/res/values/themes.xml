@@ -2,7 +2,6 @@
 <resources>
 
     <style name="Theme.Main" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:windowFullscreen">true</item>
         <item name="android:windowBackground">@color/background</item>
 
         <item name="colorPrimary">@color/primary</item>
