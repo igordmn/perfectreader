@@ -24,8 +24,6 @@ fun View.onSizeChange(listener: (size: Size, oldSize: Size) -> Unit) {
 
 fun MenuItem.onClick(action: () -> Unit): MenuItem = setOnMenuItemClickListener { action(); true }
 
-fun View.dontSendTouchToParent() = onTouch { _, _ -> true }
-
 fun View.onContinousClick(repeatMillis: Long = 200, action: () -> Unit) {
     var job: Job? = null
     onClick {
