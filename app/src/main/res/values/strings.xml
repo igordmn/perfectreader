@@ -141,8 +141,10 @@
     <string name="settingsUIThemeSelection">Выделение</string>
 
     <string name="settingsUIScreenAnimation">Анимация</string>
-    <string name="settingsUIScreenTimeout">Время отключения экрана</string>
+    <string name="settingsUIScreenTimeout">Время отключения</string>
     <string name="settingsUIScreenTimeoutSystem">Системное</string>
+    <string name="settingsUIScreenBrightness">Яркость</string>
+    <string name="settingsUIScreenBrightnessSystem">Системная</string>
 
     <string name="settingsUIScreenFooter">Колонтитул</string>
     <string name="settingsUIScreenFooterPageNumber">Номер страницы</string>

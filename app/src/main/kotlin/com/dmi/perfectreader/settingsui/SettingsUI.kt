@@ -2,6 +2,7 @@ package com.dmi.perfectreader.settingsui
 
 import com.dmi.perfectreader.reader.Reader
 import com.dmi.util.scope.Scope
+import com.dmi.util.scope.observable
 import com.dmi.util.scope.observableProperty
 import com.dmi.util.screen.Screen
 import com.dmi.util.screen.Screens
@@ -17,6 +18,7 @@ class SettingsUI(
 ) : Screen by Screen(scope) {
     val screens by scope.observableDisposable(Screens(state.screens, back, this::Screen))
     var popup: Any? by observableProperty(state::popup)
+    var applyScreenBrightness by observable(false)
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun Screen(state: Any): Screen = StateScreen(state)

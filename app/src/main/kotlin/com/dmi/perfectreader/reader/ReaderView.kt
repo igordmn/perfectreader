@@ -17,10 +17,15 @@ import com.dmi.perfectreader.settingsui.SettingsUI
 import com.dmi.perfectreader.settingsui.settingsUIView
 import com.dmi.perfectreader.tableofcontentsui.TableOfContentsUI
 import com.dmi.perfectreader.tableofcontentsui.tableOfContentsUIView
+import com.dmi.util.android.system.screenBrighness
 import com.dmi.util.android.system.screenTimeout
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.unsupported
-import org.jetbrains.anko.*
+import org.jetbrains.anko.dip
+import org.jetbrains.anko.matchParent
+import org.jetbrains.anko.padding
+import org.jetbrains.anko.wrapContent
+
 
 fun ViewBuild.readerView(model: Reader) = FrameLayout(context).apply {
     val bookView = bookView(model)
@@ -52,6 +57,7 @@ fun ViewBuild.readerView(model: Reader) = FrameLayout(context).apply {
     }
 
     applyTimeout(model)
+    applyBrightness(model)
     applyFullscreen(model)
 
     isClickable = true
@@ -64,11 +70,18 @@ private fun View.applyTimeout(model: Reader) {
     autorun {
         activity.screenTimeout = if (model.popup == null) context.main.settings.screen.timeout else -1
     }
+}
 
-    onAttachStateChangeListener {
-        onViewDetachedFromWindow {
-            activity.screenTimeout = -1
-        }
+private fun View.applyBrightness(model: Reader) {
+    val activity = context as Activity
+
+    autorun {
+        val isSystem = context.main.settings.screen.brightnessIsSystem
+        val brightness = context.main.settings.screen.brightnessValue
+        val popup = model.popup
+        val needApply = popup == null || (popup is SettingsUI && popup.applyScreenBrightness)
+        val activityBrightness = if (isSystem) -1F else brightness
+        activity.screenBrighness = if (needApply) activityBrightness else -1F
     }
 }
 

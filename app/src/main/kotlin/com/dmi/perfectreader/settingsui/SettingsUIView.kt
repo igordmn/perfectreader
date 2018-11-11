@@ -1,8 +1,10 @@
 package com.dmi.perfectreader.settingsui
 
-import android.view.KeyEvent
-import android.view.View
+import android.graphics.PorterDuff
+import android.view.*
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.SeekBar
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -27,6 +29,8 @@ import com.google.android.material.tabs.TabLayout
 import org.jetbrains.anko.*
 import kotlin.reflect.KMutableProperty0
 
+
+// todo refactor" split into multiple files
 fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
     val settings = context.main.settings
 
@@ -227,6 +231,88 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                 }
             }
 
+            val brightness = object : Place() {
+                fun format(brightness: ScreenBrightness): String = when (brightness) {
+                    is ScreenBrightness.System -> context.string(R.string.settingsUIScreenBrightnessSystem)
+                    is ScreenBrightness.Manual -> {
+                        val percentStr = (brightness.value * 100).toInt().toString()
+                        "$percentStr %"
+                    }
+                }
+
+                override fun ViewBuild.view() = DialogView(context) {
+                    AlertDialog.Builder(context)
+                            .setView(LinearLayoutCompat(context).apply {
+                                padding = dip(8)
+                                orientation = LinearLayoutCompat.HORIZONTAL
+                                gravity = Gravity.CENTER_VERTICAL
+
+                                child(params(wrapContent, wrapContent), ImageView(context).apply {
+                                    backgroundResource = attr(android.R.attr.selectableItemBackgroundBorderless).resourceId
+                                    padding = dip(4)
+
+                                    autorun {
+                                        image = if (settings.screen.brightnessIsSystem) {
+                                            drawable(R.drawable.ic_brightness_system, color(R.color.onBackground))
+                                        } else {
+                                            drawable(R.drawable.ic_brightness_manual, color(R.color.onBackground))
+                                        }
+                                    }
+
+                                    onClick {
+                                        settings.screen.brightnessIsSystem = !settings.screen.brightnessIsSystem
+                                    }
+                                })
+
+                                child(params(matchParent, wrapContent), object : SeekBar(context) {
+                                    init {
+                                        progressDrawable.setColorFilter(color(R.color.secondary), PorterDuff.Mode.MULTIPLY)
+                                        max = 1000
+                                        progress = (settings.screen.brightnessValue * max).toInt()
+
+                                        autorun {
+                                            isEnabled = !settings.screen.brightnessIsSystem
+                                        }
+
+                                        setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                                            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                                                if (fromUser)
+                                                    settings.screen.brightnessValue = progress.toFloat() / max
+                                            }
+
+                                            override fun onStartTrackingTouch(seekBar: SeekBar) = Unit
+                                            override fun onStopTrackingTouch(seekBar: SeekBar) = Unit
+                                        })
+                                    }
+
+                                    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+                                        if (event.actionMasked == MotionEvent.ACTION_DOWN && settings.screen.brightnessIsSystem) {
+                                            settings.screen.brightnessIsSystem = false
+                                            isEnabled = true
+                                        }
+                                        return super.dispatchTouchEvent(event)
+                                    }
+                                })
+
+                                onAttachStateChangeListener {
+                                    onViewDetachedFromWindow {
+                                        model.applyScreenBrightness = false
+                                    }
+                                    onViewAttachedToWindow {
+                                        model.applyScreenBrightness = true
+                                    }
+                                }
+                            })
+                            .setOnDismissListener {
+                                model.popup = null
+                            }
+                            .create()
+                            .apply {
+                                window!!.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                            }
+                }
+            }
+
             val footerElements = object : Place() {
                 private fun BooleanArray.toElements() = PageFooterElements(this[0], this[1], this[2])
                 private fun PageFooterElements.toArray() = booleanArrayOf(pageNumber, numberOfPages, chapter)
@@ -268,6 +354,12 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                             propertyPreview(context, settings.screen::timeout, timeout::format),
                             timeout,
                             R.string.settingsUIScreenTimeout
+                    ),
+                    popupSetting(
+                            context, model,
+                            propertyPreview(context, settings.screen::brightness, brightness::format),
+                            brightness,
+                            R.string.settingsUIScreenBrightness
                     ),
                     popupSetting(
                             context, model,
