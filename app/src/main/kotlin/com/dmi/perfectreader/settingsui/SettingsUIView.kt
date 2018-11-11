@@ -453,6 +453,9 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
 
     return LinearLayoutExt(context).apply {
         orientation = LinearLayoutCompat.VERTICAL
+
+        // todo figure out how to prevent page turning without this
+        // prevent book page turning
         dontSendTouchToParent()
 
         child(params(matchParent, matchParent, weight = 1F), space())
