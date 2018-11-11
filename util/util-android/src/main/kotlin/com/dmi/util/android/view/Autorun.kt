@@ -3,7 +3,7 @@ package com.dmi.util.android.view
 import android.view.View
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Disposables
-import com.dmi.util.scope.ObservableStack
+import com.dmi.util.scope.ObservableList
 import com.dmi.util.scope.onchange
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -61,19 +61,19 @@ fun View.autorun(action: () -> Unit) {
     }
 }
 
-fun <T : Any> View.subscribe(stack: ObservableStack<T>, afterPush: (item: T) -> Unit, afterPop: () -> Unit) {
+fun <T : Any> View.subscribe(list: ObservableList<T>, afterAdd: (item: T) -> Unit, afterRemove: () -> Unit) {
     val subscriptions = Disposables()
 
     check(!isAttachedToWindow)
 
     onAttachStateChangeListener {
         onViewAttachedToWindow {
-            stack.descendingIterator().forEach(afterPush)
-            subscriptions += stack.afterPush.subscribe {
-                afterPush(stack.top!!)
+            list.forEach(afterAdd)
+            subscriptions += list.afterAdd.subscribe {
+                afterAdd(list.top!!)
             }
-            subscriptions += stack.afterPop.subscribe {
-                afterPop()
+            subscriptions += list.afterRemove.subscribe {
+                afterRemove()
             }
         }
 

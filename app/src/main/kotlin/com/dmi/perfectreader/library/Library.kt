@@ -6,7 +6,7 @@ import com.dmi.perfectreader.book.UserBooks
 import com.dmi.perfectreader.book.content.BookDescription
 import com.dmi.util.android.view.Id
 import com.dmi.util.lang.unsupported
-import com.dmi.util.scope.ObservableStack
+import com.dmi.util.scope.ObservableList
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
 import com.dmi.util.scope.observableProperty
@@ -30,8 +30,8 @@ class Library(
         }
     }
 
-    val folders = ObservableStack<Item.Folder>().apply {
-        push(root)
+    val folders = ObservableList<Item.Folder>().apply {
+        add(root)
     }
 
     var currentIndex: Int by observable(0)
@@ -45,12 +45,12 @@ class Library(
     fun open(item: Item) {
         when (item) {
             is Item.Folder -> {
-                repeat(currentIndex) {
-                    folders.pop()
+                repeat(folders.size - 1 - currentIndex) {
+                    folders.remove()
                 }
 
-                folders.push(item)
-                currentIndex = 0
+                folders.add(item)
+                currentIndex = folders.size - 1
             }
             is Item.Book -> openBook(item.uri)
         }
@@ -61,8 +61,8 @@ class Library(
     }
 
     fun back() {
-        if (currentIndex < folders.size - 1) {
-            currentIndex++
+        if (currentIndex > 0) {
+            currentIndex--
         } else {
             close()
         }

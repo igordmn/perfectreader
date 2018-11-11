@@ -10,12 +10,12 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.widget.TextViewCompat.setTextAppearance
 import com.dmi.perfectreader.R
 import com.dmi.util.android.view.*
+import com.dmi.util.collection.removeLast
 import org.jetbrains.anko.*
-import java.util.*
 
 class BreadCrumbsView(context: Context) : HorizontalScrollView(context) {
-    private val textViews = ArrayDeque<TextView>()
-    private val dividers = ArrayDeque<View>()
+    private val textViews = ArrayList<TextView>()
+    private val dividers = ArrayList<View>()
     private val container = LinearLayoutCompat(context).apply {
         setPadding(dip(8), dip(0), dip(8), dip(0))
         orientation = LinearLayoutCompat.HORIZONTAL
@@ -34,13 +34,15 @@ class BreadCrumbsView(context: Context) : HorizontalScrollView(context) {
             require(value == null || value in 0 until size)
             textViews.forEachIndexed { i, it ->
                 it.textColor = if (i == value) color(R.color.secondary) else color(R.color.onBackground).withOpacity(0.38)
+                if (i == value)
+                    requestChildFocus(it, it)
             }
         }
 
-    fun push(name: String, onClick: () -> Unit) {
+    fun add(name: String, onClick: () -> Unit) {
         if (size > 0) {
             val divider = divider()
-            dividers.push(divider)
+            dividers.add(divider)
             container.addView(divider)
         }
 
@@ -52,29 +54,18 @@ class BreadCrumbsView(context: Context) : HorizontalScrollView(context) {
             backgroundResource = attr(R.attr.selectableItemBackground).resourceId
             this.onClick { onClick() }
         }
-        textViews.push(textView)
+        textViews.add(textView)
         container.addView(textView)
-
-        scrollToEnd()
     }
 
-    fun pop() {
+    fun remove() {
         require(size > 0)
         if (dividers.size > 0)
-            container.removeView(dividers.pop())
-        container.removeView(textViews.pop())
+            container.removeView(dividers.removeLast())
+        container.removeView(textViews.removeLast())
     }
 
     private fun divider() = ImageView(context).apply {
         image = drawable(R.drawable.ic_arrow_right, color(R.color.onBackground).withOpacity(0.38))
     }
-}
-
-private fun HorizontalScrollView.scrollToEnd() {
-    addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
-        override fun onLayoutChange(view: View, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
-            removeOnLayoutChangeListener(this)
-            fullScroll(View.FOCUS_RIGHT)
-        }
-    })
 }

@@ -85,13 +85,13 @@ fun ViewBuild.libraryView(model: Library): View {
     fun addressBar() = BreadCrumbsView(context).apply {
         subscribe(
                 model.folders,
-                afterPush = {
-                    val reverseIndex = size
-                    push(it.name, onClick = {
-                        model.currentIndex = size - 1 - reverseIndex
+                afterAdd = {
+                    val index = size
+                    add(it.name, onClick = {
+                        model.currentIndex = index
                     })
                 },
-                afterPop = ::pop
+                afterRemove = ::remove
         )
         autorun {
             current = model.currentIndex
