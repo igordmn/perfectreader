@@ -145,6 +145,10 @@
     <string name="settingsUIScreenTimeoutSystem">Системное</string>
     <string name="settingsUIScreenBrightness">Яркость</string>
     <string name="settingsUIScreenBrightnessSystem">Системная</string>
+    <string name="settingsUIScreenOrientation">Ориентация</string>
+    <string name="settingsUIScreenOrientationSystem">Системная</string>
+    <string name="settingsUIScreenOrientationPortrait">Портретная</string>
+    <string name="settingsUIScreenOrientationLandscape">Альбомная</string>
 
     <string name="settingsUIScreenFooter">Колонтитул</string>
     <string name="settingsUIScreenFooterPageNumber">Номер страницы</string>

@@ -29,8 +29,7 @@ import com.google.android.material.tabs.TabLayout
 import org.jetbrains.anko.*
 import kotlin.reflect.KMutableProperty0
 
-
-// todo refactor" split into multiple files
+// todo refactor: split into multiple files
 fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
     val settings = context.main.settings
 
@@ -313,6 +312,33 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                 }
             }
 
+            val orientation = object : Place() {
+                private val values = ScreenOrientation.values()
+                private val names = values.map(::format).toTypedArray()
+
+                fun format(orientation: ScreenOrientation) = context.string(when (orientation) {
+                    ScreenOrientation.SYSTEM -> R.string.settingsUIScreenOrientationSystem
+                    ScreenOrientation.PORTRAIT -> R.string.settingsUIScreenOrientationPortrait
+                    ScreenOrientation.LANDSCAPE -> R.string.settingsUIScreenOrientationLandscape
+                })
+
+                override fun ViewBuild.view() = DialogView(context) {
+                    var current = values.indexOf(settings.screen.orientation)
+                    if (current < 0)
+                        current = 0
+                    AlertDialog.Builder(context)
+                            .setTitle(R.string.settingsUIScreenOrientation)
+                            .setSingleChoiceItems(names, current) { dialog, which ->
+                                settings.screen.orientation = values[which]
+                                dialog.dismiss()
+                            }
+                            .setOnDismissListener {
+                                model.popup = null
+                            }
+                            .create()
+                }
+            }
+
             val footerElements = object : Place() {
                 private fun BooleanArray.toElements() = PageFooterElements(this[0], this[1], this[2])
                 private fun PageFooterElements.toArray() = booleanArrayOf(pageNumber, numberOfPages, chapter)
@@ -351,6 +377,12 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                     detailsSetting(context, model, screenAnimationPreview(context, glContext), animation, R.string.settingsUIScreenAnimation),
                     popupSetting(
                             context, model,
+                            propertyPreview(context, settings.format::pageFooterElements, footerElements::format),
+                            footerElements,
+                            R.string.settingsUIScreenFooter
+                    ),
+                    popupSetting(
+                            context, model,
                             propertyPreview(context, settings.screen::timeout, timeout::format),
                             timeout,
                             R.string.settingsUIScreenTimeout
@@ -363,9 +395,9 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                     ),
                     popupSetting(
                             context, model,
-                            propertyPreview(context, settings.format::pageFooterElements, footerElements::format),
-                            footerElements,
-                            R.string.settingsUIScreenFooter
+                            propertyPreview(context, settings.screen::orientation, orientation::format),
+                            orientation,
+                            R.string.settingsUIScreenOrientation
                     )
             )
         }
