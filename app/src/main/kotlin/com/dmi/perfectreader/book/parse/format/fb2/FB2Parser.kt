@@ -65,7 +65,7 @@ class FB2Parser(
     private fun description(xmlDescription: Description?): BookDescription {
         val titleInfo = xmlDescription?.titleInfo
         val author = titleInfo?.compositeAuthorName()
-        val name = titleInfo?.bookTitle
+        val name = titleInfo?.bookTitleFormatted()
         val cover = titleInfo?.coverpage?.image?.href?.let(::imageResource)
         return BookDescription(author, name, fileName, cover)
     }

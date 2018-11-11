@@ -31,6 +31,11 @@ class TitleInfo : ElementDesc() {
         val result = authors.joinToString(", ") { it.fullName() }
         return if (result.isNotEmpty()) result else null
     }
+
+    fun bookTitleFormatted(): String? {
+        val trimmed = bookTitle?.trim()
+        return if (trimmed != null && trimmed.isNotEmpty()) trimmed else null
+    }
 }
 
 class Description : ElementDesc() {

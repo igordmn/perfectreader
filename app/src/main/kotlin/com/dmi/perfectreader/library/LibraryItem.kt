@@ -29,8 +29,8 @@ class FolderItemView(
 ) : LibraryItemView(context) {
     private val name = TextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
+        maxLines = 2
         ellipsize = TextUtils.TruncateAt.END
-        maxEms = 70
     }
     private val count = TextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
@@ -78,15 +78,15 @@ class BookItemView(
 
     private val name = TextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
+        maxLines = 2
         ellipsize = TextUtils.TruncateAt.END
-        maxEms = 70
     }
 
     private val author = TextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
         textColor = color(R.color.onBackground).withOpacity(0.60)
+        maxLines = 2
         ellipsize = TextUtils.TruncateAt.END
-        maxEms = 70
     }
 
     private val fileSize = TextView(context).apply {
