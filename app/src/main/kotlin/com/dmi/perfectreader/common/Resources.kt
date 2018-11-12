@@ -21,7 +21,7 @@ class Resources(
 
     val fonts: Fonts
         get() {
-            val userDirectory = protocols.fileFor(settings.system.fontsPath)
+            val userDirectory = protocols.fileFor(settings.other.fontsPath)
             return fontsCache[userDirectory]
         }
 

@@ -73,15 +73,15 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                     detailsSetting(context, model, fontFamilyPreview(context), family, R.string.settingsUIFontFamily),
                     titleSetting(context, fontStyleView(
                             context,
-                            settings.format::textFontIsBold, settings.format::textFontIsItalic,
+                            settings.font::isBold, settings.font::isItalic,
                             R.string.settingsUIFontStyleBold, R.string.settingsUIFontStyleItalic
                     ), R.string.settingsUIFontStyle),
-                    floatSetting(context, settings.format::textSizeDip, SettingValues.TEXT_SIZE, R.string.settingsUIFontSize),
-                    floatSetting(context, settings.format::textScaleX, SettingValues.TEXT_SCALE_X, R.string.settingsUIFontWidth),
-                    floatSetting(context, settings.format::textStrokeWidthDip, SettingValues.TEXT_STROKE_WIDTH, R.string.settingsUIFontBoldness),
-                    floatSetting(context, settings.format::textSkewX, SettingValues.TEXT_SKEW_X, R.string.settingsUIFontSkew),
-                    booleanSetting(context, settings.format::textAntialiasing, R.string.settingsUIFontAntialiasing),
-                    booleanSetting(context, settings.format::textHinting, R.string.settingsUIFontHinting, R.string.settingsUIFontHintingDesc)
+                    floatSetting(context, settings.font::sizeDip, SettingValues.TEXT_SIZE, R.string.settingsUIFontSize),
+                    floatSetting(context, settings.font::scaleX, SettingValues.TEXT_SCALE_X, R.string.settingsUIFontWidth),
+                    floatSetting(context, settings.font::strokeWidthDip, SettingValues.TEXT_STROKE_WIDTH, R.string.settingsUIFontBoldness),
+                    floatSetting(context, settings.font::skewX, SettingValues.TEXT_SKEW_X, R.string.settingsUIFontSkew),
+                    booleanSetting(context, settings.font::antialiasing, R.string.settingsUIFontAntialiasing),
+                    booleanSetting(context, settings.font::hinting, R.string.settingsUIFontHinting, R.string.settingsUIFontHintingDesc)
             )
         }
 
@@ -99,33 +99,33 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
         }
 
         val textShadow = object : Place() {
-            val color = colorPlace(settings.format::textShadowColor, R.string.settingsUIThemeTextShadowColor)
+            val color = colorPlace(settings.theme::textShadowColor, R.string.settingsUIThemeTextShadowColor)
 
             override fun ViewBuild.view() = details(
                     context, model, R.string.settingsUIThemeTextShadow,
                     vertical(
-                            booleanSetting(context, settings.format::textShadowEnabled, R.string.settingsUIThemeTextShadowEnabled),
+                            booleanSetting(context, settings.theme::textShadowEnabled, R.string.settingsUIThemeTextShadowEnabled),
                             detailsSetting(
                                     context, model,
-                                    colorPreview(context, settings.format::textShadowColor), color, R.string.settingsUIThemeTextShadowColor
-                            ) visibleIf { settings.format.textShadowEnabled },
+                                    colorPreview(context, settings.theme::textShadowColor), color, R.string.settingsUIThemeTextShadowColor
+                            ) visibleIf { settings.theme.textShadowEnabled },
                             floatSetting(
-                                    context, settings.format::textShadowOpacity, SettingValues.TEXT_SHADOW_OPACITY, R.string.settingsUIThemeTextShadowOpacity
-                            ) visibleIf { settings.format.textShadowEnabled },
+                                    context, settings.theme::textShadowOpacity, SettingValues.TEXT_SHADOW_OPACITY, R.string.settingsUIThemeTextShadowOpacity
+                            ) visibleIf { settings.theme.textShadowEnabled },
                             floatSetting(
-                                    context, settings.format::textShadowAngleDegrees,
+                                    context, settings.theme::textShadowAngleDegrees,
                                     SettingValues.TEXT_SHADOW_ANGLE, R.string.settingsUIThemeTextShadowAngle,
                                     ringValues = true
-                            ) visibleIf { settings.format.textShadowEnabled },
+                            ) visibleIf { settings.theme.textShadowEnabled },
                             floatSetting(
-                                    context, settings.format::textShadowOffsetEm, SettingValues.TEXT_SHADOW_OFFSET, R.string.settingsUIThemeTextShadowOffset
-                            ) visibleIf { settings.format.textShadowEnabled },
+                                    context, settings.theme::textShadowOffsetEm, SettingValues.TEXT_SHADOW_OFFSET, R.string.settingsUIThemeTextShadowOffset
+                            ) visibleIf { settings.theme.textShadowEnabled },
                             floatSetting(
-                                    context, settings.format::textShadowSizeEm, SettingValues.TEXT_SHADOW_SIZE, R.string.settingsUIThemeTextShadowSize
-                            ) visibleIf { settings.format.textShadowEnabled },
+                                    context, settings.theme::textShadowSizeEm, SettingValues.TEXT_SHADOW_SIZE, R.string.settingsUIThemeTextShadowSize
+                            ) visibleIf { settings.theme.textShadowEnabled },
                             floatSetting(
-                                    context, settings.format::textShadowBlurEm, SettingValues.TEXT_SHADOW_BLUR, R.string.settingsUIThemeTextShadowBlur
-                            ) visibleIf { settings.format.textShadowEnabled }
+                                    context, settings.theme::textShadowBlurEm, SettingValues.TEXT_SHADOW_BLUR, R.string.settingsUIThemeTextShadowBlur
+                            ) visibleIf { settings.theme.textShadowEnabled }
                     )
             )
         }
@@ -141,11 +141,11 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                 }
 
                 override fun ViewBuild.view() = DialogView(context) {
-                    val current = values.indexOf(settings.format.pageBackgroundIsImage)
+                    val current = values.indexOf(settings.theme.backgroundIsImage)
                     AlertDialog.Builder(context)
                             .setTitle(R.string.settingsUIThemeBackground)
                             .setSingleChoiceItems(names, current) { dialog, which ->
-                                settings.format.pageBackgroundIsImage = values[which]
+                                settings.theme.backgroundIsImage = values[which]
                                 dialog.dismiss()
                             }
                             .setOnDismissListener {
@@ -159,41 +159,41 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                 override fun ViewBuild.view() = themeBackgroundPictureDetails(context, model)
             }
 
-            val backgroundColor = colorPlace(settings.format::pageBackgroundColor, R.string.settingsUIThemeBackgroundColor)
-            val textColor = colorPlace(settings.format::textColor, R.string.settingsUIThemeText)
-            val selectionColor = colorPlace(settings.selection::color, R.string.settingsUIThemeSelection)
+            val backgroundColor = colorPlace(settings.theme::backgroundColor, R.string.settingsUIThemeBackgroundColor)
+            val textColor = colorPlace(settings.theme::textColor, R.string.settingsUIThemeText)
+            val selectionColor = colorPlace(settings.theme::selectionColor, R.string.settingsUIThemeSelection)
 
             override fun ViewBuild.view() = vertical(
                     popupSetting(
                             context, model,
-                            propertyPreview(context, settings.format::pageBackgroundIsImage, backgroundIsPicture::format),
+                            propertyPreview(context, settings.theme::backgroundIsImage, backgroundIsPicture::format),
                             backgroundIsPicture,
                             R.string.settingsUIThemeBackground
                     ),
                     detailsSetting(
                             context, model,
                             themeBackgroundPicturePreview(context), backgroundPicture, R.string.settingsUIThemeBackgroundPicture
-                    ) visibleIf { settings.format.pageBackgroundIsImage },
+                    ) visibleIf { settings.theme.backgroundIsImage },
                     detailsSetting(
                             context, model,
-                            colorPreview(context, settings.format::pageBackgroundColor), backgroundColor, R.string.settingsUIThemeBackgroundColor
-                    ) visibleIf { !settings.format.pageBackgroundIsImage },
+                            colorPreview(context, settings.theme::backgroundColor), backgroundColor, R.string.settingsUIThemeBackgroundColor
+                    ) visibleIf { !settings.theme.backgroundIsImage },
                     booleanSetting(
-                            context, settings.format::pageBackgroundContentAwareResize, R.string.settingsUIThemeBackgroundContentAwareResize
-                    ) visibleIf { settings.format.pageBackgroundIsImage },
+                            context, settings.theme::backgroundContentAwareResize, R.string.settingsUIThemeBackgroundContentAwareResize
+                    ) visibleIf { settings.theme.backgroundIsImage },
                     detailsSetting(
                             context, model,
-                            colorPreview(context, settings.format::textColor), textColor, R.string.settingsUIThemeText
+                            colorPreview(context, settings.theme::textColor), textColor, R.string.settingsUIThemeText
                     ),
                     detailsSetting(
                             context, model,
-                            colorPreview(context, settings.selection::color), selectionColor, R.string.settingsUIThemeSelection
+                            colorPreview(context, settings.theme::selectionColor), selectionColor, R.string.settingsUIThemeSelection
                     ),
                     detailsSetting(
                             context, model,
                             emptyPreview(context), textShadow, R.string.settingsUIThemeTextShadow
                     ),
-                    floatSetting(context, settings.format::pageTextGammaCorrection, SettingValues.GAMMA_CORRECTION, R.string.settingsUIThemeTextGammaCorrection)
+                    floatSetting(context, settings.theme::textGammaCorrection, SettingValues.GAMMA_CORRECTION, R.string.settingsUIThemeTextGammaCorrection)
             )
         }
 
@@ -341,15 +341,15 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
             }
 
             val footerElements = object : Place() {
-                private fun BooleanArray.toElements() = PageFooterElements(this[0], this[1], this[2])
-                private fun PageFooterElements.toArray() = booleanArrayOf(pageNumber, numberOfPages, chapter)
+                private fun BooleanArray.toElements() = ScreenFooterElements(this[0], this[1], this[2])
+                private fun ScreenFooterElements.toArray() = booleanArrayOf(pageNumber, numberOfPages, chapter)
                 private val names = arrayOf(
                         R.string.settingsUIScreenFooterPageNumber,
                         R.string.settingsUIScreenFooterNumberOfPages,
                         R.string.settingsUIScreenFooterChapter
                 ).map { context.string(it) }.toTypedArray()
 
-                fun format(footerElements: PageFooterElements): String {
+                fun format(footerElements: ScreenFooterElements): String {
                     val count = footerElements.toArray().count { it }
                     return if (count == 0) {
                         context.string(R.string.settingsUIScreenFooterHide)
@@ -359,7 +359,7 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                 }
 
                 override fun ViewBuild.view() = DialogView(context) {
-                    val checked = settings.format.pageFooterElements.toArray()
+                    val checked = settings.screen.footerElements.toArray()
                     AlertDialog.Builder(context)
                             .setTitle(R.string.settingsUIScreenFooter)
                             .setPositiveButton(android.R.string.ok) { _, _ -> }
@@ -368,7 +368,7 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                             }
                             .setOnDismissListener {
                                 model.popup = null
-                                settings.format.pageFooterElements = checked.toElements()
+                                settings.screen.footerElements = checked.toElements()
                             }
                             .create()
                 }
@@ -378,7 +378,7 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                     detailsSetting(context, model, screenAnimationPreview(context, glContext), animation, R.string.settingsUIScreenAnimation),
                     popupSetting(
                             context, model,
-                            propertyPreview(context, settings.format::pageFooterElements, footerElements::format),
+                            propertyPreview(context, settings.screen::footerElements, footerElements::format),
                             footerElements,
                             R.string.settingsUIScreenFooter
                     ),

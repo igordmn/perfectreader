@@ -28,7 +28,7 @@ fun screenAnimationDetails(
         context, model, R.string.settingsUIScreenAnimation,
         SettingListView(
                 context,
-                context.main.settings.format::pageAnimationPath,
+                context.main.settings.screen::animationPath,
                 context.main.resources.pageAnimations.map { it.toString() },
                 {
                     ScreenAnimationPreviewView(context, glContext, size = 64).apply {
@@ -46,7 +46,7 @@ fun screenAnimationPreview(
         context: Context, glContext: GLContext
 ) = PreviewView(ScreenAnimationPreviewView(context, glContext, size = 24).apply {
     autorun {
-        bind(context.main.settings.format.pageAnimationPath)
+        bind(context.main.settings.screen.animationPath)
     }
 })
 

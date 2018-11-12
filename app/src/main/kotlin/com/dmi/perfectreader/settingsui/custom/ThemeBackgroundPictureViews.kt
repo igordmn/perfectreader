@@ -17,7 +17,7 @@ fun themeBackgroundPictureDetails(context: Context, model: SettingsUI) = details
         context, model, R.string.settingsUIThemeBackgroundPicture,
         SettingListView(
                 context,
-                context.main.settings.format::pageBackgroundPath,
+                context.main.settings.theme::backgroundPath,
                 context.main.resources.backgrounds.map { it.toString() },
                 {
                     SettingBitmapView(it, size = 64).apply {
@@ -35,7 +35,7 @@ fun themeBackgroundPictureDetails(context: Context, model: SettingsUI) = details
 fun themeBackgroundPicturePreview(context: Context) = PreviewView(
         SettingBitmapView(context, size = 24).apply {
             autorun {
-                bind(context.main.settings.format.pageBackgroundPath)
+                bind(context.main.settings.theme.backgroundPath)
             }
         }
 )

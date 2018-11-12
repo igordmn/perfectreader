@@ -40,10 +40,10 @@ class Locations(
 
     private fun approximateNumberOfPages(content: Content, settings: Settings): Int {
         val pageLength: Int =
-                if (settings.navigation.pageSymbolCountIsAuto) {
+                if (settings.other.pageSymbolCountIsAuto) {
                     approximatePageLength()
                 } else {
-                    settings.navigation.pageSymbolCount
+                    settings.other.pageSymbolCount
                 }
         return intCeil(content.length / pageLength)
     }

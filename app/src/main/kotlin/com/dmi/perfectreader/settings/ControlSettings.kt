@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.settings
 
 import com.dmi.perfectreader.action.ActionID
-import com.dmi.perfectreader.control.OpenTapMode
 import com.dmi.util.action.TouchZone
 import com.dmi.util.action.TouchZoneConfiguration
 import com.dmi.util.input.HardKey
@@ -15,8 +14,6 @@ class ControlSettings(store: ValueStore) {
     val hardKeys by store.group(::HardKeys)
 
     class Touches(store: ValueStore) {
-        var linkOpenMode by store.value(OpenTapMode.SINGLE_TAP)
-        var imageOpenMode by store.value(OpenTapMode.SINGLE_TAP)
         var doubleTapEnabled by store.value(false)
         var tapMaxOffset by store.value(0F)
         var longTapTimeout by store.value(500L)

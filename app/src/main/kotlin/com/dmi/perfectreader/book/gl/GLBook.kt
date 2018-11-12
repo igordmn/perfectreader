@@ -31,7 +31,7 @@ class GLBook(
     private val pageFrameBuffer by scope.observableDisposable(GLFrameBuffer().apply { bindTo(pageTexture) })
     private val quad by scope.observableDisposable(GLQuad(context))
     private val pageAnimation: GLPageAnimation? by scope.asyncDisposable(resetOnRecompute = false) {
-        glPageAnimation(uriHandler, model.pageAnimationPath, size)
+        glPageAnimation(uriHandler, model.animationPath, size)
     }
     private val pageBackground: GLBackground by scope.observableDisposable(GLBackground(size, quad, uriHandler, model))
     private val pages by scope.observableDisposable(GLPages(size, quad, model, pageRenderer))

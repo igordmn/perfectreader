@@ -29,7 +29,7 @@ fun fontFamilyDetails(context: Context, model: SettingsUI) = details(
         context, model, R.string.settingsUIFontFamily,
         SettingListView(
             context,
-            context.main.settings.format::textFontFamily,
+            context.main.settings.font::fontFamily,
             context.main.resources.fonts.familyNames,
             ::FontFamilyItemView,
             onItemClick = {},
@@ -70,7 +70,7 @@ fun fontFamilyPreview(context: Context) = PreviewView(FontFamilyPreviewView(cont
 
 class FontFamilyPreviewView(
         context: Context,
-        model: KProperty0<String> = context.main.settings.format::textFontFamily
+        model: KProperty0<String> = context.main.settings.font::fontFamily
 ) : TextView(context) {
     private val fonts: Fonts = context.main.resources.fonts
 

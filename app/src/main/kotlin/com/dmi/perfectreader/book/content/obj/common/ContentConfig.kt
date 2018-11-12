@@ -7,8 +7,7 @@ import com.dmi.perfectreader.book.content.common.DefaultHangingConfig
 import com.dmi.perfectreader.book.content.common.NoneHangingConfig
 import com.dmi.perfectreader.book.content.common.TextAlign
 import com.dmi.perfectreader.book.content.obj.ContentImage
-import com.dmi.perfectreader.settings.AnalyzeSettings
-import com.dmi.perfectreader.settings.ImageSettings
+import com.dmi.perfectreader.settings.OtherSettings
 import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.cache.Cache
 import com.dmi.util.cache.cache
@@ -33,10 +32,10 @@ data class ContentConfig(
     ) : this(
             density = context.android.displayMetrics.density,
             fonts = context.resources.fonts,
-            defaultLocale = defaultLocale(androidContext, settings.analyze),
-            ignoreDeclaredLocale = settings.analyze.ignoreDeclaredLanguage,
-            imageScale = imageScale(settings.image),
-            footerTextSizePercent = settings.format.pageFooterTextSizePercent,
+            defaultLocale = defaultLocale(androidContext, settings.other),
+            ignoreDeclaredLocale = settings.other.ignoreDeclaredLanguage,
+            imageScale = imageScale(settings.other),
+            footerTextSizePercent = settings.screen.footerTextSizePercent,
             defaultStyle = ContentStyle(
                     boxAlign = Align.LEFT,
                     margins = ContentMargins(
@@ -55,27 +54,27 @@ data class ContentConfig(
                     hangingConfig = if (settings.format.hangingPunctuation) DefaultHangingConfig else NoneHangingConfig,
                     hyphenation = settings.format.hyphenation,
 
-                    textFontFamily = settings.format.textFontFamily,
-                    textFontIsBold = settings.format.textFontIsBold,
-                    textFontIsItalic = settings.format.textFontIsItalic,
+                    textFontFamily = settings.font.fontFamily,
+                    textFontIsBold = settings.font.isBold,
+                    textFontIsItalic = settings.font.isItalic,
 
-                    textSizeDip = settings.format.textSizeDip,
-                    textScaleX = settings.format.textScaleX,
-                    textSkewX = settings.format.textSkewX,
-                    textStrokeWidthDip = settings.format.textStrokeWidthDip,
-                    textColor = Color(settings.format.textColor),
-                    textAntialiasing = settings.format.textAntialiasing,
-                    textHinting = settings.format.textHinting,
-                    textSubpixelPositioning = settings.format.textSubpixelPositioning,
+                    textSizeDip = settings.font.sizeDip,
+                    textScaleX = settings.font.scaleX,
+                    textSkewX = settings.font.skewX,
+                    textStrokeWidthDip = settings.font.strokeWidthDip,
+                    textColor = Color(settings.theme.textColor),
+                    textAntialiasing = settings.font.antialiasing,
+                    textHinting = settings.font.hinting,
+                    textSubpixelPositioning = settings.font.subpixelPositioning,
 
-                    textShadowEnabled = settings.format.textShadowEnabled,
-                    textShadowAngleDegrees = settings.format.textShadowAngleDegrees,
-                    textShadowOffsetEm = settings.format.textShadowOffsetEm,
-                    textShadowSizeEm = settings.format.textShadowSizeEm,
-                    textShadowBlurEm = settings.format.textShadowBlurEm,
-                    textShadowColor = Color(settings.format.textShadowColor),
+                    textShadowEnabled = settings.theme.textShadowEnabled,
+                    textShadowAngleDegrees = settings.theme.textShadowAngleDegrees,
+                    textShadowOffsetEm = settings.theme.textShadowOffsetEm,
+                    textShadowSizeEm = settings.theme.textShadowSizeEm,
+                    textShadowBlurEm = settings.theme.textShadowBlurEm,
+                    textShadowColor = Color(settings.theme.textShadowColor),
 
-                    selectionColor = Color(settings.selection.color)
+                    selectionColor = Color(settings.theme.selectionColor)
             )
     )
 
@@ -192,7 +191,7 @@ data class ContentConfig(
     )
 }
 
-private fun defaultLocale(context: Context, settings: AnalyzeSettings) =
+private fun defaultLocale(context: Context, settings: OtherSettings) =
         if (settings.defaultLanguageIsSystem) {
             systemLocale(context)
         } else {
@@ -201,7 +200,7 @@ private fun defaultLocale(context: Context, settings: AnalyzeSettings) =
 
 private fun systemLocale(context: Context) = Locale(context.resources.configuration.locale.language)
 
-private fun imageScale(settings: ImageSettings) = if (settings.scaleByDpi) {
+private fun imageScale(settings: OtherSettings) = if (settings.scaleByDpi) {
     ContentImage.Scale.ByDPI(settings.scaleByDpiInteger, settings.scaleIncFiltered, settings.scaleDecFiltered)
 } else {
     ContentImage.Scale.Fixed(settings.scaleFixed, settings.scaleIncFiltered, settings.scaleDecFiltered)

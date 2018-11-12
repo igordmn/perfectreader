@@ -92,7 +92,7 @@ class Selection(
     fun moveHandleTo(touchPosition: PositionF, isLeft: Boolean): Boolean {
         val selections = book.selections
         return if (selections != null) {
-            val newSelection = selections.newSelection(range, isLeft, touchPosition, settings.selection.selectWords)
+            val newSelection = selections.newSelection(range, isLeft, touchPosition, settings.other.selectWords)
             range = newSelection.range
             newSelection.isLeftHandle
         } else {

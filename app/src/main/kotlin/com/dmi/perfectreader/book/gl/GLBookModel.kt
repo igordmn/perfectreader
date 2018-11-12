@@ -12,10 +12,10 @@ import java.net.URI
 class GLBookModel(scope: CopyScope, settings: Settings, reader: Reader, book: Book) {
     val pages: VisiblePages by scope.computed { book.pages }
     val selection: LocationRange? by scope.computed { reader.selection?.range }
-    val pageAnimationPath: URI by scope.computed { URI(settings.format.pageAnimationPath) }
+    val animationPath: URI by scope.computed { URI(settings.screen.animationPath) }
 
-    val pageBackgroundIsImage: Boolean by scope.computed { settings.format.pageBackgroundIsImage }
-    val pageBackgroundColor: Color by scope.computed { Color(settings.format.pageBackgroundColor) }
-    val pageBackgroundPath: URI by scope.computed { URI(settings.format.pageBackgroundPath) }
-    val pageBackgroundContentAwareResize: Boolean by scope.computed { settings.format.pageBackgroundContentAwareResize }
+    val pageBackgroundIsImage: Boolean by scope.computed { settings.theme.backgroundIsImage }
+    val pageBackgroundColor: Color by scope.computed { Color(settings.theme.backgroundColor) }
+    val pageBackgroundPath: URI by scope.computed { URI(settings.theme.backgroundPath) }
+    val pageBackgroundContentAwareResize: Boolean by scope.computed { settings.theme.backgroundContentAwareResize }
 }

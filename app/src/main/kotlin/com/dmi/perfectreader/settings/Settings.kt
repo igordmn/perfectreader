@@ -21,12 +21,10 @@ suspend fun settings(userDatabase: SQLiteDatabase): Settings {
 }
 
 class Settings(store: ValueStore) {
-    val analyze by store.group(::AnalyzeSettings)
+    val font by store.group(::FontSettings)
     val format by store.group(::FormatSettings)
-    val image by store.group(::ImageSettings)
+    val theme by store.group(::ThemeSettings)
     val control by store.group(::ControlSettings)
-    val navigation by store.group(::NavigationSettings)
-    val selection by store.group(::SelectionSettings)
-    val system by store.group(::SystemSettings)
     val screen by store.group(::ScreenSettings)
+    val other by store.group(::OtherSettings)
 }
