@@ -82,7 +82,7 @@ fun floatSetting(
         orientation = LinearLayoutCompat.HORIZONTAL
         child(params(dip(48), dip(48)), AppCompatImageButton(context).apply {
             backgroundResource = attr(R.attr.selectableItemBackground).resourceId
-            image = drawable(R.drawable.minus, color(R.color.onBackground).withOpacity(0.60))
+            image = drawable(R.drawable.ic_minus, color(R.color.onBackground).withOpacity(0.60))
             onContinousClick {
                 val value = editNumber.floatValue
                 if (value > min) {
@@ -112,7 +112,7 @@ fun floatSetting(
 
         child(params(dip(48), dip(48)), AppCompatImageButton(context).apply {
             backgroundResource = attr(R.attr.selectableItemBackground).resourceId
-            image = drawable(R.drawable.plus, color(R.color.onBackground).withOpacity(0.60))
+            image = drawable(R.drawable.ic_plus, color(R.color.onBackground).withOpacity(0.60))
             onContinousClick {
                 val value = editNumber.floatValue
                 if (value < max) {

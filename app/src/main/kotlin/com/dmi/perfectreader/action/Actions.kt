@@ -83,9 +83,6 @@ class Actions(
         ActionID.CHANGE_TEXT_SIZE -> ChangeSettingAction(SettingActionID.TEXT_SIZE, settings.format::textSizeDip, SettingValues.TEXT_SIZE)
         ActionID.CHANGE_TEXT_LINE_HEIGHT -> ChangeSettingAction(SettingActionID.TEXT_LINE_HEIGHT, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER)
         ActionID.CHANGE_TEXT_GAMMA -> ChangeSettingAction(SettingActionID.TEXT_GAMMA, settings.format::pageTextGammaCorrection, SettingValues.GAMMA_CORRECTION)
-        ActionID.CHANGE_TEXT_COLOR_GAMMA -> NoneAction
-        ActionID.CHANGE_TEXT_COLOR_CONTRAST -> NoneAction
-        ActionID.CHANGE_TEXT_COLOR_BRIGHTNESS -> NoneAction
         ActionID.CHANGE_TEXT_STROKE_WIDTH -> ChangeSettingAction(SettingActionID.TEXT_STROKE_WIDTH, settings.format::textStrokeWidthDip, SettingValues.TEXT_STROKE_WIDTH)
         ActionID.CHANGE_TEXT_SCALE_X -> ChangeSettingAction(SettingActionID.TEXT_SCALE_X, settings.format::textScaleX, SettingValues.TEXT_SCALE_X)
         ActionID.CHANGE_TEXT_LETTER_SPACING -> ChangeSettingAction(SettingActionID.TEXT_LETTER_SPACING, settings.format::letterSpacingEm, SettingValues.TEXT_LETTER_SPACING)
@@ -95,9 +92,6 @@ class Actions(
         ActionID.INCREASE_TEXT_SIZE -> IncreaseSettingAction(SettingActionID.TEXT_SIZE, settings.format::textSizeDip, SettingValues.TEXT_SIZE)
         ActionID.INCREASE_TEXT_LINE_HEIGHT -> IncreaseSettingAction(SettingActionID.TEXT_LINE_HEIGHT, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER)
         ActionID.INCREASE_TEXT_GAMMA -> IncreaseSettingAction(SettingActionID.TEXT_GAMMA, settings.format::pageTextGammaCorrection, SettingValues.GAMMA_CORRECTION)
-        ActionID.INCREASE_TEXT_COLOR_GAMMA -> NoneAction
-        ActionID.INCREASE_TEXT_COLOR_CONTRAST -> NoneAction
-        ActionID.INCREASE_TEXT_COLOR_BRIGHTNESS -> NoneAction
         ActionID.INCREASE_TEXT_STROKE_WIDTH -> IncreaseSettingAction(SettingActionID.TEXT_STROKE_WIDTH, settings.format::textStrokeWidthDip, SettingValues.TEXT_STROKE_WIDTH)
         ActionID.INCREASE_TEXT_SCALE_X -> IncreaseSettingAction(SettingActionID.TEXT_SCALE_X, settings.format::textScaleX, SettingValues.TEXT_SCALE_X)
         ActionID.INCREASE_TEXT_LETTER_SPACING -> IncreaseSettingAction(SettingActionID.TEXT_LETTER_SPACING, settings.format::letterSpacingEm, SettingValues.TEXT_LETTER_SPACING)
@@ -107,9 +101,6 @@ class Actions(
         ActionID.DECREASE_TEXT_SIZE -> DecreaseSettingsAction(SettingActionID.TEXT_SIZE, settings.format::textSizeDip, SettingValues.TEXT_SIZE)
         ActionID.DECREASE_TEXT_LINE_HEIGHT -> DecreaseSettingsAction(SettingActionID.TEXT_LINE_HEIGHT, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER)
         ActionID.DECREASE_TEXT_GAMMA -> DecreaseSettingsAction(SettingActionID.TEXT_GAMMA, settings.format::pageTextGammaCorrection, SettingValues.GAMMA_CORRECTION)
-        ActionID.DECREASE_TEXT_COLOR_GAMMA -> NoneAction
-        ActionID.DECREASE_TEXT_COLOR_CONTRAST -> NoneAction
-        ActionID.DECREASE_TEXT_COLOR_BRIGHTNESS -> NoneAction
         ActionID.DECREASE_TEXT_STROKE_WIDTH -> DecreaseSettingsAction(SettingActionID.TEXT_STROKE_WIDTH, settings.format::textStrokeWidthDip, SettingValues.TEXT_STROKE_WIDTH)
         ActionID.DECREASE_TEXT_SCALE_X -> DecreaseSettingsAction(SettingActionID.TEXT_SCALE_X, settings.format::textScaleX, SettingValues.TEXT_SCALE_X)
         ActionID.DECREASE_TEXT_LETTER_SPACING -> DecreaseSettingsAction(SettingActionID.TEXT_LETTER_SPACING, settings.format::letterSpacingEm, SettingValues.TEXT_LETTER_SPACING)

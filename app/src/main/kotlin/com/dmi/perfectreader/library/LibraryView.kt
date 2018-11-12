@@ -5,7 +5,6 @@ import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
-import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toolbar
 import androidx.appcompat.app.AlertDialog
@@ -100,11 +99,6 @@ fun ViewBuild.libraryView(model: Library): View {
 
     fun toolbar() = Toolbar(context).apply {
         backgroundColor = color(android.R.color.transparent)
-        menu.add(R.string.librarySearch).apply {
-            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS or MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
-            actionView = SearchView(context)
-            icon = drawable(R.drawable.ic_search, color(R.color.onBackground))
-        }
         menu.add(R.string.librarySort).apply {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             icon = drawable(R.drawable.ic_sort, color(R.color.onBackground))

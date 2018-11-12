@@ -45,7 +45,7 @@ class SettingListView<T, V>(
             child(params(matchParent, wrapContent), original)
             isClickable = true
             isFocusable = true
-            backgroundResource = R.drawable.list_item_background
+            backgroundResource = R.drawable.settings_list_item_background
             onClick { activate() }
         }
 

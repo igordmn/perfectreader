@@ -25,7 +25,7 @@ fun fontStyleView(
             child(params(dip(48), dip(48)), CheckableImageButton(context).apply {
                 contentDescription = string(boldStringId)
                 TooltipCompat.setTooltipText(this, contentDescription)
-                image = drawable(R.drawable.text_bold, color(R.color.onBackground))
+                image = drawable(R.drawable.ic_text_bold, color(R.color.onBackground))
                 isChecked = boldProperty.get()
 
                 onChecked {
@@ -36,7 +36,7 @@ fun fontStyleView(
             child(params(dip(48), dip(48)), CheckableImageButton(context).apply {
                 contentDescription = string(italicStringId)
                 TooltipCompat.setTooltipText(this, contentDescription)
-                image = drawable(R.drawable.text_italic, color(R.color.onBackground))
+                image = drawable(R.drawable.ic_text_italic, color(R.color.onBackground))
                 isChecked = italicProperty.get()
 
                 onChecked {

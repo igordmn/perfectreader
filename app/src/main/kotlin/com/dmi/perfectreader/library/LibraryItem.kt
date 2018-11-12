@@ -45,7 +45,7 @@ class FolderItemView(
             gravity = Gravity.CENTER_VERTICAL
 
             child(params(dip(48), dip(48), weight = 0F), ImageView(context).apply {
-                image = drawable(R.drawable.ic_library_folder, color(R.color.secondary))
+                image = drawable(R.drawable.library_folder, color(R.color.secondary))
                 scaleType = ImageView.ScaleType.CENTER
             })
             child(params(matchParent, wrapContent, weight = 1F), LinearLayoutCompat(context).apply {

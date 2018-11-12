@@ -56,14 +56,14 @@ fun ViewBuild.menuView(model: Menu): View {
             setNavigationOnClickListener {
                 model.close()
             }
-            menu.add(R.string.bookMenuSearch).apply {
+            menu.add(R.string.menuSearch).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 icon = drawable(R.drawable.ic_search, color(R.color.onBackground))
                 onClick {
                     model.showSearch()
                 }
             }
-            menu.add(R.string.bookMenuSettings).apply {
+            menu.add(R.string.menuSettings).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 icon = drawable(R.drawable.ic_settings, color(R.color.onBackground))
                 onClick {

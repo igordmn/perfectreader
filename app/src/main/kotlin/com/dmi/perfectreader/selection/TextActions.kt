@@ -29,7 +29,7 @@ class TextActions(private val activity: Activity) {
             intent.component = ComponentName(packageName, activityName)
             activity.startActivity(intent)
         } else {
-            activity.toast(R.string.googleTranslateNotInstalled)
+            activity.toast(R.string.selectionGoogleTranslateNotInstalled)
         }
     }
 }
