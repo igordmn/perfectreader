@@ -25,7 +25,6 @@ import com.dmi.util.screen.StateScreen
 import com.dmi.util.system.Nanos
 import com.dmi.util.system.minutes
 import com.dmi.util.system.toMinutes
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
 import org.jetbrains.anko.*
 import kotlin.reflect.KMutableProperty0
@@ -452,13 +451,11 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
         onClick { model.back() }
     }
 
-    return CoordinatorLayoutExt(context).apply {
-        child(params(matchParent, matchParent), space())
-        child(params(matchParent, dip(300), behavior = BottomSheetBehavior<View>().apply {
-            state = BottomSheetBehavior.STATE_EXPANDED
-            isHideable = false
-            peekHeight = dip(80)
-        }), ScreensView(context, model.screens, ViewBuild::screenView).apply {
+    return LinearLayoutExt(context).apply {
+        orientation = LinearLayoutCompat.VERTICAL
+
+        child(params(matchParent, 0, weight = 0.4F), space())
+        child(params(matchParent, 0, weight = 0.6F), ScreensView(context, model.screens, ViewBuild::screenView).apply {
             id = generateId()
             backgroundColor = color(R.color.background)
             elevation = dipFloat(8F)
