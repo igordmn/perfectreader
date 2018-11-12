@@ -13,11 +13,13 @@ import kotlinx.coroutines.Job
 import kotlin.coroutines.CoroutineContext
 
 private typealias Listener = () -> Unit
+private typealias ListenerArg<T> = (T) -> Unit
 
 abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatActivity(), CoroutineScope {
     private lateinit var job: Job
     override val coroutineContext: CoroutineContext get() = Dispatchers.Main + job
 
+    private var onWindowFocusChanged: ListenerArg<Boolean>? = null
     private var onUserInteraction: Listener? = null
     protected lateinit var model: M
     protected lateinit var view: View
@@ -55,8 +57,17 @@ abstract class ActivityExt<M : Disposable> protected constructor() : AppCompatAc
         outState.putBundle("view", view.saveState())
     }
 
+    fun onWindowFocusChanged(listener: ListenerArg<Boolean>) {
+        onWindowFocusChanged = listener
+    }
+
     fun onUserInteraction(listener: Listener) {
         onUserInteraction = listener
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        onWindowFocusChanged?.invoke(hasFocus)
     }
 
     override fun onUserInteraction() {

@@ -111,8 +111,13 @@ private fun View.applyFullscreen(model: Reader) {
         }
     }
 
+    activity.onWindowFocusChanged { hasFocus ->
+        if (hasFocus && model.popup == null)
+            activity.hideSystemUI()
+    }
+
     setOnSystemUiVisibilityChangeListener { visibility ->
-        if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0 && model.popup == null) {
+        if (activity.hasWindowFocus() && visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0 && model.popup == null) {
             model.showMenu()
         }
     }
