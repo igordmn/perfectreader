@@ -6,8 +6,11 @@
 
     <string name="selectionGoogleTranslateNotInstalled">Приложение "Google Translate" не установлено</string>
     <string name="selectionCopiedToClipboard">Текст скопирован</string>
-    <string name="selectionCopyText">Копировать</string>
-    <string name="selectionTranslateText">Перевести</string>
+    <string name="selectionCopy">Копировать</string>
+    <string name="selectionTranslate">Перевести</string>
+    <string name="selectionSearchBook">Найти в книге</string>
+    <string name="selectionSearchWeb">Найти в интернете</string>
+    <string name="selectionSearchWiki">Найти в Wikipedia</string>
 
     <string name="menuSearch">Поиск</string>
     <string name="menuSettings">Настройки</string>

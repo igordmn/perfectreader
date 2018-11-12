@@ -65,8 +65,10 @@ class Reader(
         popup = TableOfContentsUI()
     }
 
-    private fun showSearch() {
-        popup = SearchUI()
+    private fun showSearch() = showSearch("")
+
+    fun showSearch(text: String) {
+        popup = SearchUI(SearchUIState(text))
     }
 
     private fun hidePopup() {
@@ -81,7 +83,7 @@ class Reader(
         else -> unsupported(state)
     }
 
-    private fun Selection(state: SelectionState) = Selection(context, book, ::deselect, state)
+    private fun Selection(state: SelectionState) = Selection(context, this, ::deselect, state)
     private fun Menu(state: MenuState = MenuState()) = Menu(
             book,
             ::showSettings,

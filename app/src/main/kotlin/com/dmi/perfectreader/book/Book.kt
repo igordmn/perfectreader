@@ -35,13 +35,11 @@ suspend fun book(context: ReaderContext, uri: Uri): Book {
     val bookParsers = context.main.bookParsers
     val content: Content = bookParsers[uri].content()
     val bitmapDecoder = CachedBitmapDecoder(AndroidBitmapDecoder(content.resource))
-    val text = ContentText(content)
-    return Book(context, text, locatedPagesReadOnly, content, bitmapDecoder)
+    return Book(context, locatedPagesReadOnly, content, bitmapDecoder)
 }
 
 class Book(
         private val context: ReaderContext,
-        val text: ContentText,
         private val locatedPagesReadOnly: LocatedPagesReadOnly,
         private val content: Content,
         val bitmapDecoder: BitmapDecoder,
@@ -65,9 +63,10 @@ class Book(
             bitmapDecoder
     )
 
+    private val contentConfig: ContentConfig by scope.cached { ContentConfig(context.main) }
+
     private val sized: Sized by scope.cachedDisposable {
         val size = size
-        val contentConfig = ContentConfig(context.main)
         val pageConfig = PageConfig(context.main, size)
 
         dontObserve {
@@ -108,6 +107,7 @@ class Book(
     val description: BookDescription get() = content.description
     val tableOfContents: TableOfContents? get() = content.tableOfContents
 
+    val text: ContentText by scope.cached { ContentText(content, contentConfig) }
     val selections: BookSelections? by scope.cached {
         val page = animatedPages.visible.left
         if (page != null) {

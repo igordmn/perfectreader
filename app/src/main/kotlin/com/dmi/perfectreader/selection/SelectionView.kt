@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ScrollView
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.TooltipCompat
@@ -33,21 +35,21 @@ fun ViewBuild.selectionView(model: Selection) = FrameLayoutExt(context).apply {
             child(params(wrapContent, wrapContent), LinearLayoutCompat(context).apply {
                 orientation = LinearLayoutCompat.HORIZONTAL
 
-                child(params(dip(48), dip(48)), AppCompatImageButton(context).apply {
-                    backgroundResource = attr(R.attr.selectableItemBackground).resourceId
-                    contentDescription = string(R.string.selectionCopyText)
-                    image = drawable(R.drawable.ic_content_copy, color(R.color.onBackground))
-                    TooltipCompat.setTooltipText(this, contentDescription)
-                    onClick { model.copySelectedText() }
-                })
+                fun item(@DrawableRes icon: Int, @StringRes str: Int, action: () -> Unit) {
+                    child(params(dip(48), dip(48)), AppCompatImageButton(context).apply {
+                        backgroundResource = attr(R.attr.selectableItemBackground).resourceId
+                        contentDescription = string(str)
+                        image = drawable(icon, color(R.color.onBackground))
+                        TooltipCompat.setTooltipText(this, contentDescription)
+                        onClick { action() }
+                    })
+                }
 
-                child(params(dip(48), dip(48)), AppCompatImageButton(context).apply {
-                    backgroundResource = attr(R.attr.selectableItemBackground).resourceId
-                    contentDescription = string(R.string.selectionTranslateText)
-                    image = drawable(R.drawable.ic_translate, color(R.color.onBackground))
-                    TooltipCompat.setTooltipText(this, contentDescription)
-                    onClick { model.translateSelectedText() }
-                })
+                item(R.drawable.ic_content_copy, R.string.selectionCopy, model::copySelectedText)
+                item(R.drawable.ic_translate, R.string.selectionTranslate, model::translateSelectedText)
+                item(R.drawable.ic_search, R.string.selectionSearchBook, model::searchBookSelectedText)
+                item(R.drawable.ic_search_web, R.string.selectionSearchWeb, model::searchWebSelectedText)
+                item(R.drawable.ic_search_wiki, R.string.selectionSearchWiki, model::searchWikiSelectedText)
             })
         })
     }

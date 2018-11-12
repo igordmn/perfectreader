@@ -29,15 +29,13 @@ class SearchUI(
         return@async if (searchQuery.isEmpty()) {
             null
         } else {
-            withContext(Dispatchers.Default) {
-                search(book.text, searchQuery, maxResults)
-            }
+            search(book.text, searchQuery, maxResults)
         }
     }
 
     val isLoading get() = searchQuery.isNotEmpty() && results == null
 
-    private suspend fun search(contentText: ContentText, query: String, maxResults: Int): Results {
+    private suspend fun search(contentText: ContentText, query: String, maxResults: Int): Results = withContext(Dispatchers.Default) {
         val results = Results.Builder(maxResults)
 
         contentText.continuousTexts { text ->
@@ -52,7 +50,7 @@ class SearchUI(
             }
         }
 
-        return results.build()
+        return@withContext results.build()
     }
 
     class Results(val list: List<Result>, val isOverMax: Boolean) {

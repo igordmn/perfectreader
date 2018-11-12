@@ -5,6 +5,7 @@ import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.selection.BookSelections
 import com.dmi.perfectreader.book.selection.BookSelections.Handle
 import com.dmi.perfectreader.book.selection.BookSelections.Handles
+import com.dmi.perfectreader.reader.Reader
 import com.dmi.perfectreader.reader.ReaderContext
 import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.graphic.Position
@@ -20,9 +21,10 @@ import java.lang.Math.min
 
 class Selection(
         private val context: ReaderContext,
-        private val book: Book,
+        private val reader: Reader,
         val deselect: () -> Unit,
         val state: SelectionState,
+        private val book: Book = reader.book,
         dip2px: (Float) -> Float = context.main.dip2px,
         private val settings: Settings = context.main.settings,
         private val textActions: TextActions = context.textActions,
@@ -48,6 +50,7 @@ class Selection(
     val actionsIsVisible: Boolean get() = !isSelecting && handles.isPositioned
 
     private val selectedText get() = book.text.plain(range)
+    private val selectedTextLocale get() = book.text.locale(range)
 
     fun actionsPosition(actionsContainerSize: Size, actionsSize: Size): Position {
         val handles = handles
@@ -104,6 +107,21 @@ class Selection(
 
     fun translateSelectedText() {
         textActions.translate(selectedText)
+        deselect()
+    }
+
+    fun searchBookSelectedText() {
+        reader.showSearch(selectedText)
+        deselect()
+    }
+
+    fun searchWebSelectedText() {
+        textActions.searchWeb(selectedText)
+        deselect()
+    }
+
+    fun searchWikiSelectedText() {
+        textActions.searchWiki(selectedText, selectedTextLocale!!)
         deselect()
     }
 }

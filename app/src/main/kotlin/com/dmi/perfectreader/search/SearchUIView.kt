@@ -102,6 +102,7 @@ fun ViewBuild.searchUIView(
             }
             findViewById<TextView>(R.id.search_src_text).filters = arrayOf<InputFilter>(InputFilter.LengthFilter(model.searchQueryMaxLength))
             inputType = InputType.TYPE_CLASS_TEXT
+            setQuery(model.searchQuery, false)
 
             setOnQueryTextFocusChangeListener { _, hasFocus ->
                 if (!hasFocus)

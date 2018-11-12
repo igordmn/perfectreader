@@ -3,11 +3,13 @@ package com.dmi.perfectreader.book.content
 import com.dmi.perfectreader.book.content.location.*
 import com.dmi.perfectreader.book.content.obj.ContentObject
 import com.dmi.perfectreader.book.content.obj.ContentParagraph
+import com.dmi.perfectreader.book.content.obj.common.ContentConfig
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.anko.collections.forEachReversedWithIndex
 import org.jetbrains.anko.collections.forEachWithIndex
+import java.util.*
 
-class ContentText(private val content: Content) {
+class ContentText(private val content: Content, private val config: ContentConfig) {
     fun plain(range: LocationRange): String = runBlocking {
         val plainText = StringBuilder()
 
@@ -27,6 +29,20 @@ class ContentText(private val content: Content) {
         }
 
         return@runBlocking plainText.toString()
+    }
+
+    fun locale(range: LocationRange): Locale? = runBlocking {
+        val leafSequence = contentLeafSequence(content.sequence)
+        var entry = leafSequence.get(range.start)
+
+        while (entry.hasNext && entry.item.range.start <= range.endInclusive) {
+            val obj = entry.item
+            if (obj is ContentParagraph)
+                return@runBlocking obj.configure(config).locale
+            entry = entry.next()
+        }
+
+        return@runBlocking null
     }
 
     fun leafs(): LocatedSequence<ContentObject> = contentLeafSequence(content.sequence)

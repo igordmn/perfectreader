@@ -1,0 +1,4 @@
+// todo add all third party resources/libraries and their license
+
+ic_search_web.xml https://www.flaticon.com/free-icon/search_1179990
+ic_search_wiki.xml https://commons.wikimedia.org/wiki/File:Wikipedia%27s_W.svg

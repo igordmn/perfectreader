@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.book.content.obj
 
-import com.dmi.perfectreader.book.content.configure.ConfiguredObject
 import com.dmi.perfectreader.book.content.configure.ConfiguredParagraph
 import com.dmi.perfectreader.book.content.configure.common.ConfiguredFontStyle
 import com.dmi.perfectreader.book.content.location.Location
@@ -29,7 +28,7 @@ class ContentParagraph(
     override val length = runs.sumByDouble { it.length }
     override val range = LocationRange(runs.first().range.start, runs.last().range.endInclusive)
 
-    override fun configure(config: ContentConfig): ConfiguredObject {
+    override fun configure(config: ContentConfig): ConfiguredParagraph {
         val style = config.style(cls)
         val firstLineIndentDip = style.textSizeDip * style.firstLineIndentEm
 

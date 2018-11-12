@@ -1,9 +1,13 @@
 package com.dmi.perfectreader.selection
 
 import android.app.Activity
+import android.app.SearchManager
 import android.content.*
+import android.net.Uri
 import com.dmi.perfectreader.R
 import org.jetbrains.anko.toast
+import java.net.URLEncoder
+import java.util.*
 
 class TextActions(private val activity: Activity) {
     fun copy(text: String) {
@@ -31,5 +35,19 @@ class TextActions(private val activity: Activity) {
         } else {
             activity.toast(R.string.selectionGoogleTranslateNotInstalled)
         }
+    }
+
+    fun searchWeb(text: String) {
+        val intent = Intent(Intent.ACTION_WEB_SEARCH)
+        intent.putExtra(SearchManager.QUERY, text)
+        activity.startActivity(intent)
+    }
+
+    fun searchWiki(text: String, locale: Locale) {
+        val lang = locale.toLanguageTag()
+        val escapedQuery = URLEncoder.encode(text, "UTF-8")
+        val uri = Uri.parse("https://$lang.wikipedia.org/wiki/Special:Search/$escapedQuery")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        activity.startActivity(intent)
     }
 }
