@@ -9,7 +9,7 @@ class FontSettings(store: ValueStore) {
     var isItalic by store.value(false)
     var sizeDip by store.value(20F)
     var scaleX by store.value(1.0F)
-    var strokeWidthDip by store.value(0.0F)   // todo use Em
+    var strokeWidthEm by store.value(0.0F)
     var skewX by store.value(0.0F)
     var antialiasing by store.value(true)
     var hinting by store.value(true)

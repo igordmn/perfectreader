@@ -78,7 +78,7 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                     ), R.string.settingsUIFontStyle),
                     floatSetting(context, settings.font::sizeDip, SettingValues.TEXT_SIZE, R.string.settingsUIFontSize),
                     floatSetting(context, settings.font::scaleX, SettingValues.TEXT_SCALE_X, R.string.settingsUIFontWidth),
-                    floatSetting(context, settings.font::strokeWidthDip, SettingValues.TEXT_STROKE_WIDTH, R.string.settingsUIFontBoldness),
+                    floatSetting(context, settings.font::strokeWidthEm, SettingValues.TEXT_STROKE_WIDTH, R.string.settingsUIFontBoldness),
                     floatSetting(context, settings.font::skewX, SettingValues.TEXT_SKEW_X, R.string.settingsUIFontSkew),
                     booleanSetting(context, settings.font::antialiasing, R.string.settingsUIFontAntialiasing),
                     booleanSetting(context, settings.font::hinting, R.string.settingsUIFontHinting, R.string.settingsUIFontHintingDesc)

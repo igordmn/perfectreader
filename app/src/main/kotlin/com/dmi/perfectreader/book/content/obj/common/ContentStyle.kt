@@ -24,7 +24,7 @@ data class ContentStyle(
         val textSizeDip: Float,
         val textScaleX: Float,
         val textSkewX: Float,
-        val textStrokeWidthDip: Float,
+        val textStrokeWidthEm: Float,
         val textColor: Color,
         val textAntialiasing: Boolean,
         val textHinting: Boolean,

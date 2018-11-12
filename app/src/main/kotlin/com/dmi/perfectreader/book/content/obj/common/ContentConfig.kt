@@ -61,7 +61,7 @@ data class ContentConfig(
                     textSizeDip = settings.font.sizeDip,
                     textScaleX = settings.font.scaleX,
                     textSkewX = settings.font.skewX,
-                    textStrokeWidthDip = settings.font.strokeWidthDip,
+                    textStrokeWidthEm = settings.font.strokeWidthEm,
                     textColor = Color(settings.theme.textColor),
                     textAntialiasing = settings.font.antialiasing,
                     textHinting = settings.font.hinting,

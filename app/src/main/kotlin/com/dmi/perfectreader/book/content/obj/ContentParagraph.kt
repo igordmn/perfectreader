@@ -136,7 +136,7 @@ fun ContentConfig.computeConfiguredFontStyle(style: ContentStyle): ConfiguredFon
             style.wordSpacingMultiplier,
             style.textScaleX,
             style.textSkewX,
-            style.textStrokeWidthDip * density,
+            style.textStrokeWidthEm * textSize,
             style.textColor,
             style.textAntialiasing,
             style.textHinting,
