@@ -25,6 +25,13 @@ class SettingSelectListViewAdapter<T, V>(
     override fun getItemCount() = getItems().size
     override fun view(viewType: Int) = ItemView(createItemView(context))
 
+    fun selectAll() {
+        selectedPositions = getItems().indices.toSet()
+        for (item in allItemViews) {
+            item.isActivated = true
+        }
+    }
+
     fun deselect() {
         selectedPositions = emptySet()
         for (item in allItemViews) {

@@ -4,6 +4,7 @@
     <color name="primaryVariant">#e0e0e0</color>
     <color name="secondary">#6d4c41</color>
     <color name="secondaryVariant">#40241a</color>
+    <color name="secondaryVariantLight">#99776b</color>
     <color name="background">#ffffff</color>
     <color name="error">#b00020</color>
     <color name="surface">#ffffff</color>

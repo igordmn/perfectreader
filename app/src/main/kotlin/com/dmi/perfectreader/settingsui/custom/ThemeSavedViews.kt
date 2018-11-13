@@ -22,8 +22,9 @@ import com.dmi.perfectreader.settingsui.common.SettingSelectListViewAdapter
 import com.dmi.perfectreader.settingsui.common.details
 import com.dmi.perfectreader.settingsui.common.detailsToolbar
 import com.dmi.util.android.view.*
+import com.dmi.util.collection.removeAt
+import com.google.android.material.snackbar.Snackbar
 import org.jetbrains.anko.*
-import java.util.*
 
 fun themeSavedDetails(context: Context, model: SettingsUI): LinearLayoutExt {
     val adapter = SettingSelectListViewAdapter(
@@ -41,12 +42,55 @@ fun themeSavedDetails(context: Context, model: SettingsUI): LinearLayoutExt {
         this.adapter = adapter
     }
 
+    val undoRemoved = object {
+        private var old: SavedThemes? = null
+        private var removedPositions: Collection<Int>? = null
+
+        fun show(old: SavedThemes, removedPositions: Collection<Int>) {
+            val self = this
+            val text = if (old.list.size > 1) R.string.settingsUIThemeSavedRemovedMultiple else R.string.settingsUIThemeSavedRemovedSingle
+            Snackbar
+                    .make(recyclerView, text, 6000)
+                    .setAction(R.string.settingsUIThemeSavedUndoRemove) {
+                        undo()
+                    }
+                    .setActionTextColor(recyclerView.color(R.color.secondaryVariantLight))
+                    .addCallback(object : Snackbar.Callback() {
+                        override fun onShown(sb: Snackbar?) {
+                            self.old = old
+                            self.removedPositions = removedPositions
+                        }
+
+                        override fun onDismissed(transientBottomBar: Snackbar, event: Int) {
+                            self.old = null
+                            self.removedPositions = null
+                        }
+                    })
+                    .show()
+        }
+
+        private fun undo() {
+            context.main.settings.savedThemes = old!!
+
+            if (recyclerView.isAttachedToWindow) {
+                removedPositions!!
+                        .sorted()
+                        .forEach(adapter::notifyItemInserted)
+            }
+        }
+    }
+
+    fun selectAll() = adapter.selectAll()
+
     fun removeSelected() {
-        context.main.settings.savedThemes = SavedThemes(context.main.settings.savedThemes.list.removeAt(adapter.selectedPositions))
-        adapter.selectedPositions
+        val old = context.main.settings.savedThemes
+        val positions = adapter.selectedPositions
+        context.main.settings.savedThemes = SavedThemes(context.main.settings.savedThemes.list.removeAt(positions))
+        positions
                 .sortedDescending()
                 .forEach(adapter::notifyItemRemoved)
         adapter.deselect()
+        undoRemoved.show(old = old, removedPositions = positions)
     }
 
     fun add() {
@@ -62,6 +106,11 @@ fun themeSavedDetails(context: Context, model: SettingsUI): LinearLayoutExt {
         backgroundColor = color(R.color.dark)
         navigationIcon = drawable(R.drawable.ic_arrow_back, color(R.color.onSecondary))
         setNavigationOnClickListener { adapter.deselect() }
+        menu.add(R.string.settingsUIThemeSavedSelectAll).apply {
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            icon = drawable(R.drawable.ic_select_all, color(R.color.onSecondary))
+            onClick { selectAll() }
+        }
         menu.add(R.string.settingsUIThemeSavedRemove).apply {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             icon = drawable(R.drawable.ic_delete, color(R.color.onSecondary))
@@ -122,17 +171,4 @@ class ThemeSavedItemView(context: Context) : FrameLayout(context), Bindable<Save
         backgroundColor.backgroundColor = settings.backgroundColor
         letter.textColor = settings.textColor
     }
-}
-
-private fun <T> List<T>.removeAt(indices: Set<Int>): List<T> {
-    val newList = LinkedList(this)
-    var i = 0
-    val it = newList.iterator()
-    while (it.hasNext()) {
-        it.next()
-        if (indices.contains(i))
-            it.remove()
-        i++
-    }
-    return ArrayList(newList)
 }

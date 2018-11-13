@@ -76,7 +76,11 @@
 
     <string name="settingsUIThemeSaved">Стили</string>
     <string name="settingsUIThemeSavedAdd">Добавить</string>
+    <string name="settingsUIThemeSavedSelectAll">Выделить все</string>
     <string name="settingsUIThemeSavedRemove">Удалить</string>
+    <string name="settingsUIThemeSavedRemovedSingle">Стиль удален</string>
+    <string name="settingsUIThemeSavedRemovedMultiple">Стили удалены</string>
+    <string name="settingsUIThemeSavedUndoRemove">Отменить</string>
     <string name="settingsUIThemeBackgroundColor">Цвет фона</string>
     <string name="settingsUIThemeBackgroundSelectPicture">Картинка</string>
     <string name="settingsUIThemeBackgroundSelectColor">Цвет</string>
