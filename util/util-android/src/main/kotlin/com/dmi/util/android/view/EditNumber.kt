@@ -16,6 +16,7 @@ import com.dmi.util.android.system.hideSoftKeyboard
 import com.dmi.util.android.system.showSoftKeyboard
 import com.dmi.util.lang.intCeil
 import com.dmi.util.lang.intFloor
+import java.util.*
 import kotlin.math.max
 
 class EditNumber(context: Context) : EditText(context), ClearFocusOnClickOutside {
@@ -149,7 +150,7 @@ class EditNumber(context: Context) : EditText(context), ClearFocusOnClickOutside
         return super.onKeyPreIme(keyCode, event)
     }
 
-    private fun formatValue(value: Float) = String.format("%.${decimalCount}f", value)
+    private fun formatValue(value: Float) = String.format(Locale.US, "%.${decimalCount}f", value)
 }
 
 private class DecimalCountFilter(private val count: Int) : InputFilter {
