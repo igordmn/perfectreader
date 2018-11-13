@@ -1,6 +1,6 @@
 package com.dmi.perfectreader.settings
 
-import com.dmi.perfectreader.action.ActionID
+import com.dmi.perfectreader.ui.action.ActionID
 import com.dmi.util.action.TouchZone
 import com.dmi.util.action.TouchZoneConfiguration
 import com.dmi.util.input.HardKey

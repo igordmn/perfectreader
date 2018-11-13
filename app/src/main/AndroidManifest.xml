@@ -29,7 +29,7 @@
         </activity>
 
         <activity
-            android:name=".reader.ReaderActivity"
+            android:name="com.dmi.perfectreader.ui.reader.ReaderActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/appName">
             <intent-filter>
@@ -47,7 +47,7 @@
         </activity>
 
         <activity
-            android:name=".library.LibraryActivity"
+            android:name="com.dmi.perfectreader.ui.library.LibraryActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/appName"
             android:launchMode="singleTask">

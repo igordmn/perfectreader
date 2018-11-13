@@ -1,7 +1,7 @@
 package com.dmi.perfectreader.common
 
 import com.dmi.perfectreader.MainContext
-import com.dmi.perfectreader.book.gl.PageAnimationPreviews
+import com.dmi.perfectreader.ui.book.gl.PageAnimationPreviews
 import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.android.font.androidFontsCache
 import com.dmi.util.android.opengl.GLContext

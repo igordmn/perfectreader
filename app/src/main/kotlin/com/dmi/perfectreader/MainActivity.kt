@@ -3,7 +3,7 @@ package com.dmi.perfectreader
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.dmi.perfectreader.library.LibraryActivity
+import com.dmi.perfectreader.ui.library.LibraryActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
