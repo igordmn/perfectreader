@@ -52,6 +52,8 @@ fun ViewBuild.menuView(model: Menu): View {
             setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
             backgroundColor = color(android.R.color.transparent)
             navigationIcon = drawable(R.drawable.ic_arrow_back)
+            title = book.description.name ?: book.description.fileName
+            contentInsetStartWithNavigation = 0
             setNavigationOnClickListener {
                 model.close()
             }
