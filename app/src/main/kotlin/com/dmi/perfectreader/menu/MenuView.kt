@@ -52,7 +52,6 @@ fun ViewBuild.menuView(model: Menu): View {
             setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
             backgroundColor = color(android.R.color.transparent)
             navigationIcon = drawable(R.drawable.ic_arrow_back)
-            popupTheme = R.style.Theme_AppCompat_Light
             setNavigationOnClickListener {
                 model.close()
             }

@@ -7,9 +7,17 @@ import com.dmi.util.android.db.getNullOrString
 import com.dmi.util.lang.Enums
 import com.dmi.util.lang.unsupported
 import com.dmi.util.persist.ValueStore
-import kotlinx.coroutines.*
+import com.google.common.io.BaseEncoding.base64
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.cbor.CBOR
+import kotlinx.serialization.compiledSerializer
+import kotlinx.serialization.context.getOrDefault
 import org.jetbrains.anko.db.replace
 import org.jetbrains.anko.db.select
+import kotlin.reflect.KClass
 
 class DBValueStore(
         private val database: SQLiteDatabase,
@@ -17,7 +25,7 @@ class DBValueStore(
 ) : ValueStore {
     private val keyToValue = HashMap<String, DBValue<*>>()
 
-    override fun <T : Any> value(key: String, default: T): ValueStore.Value<T> = DBValue(key, default)
+    override fun <T : Any> value(key: String, default: T, cls: KClass<T>): ValueStore.Value<T> = DBValue(key, default, cls)
 
     suspend fun load() {
         withContext(Dispatchers.IO) {
@@ -46,7 +54,8 @@ class DBValueStore(
 
     private inner class DBValue<T : Any>(
             private val key: String,
-            var value: T
+            private var value: T,
+            private val cls: KClass<T>
     ) : ValueStore.Value<T> {
         init {
             keyToValue[key] = this
@@ -54,15 +63,16 @@ class DBValueStore(
 
         fun load(intValue: Long?, realValue: Double?, textValue: String?) {
             @Suppress("UNCHECKED_CAST")
-            val newValue = when (value) {
-                is Short -> intValue?.toShort() as T?
-                is Int -> intValue?.toInt() as T?
-                is Long -> intValue as T?
-                is Float -> realValue?.toFloat() as T?
-                is Double -> realValue as T?
-                is Boolean -> intValue?.let { it == 1L } as T?
-                is String -> textValue as T?
-                is Enum<*> -> textValue?.let { enumValueOrNull(value.javaClass as Class<Enum<*>>, it) } as T?
+            val newValue = when {
+                value is Short -> intValue?.toShort() as T?
+                value is Int -> intValue?.toInt() as T?
+                value is Long -> intValue as T?
+                value is Float -> realValue?.toFloat() as T?
+                value is Double -> realValue as T?
+                value is Boolean -> intValue?.let { it == 1L } as T?
+                value is String -> textValue as T?
+                value is Enum<*> -> textValue?.let { enumValueOrNull(value.javaClass as Class<Enum<*>>, it) } as T?
+                CBOR.isSupported(cls) -> textValue?.let { CBOR.load(cls, base64().decode(it)) }
                 else -> unsupported(value)
             }
             if (newValue != null)
@@ -80,15 +90,16 @@ class DBValueStore(
         override fun set(value: T) {
             this.value = value
             GlobalScope.launch(Dispatchers.IO) {
-                when (value) {
-                    is Short -> saveInt(key, value.toLong())
-                    is Int -> saveInt(key, value.toLong())
-                    is Long -> saveInt(key, value)
-                    is Float -> saveReal(key, value.toDouble())
-                    is Double -> saveReal(key, value)
-                    is Boolean -> saveInt(key, if (value) 1L else 0L)
-                    is String -> saveText(key, value)
-                    is Enum<*> -> saveText(key, value.toString())
+                when {
+                    value is Short -> saveInt(key, value.toLong())
+                    value is Int -> saveInt(key, value.toLong())
+                    value is Long -> saveInt(key, value)
+                    value is Float -> saveReal(key, value.toDouble())
+                    value is Double -> saveReal(key, value)
+                    value is Boolean -> saveInt(key, if (value) 1L else 0L)
+                    value is String -> saveText(key, value)
+                    value is Enum<*> -> saveText(key, value.toString())
+                    CBOR.isSupported(cls) -> saveText(key, base64().encode(CBOR.dump(cls, value)))
                     else -> unsupported(value)
                 }
             }
@@ -116,3 +127,11 @@ class DBValueStore(
         }
     }
 }
+
+private fun <T : Any> CBOR.Companion.isSupported(cls: KClass<T>): Boolean {
+    val serializer = CBOR.plain.context[cls] ?: cls.compiledSerializer()
+    return serializer != null
+}
+
+private fun <T : Any> CBOR.Companion.dump(cls: KClass<T>, obj: T) = CBOR.plain.dump(CBOR.plain.context.getOrDefault(cls), obj)
+private fun <T : Any> CBOR.Companion.load(cls: KClass<T>, raw: ByteArray) = CBOR.plain.load(CBOR.plain.context.getOrDefault(cls), raw)

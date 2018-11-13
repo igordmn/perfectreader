@@ -14,7 +14,7 @@ import org.jetbrains.anko.*
 import kotlin.math.max
 import kotlin.reflect.KMutableProperty0
 
-class SettingListView<T, V>(
+class SettingChoiceListView<T, V>(
         context: Context,
         private val property: KMutableProperty0<T>,
         private val items: List<T>,

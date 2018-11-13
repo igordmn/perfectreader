@@ -31,21 +31,21 @@ fun colorDetails(
         property: KMutableProperty0<Int>,
         hex: Places.Place
 ) = details(
-        context, model, titleRes,
+        context,
+        detailsToolbar(context, titleRes, model).apply {
+            menu.add(R.string.settingsUIColorHEX).apply {
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                onClick {
+                    model.popup = hex.id
+                }
+            }
+        },
         ColorPickerView(context).apply {
             setOnColorChangedListener {
                 property.set(color)
             }
             autorun {
                 color = property.get()
-            }
-        },
-        configureMenu = { menu ->
-            menu.add(R.string.settingsUIColorHEX).apply {
-                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                onClick {
-                    model.popup = hex.id
-                }
             }
         }
 )

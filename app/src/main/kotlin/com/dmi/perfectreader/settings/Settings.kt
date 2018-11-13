@@ -5,6 +5,8 @@ import com.dmi.util.android.persist.DBValueStore
 import com.dmi.util.persist.ObservableValueStore
 import com.dmi.util.persist.ValueStore
 import com.dmi.util.persist.group
+import com.dmi.util.persist.value
+import kotlinx.serialization.Serializable
 
 suspend fun settings(userDatabase: SQLiteDatabase): Settings {
     val store = DBValueStore(userDatabase,
@@ -27,4 +29,8 @@ class Settings(store: ValueStore) {
     val control by store.group(::ControlSettings)
     val screen by store.group(::ScreenSettings)
     val other by store.group(::OtherSettings)
+    var savedThemes: SavedThemes by store.value(DefaultSavedThemes)
 }
+
+@Serializable
+class SavedThemes(val list: List<SavedTheme>)

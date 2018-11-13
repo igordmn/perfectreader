@@ -7,7 +7,7 @@ import com.dmi.perfectreader.book.Book
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.settingsui.SettingsUI
 import com.dmi.perfectreader.settingsui.common.PreviewView
-import com.dmi.perfectreader.settingsui.common.SettingListView
+import com.dmi.perfectreader.settingsui.common.SettingChoiceListView
 import com.dmi.perfectreader.settingsui.common.details
 import com.dmi.util.android.opengl.GLContext
 import com.dmi.util.android.view.Bindable
@@ -26,7 +26,7 @@ fun screenAnimationDetails(
         glContext: GLContext
 ) = details(
         context, model, R.string.settingsUIScreenAnimation,
-        SettingListView(
+        SettingChoiceListView(
                 context,
                 context.main.settings.screen::animationPath,
                 context.main.resources.pageAnimations.map { it.toString() },

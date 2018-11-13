@@ -13,6 +13,7 @@
     <color name="onError">#000000</color>
     <color name="onSurface">#000000</color>
     <color name="scrimBackground">#000000</color>
+    <color name="dark">#424242</color>
 
     <color name="selected">#f0f0f0</color>
 </resources>

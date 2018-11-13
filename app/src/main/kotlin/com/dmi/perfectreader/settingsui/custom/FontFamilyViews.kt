@@ -12,7 +12,7 @@ import com.dmi.perfectreader.common.Nano
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.settingsui.SettingsUI
 import com.dmi.perfectreader.settingsui.common.PreviewView
-import com.dmi.perfectreader.settingsui.common.SettingListView
+import com.dmi.perfectreader.settingsui.common.SettingChoiceListView
 import com.dmi.perfectreader.settingsui.common.details
 import com.dmi.util.android.font.AndroidFont
 import com.dmi.util.android.view.*
@@ -27,7 +27,7 @@ import kotlin.reflect.KProperty0
 
 fun fontFamilyDetails(context: Context, model: SettingsUI) = details(
         context, model, R.string.settingsUIFontFamily,
-        SettingListView(
+        SettingChoiceListView(
             context,
             context.main.settings.font::fontFamily,
             context.main.resources.fonts.familyNames,

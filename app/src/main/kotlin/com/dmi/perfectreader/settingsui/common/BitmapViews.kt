@@ -23,15 +23,19 @@ class SettingBitmapView(context: Context, size: Int) : ImageView(context), Binda
     }
 
     override fun bind(model: String) {
-        val path = URI(model)
         setImageBitmap(null)
-        load.start {
-            setImageBitmap(
-                    uriHandler
-                            .open(path)
-                            .buffered()
-                            .toBitmap(Size(size, size))
-            )
+        if (model.isNotEmpty()) {
+            val path = URI(model)
+            load.start {
+                setImageBitmap(
+                        uriHandler
+                                .open(path)
+                                .buffered()
+                                .toBitmap(Size(size, size))
+                )
+            }
+        } else {
+            load.cancel()
         }
     }
 }

@@ -72,13 +72,17 @@ fun <T> threadLocal(initial: T) = object : ReadWriteProperty<Any?, T> {
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) = this.value.set(value)
 }
 
-class Delegate<R, T>(val provide: DelegateContext<R>.() -> ReadOnlyProperty2<R, T>) {
+class ReadOnlyDelegate<R, T>(val provide: DelegateContext<R>.() -> ReadOnlyProperty2<R, T>) {
+    operator fun provideDelegate(thisRef: R, prop: KProperty<*>) = DelegateContext(thisRef, prop).provide()
+}
+
+class ReadWriteDelegate<R, T>(val provide: DelegateContext<R>.() -> ReadWriteProperty2<R, T>) {
     operator fun provideDelegate(thisRef: R, prop: KProperty<*>) = DelegateContext(thisRef, prop).provide()
 }
 
 class DelegateContext<R>(val thisRef: R, val prop: KProperty<*>)
 
-fun <R, T : Any> Delegate<R, T?>.required() = Delegate<R, T> {
+fun <R, T : Any> ReadOnlyDelegate<R, T?>.required() = ReadOnlyDelegate<R, T> {
     val context = this
     val original = this@required
     val delegate = original.provide(context)

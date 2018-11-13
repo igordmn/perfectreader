@@ -41,4 +41,11 @@ class ViewLoad(private val view: View) {
         if (view.isAttachedToWindow)
             currentJob = launchJob!!()
     }
+
+    @UiThread
+    fun cancel() {
+        currentJob?.cancel()
+        currentJob = null
+        isFinished = true
+    }
 }

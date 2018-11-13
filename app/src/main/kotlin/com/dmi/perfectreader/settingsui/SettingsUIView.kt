@@ -130,6 +130,10 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
         }
 
         val theme = object : Place() {
+            val saved = object : Place() {
+                override fun ViewBuild.view() = themeSavedDetails(context, model)
+            }
+
             val backgroundIsPicture = object : Place() {
                 private val values = arrayOf(false, true)
                 private val names = values.map(::format).toTypedArray()
@@ -163,6 +167,10 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
             val selectionColor = colorPlace(settings.theme::selectionColor, R.string.settingsUIThemeSelection)
 
             override fun ViewBuild.view() = vertical(
+                    detailsSetting(
+                            context, model,
+                            emptyPreview(context), saved, R.string.settingsUIThemeSaved
+                    ),
                     popupSetting(
                             context, model,
                             propertyPreview(context, settings.theme::backgroundIsImage, backgroundIsPicture::format),

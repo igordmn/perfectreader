@@ -1,6 +1,6 @@
 package com.dmi.util.xml
 
-import com.dmi.util.lang.Delegate
+import com.dmi.util.lang.ReadOnlyDelegate
 import com.dmi.util.lang.initOnce
 import com.dmi.util.lang.required
 import kotlinx.io.Reader
@@ -84,7 +84,7 @@ abstract class ElementDesc : XMLDesc() {
         }
     }
 
-    protected fun element(name: String): Delegate<Any?, String?> = xmlDelegate {
+    protected fun element(name: String): ReadOnlyDelegate<Any?, String?> = xmlDelegate {
         class Element : ElementDesc() {
             val text: String by text()
         }
@@ -99,7 +99,7 @@ abstract class ElementDesc : XMLDesc() {
     /**
      * List of [Text] or [ElementDesc]
      */
-    protected fun nodes(vararg createByName: Pair<String, () -> ElementDesc>): Delegate<Any?, List<XMLDesc>> = xmlDelegate {
+    protected fun nodes(vararg createByName: Pair<String, () -> ElementDesc>): ReadOnlyDelegate<Any?, List<XMLDesc>> = xmlDelegate {
         val list = ArrayList<XMLDesc>()
 
         createByName.forEach {
@@ -124,7 +124,7 @@ abstract class ElementDesc : XMLDesc() {
         }
     }
 
-    protected fun text(): Delegate<Any?, String> = xmlDelegate {
+    protected fun text(): ReadOnlyDelegate<Any?, String> = xmlDelegate {
         val descs = ArrayList<Text>()
 
         onText {
@@ -138,7 +138,7 @@ abstract class ElementDesc : XMLDesc() {
         }
     }
 
-    private fun <T> xmlDelegate(init: DelegateInit<T>.() -> Unit) = Delegate<Any?, T> {
+    private fun <T> xmlDelegate(init: DelegateInit<T>.() -> Unit) = ReadOnlyDelegate<Any?, T> {
         var value: T by initOnce()
 
         val delegateInit = object : DelegateInit<T>(inits!!) {

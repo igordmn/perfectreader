@@ -74,6 +74,9 @@
     <string name="settingsUIColorHEX">HEX</string>
     <string name="settingsUIThemeBackground">Фон</string>
 
+    <string name="settingsUIThemeSaved">Стили</string>
+    <string name="settingsUIThemeSavedAdd">Добавить</string>
+    <string name="settingsUIThemeSavedRemove">Удалить</string>
     <string name="settingsUIThemeBackgroundColor">Цвет фона</string>
     <string name="settingsUIThemeBackgroundSelectPicture">Картинка</string>
     <string name="settingsUIThemeBackgroundSelectColor">Цвет</string>
@@ -110,7 +113,7 @@
         <item quantity="zero">Нет элементов</item>
         <item quantity="one">%d элемент</item>
         <item quantity="two">%d элемента</item>
-        <item quantity="few">%d элементов</item>
+        <item quantity="few">%d элемента</item>
         <item quantity="many">%d элементов</item>
         <item quantity="other">%d элементов</item>
     </plurals>

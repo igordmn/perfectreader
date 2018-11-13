@@ -6,7 +6,7 @@ import com.dmi.perfectreader.main
 import com.dmi.perfectreader.settingsui.SettingsUI
 import com.dmi.perfectreader.settingsui.common.PreviewView
 import com.dmi.perfectreader.settingsui.common.SettingBitmapView
-import com.dmi.perfectreader.settingsui.common.SettingListView
+import com.dmi.perfectreader.settingsui.common.SettingChoiceListView
 import com.dmi.perfectreader.settingsui.common.details
 import com.dmi.util.android.view.GridAutoFitLayoutManager
 import com.dmi.util.android.view.autorun
@@ -15,7 +15,7 @@ import org.jetbrains.anko.padding
 
 fun themeBackgroundPictureDetails(context: Context, model: SettingsUI) = details(
         context, model, R.string.settingsUIThemeBackgroundPicture,
-        SettingListView(
+        SettingChoiceListView(
                 context,
                 context.main.settings.theme::backgroundPath,
                 context.main.resources.backgrounds.map { it.toString() },

@@ -1,12 +1,14 @@
 package com.dmi.util.persist
 
+import com.dmi.util.lang.ReadOnlyDelegate
+import com.dmi.util.lang.ReadOnlyProperty2
+import com.dmi.util.lang.ReadWriteDelegate
+import com.dmi.util.lang.ReadWriteProperty2
 import com.dmi.util.scope.observable
-import kotlin.properties.ReadOnlyProperty
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KProperty
+import kotlin.reflect.KClass
 
 interface ValueStore {
-    fun <T : Any> value(key: String, default: T): Value<T>
+    fun <T : Any> value(key: String, default: T, cls: KClass<T>): Value<T>
 
     interface Value<T : Any> {
         fun get(): T
@@ -14,35 +16,41 @@ interface ValueStore {
     }
 }
 
+class MemoryValueStore : ValueStore {
+    private val map = HashMap<String, Any>()
+    override fun <T : Any> value(key: String, default: T, cls: KClass<T>) = object : ValueStore.Value<T> {
+        @Suppress("UNCHECKED_CAST")
+        override fun get() = map.getOrElse(key) { default } as T
+
+        override fun set(value: T) {
+            map[key] = value
+        }
+    }
+}
+
 fun ValueStore.substore(storeKey: String) = object : ValueStore {
-    override fun <T : Any> value(key: String, default: T) = this@substore.value("$storeKey.$key", default)
+    override fun <T : Any> value(key: String, default: T, cls: KClass<T>) = this@substore.value("$storeKey.$key", default, cls)
 }
 
-fun <T : Any> ValueStore.group(create: (subStore: ValueStore) -> T) = GroupDelegate(this, create)
-fun <T : Any> ValueStore.value(default: T) = ValueDelegate(this, default)
-
-class GroupDelegate<T>(private val store: ValueStore, private val create: (subStore: ValueStore) -> T) {
-    operator fun provideDelegate(thisRef: Any, prop: KProperty<*>): ReadOnlyProperty<Any, T> {
-        val value = create(store.substore(prop.name))
-        return object : ReadOnlyProperty<Any, T> {
-            override fun getValue(thisRef: Any, property: KProperty<*>): T = value
-        }
+fun <T : Any> ValueStore.group(create: (subStore: ValueStore) -> T) = ReadOnlyDelegate<Any, T> {
+    val value = create(substore(prop.name))
+    object : ReadOnlyProperty2<Any, T> {
+        override val value: T get() = value
     }
 }
 
-class ValueDelegate<T : Any>(private val store: ValueStore, private val default: T) {
-    operator fun provideDelegate(thisRef: Any, prop: KProperty<*>): ReadWriteProperty<Any, T> {
-        val storeValue = store.value(prop.name, default)
-        return object : ReadWriteProperty<Any, T> {
-            override fun getValue(thisRef: Any, property: KProperty<*>): T = storeValue.get()
-            override fun setValue(thisRef: Any, property: KProperty<*>, value: T) = storeValue.set(value)
-        }
+inline fun <reified T : Any> ValueStore.value(default: T) = ReadWriteDelegate<Any, T> {
+    val storeValue = value(prop.name, default, T::class)
+    object : ReadWriteProperty2<Any, T> {
+        override var value: T
+            get() = storeValue.get()
+            set(value) = storeValue.set(value)
     }
 }
 
-class ObservableValueStore(private val valueStore: ValueStore): ValueStore {
-    override fun <T : Any> value(key: String, default: T): ValueStore.Value<T> {
-        val original = valueStore.value(key, default)
+class ObservableValueStore(private val valueStore: ValueStore) : ValueStore {
+    override fun <T : Any> value(key: String, default: T, cls: KClass<T>): ValueStore.Value<T> {
+        val original = valueStore.value(key, default, cls)
         var observableValue by observable(Unit)
         return object : ValueStore.Value<T> {
             override fun get(): T {
