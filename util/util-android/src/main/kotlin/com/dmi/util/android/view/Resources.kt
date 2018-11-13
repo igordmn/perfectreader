@@ -15,9 +15,11 @@ fun View.spFloat(value: Float): Float = value * resources.displayMetrics.scaledD
 fun View.color(resID: Int) = ContextCompat.getColor(context, resID)
 fun View.drawable(resID: Int): Drawable = ResourcesCompat.getDrawable(resources, resID, context.theme)!!
 
-fun View.drawable(resID: Int, tintColor: Int): Drawable = drawable(resID).apply {
-    DrawableCompat.setTint(this, tintColor)
-}
+fun View.drawable(resID: Int, tintColor: Int): Drawable = drawable(resID)
+        .constantState!!.newDrawable().mutate()
+        .apply {
+            DrawableCompat.setTint(this, tintColor)
+        }
 
 fun Context.string(resID: Int): String = getString(resID)
 fun Context.string(resID: Int, vararg formatArgs: Any): String = getString(resID, *formatArgs)
