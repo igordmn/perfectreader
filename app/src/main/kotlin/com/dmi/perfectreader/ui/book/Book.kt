@@ -69,6 +69,7 @@ class Book(
     private val sized: Sized by scope.cachedDisposable {
         val size = size
         val pageConfig = PageConfig(context.main, size)
+        val contentConfig = contentConfig
 
         dontObserve {
             val settings = context.main.settings
