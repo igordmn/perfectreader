@@ -1,8 +1,8 @@
 package com.dmi.perfectreader.ui.control
 
-import com.dmi.perfectreader.ui.reader.Reader
 import com.dmi.perfectreader.settings.ControlSettings
 import com.dmi.perfectreader.settings.Settings
+import com.dmi.perfectreader.ui.reader.Reader
 import com.dmi.util.action.Action
 import com.dmi.util.action.TouchActionPerformer
 import com.dmi.util.action.TouchZoneConfiguration
@@ -74,5 +74,5 @@ class ReaderActionProvider(
         return actions[actionID]
     }
 
-    private operator fun TouchZoneConfiguration.get(area: TouchArea) = getAt(area.x / density, area.y / density, size.width / density, size.height / density)
+    private operator fun TouchZoneConfiguration.get(area: TouchArea) = this[area.position / density, size / density]
 }

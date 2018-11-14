@@ -6,7 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 
-class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<CharSequence, ViewBuild.() -> View>) : PagerAdapter() {
+fun ViewPagerAdapter(views: List<ViewBuild.() -> View>): ViewPagerAdapter {
+    val array = views.map { "" to it}.toTypedArray()
+    return ViewPagerAdapter(*array)
+}
+
+class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<String, ViewBuild.() -> View>) : PagerAdapter() {
     private val items = titlesWithCreateViews.map { Item(it.first, it.second) }
 
     private val savedStates = Array<Bundle?>(titlesWithCreateViews.size) { null }
