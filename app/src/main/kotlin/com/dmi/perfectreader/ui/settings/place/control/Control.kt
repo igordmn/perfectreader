@@ -9,6 +9,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.widget.TextViewCompat
@@ -16,13 +17,16 @@ import androidx.viewpager.widget.ViewPager
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.settings.ControlSettings
 import com.dmi.perfectreader.ui.action.ActionID
+import com.dmi.perfectreader.ui.action.actionDescription
 import com.dmi.perfectreader.ui.settings.SettingsUI
 import com.dmi.perfectreader.ui.settings.common.*
 import com.dmi.util.action.TouchZone
 import com.dmi.util.action.TouchZoneConfiguration
+import com.dmi.util.action.zone
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.*
 import kotlin.reflect.KMutableProperty0
+
 
 // todo triangle zones
 
@@ -107,8 +111,7 @@ private fun Places.controlDialog(
         model: SettingsUI,
         configurations: List<TouchZoneConfiguration>,
         configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
-        actionProperty: (zone: TouchZone) -> KMutableProperty0<ActionID>,
-//        actions: List<ActionID> // todo action categories
+        getActionProperty: (zone: TouchZone) -> KMutableProperty0<ActionID>,
         @StringRes titleRes: Int
 ) = dialog {
     fun LinearLayoutCompat.horizontalDivider() {
@@ -135,19 +138,40 @@ private fun Places.controlDialog(
         params(dip(width), matchParent, weight = 0F)
     }
 
-    fun cell(isSmall: Boolean) = TextView(context).apply {
-        val desc = "Перейти на следующую страницу"
-        TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
-        textColor = color(R.color.onBackground)
-        textSize = spFloat(8F)
-        gravity = Gravity.CENTER
-        padding = dip(4)
-        backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
-        ellipsize = TextUtils.TruncateAt.END
-        text = if (isSmall) "⋯" else desc
-        TooltipCompat.setTooltipText(this, desc)
+    fun cell(zone: TouchZone, isSmall: Boolean) = FrameLayout(context).apply {
+        val actionProperty = getActionProperty(zone)
 
-        onClick { }
+        val menuAnchor = child(params(0, 0, gravity = Gravity.CENTER), View(context).apply {
+            visibility = View.INVISIBLE
+        })
+
+        child(params(matchParent, matchParent), TextView(context).apply {
+            TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
+            textColor = color(R.color.onBackground)
+            textSize = spFloat(8F)
+            gravity = Gravity.CENTER
+            padding = dip(4)
+            backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
+            ellipsize = TextUtils.TruncateAt.END
+
+            autorun {
+                val desc = actionDescription(context, actionProperty.get()).toString()
+                text = if (isSmall) "⋯" else desc
+                TooltipCompat.setTooltipText(this, desc)
+            }
+
+            onClick {
+                val popup = PopupMenu(context, menuAnchor, Gravity.CENTER)
+                popup.menu.addSubMenu(R.string.actionSetting).apply {
+                    addSubMenu(R.string.actionSettingFontSize).apply {
+                        add(R.string.actionSettingIncrease)
+                        add(R.string.actionSettingDecrease)
+                        add(R.string.actionSettingChange)
+                    }
+                }
+                popup.show()
+            }
+        })
     }
 
     fun ViewBuild.taps(configuration: TouchZoneConfiguration): View = LinearLayoutCompat(context).apply {
@@ -156,12 +180,14 @@ private fun Places.controlDialog(
         setPadding(dip(16), 0, dip(16), 0)
 
         horizontalDivider()
-        for (height in shapes.heights) {
-            child(vparams(height), LinearLayoutCompat(context).apply {
+        for (vertical in shapes.verticals) {
+            child(vparams(vertical.size), LinearLayoutCompat(context).apply {
                 orientation = LinearLayoutCompat.HORIZONTAL
                 verticalDivider()
-                for (width in shapes.widths) {
-                    child(hparams(width), cell(isSmall = height in 0..32 || width in 0..32))
+                for (horizontal in shapes.horizontals) {
+                    val zone = zone(horizontal.zone, vertical.zone)
+                    val isSmall = vertical.size in 0..32 || horizontal.size in 0..32
+                    child(hparams(horizontal.size), cell(zone, isSmall))
                     verticalDivider()
                 }
             })

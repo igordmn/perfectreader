@@ -162,9 +162,9 @@ class ControlSettings(store: ValueStore) {
         class SingleTaps(store: ValueStore) : Taps(
                 store,
                 TouchZoneConfiguration.NINE,
-                left = ActionID.GO_PAGE_PREVIOUS,
+                left = ActionID.GO_PAGE_PREVIOUS_ANIMATED,
                 middle = ActionID.SHOW_MENU,
-                right = ActionID.GO_PAGE_NEXT
+                right = ActionID.GO_PAGE_NEXT_ANIMATED
         )
 
         class LongTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE, ActionID.WORD_SELECT)
@@ -192,8 +192,8 @@ class ControlSettings(store: ValueStore) {
                 ActionID.SCROLL_PAGE
         )
 
-        class TwoFingersLeftScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.GO_PAGE_NEXT_10)
-        class TwoFingersRightScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.GO_PAGE_PREVIOUS_10)
+        class TwoFingersLeftScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.GO_PAGE_NEXT_10_ANIMATED)
+        class TwoFingersRightScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.GO_PAGE_PREVIOUS_10_ANIMATED)
         class TwoFingersUpScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.SETTINGS_FORMAT_LINE_HEIGHT_CHANGE)
         class TwoFingersDownScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.SETTINGS_FORMAT_LINE_HEIGHT_CHANGE)
 
@@ -204,8 +204,8 @@ class ControlSettings(store: ValueStore) {
     }
 
     class HardKeys(store: ValueStore) {
-        var volumeDown by store.value(ActionID.GO_PAGE_NEXT_10)
-        var volumeUp by store.value(ActionID.GO_PAGE_PREVIOUS_10)
+        var volumeDown by store.value(ActionID.GO_PAGE_NEXT_ANIMATED)
+        var volumeUp by store.value(ActionID.GO_PAGE_PREVIOUS_ANIMATED)
 
         fun property(hardKey: HardKey): KMutableProperty0<ActionID> = when (hardKey) {
             HardKey.VOLUME_DOWN -> ::volumeDown
