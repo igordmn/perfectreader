@@ -4,10 +4,10 @@ import android.app.Activity
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
+import com.dmi.perfectreader.main
 import com.dmi.perfectreader.ui.action.performingActionView
 import com.dmi.perfectreader.ui.book.bookView
 import com.dmi.perfectreader.ui.control.controlView
-import com.dmi.perfectreader.main
 import com.dmi.perfectreader.ui.menu.Menu
 import com.dmi.perfectreader.ui.menu.menuView
 import com.dmi.perfectreader.ui.search.SearchUI
@@ -47,7 +47,6 @@ fun ViewBuild.readerView(model: Reader) = FrameLayout(context).apply {
         id = generateId()
         layoutTransition = fadeTransition(300)
         fitsSystemWindows = true
-        systemUiVisibility = 0
     }
     bindChild(params(wrapContent, wrapContent, Gravity.CENTER_HORIZONTAL), model::performingAction, ViewBuild::performingActionView).apply {
         id = generateId()
