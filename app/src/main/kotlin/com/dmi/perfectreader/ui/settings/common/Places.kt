@@ -44,13 +44,15 @@ fun Places.multiChoice(
         val checked = property.get()
         AlertDialog.Builder(context)
                 .setTitle(titleRes)
-                .setPositiveButton(android.R.string.ok) { _, _ -> }
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    property.set(checked)
+                }
+                .setNegativeButton(android.R.string.cancel) { _, _ -> }
                 .setMultiChoiceItems(names, checked) { _, which, isChecked ->
                     checked[which] = isChecked
                 }
                 .setOnDismissListener {
                     model.popup = null
-                    property.set(checked)
                 }
                 .create()
     }
