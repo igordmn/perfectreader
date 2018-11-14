@@ -29,6 +29,6 @@ open class Places {
 fun Places.Place.view(build: ViewBuild): View = build.view()
 val Places.Place.viewRef: ViewBuild.() -> View get() = { view() }
 
-fun Places.dialog(createDialog: () -> Dialog) = place {
+fun Places.dialog(createDialog: ViewBuild.() -> Dialog) = place {
     DialogView(context, createDialog)
 }

@@ -53,7 +53,7 @@ fun Places.screen(model: SettingsUI, settings: ScreenSettings, glContext: GLCont
             ::formatTimeout, R.string.settingsUIScreenTimeout
     )
 
-    val brightness = screenBrightness(context, model)
+    val brightness = screenBrightness(model)
 
     val orientation = singleChoice(
             model, settings::orientation,

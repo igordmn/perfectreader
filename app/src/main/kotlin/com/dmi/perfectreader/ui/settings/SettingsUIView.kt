@@ -6,8 +6,9 @@ import android.widget.FrameLayout
 import androidx.appcompat.widget.LinearLayoutCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
-import com.dmi.perfectreader.ui.settings.place.*
+import com.dmi.perfectreader.ui.settings.place.control.control
 import com.dmi.perfectreader.ui.settings.place.font.font
+import com.dmi.perfectreader.ui.settings.place.format
 import com.dmi.perfectreader.ui.settings.place.screen.screen
 import com.dmi.perfectreader.ui.settings.place.theme.theme
 import com.dmi.util.android.opengl.GLContext

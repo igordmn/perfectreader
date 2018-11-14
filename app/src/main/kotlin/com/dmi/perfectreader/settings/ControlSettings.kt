@@ -47,7 +47,7 @@ class ControlSettings(store: ValueStore) {
                     configuration: TouchZoneConfiguration,
                     middle: ActionID
             ) : this(store, configuration, middle, middle, middle)
-            
+
             constructor(
                     store: ValueStore,
                     configuration: TouchZoneConfiguration
@@ -177,7 +177,7 @@ class ControlSettings(store: ValueStore) {
         class RightScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.SCROLL)
 
         class UpScrolls(store: ValueStore) : Scrolls(
-                store, 
+                store,
                 TouchZoneConfiguration.THREE_COLUMNS_FIXED,
                 ActionID.CHANGE_SCREEN_BRIGHTNESS,
                 ActionID.SCROLL,

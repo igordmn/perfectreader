@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.ui.settings.place.screen
 
-import android.content.Context
 import android.graphics.PorterDuff
 import android.view.Gravity
 import android.view.MotionEvent
@@ -15,7 +14,7 @@ import com.dmi.perfectreader.ui.settings.SettingsUI
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.*
 
-fun Places.screenBrightness(context: Context, model: SettingsUI)= place {
+fun Places.screenBrightness(model: SettingsUI) = place {
     val settings = context.main.settings
     DialogView(context) {
         AlertDialog.Builder(context)

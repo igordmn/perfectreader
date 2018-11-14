@@ -11,13 +11,13 @@ import android.widget.FrameLayout
 import androidx.core.util.set
 
 @SuppressLint("ViewConstructor")
-class DialogView(context: Context, private val createDialog: () -> Dialog) : View(context) {
+class DialogView(context: Context, private val createDialog: ViewBuild.() -> Dialog) : View(context) {
     private var dialog: Dialog? = null
     private var restoredState: Bundle? = null
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        val dialog = createDialog()
+        val dialog = ViewBuild(context).createDialog()
         val restoredState = restoredState
         dialog.show()
         if (restoredState != null) {
