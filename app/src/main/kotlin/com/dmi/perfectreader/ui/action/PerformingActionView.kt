@@ -11,6 +11,7 @@ import com.google.android.material.card.MaterialCardView
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.wrapContent
+import java.util.*
 
 fun ViewBuild.performingActionView(model: PerformingAction, old: PerformingActionView?): PerformingActionView {
     val view = old ?: PerformingActionView(context)
@@ -49,21 +50,9 @@ class PerformingActionView(context: Context) : FrameLayout(context) {
     }
 
     fun set(action: PerformingAction) {
-        name.text = settingActionName(context, action.id)
-        value.text = formatSettingValue(action.id, action.value)
+        name.text = numberSettingActionName(context, action.id)
+        value.text = formatFloatValue(action.value)
     }
 
-    private fun formatSettingValue(id: SettingActionID, value: Any): String = when (id) {
-        SettingActionID.NONE -> ""
-        SettingActionID.PAGE_MARGINS -> formatFloatValue(value)
-        SettingActionID.TEXT_SIZE -> formatFloatValue(value)
-        SettingActionID.TEXT_LINE_HEIGHT -> formatFloatValue(value)
-        SettingActionID.TEXT_GAMMA -> formatFloatValue(value)
-        SettingActionID.TEXT_STROKE_WIDTH -> formatFloatValue(value)
-        SettingActionID.TEXT_SCALE_X -> formatFloatValue(value)
-        SettingActionID.TEXT_LETTER_SPACING -> formatFloatValue(value)
-        SettingActionID.SCREEN_BRIGHTNESS -> formatFloatValue(value)
-    }
-
-    private fun formatFloatValue(value: Any) = String.format("%.2f", value as Float)
+    private fun formatFloatValue(value: Float) = String.format(Locale.US, "%.2f", value)
 }

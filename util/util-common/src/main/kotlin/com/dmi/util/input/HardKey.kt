@@ -1,6 +1,6 @@
 package com.dmi.util.input
 
 enum class HardKey {
-    VOLUME_UP,
-    VOLUME_DOWN
+    VOLUME_DOWN,
+    VOLUME_UP
 }

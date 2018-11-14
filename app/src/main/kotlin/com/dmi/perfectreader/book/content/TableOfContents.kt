@@ -36,6 +36,8 @@ class TableOfContents(val chapters: List<Chapter>) {
     }
 
     fun chapterAt(location: Location): Chapter? = locationToChapter.floorEntry(location)?.value
+    fun lowerChapter(location: Location): Chapter? = locationToChapter.lowerEntry(location)?.value
+    fun higherChapter(location: Location): Chapter? = locationToChapter.higherEntry(location)?.value
 
     class Chapter(val name: String, val location: Location, val children: List<Chapter> = emptyList()) {
         init {

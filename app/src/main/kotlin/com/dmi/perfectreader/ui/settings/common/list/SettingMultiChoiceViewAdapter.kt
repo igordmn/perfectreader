@@ -16,7 +16,7 @@ class SettingMultiChoiceViewAdapter<T, V>(
         private val context: Context,
         private val getItems: () -> List<T>,
         private val createItemView: (Context) -> V,
-        private val onItemClick: (T) -> Unit = {}
+        private val onItemClick: (position: Int, T) -> Unit = { _, _ -> }
 ) : BindableViewAdapter<SettingMultiChoiceViewAdapter<*, *>.ItemView>() where V : View, V : Bindable<T> {
     private val allItemViews = ArrayList<ItemView>()
     var selectedPositions: Set<Int> by observable(emptySet())
@@ -74,7 +74,7 @@ class SettingMultiChoiceViewAdapter<T, V>(
             if (selectedPositions.isNotEmpty()) {
                 switchSelection()
             } else {
-                onItemClick(getItems()[position])
+                onItemClick(position, getItems()[position])
             }
         }
     }

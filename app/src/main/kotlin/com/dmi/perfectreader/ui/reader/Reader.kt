@@ -57,15 +57,19 @@ class Reader(
         popup = Menu()
     }
 
-    private fun showSettings() {
+    fun showSettings() {
         popup = SettingsUI()
     }
 
-    private fun showTableOfContents() {
+    fun showTableOfContents() {
         popup = TableOfContentsUI()
     }
 
-    private fun showSearch() = showSearch("")
+    fun showSearch() = showSearch("")
+
+    fun showLibrary() {
+        TODO()
+    }
 
     fun showSearch(text: String) {
         popup = SearchUI(SearchUIState(text))

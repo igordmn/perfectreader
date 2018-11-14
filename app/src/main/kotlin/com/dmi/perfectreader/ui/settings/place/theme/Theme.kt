@@ -10,8 +10,8 @@ import com.dmi.util.android.view.Places
 import com.dmi.util.android.view.string
 
 fun Places.theme(model: SettingsUI, settings: ThemeSettings) = place {
-    val saved = place {
-        themeSavedDetails(model)
+    val styles = place {
+        stylesDetails(model)
     }
 
     fun formatBackgroundIsImage(backgroundIsPicture: Boolean) = when (backgroundIsPicture) {
@@ -44,28 +44,28 @@ fun Places.theme(model: SettingsUI, settings: ThemeSettings) = place {
                                 colorPreview(settings::textShadowColor), color, R.string.settingsUIThemeTextShadowColor
                         ) visibleIf { settings.textShadowEnabled },
                         floatSetting(
-                                settings::textShadowOpacity, SettingValues.TEXT_SHADOW_OPACITY, R.string.settingsUIThemeTextShadowOpacity
+                                settings::textShadowOpacity, SettingValues.THEME_TEXT_SHADOW_OPACITY, R.string.settingsUIThemeTextShadowOpacity
                         ) visibleIf { settings.textShadowEnabled },
                         floatSetting(
                                 settings::textShadowAngleDegrees,
-                                SettingValues.TEXT_SHADOW_ANGLE, R.string.settingsUIThemeTextShadowAngle,
+                                SettingValues.THEME_TEXT_SHADOW_ANGLE, R.string.settingsUIThemeTextShadowAngle,
                                 ringValues = true
                         ) visibleIf { settings.textShadowEnabled },
                         floatSetting(
-                                settings::textShadowOffsetEm, SettingValues.TEXT_SHADOW_OFFSET, R.string.settingsUIThemeTextShadowOffset
+                                settings::textShadowOffsetEm, SettingValues.THEME_TEXT_SHADOW_OFFSET, R.string.settingsUIThemeTextShadowOffset
                         ) visibleIf { settings.textShadowEnabled },
                         floatSetting(
-                                settings::textShadowSizeEm, SettingValues.TEXT_SHADOW_SIZE, R.string.settingsUIThemeTextShadowSize
+                                settings::textShadowSizeEm, SettingValues.THEME_TEXT_SHADOW_SIZE, R.string.settingsUIThemeTextShadowSize
                         ) visibleIf { settings.textShadowEnabled },
                         floatSetting(
-                                settings::textShadowBlurEm, SettingValues.TEXT_SHADOW_BLUR, R.string.settingsUIThemeTextShadowBlur
+                                settings::textShadowBlurEm, SettingValues.THEME_TEXT_SHADOW_BLUR, R.string.settingsUIThemeTextShadowBlur
                         ) visibleIf { settings.textShadowEnabled }
                 )
         )
     }
 
     verticalScroll(
-            detailsSetting(model, emptyPreview(), saved, R.string.settingsUIThemeSaved),
+            detailsSetting(model, emptyPreview(), styles, R.string.settingsUIThemeSaved),
             popupSetting(
                     model,
                     propertyPreview(settings::backgroundIsImage, ::formatBackgroundIsImage),
@@ -84,6 +84,6 @@ fun Places.theme(model: SettingsUI, settings: ThemeSettings) = place {
             detailsSetting(model, colorPreview(settings::textColor), textColor, R.string.settingsUIThemeText),
             detailsSetting(model, colorPreview(settings::selectionColor), selectionColor, R.string.settingsUIThemeSelection),
             detailsSetting(model, emptyPreview(), textShadow, R.string.settingsUIThemeTextShadow),
-            floatSetting(settings::textGammaCorrection, SettingValues.GAMMA_CORRECTION, R.string.settingsUIThemeTextGammaCorrection)
+            floatSetting(settings::textGammaCorrection, SettingValues.THEME_GAMMA_CORRECTION, R.string.settingsUIThemeTextGammaCorrection)
     )
 }

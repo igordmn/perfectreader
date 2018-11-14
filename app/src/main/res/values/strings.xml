@@ -9,7 +9,7 @@
     <string name="selectionCopy">Копировать</string>
     <string name="selectionTranslate">Перевести</string>
     <string name="selectionSearchBook">Найти в книге</string>
-    <string name="selectionSearchWeb">Найти в интернете</string>
+    <string name="selectionSearchWeb">Найти в Интернете</string>
     <string name="selectionSearchWiki">Найти в Wikipedia</string>
 
     <string name="menuSearch">Поиск</string>
@@ -17,31 +17,38 @@
 
     <string name="actionNone">Нет действия</string>
 
+    <string name="actionShow">Показать</string>
     <string name="actionShowMenu">Меню</string>
     <string name="actionShowSettings">Настройки</string>
     <string name="actionShowTableOfContents">Содержание</string>
     <string name="actionShowSearch">Поиск</string>
-    <string name="actionShowLibrary">Поиск</string>
+    <string name="actionShowLibrary">Библиотека</string>
 
-    <string name="actionScrollPage">Листание страницы</string>
+    <string name="actionScrollPage">Листание</string>
+    <string name="actionGo">Перейти</string>
     <string name="actionGoPageNext">Следующая страница</string>
     <string name="actionGoPagePrevious">Предыдущая страница</string>
+    <string name="actionGoPageNext5">На 5 страниц вперед</string>
+    <string name="actionGoPagePrevious5">На 5 страниц назад</string>
+    <string name="actionGoPageNext10">На 10 страниц вперед</string>
+    <string name="actionGoPagePrevious10">На 10 страниц вперед</string>
+    <string name="actionGoPageNext20">На 20 страниц вперед</string>
+    <string name="actionGoPagePrevious20">На 20 страниц вперед</string>
     <string name="actionGoBookBegin">Начало книги</string>
     <string name="actionGoBookEnd">Конец книги</string>
     <string name="actionGoNextChapter">Следующая глава</string>
     <string name="actionGoPreviousChapter">Предыдущая глава</string>
-    <string name="actionGoAnimation">Анимация</string>
+    <string name="actionGoAnimated">С анимацией</string>
+    <string name="actionGoNorAnimated">Без анимации</string>
 
-    <string name="actionSelectWord">Выделить слово</string>
-    <string name="actionCopyWord">Скопировать слово</string>
-    <string name="actionTranslateWord">Перевести слово</string>
-    <string name="actionSearchWord">Найти слово в Google</string>
-    <string name="actionWikiWord">Найти слово в Wikipedia</string>
+    <string name="actionWordSelect">Выделить слово</string>
 
-    <string name="actionSettingIncrease">увеличение</string>
-    <string name="actionSettingDecrease">уменьшение</string>
-    <string name="actionSettingNext">следующее</string>
-    <string name="actionSettingPrevious">предыдущее</string>
+    <string name="actionSettingIncrease">Увеличить</string>
+    <string name="actionSettingDecrease">Уменьшить</string>
+    <string name="actionSettingNext">Следующий</string>
+    <string name="actionSettingPrevious">Предыдущий</string>
+    <string name="actionSettingEnable">Включить</string>
+    <string name="actionSettingDisable">Выключить</string>
 
     <string name="settingsUIFont">Шрифт</string>
     <string name="settingsUIFormat">Формат</string>

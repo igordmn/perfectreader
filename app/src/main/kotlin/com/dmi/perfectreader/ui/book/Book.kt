@@ -159,6 +159,27 @@ class Book(
         return animatedPages.scroll()
     }
 
+    fun goNextChapter() {
+        val location = tableOfContents?.higherChapter(location)?.location
+        if (location != null) {
+            goLocation(location)
+        } else {
+            goEnd()
+        }
+    }
+
+    fun goPreviousChapter() {
+        val location = tableOfContents?.lowerChapter(location)?.location
+        if (location != null) {
+            goLocation(location)
+        } else {
+            goBegin()
+        }
+    }
+
+    fun goBegin() = goLocation(locations.percentToLocation(0.0))
+    fun goEnd() = goLocation(locations.percentToLocation(100.0))
+
     private class Sized(
             val locations: Locations,
             val loadingPages: LoadingPages,

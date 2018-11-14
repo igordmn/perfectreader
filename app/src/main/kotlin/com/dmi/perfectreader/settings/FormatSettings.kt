@@ -20,7 +20,7 @@ class FormatSettings(store: ValueStore) {
     var paddingBottomDip by store.value(20F)
 }
 
-var FormatSettings.pagePadding: Float
+var FormatSettings.paddingDip: Float
     get() = paddingLeftDip
     set(value) {
         paddingLeftDip = value

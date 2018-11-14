@@ -40,7 +40,7 @@ var ThemeSettings.textShadowOpacity: Float
         textShadowColor = color.withAlpha((value * 255).toInt()).value
     }
 
-val DefaultSavedThemes = SavedThemes(listOf(
+val DefaultStyles = SavedThemes(listOf(
         savedTheme(textColor = Color.BLACK, backgroundColor = Color.WHITE),
         savedTheme(textColor = Color.WHITE, backgroundColor = Color.BLACK)
 ))

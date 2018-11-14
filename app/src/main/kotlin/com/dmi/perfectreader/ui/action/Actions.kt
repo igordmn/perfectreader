@@ -1,10 +1,13 @@
 package com.dmi.perfectreader.ui.action
 
+import com.dmi.perfectreader.settings.Settings
+import com.dmi.perfectreader.settings.brightnessValueAndEnable
+import com.dmi.perfectreader.settings.paddingDip
+import com.dmi.perfectreader.settings.switchStyle
 import com.dmi.perfectreader.ui.book.Book
 import com.dmi.perfectreader.ui.book.page.PageScroller
 import com.dmi.perfectreader.ui.reader.Reader
 import com.dmi.perfectreader.ui.reader.ReaderContext
-import com.dmi.perfectreader.settings.Settings
 import com.dmi.perfectreader.ui.settings.SettingValues
 import com.dmi.perfectreader.ui.settings.chooseSettingValue
 import com.dmi.util.action.*
@@ -25,98 +28,94 @@ class Actions(
 
     operator fun get(id: ActionID): Action = when (id) {
         ActionID.NONE -> NoneAction
+
         ActionID.SHOW_MENU -> performAction { reader.showMenu() }
-        ActionID.GO_TO_LIBRARY_LAST -> NoneAction
-        ActionID.GO_TO_LIBRARY_FAVOURITE -> NoneAction
-        ActionID.GO_TO_LIBRARY_FILES -> NoneAction
-        ActionID.GO_TO_LIBRARY_OPDS -> NoneAction
-        ActionID.GO_TO_SETTINGS -> NoneAction
-        ActionID.GO_TO_TABLE_OF_CONTENTS -> NoneAction
-        ActionID.GO_TO_BOOKMARKS -> NoneAction
-        ActionID.GO_TO_NOTES -> NoneAction
-        ActionID.GO_TO_MARKS -> NoneAction
-        ActionID.GO_TO_NEXT_BOOK_IN_HISTORY -> NoneAction
-        ActionID.GO_TO_PREVIOUS_BOOK_IN_HISTORY -> NoneAction
-        ActionID.SHOW_FAST_SETTINGS -> NoneAction
-        ActionID.SHOW_SEARCH -> NoneAction
-        ActionID.SHOW_GO_PAGE -> NoneAction
-        ActionID.SHOW_BOOK_INFO -> NoneAction
-        ActionID.TOGGLE_AUTOSCROLL -> NoneAction
-        ActionID.TOGGLE_TEXT_SPEECH -> NoneAction
-        ActionID.ADD_BOOKMARK -> NoneAction
-        ActionID.ADD_BOOK_TO_FAVOURITE -> NoneAction
+        ActionID.SHOW_LIBRARY -> performAction { reader.showLibrary() }
+        ActionID.SHOW_SETTINGS -> performAction { reader.showSettings() }
+        ActionID.SHOW_SEARCH -> performAction { reader.showSearch() }
+        ActionID.SHOW_TABLE_OF_CONTENTS -> performAction { reader.showTableOfContents() }
 
-        ActionID.SCROLL -> object : Action {
-            lateinit var scroller: PageScroller
+        ActionID.SCROLL_PAGE -> scrollPage()
+        ActionID.GO_PAGE_NEXT -> repeatAction { book.goRelative(1) }
+        ActionID.GO_PAGE_PREVIOUS -> repeatAction { book.goRelative(-1) }
+        ActionID.GO_PAGE_NEXT_5 -> repeatAction { book.goRelative(5) }
+        ActionID.GO_PAGE_PREVIOUS_5 -> repeatAction { book.goRelative(-5) }
+        ActionID.GO_PAGE_NEXT_10 -> repeatAction { book.goRelative(10) }
+        ActionID.GO_PAGE_PREVIOUS_10 -> repeatAction { book.goRelative(-10) }
+        ActionID.GO_PAGE_NEXT_20 -> repeatAction { book.goRelative(20) }
+        ActionID.GO_PAGE_PREVIOUS_20 -> repeatAction { book.goRelative(-20) }
+        ActionID.GO_PAGE_NEXT_ANIMATED -> repeatAction { book.animateRelative(1) }
+        ActionID.GO_PAGE_PREVIOUS_ANIMATED -> repeatAction { book.animateRelative(-1) }
+        ActionID.GO_PAGE_NEXT_5_ANIMATED -> repeatAction { book.animateRelative(5) }
+        ActionID.GO_PAGE_PREVIOUS_5_ANIMATED -> repeatAction { book.animateRelative(-5) }
+        ActionID.GO_PAGE_NEXT_10_ANIMATED -> repeatAction { book.animateRelative(10) }
+        ActionID.GO_PAGE_PREVIOUS_10_ANIMATED -> repeatAction { book.animateRelative(-10) }
+        ActionID.GO_PAGE_NEXT_20_ANIMATED -> repeatAction { book.animateRelative(20) }
+        ActionID.GO_PAGE_PREVIOUS_20_ANIMATED -> repeatAction { book.animateRelative(-20) }
 
-            override fun startScroll(area: TouchArea) = run { scroller = book.scroll() }
-            override fun scroll(delta: PositionF) = scroller.scroll(-delta)
-            override fun endScroll(velocity: PositionF) = scroller.end(-velocity)
-            override fun cancelScroll() = scroller.cancel()
-        }
-        ActionID.GO_NEXT_PAGE -> repeatAction { book.animateRelative(1) }
-        ActionID.GO_PREVIOUS_PAGE -> repeatAction { book.animateRelative(-1) }
-        ActionID.GO_NEXT_PAGE_WITHOUT_ANIMATION -> repeatAction { book.goRelative(1) }
-        ActionID.GO_PREVIOUS_PAGE_WITHOUT_ANIMATION -> repeatAction { book.goRelative(-1) }
-        ActionID.GO_NEXT_PAGE_10 -> performAction { book.animateRelative(10) }
-        ActionID.GO_PREVIOUS_PAGE_10 -> performAction { book.animateRelative(-10) }
-        ActionID.GO_BOOK_BEGIN -> NoneAction
-        ActionID.GO_BOOK_END -> NoneAction
-        ActionID.GO_NEXT_CHAPTER -> NoneAction
-        ActionID.GO_PREVIOUS_CHAPTER -> NoneAction
-        ActionID.GO_BACK_BY_HISTORY -> NoneAction
-        ActionID.GO_FORWARD_BY_HISTORY -> NoneAction
+        ActionID.GO_CHAPTER_NEXT -> repeatAction { book.goNextChapter() }
+        ActionID.GO_CHAPTER_PREVIOUS -> repeatAction { book.goPreviousChapter() }
+        ActionID.GO_BOOK_BEGIN -> repeatAction { book.goBegin() }
+        ActionID.GO_BOOK_END -> repeatAction { book.goEnd() }
 
-        ActionID.SELECT_WORD -> touchAction { reader.select(book.selections?.at(it.position)) }
-        ActionID.SELECT_WORD_AT_CENTER -> performAction { reader.select(book.selections?.center()) }
-        ActionID.TRANSLATE_WORD -> NoneAction
-        ActionID.SEARCH_WORD -> NoneAction
-        ActionID.WIKI_WORD -> NoneAction
+        ActionID.WORD_SELECT -> touchAction { reader.select(book.selections?.at(it.position)) }
 
-        ActionID.NEXT_THEME -> NoneAction
-        ActionID.PREVIOUS_THEME -> NoneAction
-        ActionID.TOGGLE_FULL_SCREEN -> NoneAction
-        ActionID.TOGGLE_ORIENTATION -> NoneAction
-        ActionID.TOGGLE_BOOK_CSS_ENABLED -> NoneAction
+        ActionID.SETTINGS_FONT_SIZE_CHANGE -> ChangeSetting(NumberSettingActionID.FONT_SIZE, settings.font::sizeDip, SettingValues.FONT_SIZE_DIP)
+        ActionID.SETTINGS_FONT_WIDTH_CHANGE -> ChangeSetting(NumberSettingActionID.FONT_WIDTH, settings.font::scaleX, SettingValues.FONT_WIDTH)
+        ActionID.SETTINGS_FONT_BOLDNESS_CHANGE -> ChangeSetting(NumberSettingActionID.FONT_BOLDNESS, settings.font::strokeWidthEm, SettingValues.FONT_BOLDNESS_EM)
+        ActionID.SETTINGS_FONT_SKEW_CHANGE -> ChangeSetting(NumberSettingActionID.FONT_SKEW, settings.font::skewX, SettingValues.FONT_SKEW)
+        ActionID.SETTINGS_FORMAT_PADDING_CHANGE -> ChangeSetting(NumberSettingActionID.FORMAT_PADDING, settings.format::paddingDip, SettingValues.FORMAT_PADDING)
+        ActionID.SETTINGS_FORMAT_LINE_HEIGHT_CHANGE -> ChangeSetting(NumberSettingActionID.FORMAT_LINE_HEIGHT, settings.format::lineHeightMultiplier, SettingValues.FORMAT_LINE_HEIGHT_MULTIPLIER)
+        ActionID.SETTINGS_FORMAT_LETTER_SPACING_CHANGE -> ChangeSetting(NumberSettingActionID.FORMAT_LETTER_SPACING, settings.format::letterSpacingEm, SettingValues.FONT_LETTER_SPACING_EM)
+        ActionID.SETTINGS_FORMAT_PARAGRAPH_SPACING_CHANGE -> ChangeSetting(NumberSettingActionID.FORMAT_PARAGRAPH_SPACING, settings.format::paragraphVerticalMarginEm, SettingValues.FORMAT_PARAGRAPH_VERTICAL_MARGIN_EM)
+        ActionID.SETTINGS_FORMAT_FIRST_LINE_INDENT_CHANGE -> ChangeSetting(NumberSettingActionID.FORMAT_FIRST_LINE_INDENT, settings.format::paragraphFirstLineIndentEm, SettingValues.FORMAT_FIRST_LINE_INDENT_EM)
+        ActionID.SETTINGS_SCREEN_BRIGHTNESS_CHANGE -> ChangeSetting(NumberSettingActionID.SCREEN_BRIGHTNESS, settings.screen::brightnessValueAndEnable, SettingValues.SCREEN_BRIGHTNESS)
 
-        ActionID.CHANGE_PAGE_MARGINS -> NoneAction
-        ActionID.CHANGE_TEXT_SIZE -> ChangeSettingAction(SettingActionID.TEXT_SIZE, settings.font::sizeDip, SettingValues.TEXT_SIZE)
-        ActionID.CHANGE_TEXT_LINE_HEIGHT -> ChangeSettingAction(SettingActionID.TEXT_LINE_HEIGHT, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER)
-        ActionID.CHANGE_TEXT_GAMMA -> ChangeSettingAction(SettingActionID.TEXT_GAMMA, settings.theme::textGammaCorrection, SettingValues.GAMMA_CORRECTION)
-        ActionID.CHANGE_TEXT_STROKE_WIDTH -> ChangeSettingAction(SettingActionID.TEXT_STROKE_WIDTH, settings.font::strokeWidthEm, SettingValues.TEXT_STROKE_WIDTH)
-        ActionID.CHANGE_TEXT_SCALE_X -> ChangeSettingAction(SettingActionID.TEXT_SCALE_X, settings.font::scaleX, SettingValues.TEXT_SCALE_X)
-        ActionID.CHANGE_TEXT_LETTER_SPACING -> ChangeSettingAction(SettingActionID.TEXT_LETTER_SPACING, settings.format::letterSpacingEm, SettingValues.TEXT_LETTER_SPACING)
-        ActionID.CHANGE_SCREEN_BRIGHTNESS -> NoneAction
+        ActionID.SETTINGS_FONT_SIZE_INCREASE -> IncreaseSetting(NumberSettingActionID.FONT_SIZE, settings.font::sizeDip, SettingValues.FONT_SIZE_DIP)
+        ActionID.SETTINGS_FONT_WIDTH_INCREASE -> IncreaseSetting(NumberSettingActionID.FONT_WIDTH, settings.font::scaleX, SettingValues.FONT_WIDTH)
+        ActionID.SETTINGS_FONT_BOLDNESS_INCREASE -> IncreaseSetting(NumberSettingActionID.FONT_BOLDNESS, settings.font::strokeWidthEm, SettingValues.FONT_BOLDNESS_EM)
+        ActionID.SETTINGS_FONT_SKEW_INCREASE -> IncreaseSetting(NumberSettingActionID.FONT_SKEW, settings.font::skewX, SettingValues.FONT_SKEW)
+        ActionID.SETTINGS_FORMAT_PADDING_INCREASE -> IncreaseSetting(NumberSettingActionID.FORMAT_PADDING, settings.format::paddingDip, SettingValues.FORMAT_PADDING)
+        ActionID.SETTINGS_FORMAT_LINE_HEIGHT_INCREASE -> IncreaseSetting(NumberSettingActionID.FORMAT_LINE_HEIGHT, settings.format::lineHeightMultiplier, SettingValues.FORMAT_LINE_HEIGHT_MULTIPLIER)
+        ActionID.SETTINGS_FORMAT_LETTER_SPACING_INCREASE -> IncreaseSetting(NumberSettingActionID.FORMAT_LETTER_SPACING, settings.format::letterSpacingEm, SettingValues.FONT_LETTER_SPACING_EM)
+        ActionID.SETTINGS_FORMAT_PARAGRAPH_SPACING_INCREASE -> IncreaseSetting(NumberSettingActionID.FORMAT_PARAGRAPH_SPACING, settings.format::paragraphVerticalMarginEm, SettingValues.FORMAT_PARAGRAPH_VERTICAL_MARGIN_EM)
+        ActionID.SETTINGS_FORMAT_FIRST_LINE_INDENT_INCREASE -> IncreaseSetting(NumberSettingActionID.FORMAT_FIRST_LINE_INDENT, settings.format::paragraphFirstLineIndentEm, SettingValues.FORMAT_FIRST_LINE_INDENT_EM)
+        ActionID.SETTINGS_SCREEN_BRIGHTNESS_INCREASE -> IncreaseSetting(NumberSettingActionID.SCREEN_BRIGHTNESS, settings.screen::brightnessValueAndEnable, SettingValues.SCREEN_BRIGHTNESS)
 
-        ActionID.INCREASE_PAGE_MARGINS -> NoneAction
-        ActionID.INCREASE_TEXT_SIZE -> IncreaseSettingAction(SettingActionID.TEXT_SIZE, settings.font::sizeDip, SettingValues.TEXT_SIZE)
-        ActionID.INCREASE_TEXT_LINE_HEIGHT -> IncreaseSettingAction(SettingActionID.TEXT_LINE_HEIGHT, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER)
-        ActionID.INCREASE_TEXT_GAMMA -> IncreaseSettingAction(SettingActionID.TEXT_GAMMA, settings.theme::textGammaCorrection, SettingValues.GAMMA_CORRECTION)
-        ActionID.INCREASE_TEXT_STROKE_WIDTH -> IncreaseSettingAction(SettingActionID.TEXT_STROKE_WIDTH, settings.font::strokeWidthEm, SettingValues.TEXT_STROKE_WIDTH)
-        ActionID.INCREASE_TEXT_SCALE_X -> IncreaseSettingAction(SettingActionID.TEXT_SCALE_X, settings.font::scaleX, SettingValues.TEXT_SCALE_X)
-        ActionID.INCREASE_TEXT_LETTER_SPACING -> IncreaseSettingAction(SettingActionID.TEXT_LETTER_SPACING, settings.format::letterSpacingEm, SettingValues.TEXT_LETTER_SPACING)
-        ActionID.INCREASE_SCREEN_BRIGHTNESS -> NoneAction
+        ActionID.SETTINGS_FONT_SIZE_DECREASE -> DecreaseSetting(NumberSettingActionID.FONT_SIZE, settings.font::sizeDip, SettingValues.FONT_SIZE_DIP)
+        ActionID.SETTINGS_FONT_WIDTH_DECREASE -> DecreaseSetting(NumberSettingActionID.FONT_WIDTH, settings.font::scaleX, SettingValues.FONT_WIDTH)
+        ActionID.SETTINGS_FONT_BOLDNESS_DECREASE -> DecreaseSetting(NumberSettingActionID.FONT_BOLDNESS, settings.font::strokeWidthEm, SettingValues.FONT_BOLDNESS_EM)
+        ActionID.SETTINGS_FONT_SKEW_DECREASE -> DecreaseSetting(NumberSettingActionID.FONT_SKEW, settings.font::skewX, SettingValues.FONT_SKEW)
+        ActionID.SETTINGS_FORMAT_PADDING_DECREASE -> DecreaseSetting(NumberSettingActionID.FORMAT_PADDING, settings.format::paddingDip, SettingValues.FORMAT_PADDING)
+        ActionID.SETTINGS_FORMAT_LINE_HEIGHT_DECREASE -> DecreaseSetting(NumberSettingActionID.FORMAT_LINE_HEIGHT, settings.format::lineHeightMultiplier, SettingValues.FORMAT_LINE_HEIGHT_MULTIPLIER)
+        ActionID.SETTINGS_FORMAT_LETTER_SPACING_DECREASE -> DecreaseSetting(NumberSettingActionID.FORMAT_LETTER_SPACING, settings.format::letterSpacingEm, SettingValues.FONT_LETTER_SPACING_EM)
+        ActionID.SETTINGS_FORMAT_PARAGRAPH_SPACING_DECREASE -> DecreaseSetting(NumberSettingActionID.FORMAT_PARAGRAPH_SPACING, settings.format::paragraphVerticalMarginEm, SettingValues.FORMAT_PARAGRAPH_VERTICAL_MARGIN_EM)
+        ActionID.SETTINGS_FORMAT_FIRST_LINE_INDENT_DECREASE -> DecreaseSetting(NumberSettingActionID.FORMAT_FIRST_LINE_INDENT, settings.format::paragraphFirstLineIndentEm, SettingValues.FORMAT_FIRST_LINE_INDENT_EM)
+        ActionID.SETTINGS_SCREEN_BRIGHTNESS_DECREASE -> DecreaseSetting(NumberSettingActionID.SCREEN_BRIGHTNESS, settings.screen::brightnessValueAndEnable, SettingValues.SCREEN_BRIGHTNESS)
 
-        ActionID.DECREASE_PAGE_MARGINS -> NoneAction
-        ActionID.DECREASE_TEXT_SIZE -> DecreaseSettingsAction(SettingActionID.TEXT_SIZE, settings.font::sizeDip, SettingValues.TEXT_SIZE)
-        ActionID.DECREASE_TEXT_LINE_HEIGHT -> DecreaseSettingsAction(SettingActionID.TEXT_LINE_HEIGHT, settings.format::lineHeightMultiplier, SettingValues.LINE_HEIGHT_MULTIPLIER)
-        ActionID.DECREASE_TEXT_GAMMA -> DecreaseSettingsAction(SettingActionID.TEXT_GAMMA, settings.theme::textGammaCorrection, SettingValues.GAMMA_CORRECTION)
-        ActionID.DECREASE_TEXT_STROKE_WIDTH -> DecreaseSettingsAction(SettingActionID.TEXT_STROKE_WIDTH, settings.font::strokeWidthEm, SettingValues.TEXT_STROKE_WIDTH)
-        ActionID.DECREASE_TEXT_SCALE_X -> DecreaseSettingsAction(SettingActionID.TEXT_SCALE_X, settings.font::scaleX, SettingValues.TEXT_SCALE_X)
-        ActionID.DECREASE_TEXT_LETTER_SPACING -> DecreaseSettingsAction(SettingActionID.TEXT_LETTER_SPACING, settings.format::letterSpacingEm, SettingValues.TEXT_LETTER_SPACING)
-        ActionID.DECREASE_SCREEN_BRIGHTNESS -> NoneAction
+        ActionID.SETTINGS_THEME_STYLE_SWITCH -> performAction { settings.switchStyle() }
+        ActionID.SETTINGS_SCREEN_FOOTER_SWITCH -> performAction { settings.screen.footerEnabled = !settings.screen.footerEnabled }
+    }
+
+    private fun scrollPage() = object : Action {
+        lateinit var scroller: PageScroller
+
+        override fun startScroll(area: TouchArea) = run { scroller = book.scroll() }
+        override fun scroll(delta: PositionF) = scroller.scroll(-delta)
+        override fun endScroll(velocity: PositionF) = scroller.end(-velocity)
+        override fun cancelScroll() = scroller.cancel()
     }
 
     private fun repeatAction(action: () -> Unit) = object : RepeatAction(Dispatchers.Main, periodMillis = 400) {
         override fun perform() = action()
     }
 
-    private inner class ChangeSettingAction(
-            private val id: SettingActionID,
+    private inner class ChangeSetting(
+            private val id: NumberSettingActionID,
             private val property: KMutableProperty0<Float>,
             private val values: FloatArray
     ) : Action {
-        private val SENSITIVITY = 16F * density
+        private val sensitivity = 16F * density
 
         private var deltaFromLast = 0F
 
@@ -127,9 +126,9 @@ class Actions(
 
         override fun change(delta: Float) {
             deltaFromLast += delta
-            if (abs(deltaFromLast) >= SENSITIVITY) {
-                val indexDelta: Int = round(deltaFromLast / SENSITIVITY)
-                deltaFromLast -= indexDelta * SENSITIVITY
+            if (abs(deltaFromLast) >= sensitivity) {
+                val indexDelta: Int = round(deltaFromLast / sensitivity)
+                deltaFromLast -= indexDelta * sensitivity
                 setBookSetting(values, property, indexDelta)
                 showPopup()
             }
@@ -144,8 +143,8 @@ class Actions(
         }
     }
 
-    private abstract inner class DeltaSettingAction(
-            private val id: SettingActionID,
+    private abstract inner class DeltaSetting(
+            private val id: NumberSettingActionID,
             private val property: KMutableProperty0<Float>,
             private val values: FloatArray,
             private val offset: Int
@@ -175,13 +174,13 @@ class Actions(
         }
     }
 
-    private inner class IncreaseSettingAction(
-            id: SettingActionID, property: KMutableProperty0<Float>, values: FloatArray
-    ) : DeltaSettingAction(id, property, values, 1)
+    private inner class IncreaseSetting(
+            id: NumberSettingActionID, property: KMutableProperty0<Float>, values: FloatArray
+    ) : DeltaSetting(id, property, values, 1)
 
-    private inner class DecreaseSettingsAction(
-            id: SettingActionID, property: KMutableProperty0<Float>, values: FloatArray
-    ) : DeltaSettingAction(id, property, values, -1)
+    private inner class DecreaseSetting(
+            id: NumberSettingActionID, property: KMutableProperty0<Float>, values: FloatArray
+    ) : DeltaSetting(id, property, values, -1)
 
     private fun setBookSetting(values: FloatArray, property: KMutableProperty0<Float>, offset: Int) {
         val oldValue = property.get()

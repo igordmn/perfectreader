@@ -18,21 +18,22 @@ import com.dmi.perfectreader.settings.SavedThemes
 import com.dmi.perfectreader.settings.themeSettings
 import com.dmi.perfectreader.ui.settings.SettingsUI
 import com.dmi.perfectreader.ui.settings.common.SettingBitmapView
-import com.dmi.perfectreader.ui.settings.common.list.SettingMultiChoiceViewAdapter
 import com.dmi.perfectreader.ui.settings.common.details
 import com.dmi.perfectreader.ui.settings.common.detailsToolbar
+import com.dmi.perfectreader.ui.settings.common.list.SettingMultiChoiceViewAdapter
 import com.dmi.util.android.view.*
 import com.dmi.util.collection.removeAt
 import com.google.android.material.snackbar.Snackbar
 import org.jetbrains.anko.*
 
-fun ViewBuild.themeSavedDetails(model: SettingsUI): LinearLayoutExt {
+fun ViewBuild.stylesDetails(model: SettingsUI): LinearLayoutExt {
     val adapter = SettingMultiChoiceViewAdapter(
             context,
-            { context.main.settings.savedThemes.list },
+            { context.main.settings.styles.saved.list },
             ::ThemeSavedItemView,
-            onItemClick = {
+            onItemClick = { position, it ->
                 context.main.settings.theme.load(it)
+                context.main.settings.styles.lastAppliedIndex = position
                 model.screens.goBackward()
             }
     )
@@ -70,7 +71,7 @@ fun ViewBuild.themeSavedDetails(model: SettingsUI): LinearLayoutExt {
         }
 
         private fun undo() {
-            context.main.settings.savedThemes = old!!
+            context.main.settings.styles.saved = old!!
 
             if (recyclerView.isAttachedToWindow) {
                 removedPositions!!
@@ -83,9 +84,9 @@ fun ViewBuild.themeSavedDetails(model: SettingsUI): LinearLayoutExt {
     fun selectAll() = adapter.selectAll()
 
     fun removeSelected() {
-        val old = context.main.settings.savedThemes
+        val old = context.main.settings.styles.saved
         val positions = adapter.selectedPositions
-        context.main.settings.savedThemes = SavedThemes(context.main.settings.savedThemes.list.removeAt(positions))
+        context.main.settings.styles.saved = SavedThemes(context.main.settings.styles.saved.list.removeAt(positions))
         positions
                 .sortedDescending()
                 .forEach(adapter::notifyItemRemoved)
@@ -95,8 +96,8 @@ fun ViewBuild.themeSavedDetails(model: SettingsUI): LinearLayoutExt {
 
     fun add() {
         val theme = context.main.settings.theme.save()
-        context.main.settings.savedThemes = SavedThemes(context.main.settings.savedThemes.list + theme)
-        val lastIndex = context.main.settings.savedThemes.list.size - 1
+        context.main.settings.styles.saved = SavedThemes(context.main.settings.styles.saved.list + theme)
+        val lastIndex = context.main.settings.styles.saved.list.size - 1
         adapter.notifyItemInserted(lastIndex)
         recyclerView.smoothScrollToPosition(lastIndex)
     }

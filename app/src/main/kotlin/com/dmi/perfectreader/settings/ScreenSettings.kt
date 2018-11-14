@@ -21,6 +21,13 @@ class ScreenSettings(store: ValueStore) {
 
 val ScreenSettings.brightness get() = if (brightnessIsSystem) ScreenBrightness.System else ScreenBrightness.Manual(brightnessValue)
 
+var ScreenSettings.brightnessValueAndEnable: Float
+    get() = brightnessValue
+    set(value) {
+        brightnessValue = value
+        brightnessIsSystem = false
+    }
+
 sealed class ScreenBrightness {
     object System : ScreenBrightness()
     class Manual(val value: Float): ScreenBrightness()

@@ -1,3 +1,3 @@
 package com.dmi.perfectreader.ui.action
 
-class PerformingAction(val id: SettingActionID, val value: Any)
+class PerformingAction(val id: NumberSettingActionID, val value: Float)

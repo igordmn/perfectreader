@@ -18,10 +18,10 @@ fun Places.font(model: SettingsUI, settings: FontSettings) = place {
                     settings::isBold, settings::isItalic,
                     R.string.settingsUIFontStyleBold, R.string.settingsUIFontStyleItalic
             ), R.string.settingsUIFontStyle),
-            floatSetting(settings::sizeDip, SettingValues.TEXT_SIZE, R.string.settingsUIFontSize),
-            floatSetting(settings::scaleX, SettingValues.TEXT_SCALE_X, R.string.settingsUIFontWidth),
-            floatSetting(settings::strokeWidthEm, SettingValues.TEXT_STROKE_WIDTH, R.string.settingsUIFontBoldness),
-            floatSetting(settings::skewX, SettingValues.TEXT_SKEW_X, R.string.settingsUIFontSkew),
+            floatSetting(settings::sizeDip, SettingValues.FONT_SIZE_DIP, R.string.settingsUIFontSize),
+            floatSetting(settings::scaleX, SettingValues.FONT_WIDTH, R.string.settingsUIFontWidth),
+            floatSetting(settings::strokeWidthEm, SettingValues.FONT_BOLDNESS_EM, R.string.settingsUIFontBoldness),
+            floatSetting(settings::skewX, SettingValues.FONT_SKEW, R.string.settingsUIFontSkew),
             booleanSetting(settings::antialiasing, R.string.settingsUIFontAntialiasing),
             booleanSetting(settings::hinting, R.string.settingsUIFontHinting, R.string.settingsUIFontHintingDesc)
     )

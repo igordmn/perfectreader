@@ -56,8 +56,8 @@ class ControlSettings(store: ValueStore) {
             var configuration by store.value(configuration)
 
             var topLeft by store.value(left)
-            var topMiddle1 by store.value(left)
-            var topMiddle2 by store.value(left)
+            var topMiddle1 by store.value(middle)
+            var topMiddle2 by store.value(middle)
             var topRight by store.value(right)
 
             var middle1Left by store.value(left)
@@ -71,8 +71,8 @@ class ControlSettings(store: ValueStore) {
             var middle2Right by store.value(right)
 
             var bottomLeft by store.value(left)
-            var bottomMiddle1 by store.value(right)
-            var bottomMiddle2 by store.value(right)
+            var bottomMiddle1 by store.value(middle)
+            var bottomMiddle2 by store.value(middle)
             var bottomRight by store.value(right)
 
             fun property(zone: TouchZone): KMutableProperty0<ActionID> = when (zone) {
@@ -162,54 +162,54 @@ class ControlSettings(store: ValueStore) {
         class SingleTaps(store: ValueStore) : Taps(
                 store,
                 TouchZoneConfiguration.NINE,
-                left = ActionID.GO_PREVIOUS_PAGE,
+                left = ActionID.GO_PAGE_PREVIOUS,
                 middle = ActionID.SHOW_MENU,
-                right = ActionID.GO_NEXT_PAGE
+                right = ActionID.GO_PAGE_NEXT
         )
 
-        class LongTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE, ActionID.SELECT_WORD)
+        class LongTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE, ActionID.WORD_SELECT)
         class DoubleTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE, ActionID.NONE)
         class TwoFingersSingleTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE)
         class TwoFingersLongTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE)
         class TwoFingersDoubleTaps(store: ValueStore) : Taps(store, TouchZoneConfiguration.SINGLE)
 
-        class LeftScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.SCROLL)
-        class RightScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.SCROLL)
+        class LeftScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.SCROLL_PAGE)
+        class RightScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.SCROLL_PAGE)
 
         class UpScrolls(store: ValueStore) : Scrolls(
                 store,
                 TouchZoneConfiguration.THREE_COLUMNS_FIXED,
-                ActionID.CHANGE_SCREEN_BRIGHTNESS,
-                ActionID.SCROLL,
-                ActionID.SCROLL
+                ActionID.SETTINGS_SCREEN_BRIGHTNESS_CHANGE,
+                ActionID.SCROLL_PAGE,
+                ActionID.SCROLL_PAGE
         )
 
         class DownScrolls(store: ValueStore) : Scrolls(
                 store,
                 TouchZoneConfiguration.THREE_COLUMNS_FIXED,
-                ActionID.CHANGE_SCREEN_BRIGHTNESS,
-                ActionID.SCROLL,
-                ActionID.SCROLL
+                ActionID.SETTINGS_SCREEN_BRIGHTNESS_CHANGE,
+                ActionID.SCROLL_PAGE,
+                ActionID.SCROLL_PAGE
         )
 
-        class TwoFingersLeftScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.GO_NEXT_PAGE_10)
-        class TwoFingersRightScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.GO_PREVIOUS_PAGE_10)
-        class TwoFingersUpScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.CHANGE_TEXT_LINE_HEIGHT)
-        class TwoFingersDownScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.CHANGE_TEXT_LINE_HEIGHT)
+        class TwoFingersLeftScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.GO_PAGE_NEXT_10)
+        class TwoFingersRightScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.GO_PAGE_PREVIOUS_10)
+        class TwoFingersUpScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.SETTINGS_FORMAT_LINE_HEIGHT_CHANGE)
+        class TwoFingersDownScrolls(store: ValueStore) : Scrolls(store, TouchZoneConfiguration.SINGLE, ActionID.SETTINGS_FORMAT_LINE_HEIGHT_CHANGE)
 
         class TwoFingersPinches(store: ValueStore) {
-            var pinchIn by store.value(ActionID.CHANGE_TEXT_SIZE)
-            var pinchOut by store.value(ActionID.CHANGE_TEXT_SIZE)
+            var pinchIn by store.value(ActionID.SETTINGS_FONT_SIZE_CHANGE)
+            var pinchOut by store.value(ActionID.SETTINGS_FONT_SIZE_CHANGE)
         }
     }
 
     class HardKeys(store: ValueStore) {
-        var volumeUp by store.value(ActionID.GO_PREVIOUS_PAGE)
-        var volumeDown by store.value(ActionID.GO_NEXT_PAGE)
+        var volumeDown by store.value(ActionID.GO_PAGE_NEXT_10)
+        var volumeUp by store.value(ActionID.GO_PAGE_PREVIOUS_10)
 
         fun property(hardKey: HardKey): KMutableProperty0<ActionID> = when (hardKey) {
-            HardKey.VOLUME_UP -> ::volumeUp
             HardKey.VOLUME_DOWN -> ::volumeDown
+            HardKey.VOLUME_UP -> ::volumeUp
         }
     }
 }
