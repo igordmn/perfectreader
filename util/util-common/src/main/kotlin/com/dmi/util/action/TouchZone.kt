@@ -1,6 +1,7 @@
 package com.dmi.util.action
 
 enum class TouchZone1D { FIRST, MIDDLE1, MIDDLE2, LAST }
+
 enum class TouchZone {
     TOP_LEFT, TOP_MIDDLE1, TOP_MIDDLE2, TOP_RIGHT,
     MIDDLE1_LEFT, MIDDLE1_MIDDLE1, MIDDLE1_MIDDLE2, MIDDLE1_RIGHT,

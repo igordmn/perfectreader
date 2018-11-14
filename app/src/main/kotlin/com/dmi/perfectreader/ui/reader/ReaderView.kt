@@ -85,8 +85,11 @@ private fun View.applyBrightness(model: Reader) {
 }
 
 private fun View.applyFullscreen(model: Reader) {
+    val activity = context as ActivityExt<*>
+    val original = activity.window.decorView.systemUiVisibility
+
     fun Activity.hideSystemUI() {
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
+        window.decorView.systemUiVisibility = (original or View.SYSTEM_UI_FLAG_IMMERSIVE
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -95,12 +98,10 @@ private fun View.applyFullscreen(model: Reader) {
     }
 
     fun Activity.showSystemUI() {
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        window.decorView.systemUiVisibility = (original or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
     }
-
-    val activity = context as ActivityExt<*>
 
     autorun {
         if (model.popup == null) {

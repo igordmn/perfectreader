@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Main" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="Theme.Main.Common" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowBackground">@color/background</item>
 
         <item name="colorPrimary">@color/primary</item>
@@ -37,6 +37,8 @@
 
         <item name="verticalRecyclerViewStyle">@style/VerticalRecyclerView</item>
     </style>
+
+    <style name="Theme.Main" parent="Theme.Main.Common"/>
 
     <style name="fullScreenDialog">
         <item name="android:windowFrame">@null</item>
