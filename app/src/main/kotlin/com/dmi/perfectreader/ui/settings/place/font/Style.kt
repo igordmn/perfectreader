@@ -1,6 +1,5 @@
-package com.dmi.perfectreader.ui.settings.custom
+package com.dmi.perfectreader.ui.settings.place.font
 
-import android.content.Context
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.TooltipCompat
@@ -11,8 +10,7 @@ import org.jetbrains.anko.dip
 import org.jetbrains.anko.image
 import kotlin.reflect.KMutableProperty0
 
-fun fontStyleView(
-        context: Context,
+fun ViewBuild.fontStyleView(
         boldProperty: KMutableProperty0<Boolean>,
         italicProperty: KMutableProperty0<Boolean>,
         @StringRes

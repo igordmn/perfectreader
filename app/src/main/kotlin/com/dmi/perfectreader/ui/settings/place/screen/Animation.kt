@@ -1,32 +1,28 @@
-package com.dmi.perfectreader.ui.settings.custom
+package com.dmi.perfectreader.ui.settings.place.screen
 
 import android.content.Context
 import android.widget.ImageView
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.ui.book.Book
 import com.dmi.perfectreader.main
+import com.dmi.perfectreader.ui.book.Book
 import com.dmi.perfectreader.ui.settings.SettingsUI
 import com.dmi.perfectreader.ui.settings.common.PreviewView
-import com.dmi.perfectreader.ui.settings.common.SettingChoiceListView
+import com.dmi.perfectreader.ui.settings.common.list.SettingSingleChoiceListView
 import com.dmi.perfectreader.ui.settings.common.details
 import com.dmi.util.android.opengl.GLContext
-import com.dmi.util.android.view.Bindable
-import com.dmi.util.android.view.GridAutoFitLayoutManager
-import com.dmi.util.android.view.ViewLoad
-import com.dmi.util.android.view.autorun
+import com.dmi.util.android.view.*
 import com.dmi.util.graphic.Size
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.padding
 import java.net.URI
 
-fun screenAnimationDetails(
-        context: Context,
+fun ViewBuild.screenAnimationDetails(
         model: SettingsUI,
         book: Book,
         glContext: GLContext
 ) = details(
-        context, model, R.string.settingsUIScreenAnimation,
-        SettingChoiceListView(
+        model, R.string.settingsUIScreenAnimation,
+        SettingSingleChoiceListView(
                 context,
                 context.main.settings.screen::animationPath,
                 context.main.resources.pageAnimations.map { it.toString() },
@@ -42,8 +38,8 @@ fun screenAnimationDetails(
         }
 )
 
-fun screenAnimationPreview(
-        context: Context, glContext: GLContext
+fun ViewBuild.screenAnimationPreview(
+        glContext: GLContext
 ) = PreviewView(ScreenAnimationPreviewView(context, glContext, size = 24).apply {
     autorun {
         bind(context.main.settings.screen.animationPath)

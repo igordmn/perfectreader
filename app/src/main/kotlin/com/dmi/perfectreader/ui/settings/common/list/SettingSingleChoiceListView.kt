@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.ui.settings.common
+package com.dmi.perfectreader.ui.settings.common.list
 
 import android.content.Context
 import android.view.View
@@ -14,7 +14,7 @@ import org.jetbrains.anko.*
 import kotlin.math.max
 import kotlin.reflect.KMutableProperty0
 
-class SettingChoiceListView<T, V>(
+class SettingSingleChoiceListView<T, V>(
         context: Context,
         private val property: KMutableProperty0<T>,
         private val items: List<T>,

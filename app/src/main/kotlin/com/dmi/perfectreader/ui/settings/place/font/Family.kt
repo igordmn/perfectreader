@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.ui.settings.custom
+package com.dmi.perfectreader.ui.settings.place.font
 
 import android.content.Context
 import android.graphics.Typeface
@@ -12,7 +12,7 @@ import com.dmi.perfectreader.common.Nano
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.ui.settings.SettingsUI
 import com.dmi.perfectreader.ui.settings.common.PreviewView
-import com.dmi.perfectreader.ui.settings.common.SettingChoiceListView
+import com.dmi.perfectreader.ui.settings.common.list.SettingSingleChoiceListView
 import com.dmi.perfectreader.ui.settings.common.details
 import com.dmi.util.android.font.AndroidFont
 import com.dmi.util.android.view.*
@@ -25,15 +25,15 @@ import org.jetbrains.anko.singleLine
 import org.jetbrains.anko.textColor
 import kotlin.reflect.KProperty0
 
-fun fontFamilyDetails(context: Context, model: SettingsUI) = details(
-        context, model, R.string.settingsUIFontFamily,
-        SettingChoiceListView(
-            context,
-            context.main.settings.font::fontFamily,
-            context.main.resources.fonts.familyNames,
-            ::FontFamilyItemView,
-            onItemClick = {},
-            onItemSecondClick = model.screens::goBackward
+fun ViewBuild.fontFamilyDetails(model: SettingsUI) = details(
+        model, R.string.settingsUIFontFamily,
+        SettingSingleChoiceListView(
+                context,
+                context.main.settings.font::fontFamily,
+                context.main.resources.fonts.familyNames,
+                ::FontFamilyItemView,
+                onItemClick = {},
+                onItemSecondClick = model.screens::goBackward
         )
 )
 

@@ -24,15 +24,21 @@ import org.jetbrains.anko.wrapContent
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty0
 
-fun colorDetails(
-        context: Context,
+fun Places.colorPlace(model: SettingsUI, property: KMutableProperty0<Int>, @StringRes titleRes: Int) = place {
+    val hex = dialog {
+        colorHEXDialog(model, property)
+    }
+
+    colorDetails(model, titleRes, property, hex)
+}
+
+fun ViewBuild.colorDetails(
         model: SettingsUI,
         @StringRes titleRes: Int,
         property: KMutableProperty0<Int>,
         hex: Places.Place
 ) = details(
-        context,
-        detailsToolbar(context, titleRes, model).apply {
+        detailsToolbar(titleRes, model).apply {
             menu.add(R.string.settingsUIColorHEX).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 onClick {
@@ -50,8 +56,7 @@ fun colorDetails(
         }
 )
 
-fun colorHEXDialog(
-        context: Context,
+fun ViewBuild.colorHEXDialog(
         model: SettingsUI,
         property: KMutableProperty0<Int>
 ): AlertDialog {
@@ -84,7 +89,7 @@ fun colorHEXDialog(
 
 private fun colorToHEX(color: Int) = String.format("%06x", 0xFFFFFF and color)
 
-fun colorPreview(context: Context, property: KProperty0<Int>) = PreviewView(ColorPreviewView(context, property))
+fun ViewBuild.colorPreview(property: KProperty0<Int>) = PreviewView(ColorPreviewView(context, property))
 
 class ColorPreviewView(
         context: Context,

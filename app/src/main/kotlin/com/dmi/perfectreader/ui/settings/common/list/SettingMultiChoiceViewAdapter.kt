@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.ui.settings.common
+package com.dmi.perfectreader.ui.settings.common.list
 
 import android.content.Context
 import android.view.View
@@ -12,12 +12,12 @@ import com.dmi.util.scope.observable
 import org.jetbrains.anko.*
 
 // todo tune ripple effect
-class SettingSelectListViewAdapter<T, V>(
+class SettingMultiChoiceViewAdapter<T, V>(
         private val context: Context,
         private val getItems: () -> List<T>,
         private val createItemView: (Context) -> V,
         private val onItemClick: (T) -> Unit = {}
-) : BindableViewAdapter<SettingSelectListViewAdapter<*, *>.ItemView>() where V : View, V : Bindable<T> {
+) : BindableViewAdapter<SettingMultiChoiceViewAdapter<*, *>.ItemView>() where V : View, V : Bindable<T> {
     private val allItemViews = ArrayList<ItemView>()
     var selectedPositions: Set<Int> by observable(emptySet())
         private set

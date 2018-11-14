@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.ui.settings.common
 
-import android.content.Context
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -12,15 +11,13 @@ import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.wrapContent
 
-fun details(
-        context: Context,
+fun ViewBuild.details(
         model: SettingsUI,
         @StringRes titleRes: Int,
         content: View
-) = details(context, detailsToolbar(context, titleRes, model), content)
+) = details(detailsToolbar(titleRes, model), content)
 
-fun details(
-        context: Context,
+fun ViewBuild.details(
         toolbar: View,
         content: View
 ) = LinearLayoutExt(context).apply {
@@ -31,8 +28,7 @@ fun details(
     child(params(matchParent, matchParent, weight = 1F), content)
 }
 
-fun detailsToolbar(
-        context: Context,
+fun ViewBuild.detailsToolbar(
         titleRes: Int,
         model: SettingsUI
 ) = Toolbar(context).apply {

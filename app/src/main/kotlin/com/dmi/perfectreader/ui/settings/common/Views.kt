@@ -1,6 +1,5 @@
 package com.dmi.perfectreader.ui.settings.common
 
-import android.content.Context
 import android.view.Gravity
 import android.view.View
 import android.view.ViewStub
@@ -9,6 +8,8 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.ui.settings.SettingsUI
@@ -19,18 +20,34 @@ import org.jetbrains.anko.*
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty0
 
+fun ViewBuild.verticalScroll(vararg list: View) = NestedScrollView(context).apply {
+    id = generateId()
+    child(params(matchParent, wrapContent), LinearLayoutCompat(context).apply {
+        orientation = LinearLayoutCompat.VERTICAL
+        list.forEach {
+            child(params(matchParent, wrapContent), it)
+        }
+    })
+}
+
+infix fun View.visibleIf(condition: () -> Boolean): View {
+    autorun {
+        isVisible = condition()
+    }
+    return this
+}
+
 class PreviewView(val view: View, val withPadding: Boolean = true, val isClickable: Boolean = true)
 
-fun emptyPreview(context: Context) = PreviewView(ViewStub(context))
+fun ViewBuild.emptyPreview() = PreviewView(ViewStub(context))
 
-fun <T> propertyPreview(context: Context, property: KProperty0<T>, format: (value: T) -> String) = PreviewView(TextView(context).apply {
+fun <T> ViewBuild.propertyPreview(property: KProperty0<T>, format: (value: T) -> String) = PreviewView(TextView(context).apply {
     autorun {
         text = format(property.get())
     }
 })
 
-fun detailsSetting(
-        context: Context,
+fun ViewBuild.detailsSetting(
         model: SettingsUI,
         preview: PreviewView,
         place: Places.Place,
@@ -39,15 +56,14 @@ fun detailsSetting(
         @StringRes
         subtitleRes: Int? = null
 ) : View {
-    return titleSetting(context, preview, titleRes, subtitleRes).apply {
+    return titleSetting(preview, titleRes, subtitleRes).apply {
         onClick {
             model.screens.goForward(place.id)
         }
     }
 }
 
-fun popupSetting(
-        context: Context,
+fun ViewBuild.popupSetting(
         model: SettingsUI,
         preview: PreviewView,
         place: Places.Place,
@@ -56,15 +72,14 @@ fun popupSetting(
         @StringRes
         subtitleRes: Int? = null
 ) : View {
-    return titleSetting(context, preview, titleRes, subtitleRes).apply {
+    return titleSetting(preview, titleRes, subtitleRes).apply {
         onClick {
             model.popup = place.id
         }
     }
 }
 
-fun floatSetting(
-        context: Context,
+fun ViewBuild.floatSetting(
         property: KMutableProperty0<Float>,
         values: FloatArray,
         @StringRes
@@ -127,15 +142,14 @@ fun floatSetting(
         })
     }
 
-    return titleSetting(context, PreviewView(view, withPadding = false), titleRes, subtitleRes).apply {
+    return titleSetting(PreviewView(view, withPadding = false), titleRes, subtitleRes).apply {
         onClick {
             editNumber.requestFocus()
         }
     }
 }
 
-fun booleanSetting(
-        context: Context,
+fun ViewBuild.booleanSetting(
         property: KMutableProperty0<Boolean>,
         @StringRes
         titleRes: Int,
@@ -151,15 +165,14 @@ fun booleanSetting(
         }
     }
 
-    return titleSetting(context, PreviewView(switch), titleRes, subtitleRes).apply {
+    return titleSetting(PreviewView(switch), titleRes, subtitleRes).apply {
         onClick {
             switch.performClick()
         }
     }
 }
 
-fun titleSetting(
-        context: Context,
+fun ViewBuild.titleSetting(
         previewView: PreviewView,
         @StringRes
         titleRes: Int,

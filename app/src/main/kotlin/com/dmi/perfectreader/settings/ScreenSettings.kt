@@ -41,4 +41,12 @@ var ScreenSettings.footerElements: ScreenFooterElements
         footerEnabled = value.pageNumber || value.numberOfPages || value.chapter
     }
 
+var ScreenSettings.footerElementsArray: BooleanArray
+    get() = footerElements.toArray()
+    set(value) {
+        footerElements = value.toElements()
+    }
+
 class ScreenFooterElements(val pageNumber: Boolean, val numberOfPages: Boolean, val chapter: Boolean)
+fun BooleanArray.toElements() = ScreenFooterElements(this[0], this[1], this[2])
+fun ScreenFooterElements.toArray() = booleanArrayOf(pageNumber, numberOfPages, chapter)

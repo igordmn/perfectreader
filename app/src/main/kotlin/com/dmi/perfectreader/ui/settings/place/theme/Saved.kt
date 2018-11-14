@@ -1,4 +1,4 @@
-package com.dmi.perfectreader.ui.settings.custom
+package com.dmi.perfectreader.ui.settings.place.theme
 
 import android.content.Context
 import android.graphics.Typeface
@@ -18,7 +18,7 @@ import com.dmi.perfectreader.settings.SavedThemes
 import com.dmi.perfectreader.settings.themeSettings
 import com.dmi.perfectreader.ui.settings.SettingsUI
 import com.dmi.perfectreader.ui.settings.common.SettingBitmapView
-import com.dmi.perfectreader.ui.settings.common.SettingSelectListViewAdapter
+import com.dmi.perfectreader.ui.settings.common.list.SettingMultiChoiceViewAdapter
 import com.dmi.perfectreader.ui.settings.common.details
 import com.dmi.perfectreader.ui.settings.common.detailsToolbar
 import com.dmi.util.android.view.*
@@ -26,8 +26,8 @@ import com.dmi.util.collection.removeAt
 import com.google.android.material.snackbar.Snackbar
 import org.jetbrains.anko.*
 
-fun themeSavedDetails(context: Context, model: SettingsUI): LinearLayoutExt {
-    val adapter = SettingSelectListViewAdapter(
+fun ViewBuild.themeSavedDetails(model: SettingsUI): LinearLayoutExt {
+    val adapter = SettingMultiChoiceViewAdapter(
             context,
             { context.main.settings.savedThemes.list },
             ::ThemeSavedItemView,
@@ -123,7 +123,7 @@ fun themeSavedDetails(context: Context, model: SettingsUI): LinearLayoutExt {
     }
 
     fun toolbar() = FrameLayout(context).apply {
-        child(params(matchParent, wrapContent), detailsToolbar(context, R.string.settingsUIThemeSaved, model).apply {
+        child(params(matchParent, wrapContent), detailsToolbar(R.string.settingsUIThemeSaved, model).apply {
             menu.add(R.string.settingsUIThemeSavedAdd).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 icon = drawable(R.drawable.ic_plus, color(R.color.onBackground))
@@ -140,11 +140,7 @@ fun themeSavedDetails(context: Context, model: SettingsUI): LinearLayoutExt {
         })
     }
 
-    return details(
-            context,
-            toolbar(),
-            recyclerView
-    )
+    return details(toolbar(), recyclerView)
 }
 
 class ThemeSavedItemView(context: Context) : FrameLayout(context), Bindable<SavedTheme> {

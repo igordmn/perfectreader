@@ -30,14 +30,13 @@ import org.jetbrains.anko.*
 
 fun ViewBuild.libraryView(model: Library): View {
     val places = object : Places() {
-        val sort = object : Place() {
-            private val values = arrayOf(Library.Sort.Field.Name, Library.Sort.Field.Author, Library.Sort.Field.Size, Library.Sort.Field.ReadPercent)
-            private val names = arrayOf(
-                    R.string.librarySortName, R.string.librarySortAuthor,
-                    R.string.librarySortSize, R.string.librarySortReadPercent
+        val sort = place {
+            val values = arrayOf(Library.Sort.Field.Name, Library.Sort.Field.Author, Library.Sort.Field.Size, Library.Sort.Field.ReadPercent)
+            val names = arrayOf(
+                    R.string.librarySortName, R.string.librarySortAuthor, R.string.librarySortSize, R.string.librarySortReadPercent
             ).map { context.string(it) }.toTypedArray()
 
-            override fun ViewBuild.view() = DialogView(context) {
+            DialogView(context) {
                 var fieldIndex = values.indexOf(model.sort.field)
 
                 fun apply(method: Library.Sort.Method) {
