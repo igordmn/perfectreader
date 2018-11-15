@@ -2,11 +2,9 @@ package com.dmi.perfectreader.ui.settings.place.control
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.graphics.Color
 import android.text.TextUtils
-import android.view.Gravity
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -246,74 +244,79 @@ fun ViewBuild.cell(
         isSmallHorizontal: Boolean,
         @DrawableRes icon: Int? = null
 ) = FrameLayout(context).apply {
-    val menuAnchor = child(params(0, 0, gravity = Gravity.CENTER), View(context).apply {
-        visibility = View.INVISIBLE
+    val menuAnchor = child(params(1, 1), View(context).apply {
+        backgroundColor = Color.TRANSPARENT
     })
 
-    child(params(matchParent, matchParent), FrameLayout(context).apply {
-        backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
+    backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
 
-        val textView = TextView(context).apply {
-            TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
-            textColor = color(R.color.onBackground)
-            textSize = spFloat(8F)
-            gravity = Gravity.CENTER
-            padding = dip(4)
-            ellipsize = TextUtils.TruncateAt.END
-        }
+    val textView = TextView(context).apply {
+        TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
+        textColor = color(R.color.onBackground)
+        textSize = spFloat(8F)
+        gravity = Gravity.CENTER
+        padding = dip(4)
+        ellipsize = TextUtils.TruncateAt.END
+    }
 
-        @SuppressLint("RtlHardcoded")
-        when {
-            icon != null && !isSmallVertical -> child(params(matchParent, matchParent), LinearLayoutCompat(context).apply {
-                orientation = LinearLayoutCompat.VERTICAL
+    @SuppressLint("RtlHardcoded")
+    when {
+        icon != null && !isSmallVertical -> child(params(matchParent, matchParent), LinearLayoutCompat(context).apply {
+            orientation = LinearLayoutCompat.VERTICAL
 
-                child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
-                    child(params(dip(24), dip(24), gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL), ImageView(context).apply {
-                        image = drawable(icon, color(R.color.onBackground).withOpacity(0.10))
-                    })
-                })
-
-                child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
-                    child(params(wrapContent, wrapContent, gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL), textView)
+            child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
+                child(params(dip(24), dip(24), gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL), ImageView(context).apply {
+                    image = drawable(icon, color(R.color.onBackground).withOpacity(0.10))
                 })
             })
 
-            icon != null && isSmallVertical -> child(params(matchParent, matchParent), LinearLayoutCompat(context).apply {
-                orientation = LinearLayoutCompat.HORIZONTAL
+            child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
+                child(params(wrapContent, wrapContent, gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL), textView)
+            })
+        })
 
-                child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
-                    child(params(dip(24), dip(24), gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL), ImageView(context).apply {
-                        image = drawable(icon, color(R.color.onBackground).withOpacity(0.10))
-                    })
-                })
+        icon != null && isSmallVertical -> child(params(matchParent, matchParent), LinearLayoutCompat(context).apply {
+            orientation = LinearLayoutCompat.HORIZONTAL
 
-                child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
-                    child(params(wrapContent, wrapContent, gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL), textView)
+            child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
+                child(params(dip(24), dip(24), gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL), ImageView(context).apply {
+                    image = drawable(icon, color(R.color.onBackground).withOpacity(0.10))
                 })
             })
 
-            else -> child(params(wrapContent, wrapContent, gravity = Gravity.CENTER), textView)
-        }
+            child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
+                child(params(wrapContent, wrapContent, gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL), textView)
+            })
+        })
 
-        autorun {
-            val actionID = property.get()
-            val desc = actionDescription(context, actionID).toString()
-            textView.text = when {
-                actionID == ActionID.NONE -> ""
-                isSmallVertical || isSmallHorizontal -> "⋯"
-                else -> desc
-            }
-            TooltipCompat.setTooltipText(this, desc)
-        }
+        else -> child(params(wrapContent, wrapContent, gravity = Gravity.CENTER), textView)
+    }
 
-        onClick {
-            val popup = PopupMenu(context, menuAnchor, Gravity.CENTER)
+    autorun {
+        val actionID = property.get()
+        val desc = actionDescription(context, actionID).toString()
+        textView.text = when {
+            actionID == ActionID.NONE -> ""
+            isSmallVertical || isSmallHorizontal -> "⋯"
+            else -> desc
+        }
+        TooltipCompat.setTooltipText(this, desc)
+    }
+
+    onTouch { _, event ->
+        if (event.actionMasked == MotionEvent.ACTION_UP) {
+            menuAnchor.x = event.x
+            menuAnchor.y = event.y
+            val popup = PopupMenu(context, menuAnchor)
             actionsMenu(popup.menu, onClick = { actionId ->
                 property.set(actionId)
             })
             popup.show()
+            true
+        } else {
+            false
         }
-    })
+    }
 }
 
 fun ViewBuild.doubleCell(
