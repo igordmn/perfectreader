@@ -7,8 +7,8 @@ import com.dmi.util.android.view.string
 
 class ActionDescription(val first: String, val second: String? = null, val third: String? = null) {
     override fun toString() = when {
-        second != null && third != null -> "$first $second ($third)"
-        second != null -> "$first $second"
+        second != null && third != null -> "$second\n(${third.toLowerCase()})"
+        second != null -> "$second"
         else -> first
     }
 }
@@ -25,7 +25,7 @@ fun actionDescription(context: Context, id: ActionID): ActionDescription {
     )
 
     return when (id) {
-        ActionID.NONE -> ActionDescription("")
+        ActionID.NONE -> ActionDescription(R.string.actionNone)
 
         ActionID.SHOW_MENU -> ActionDescription(R.string.actionShow, R.string.actionShowMenu)
         ActionID.SHOW_LIBRARY -> ActionDescription(R.string.actionShow, R.string.actionShowLibrary)
@@ -62,9 +62,9 @@ fun actionDescription(context: Context, id: ActionID): ActionDescription {
         ActionID.SETTINGS_FONT_WIDTH_CHANGE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFontWidth, R.string.actionSettingChange)
         ActionID.SETTINGS_FONT_BOLDNESS_CHANGE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFontBoldness, R.string.actionSettingChange)
         ActionID.SETTINGS_FONT_SKEW_CHANGE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFontSkew, R.string.actionSettingChange)
-        ActionID.SETTINGS_FORMAT_PADDING_CHANGE -> ActionDescription(R.string.actionSetting, R.string.settingsUIFormatPadding, R.string.actionSettingChange)
+        ActionID.SETTINGS_FORMAT_PADDING_CHANGE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFormatPadding, R.string.actionSettingChange)
         ActionID.SETTINGS_FORMAT_LINE_HEIGHT_CHANGE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFormatLineHeight, R.string.actionSettingChange)
-        ActionID.SETTINGS_FORMAT_LETTER_SPACING_CHANGE -> ActionDescription(R.string.actionSetting, R.string.settingsUIFormatLetterSpacing, R.string.actionSettingChange)
+        ActionID.SETTINGS_FORMAT_LETTER_SPACING_CHANGE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFormatLetterSpacing, R.string.actionSettingChange)
         ActionID.SETTINGS_FORMAT_PARAGRAPH_SPACING_CHANGE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFormatParagraphSpacing, R.string.actionSettingChange)
         ActionID.SETTINGS_FORMAT_FIRST_LINE_INDENT_CHANGE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFirstLineIndent, R.string.actionSettingChange)
         ActionID.SETTINGS_SCREEN_BRIGHTNESS_CHANGE -> ActionDescription(R.string.actionSetting, R.string.actionSettingBrightness, R.string.actionSettingChange)
@@ -73,9 +73,9 @@ fun actionDescription(context: Context, id: ActionID): ActionDescription {
         ActionID.SETTINGS_FONT_WIDTH_INCREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFontWidth, R.string.actionSettingIncrease)
         ActionID.SETTINGS_FONT_BOLDNESS_INCREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFontBoldness, R.string.actionSettingIncrease)
         ActionID.SETTINGS_FONT_SKEW_INCREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFontSkew, R.string.actionSettingIncrease)
-        ActionID.SETTINGS_FORMAT_PADDING_INCREASE -> ActionDescription(R.string.actionSetting, R.string.settingsUIFormatPadding, R.string.actionSettingIncrease)
+        ActionID.SETTINGS_FORMAT_PADDING_INCREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFormatPadding, R.string.actionSettingIncrease)
         ActionID.SETTINGS_FORMAT_LINE_HEIGHT_INCREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFormatLineHeight, R.string.actionSettingIncrease)
-        ActionID.SETTINGS_FORMAT_LETTER_SPACING_INCREASE -> ActionDescription(R.string.actionSetting, R.string.settingsUIFormatLetterSpacing, R.string.actionSettingIncrease)
+        ActionID.SETTINGS_FORMAT_LETTER_SPACING_INCREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFormatLetterSpacing, R.string.actionSettingIncrease)
         ActionID.SETTINGS_FORMAT_PARAGRAPH_SPACING_INCREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFormatParagraphSpacing, R.string.actionSettingIncrease)
         ActionID.SETTINGS_FORMAT_FIRST_LINE_INDENT_INCREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFirstLineIndent, R.string.actionSettingIncrease)
         ActionID.SETTINGS_SCREEN_BRIGHTNESS_INCREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingBrightness, R.string.actionSettingIncrease)
@@ -84,9 +84,9 @@ fun actionDescription(context: Context, id: ActionID): ActionDescription {
         ActionID.SETTINGS_FONT_WIDTH_DECREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFontWidth, R.string.actionSettingDecrease)
         ActionID.SETTINGS_FONT_BOLDNESS_DECREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFontBoldness, R.string.actionSettingDecrease)
         ActionID.SETTINGS_FONT_SKEW_DECREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFontSkew, R.string.actionSettingDecrease)
-        ActionID.SETTINGS_FORMAT_PADDING_DECREASE -> ActionDescription(R.string.actionSetting, R.string.settingsUIFormatPadding, R.string.actionSettingDecrease)
+        ActionID.SETTINGS_FORMAT_PADDING_DECREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFormatPadding, R.string.actionSettingDecrease)
         ActionID.SETTINGS_FORMAT_LINE_HEIGHT_DECREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFormatLineHeight, R.string.actionSettingDecrease)
-        ActionID.SETTINGS_FORMAT_LETTER_SPACING_DECREASE -> ActionDescription(R.string.actionSetting, R.string.settingsUIFormatLetterSpacing, R.string.actionSettingDecrease)
+        ActionID.SETTINGS_FORMAT_LETTER_SPACING_DECREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFormatLetterSpacing, R.string.actionSettingDecrease)
         ActionID.SETTINGS_FORMAT_PARAGRAPH_SPACING_DECREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFormatParagraphSpacing, R.string.actionSettingDecrease)
         ActionID.SETTINGS_FORMAT_FIRST_LINE_INDENT_DECREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingFirstLineIndent, R.string.actionSettingDecrease)
         ActionID.SETTINGS_SCREEN_BRIGHTNESS_DECREASE -> ActionDescription(R.string.actionSetting, R.string.actionSettingBrightness, R.string.actionSettingDecrease)

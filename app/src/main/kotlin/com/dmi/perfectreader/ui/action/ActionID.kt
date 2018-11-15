@@ -3,13 +3,15 @@ package com.dmi.perfectreader.ui.action
 enum class ActionID {
     NONE,
 
+    SCROLL_PAGE,
+    WORD_SELECT,
+
     SHOW_MENU,
     SHOW_LIBRARY,
     SHOW_SETTINGS,
     SHOW_SEARCH,
     SHOW_TABLE_OF_CONTENTS,
 
-    SCROLL_PAGE,
     GO_PAGE_NEXT,
     GO_PAGE_PREVIOUS,
     GO_PAGE_NEXT_5,
@@ -31,8 +33,6 @@ enum class ActionID {
     GO_CHAPTER_PREVIOUS,
     GO_BOOK_BEGIN,
     GO_BOOK_END,
-
-    WORD_SELECT,
 
     SETTINGS_FONT_SIZE_CHANGE,
     SETTINGS_FONT_WIDTH_CHANGE,

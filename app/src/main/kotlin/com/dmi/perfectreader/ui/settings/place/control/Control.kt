@@ -3,6 +3,7 @@ package com.dmi.perfectreader.ui.settings.place.control
 import android.app.Dialog
 import android.text.TextUtils
 import android.view.Gravity
+import android.view.Menu
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
@@ -49,20 +50,33 @@ import kotlin.reflect.KMutableProperty0
 
 fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
     val oneFinger = place {
+        val tapConfigurations = listOf(
+                TouchZoneConfiguration.SINGLE,
+                TouchZoneConfiguration.FOUR,
+                TouchZoneConfiguration.NINE,
+                TouchZoneConfiguration.THREE_ROWS_TWO_COLUMNS,
+                TouchZoneConfiguration.TWO_ROWS_THREE_COLUMNS,
+                TouchZoneConfiguration.SIXTEEN_FIXED
+        )
+
         val singleTaps = controlDialog(
-                model,
-                listOf(
-                        TouchZoneConfiguration.SINGLE,
-                        TouchZoneConfiguration.FOUR,
-                        TouchZoneConfiguration.NINE,
-                        TouchZoneConfiguration.THREE_ROWS_TWO_COLUMNS,
-                        TouchZoneConfiguration.TWO_ROWS_THREE_COLUMNS,
-                        TouchZoneConfiguration.SIXTEEN_FIXED
-                ),
-                settings.touches.singleTaps::configuration,
-                settings.touches.singleTaps::property,
+                model, tapConfigurations,
+                settings.touches.singleTaps::configuration, settings.touches.singleTaps::property,
                 R.string.settingsUIControlSingleTaps
         )
+
+        val longTaps = controlDialog(
+                model, tapConfigurations,
+                settings.touches.singleTaps::configuration, settings.touches.singleTaps::property,
+                R.string.settingsUIControlSingleTaps
+        )
+
+        val doubleTaps = controlDialog(
+                model, tapConfigurations,
+                settings.touches.singleTaps::configuration, settings.touches.singleTaps::property,
+                R.string.settingsUIControlSingleTaps
+        )
+
 //        val longTaps = controlDialog(model)
 //        val doubleTaps = controlDialog(model)
 //        val horizontalScrolls = controlDialog(model)
@@ -71,11 +85,11 @@ fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
         details(
                 model, R.string.settingsUIControlOneFinger,
                 verticalScroll(
-                        popupSetting(model, emptyPreview(), singleTaps, R.string.settingsUIControlSingleTaps)
-//                        detailsSetting(model, emptyPreview(), longTaps, R.string.settingsUIControlLongTaps),
-//                        detailsSetting(model, emptyPreview(), doubleTaps, R.string.settingsUIControlDoubleTaps),
-//                        detailsSetting(model, emptyPreview(), horizontalScrolls, R.string.settingsUIControlHorizontalScrolls),
-//                        detailsSetting(model, emptyPreview(), verticalScrolls, R.string.settingsUIControlVerticalScrolls)
+                        popupSetting(model, emptyPreview(), singleTaps, R.string.settingsUIControlSingleTaps),
+                        popupSetting(model, emptyPreview(), longTaps, R.string.settingsUIControlLongTaps),
+                        popupSetting(model, emptyPreview(), doubleTaps, R.string.settingsUIControlDoubleTaps)
+//                        popupSetting(model, emptyPreview(), horizontalScrolls, R.string.settingsUIControlHorizontalScrolls),
+//                        popupSetting(model, emptyPreview(), verticalScrolls, R.string.settingsUIControlVerticalScrolls)
                 )
         )
     }
@@ -138,6 +152,32 @@ private fun Places.controlDialog(
         params(dip(width), matchParent, weight = 0F)
     }
 
+    class MenuBuild(val menu: Menu) {
+        val nameToSub = HashMap<String, MenuBuild>()
+
+        fun sub(name: String) = nameToSub.getOrPut(name) {
+            MenuBuild(menu.addSubMenu(name))
+        }
+
+        fun add(name: String) = menu.add(name)
+    }
+
+    fun actionsMenu(menu: Menu, onClick: (ActionID) -> Unit) {
+        val build = MenuBuild(menu)
+
+        for (actionID in ActionID.values()) {
+            val desc = actionDescription(context, actionID)
+            val item = when {
+                desc.second != null && desc.third != null -> build.sub(desc.first).sub(desc.second).add(desc.third)
+                desc.second != null -> build.sub(desc.first).add(desc.second)
+                else -> build.add(desc.first)
+            }
+            item.onClick {
+                onClick(actionID)
+            }
+        }
+    }
+
     fun cell(zone: TouchZone, isSmall: Boolean) = FrameLayout(context).apply {
         val actionProperty = getActionProperty(zone)
 
@@ -155,20 +195,21 @@ private fun Places.controlDialog(
             ellipsize = TextUtils.TruncateAt.END
 
             autorun {
-                val desc = actionDescription(context, actionProperty.get()).toString()
-                text = if (isSmall) "⋯" else desc
+                val actionID = actionProperty.get()
+                val desc = actionDescription(context, actionID).toString()
+                text = when {
+                    actionID == ActionID.NONE -> ""
+                    isSmall -> "⋯"
+                    else -> desc
+                }
                 TooltipCompat.setTooltipText(this, desc)
             }
 
             onClick {
                 val popup = PopupMenu(context, menuAnchor, Gravity.CENTER)
-                popup.menu.addSubMenu(R.string.actionSetting).apply {
-                    addSubMenu(R.string.actionSettingFontSize).apply {
-                        add(R.string.actionSettingIncrease)
-                        add(R.string.actionSettingDecrease)
-                        add(R.string.actionSettingChange)
-                    }
-                }
+                actionsMenu(popup.menu, onClick = { actionId ->
+                    actionProperty.set(actionId)
+                })
                 popup.show()
             }
         })
