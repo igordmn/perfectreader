@@ -30,6 +30,7 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onTouch
 import kotlin.reflect.KMutableProperty0
+import com.dmi.util.action.TouchZoneConfiguration.Shapes.Zone as ShapeZone
 
 // todo refactoring
 
@@ -193,30 +194,6 @@ fun ViewBuild.controlToolbar(@StringRes titleRes: Int, dialog: Dialog) = Toolbar
     }
 }
 
-fun LinearLayoutCompat.horizontalDivider() {
-    child(params(matchParent, dip(1), weight = 0F), View(context).apply {
-        backgroundColor = color(attr(android.R.attr.colorControlHighlight).resourceId)
-    })
-}
-
-fun LinearLayoutCompat.verticalDivider() {
-    child(params(dip(1), matchParent, weight = 0F), View(context).apply {
-        backgroundColor = color(attr(android.R.attr.colorControlHighlight).resourceId)
-    })
-}
-
-fun LinearLayoutCompat.vparams(height: Int) = if (height < 0) {
-    params(matchParent, matchParent, weight = 1F)
-} else {
-    params(matchParent, dip(height), weight = 0F)
-}
-
-fun LinearLayoutCompat.hparams(width: Int) = if (width < 0) {
-    params(matchParent, matchParent, weight = 1F)
-} else {
-    params(dip(width), matchParent, weight = 0F)
-}
-
 class MenuBuild(val menu: Menu) {
     private val nameToSub = HashMap<String, MenuBuild>()
 
@@ -359,6 +336,24 @@ fun ViewBuild.controlContent(
         configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
         getCell: (zone: TouchZone, isSmallVertical: Boolean, isSmallHorizontal: Boolean) -> View
 ): View {
+    fun LinearLayoutCompat.tapColumn(horizontal: ShapeZone, vertical: ShapeZone) {
+        val zone = zone(horizontal.zone, vertical.zone)
+        val isSmallVertical = vertical.size in 0..32
+        val isSmallHorizontal = horizontal.size in 0..32
+        child(hparams(horizontal.size), getCell(zone, isSmallVertical, isSmallHorizontal))
+    }
+
+    fun LinearLayoutCompat.tapRow(vertical: ShapeZone, horizontals: List<ShapeZone>) {
+        child(vparams(vertical.size), LinearLayoutCompat(context).apply {
+            orientation = LinearLayoutCompat.HORIZONTAL
+            verticalDivider()
+            for (horizontal in horizontals) {
+                tapColumn(horizontal, vertical)
+                verticalDivider()
+            }
+        })
+    }
+
     fun ViewBuild.taps(configuration: TouchZoneConfiguration): View = LinearLayoutCompat(context).apply {
         val shapes = configuration.shapes as TouchZoneConfiguration.Shapes.Table
         orientation = LinearLayoutCompat.VERTICAL
@@ -366,15 +361,7 @@ fun ViewBuild.controlContent(
 
         horizontalDivider()
         for (vertical in shapes.verticals) {
-            child(vparams(vertical.size), LinearLayoutCompat(context).apply {
-                orientation = LinearLayoutCompat.HORIZONTAL
-                verticalDivider()
-                for (horizontal in shapes.horizontals) {
-                    val zone = zone(horizontal.zone, vertical.zone)
-                    child(hparams(horizontal.size), getCell(zone, vertical.size in 0..32, horizontal.size in 0..32))
-                    verticalDivider()
-                }
-            })
+            tapRow(vertical, shapes.horizontals)
             horizontalDivider()
         }
     }
@@ -403,4 +390,28 @@ fun ViewBuild.controlContent(
         setPadding(0, 0, 0, dip(16))
         child(params(matchParent, matchParent), viewPager())
     }
+}
+
+fun LinearLayoutCompat.horizontalDivider() {
+    child(params(matchParent, dip(1), weight = 0F), View(context).apply {
+        backgroundColor = color(attr(android.R.attr.colorControlHighlight).resourceId)
+    })
+}
+
+fun LinearLayoutCompat.verticalDivider() {
+    child(params(dip(1), matchParent, weight = 0F), View(context).apply {
+        backgroundColor = color(attr(android.R.attr.colorControlHighlight).resourceId)
+    })
+}
+
+fun LinearLayoutCompat.vparams(height: Int) = if (height < 0) {
+    params(matchParent, matchParent, weight = 1F)
+} else {
+    params(matchParent, dip(height), weight = 0F)
+}
+
+fun LinearLayoutCompat.hparams(width: Int) = if (width < 0) {
+    params(matchParent, matchParent, weight = 1F)
+} else {
+    params(dip(width), matchParent, weight = 0F)
 }
