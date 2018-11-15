@@ -72,7 +72,7 @@ fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
             controlDirectionTaps(
                     R.string.settingsUIControlVerticalScrolls, it, verticalScrollConfigurations,
                     settings.touches.upScrolls::configuration, settings.touches.downScrolls::configuration,
-                    settings.touches.upScrolls::horizontalProperty, settings.touches.downScrolls::horizontalProperty,
+                    settings.touches.upScrolls::verticalProperty, settings.touches.downScrolls::verticalProperty,
                     R.drawable.ic_long_arrow_up, R.drawable.ic_long_arrow_down,
                     LinearLayoutCompat.VERTICAL
             )
@@ -126,7 +126,7 @@ fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
             controlDirectionTaps(
                     R.string.settingsUIControlVerticalScrolls, it, verticalScrollConfigurations,
                     settings.touches.twoFingersUpScrolls::configuration, settings.touches.twoFingersDownScrolls::configuration,
-                    settings.touches.twoFingersUpScrolls::horizontalProperty, settings.touches.twoFingersDownScrolls::horizontalProperty,
+                    settings.touches.twoFingersUpScrolls::verticalProperty, settings.touches.twoFingersDownScrolls::verticalProperty,
                     R.drawable.ic_long_arrow_up, R.drawable.ic_long_arrow_down,
                     LinearLayoutCompat.VERTICAL
             )
