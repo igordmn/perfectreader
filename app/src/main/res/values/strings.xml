@@ -41,7 +41,7 @@
     <string name="actionGoWithAnimation">С анимацией</string>
     <string name="actionGoWithoutAnimation">Без анимации</string>
 
-    <string name="actionWordSelect">Выделить</string>
+    <string name="actionWordSelect">Выделить текст</string>
 
     <string name="actionSetting">Настроить</string>
     <string name="actionSettingFontSize">Размер шрифта</string>

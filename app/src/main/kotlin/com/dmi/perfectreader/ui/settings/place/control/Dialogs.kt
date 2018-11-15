@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.ui.settings.place.control
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.text.TextUtils
 import android.view.Gravity
@@ -26,6 +27,8 @@ import com.dmi.util.action.zone
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.*
 import kotlin.reflect.KMutableProperty0
+
+// todo refactoring
 
 fun Places.controlDialog(
         model: SettingsUI,
@@ -132,11 +135,16 @@ fun ViewBuild.controlDirectionTaps(
             }
     }
 
-    fun cell(zone: TouchZone, isSmall: Boolean): View = doubleCell(
+    fun cell(
+            zone: TouchZone,
+            isSmallVertical: Boolean,
+            isSmallHorizontal: Boolean
+    ): View = doubleCell(
             getActionProperty1(zone), getActionProperty2(zone),
             icon1, icon2,
             layoutOrientation,
-            isSmall
+            isSmallVertical,
+            isSmallHorizontal
     )
 
     orientation = LinearLayoutCompat.VERTICAL
@@ -206,8 +214,9 @@ fun ViewBuild.actionsMenu(menu: Menu, onClick: (ActionID) -> Unit) {
 }
 
 fun ViewBuild.cell(
-        property:  KMutableProperty0<ActionID>,
-        isSmall: Boolean,
+        property: KMutableProperty0<ActionID>,
+        isSmallVertical: Boolean,
+        isSmallHorizontal: Boolean,
         @DrawableRes icon: Int? = null
 ) = FrameLayout(context).apply {
     val menuAnchor = child(params(0, 0, gravity = Gravity.CENTER), View(context).apply {
@@ -226,10 +235,11 @@ fun ViewBuild.cell(
             ellipsize = TextUtils.TruncateAt.END
         }
 
-        child(params(matchParent, matchParent), LinearLayoutCompat(context).apply {
-            orientation = LinearLayoutCompat.VERTICAL
+        @SuppressLint("RtlHardcoded")
+        when {
+            icon != null && !isSmallVertical -> child(params(matchParent, matchParent), LinearLayoutCompat(context).apply {
+                orientation = LinearLayoutCompat.VERTICAL
 
-            if (icon != null) {
                 child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
                     child(params(dip(24), dip(24), gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL), ImageView(context).apply {
                         imageResource = icon
@@ -239,17 +249,31 @@ fun ViewBuild.cell(
                 child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
                     child(params(wrapContent, wrapContent, gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL), textView)
                 })
-            } else {
-                child(params(wrapContent, wrapContent, gravity = Gravity.CENTER), textView)
-            }
-        })
+            })
+
+            icon != null && isSmallVertical -> child(params(matchParent, matchParent), LinearLayoutCompat(context).apply {
+                orientation = LinearLayoutCompat.HORIZONTAL
+
+                child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
+                    child(params(dip(24), dip(24), gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL), ImageView(context).apply {
+                        imageResource = icon
+                    })
+                })
+
+                child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
+                    child(params(wrapContent, wrapContent, gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL), textView)
+                })
+            })
+
+            else -> child(params(wrapContent, wrapContent, gravity = Gravity.CENTER), textView)
+        }
 
         autorun {
             val actionID = property.get()
             val desc = actionDescription(context, actionID).toString()
             textView.text = when {
                 actionID == ActionID.NONE -> ""
-                isSmall -> "⋯"
+                isSmallVertical || isSmallHorizontal -> "⋯"
                 else -> desc
             }
             TooltipCompat.setTooltipText(this, desc)
@@ -266,17 +290,18 @@ fun ViewBuild.cell(
 }
 
 fun ViewBuild.doubleCell(
-        property1:  KMutableProperty0<ActionID>,
-        property2:  KMutableProperty0<ActionID>,
+        property1: KMutableProperty0<ActionID>,
+        property2: KMutableProperty0<ActionID>,
         @DrawableRes icon1: Int,
         @DrawableRes icon2: Int,
         layoutOrientation: Int,
-        isSmall: Boolean
+        isSmallVertical: Boolean,
+        isSmallHorizontal: Boolean
 ) = FrameLayout(context).apply {
     child(params(matchParent, matchParent), LinearLayoutCompat(context).apply {
         orientation = layoutOrientation
-        child(params(matchParent, matchParent, weight = 0.5F), cell(property1, isSmall, icon1))
-        child(params(matchParent, matchParent, weight = 0.5F), cell(property2, isSmall, icon2))
+        child(params(matchParent, matchParent, weight = 0.5F), cell(property1, isSmallVertical, isSmallHorizontal, icon1))
+        child(params(matchParent, matchParent, weight = 0.5F), cell(property2, isSmallVertical, isSmallHorizontal, icon2))
     })
 }
 
@@ -284,14 +309,14 @@ fun ViewBuild.controlContent(
         configurations: List<TouchZoneConfiguration>,
         configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
         getActionProperty: (zone: TouchZone) -> KMutableProperty0<ActionID>
-) = controlContent(configurations, configurationProperty) { zone, isSmall ->
-    cell(getActionProperty(zone), isSmall)
+) = controlContent(configurations, configurationProperty) { zone, isSmallVertical, isSmallHorizontal ->
+    cell(getActionProperty(zone), isSmallVertical, isSmallHorizontal)
 }
 
 fun ViewBuild.controlContent(
         configurations: List<TouchZoneConfiguration>,
         configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
-        getCell: (zone: TouchZone, isSmall: Boolean) -> View
+        getCell: (zone: TouchZone, isSmallVertical: Boolean, isSmallHorizontal: Boolean) -> View
 ): View {
     fun ViewBuild.taps(configuration: TouchZoneConfiguration): View = LinearLayoutCompat(context).apply {
         val shapes = configuration.shapes as TouchZoneConfiguration.Shapes.Table
@@ -305,8 +330,7 @@ fun ViewBuild.controlContent(
                 verticalDivider()
                 for (horizontal in shapes.horizontals) {
                     val zone = zone(horizontal.zone, vertical.zone)
-                    val isSmall = vertical.size in 0..32 || horizontal.size in 0..32
-                    child(hparams(horizontal.size), getCell(zone, isSmall))
+                    child(hparams(horizontal.size), getCell(zone, vertical.size in 0..32, horizontal.size in 0..32))
                     verticalDivider()
                 }
             })
