@@ -12,10 +12,11 @@ import androidx.core.widget.TextViewCompat.setTextAppearance
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.ui.book.Book
 import com.dmi.perfectreader.book.content.TableOfContents
+import com.dmi.perfectreader.ui.book.Book
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 fun ViewBuild.tableOfContentsUIView(
         model: TableOfContentsUI

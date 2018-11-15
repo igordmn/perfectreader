@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.jetbrains.anko.onAttachStateChangeListener
+import org.jetbrains.anko.sdk27.coroutines.onAttachStateChangeListener
 
 /**
  * Call action and intercept all called scope values.

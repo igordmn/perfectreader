@@ -11,7 +11,7 @@ import com.dmi.util.graphic.Size
 import com.dmi.util.lang.unsupported
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.wrapContent
 
 class LibraryRecentBook(

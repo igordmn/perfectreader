@@ -17,6 +17,8 @@ import com.dmi.perfectreader.ui.settings.chooseSettingValue
 import com.dmi.util.android.view.*
 import com.dmi.util.lang.initOnce
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk27.coroutines.onCheckedChange
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty0
 
@@ -98,7 +100,7 @@ fun ViewBuild.floatSetting(
         child(params(dip(48), dip(48)), AppCompatImageButton(context).apply {
             backgroundResource = attr(R.attr.selectableItemBackground).resourceId
             image = drawable(R.drawable.ic_minus, color(R.color.onBackground).withOpacity(0.60))
-            onContinousClick {
+            onContinuousClick {
                 val value = editNumber.floatValue
                 if (value > min) {
                     val newValue = chooseSettingValue(values, value, -1)
@@ -128,7 +130,7 @@ fun ViewBuild.floatSetting(
         child(params(dip(48), dip(48)), AppCompatImageButton(context).apply {
             backgroundResource = attr(R.attr.selectableItemBackground).resourceId
             image = drawable(R.drawable.ic_plus, color(R.color.onBackground).withOpacity(0.60))
-            onContinousClick {
+            onContinuousClick {
                 val value = editNumber.floatValue
                 if (value < max) {
                     val newValue = chooseSettingValue(values, value, 1)

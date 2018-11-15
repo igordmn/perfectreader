@@ -12,6 +12,7 @@ import com.dmi.perfectreader.R
 import com.dmi.util.android.view.*
 import com.dmi.util.collection.removeLast
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 class BreadCrumbsView(context: Context) : HorizontalScrollView(context) {
     private val textViews = ArrayList<TextView>()

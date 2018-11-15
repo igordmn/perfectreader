@@ -14,6 +14,7 @@ import com.dmi.perfectreader.R
 import com.dmi.util.android.view.*
 import com.google.android.material.card.MaterialCardView
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 fun ViewBuild.selectionView(model: Selection) = FrameLayoutExt(context).apply {
     fun updateActions(container: ViewGroup, actions: View) {

@@ -3,7 +3,7 @@ package com.dmi.util.android.view
 import android.view.View
 import androidx.annotation.UiThread
 import kotlinx.coroutines.*
-import org.jetbrains.anko.onAttachStateChangeListener
+import org.jetbrains.anko.sdk27.coroutines.onAttachStateChangeListener
 
 class ViewLoad(private val view: View) {
     private var isFinished = false

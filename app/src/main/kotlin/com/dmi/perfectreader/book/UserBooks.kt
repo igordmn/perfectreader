@@ -27,15 +27,13 @@ class UserBooks(private val db: SQLiteDatabase) {
         }
     }
 
-    private fun parser(): MapRowParser<Book> {
-        return object : MapRowParser<Book> {
-            override fun parseRow(columns: Map<String, Any>) = Book(
-                    uri = Uri.parse(columns["uri"] as String),
-                    location = Location(columns["offset"] as Double),
-                    percent = columns["percent"] as Double,
-                    lastReadTime = Date(columns["lastReadTime"] as Long)
-            )
-        }
+    private fun parser() = object : MapRowParser<Book> {
+        override fun parseRow(columns: Map<String, Any?>) = Book(
+                uri = Uri.parse(columns["uri"] as String),
+                location = Location(columns["offset"] as Double),
+                percent = columns["percent"] as Double,
+                lastReadTime = Date(columns["lastReadTime"] as Long)
+        )
     }
 
     fun save(book: Book) {

@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
 import android.text.TextUtils
-import android.view.*
+import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -24,6 +27,8 @@ import com.dmi.util.action.TouchZoneConfiguration
 import com.dmi.util.action.zone
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onTouch
 import kotlin.reflect.KMutableProperty0
 
 // todo refactoring
@@ -306,10 +311,9 @@ fun ViewBuild.cell(
     var lastX = 0F
     var lastY = 0F
 
-    onTouch { _, event ->
+    onTouch(returnValue = false) { _, event ->
         lastX = event.x
         lastY = event.y
-        false
     }
 
     onClick {

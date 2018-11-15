@@ -13,6 +13,8 @@ import com.dmi.perfectreader.main
 import com.dmi.perfectreader.ui.settings.SettingsUI
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk27.coroutines.onAttachStateChangeListener
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 fun Places.screenBrightness(model: SettingsUI) = place {
     val settings = context.main.settings

@@ -26,12 +26,6 @@ fun Context.string(resID: Int, vararg formatArgs: Any): String = getString(resID
 fun View.string(resID: Int): String = context.string(resID)
 fun View.string(resID: Int, vararg formatArgs: Any): String = context.string(resID, *formatArgs)
 
-fun View.attr(value: Int): TypedValue {
-    val ret = TypedValue()
-    context.theme.resolveAttribute(value, ret, true)
-    return ret
-}
-
 inline fun <reified T> Context.inflate(id: Int): T = layoutInflater.inflate(id, null, false) as T
 
 fun Int.withOpacity(transparency: Double) = withAlpha((transparency * 255).toInt())

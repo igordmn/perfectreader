@@ -14,6 +14,7 @@ import com.dmi.util.android.view.*
 import com.dmi.util.graphic.Size
 import com.dmi.util.lang.unsupported
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 abstract class LibraryItemView(context: Context) : FrameLayout(context), Bindable<Int> {
     init {

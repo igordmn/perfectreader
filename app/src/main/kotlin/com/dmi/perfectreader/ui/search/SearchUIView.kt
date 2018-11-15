@@ -25,6 +25,7 @@ import com.dmi.util.android.system.hideSoftKeyboard
 import com.dmi.util.android.view.*
 import com.rubengees.easyheaderfooteradapter.EasyHeaderFooterAdapter
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 fun ViewBuild.searchUIView(
         model: SearchUI

@@ -10,7 +10,11 @@ import com.dmi.util.android.view.Bindable
 import com.dmi.util.android.view.BindableViewAdapter
 import com.dmi.util.android.view.child
 import com.dmi.util.android.view.params
-import org.jetbrains.anko.*
+import org.jetbrains.anko.backgroundResource
+import org.jetbrains.anko.dip
+import org.jetbrains.anko.matchParent
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.wrapContent
 import kotlin.math.max
 import kotlin.reflect.KMutableProperty0
 

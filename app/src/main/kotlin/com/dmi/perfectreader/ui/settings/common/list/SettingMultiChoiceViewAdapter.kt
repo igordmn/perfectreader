@@ -9,7 +9,11 @@ import com.dmi.util.android.view.BindableViewAdapter
 import com.dmi.util.android.view.child
 import com.dmi.util.android.view.params
 import com.dmi.util.scope.observable
-import org.jetbrains.anko.*
+import org.jetbrains.anko.backgroundResource
+import org.jetbrains.anko.matchParent
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onLongClick
+import org.jetbrains.anko.wrapContent
 
 // todo tune ripple effect
 class SettingMultiChoiceViewAdapter<T, V>(
@@ -49,7 +53,7 @@ class SettingMultiChoiceViewAdapter<T, V>(
             isClickable = true
             isFocusable = true
             backgroundResource = R.drawable.settings_list_item_background
-            onLongClick { switchSelection(); true }
+            onLongClick(returnValue = true) { switchSelection() }
             onClick { click() }
         }
 

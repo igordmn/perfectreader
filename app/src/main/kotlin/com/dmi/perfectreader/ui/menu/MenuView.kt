@@ -16,6 +16,7 @@ import com.dmi.util.android.view.*
 import com.dmi.util.lang.intRound
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 fun ViewBuild.menuView(model: Menu): View {
     val book = model.book

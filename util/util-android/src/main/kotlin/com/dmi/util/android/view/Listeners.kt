@@ -5,10 +5,10 @@ import android.view.MotionEvent
 import android.view.View
 import com.dmi.util.graphic.Size
 import kotlinx.coroutines.*
-import org.jetbrains.anko.onClick
-import org.jetbrains.anko.onLayoutChange
-import org.jetbrains.anko.onLongClick
-import org.jetbrains.anko.onTouch
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onLayoutChange
+import org.jetbrains.anko.sdk27.coroutines.onLongClick
+import org.jetbrains.anko.sdk27.coroutines.onTouch
 
 fun View.onSizeChange(listener: (size: Size, oldSize: Size) -> Unit) {
     onLayoutChange { _, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
@@ -24,12 +24,12 @@ fun View.onSizeChange(listener: (size: Size, oldSize: Size) -> Unit) {
 
 fun MenuItem.onClick(action: () -> Unit): MenuItem = setOnMenuItemClickListener { action(); true }
 
-fun View.onContinousClick(repeatMillis: Long = 200, action: () -> Unit) {
+fun View.onContinuousClick(repeatMillis: Long = 200, action: () -> Unit) {
     var job: Job? = null
     onClick {
         action()
     }
-    onLongClick {
+    onLongClick(returnValue = true) {
         action()
         job = GlobalScope.launch(Dispatchers.Main) {
             while(true) {
@@ -37,14 +37,10 @@ fun View.onContinousClick(repeatMillis: Long = 200, action: () -> Unit) {
                 action()
             }
         }
-        true
     }
     onTouch { _, event ->
         if (event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_UP) {
             job?.cancel()
-            false
-        } else {
-            false
         }
     }
 }

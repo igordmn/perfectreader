@@ -21,7 +21,7 @@ import com.dmi.util.screen.StateScreen
 import com.google.android.material.tabs.TabLayout
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.wrapContent
 
 fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
