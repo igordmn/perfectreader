@@ -49,9 +49,9 @@
     <string name="actionSettingFontBoldness">Утолщение шрифта</string>
     <string name="actionSettingFontSkew">Наклон шрифта</string>
     <string name="actionSettingFormatPadding">Поля</string>
-    <string name="actionSettingFormatLineHeight">Межстрочное расс.</string>
-    <string name="actionSettingFormatLetterSpacing">Межбуквенное расс.</string>
-    <string name="actionSettingFormatParagraphSpacing">Межабзацное расс.</string>
+    <string name="actionSettingFormatLineHeight">Межстрочное расстояние</string>
+    <string name="actionSettingFormatLetterSpacing">Межбуквенное расстояние</string>
+    <string name="actionSettingFormatParagraphSpacing">Межабзацное расстояние</string>
     <string name="actionSettingFirstLineIndent">Красная строка</string>
     <string name="actionSettingBrightness">Яркость</string>
     <string name="actionSettingStyle">Стиль</string>
@@ -146,7 +146,7 @@
     <string name="settingsUIControlDoubleTaps">Двойные касания</string>
     <string name="settingsUIControlHorizontalScrolls">Горизонтальные свайпы</string>
     <string name="settingsUIControlVerticalScrolls">Вертикальные свайпы</string>
-    <string name="settingsUIControlPinch">Сведение</string>
+    <string name="settingsUIControlPinch">Щипки</string>
 
     <string name="settingsUIControlDoubleTapsEnable">Включить</string>
     <string name="settingsUIControlDoubleTapsIsDisabled">Двойные касания отключены</string>

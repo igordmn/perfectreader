@@ -114,6 +114,33 @@ fun ViewBuild.controlDoubleTaps(
     })
 }
 
+@Suppress("UNUSED_PARAMETER")
+fun ViewBuild.controlPinchTaps(
+        @StringRes titleRes: Int,
+        dialog: Dialog,
+        actionProperty1: KMutableProperty0<ActionID>,
+        actionProperty2: KMutableProperty0<ActionID>,
+        @DrawableRes icon1: Int,
+        @DrawableRes icon2: Int,
+        layoutOrientation: Int
+): View {
+    val configurationProperty = object {
+        var delegate: TouchZoneConfiguration
+            get() = TouchZoneConfiguration.SINGLE
+            set(value) = Unit
+    }
+
+    fun getActionProperty1(zone: TouchZone) = actionProperty1
+    fun getActionProperty2(zone: TouchZone) = actionProperty2
+
+    return controlDirectionTaps(
+            titleRes, dialog, listOf(TouchZoneConfiguration.SINGLE),
+            configurationProperty::delegate, configurationProperty::delegate,
+            ::getActionProperty1, ::getActionProperty2,
+            icon1, icon2, layoutOrientation
+    )
+}
+
 fun ViewBuild.controlDirectionTaps(
         @StringRes titleRes: Int,
         dialog: Dialog,
@@ -242,7 +269,7 @@ fun ViewBuild.cell(
 
                 child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
                     child(params(dip(24), dip(24), gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL), ImageView(context).apply {
-                        imageResource = icon
+                        image = drawable(icon, color(R.color.onBackground).withOpacity(0.10))
                     })
                 })
 
@@ -256,7 +283,7 @@ fun ViewBuild.cell(
 
                 child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
                     child(params(dip(24), dip(24), gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL), ImageView(context).apply {
-                        imageResource = icon
+                        image = drawable(icon, color(R.color.onBackground).withOpacity(0.10))
                     })
                 })
 

@@ -8,25 +8,7 @@ import com.dmi.perfectreader.ui.settings.common.*
 import com.dmi.util.action.TouchZoneConfiguration
 import com.dmi.util.android.view.Places
 
-
 // todo triangle zones
-
-//TouchZoneConfiguration.SINGLE,
-//TouchZoneConfiguration.FOUR,
-//TouchZoneConfiguration.NINE,
-//TouchZoneConfiguration.SIXTEEN_FIXED,
-//TouchZoneConfiguration.THREE_ROWS_TWO_COLUMNS,
-//TouchZoneConfiguration.TWO_ROWS_THREE_COLUMNS,
-//TouchZoneConfiguration.TWO_ROWS,
-//TouchZoneConfiguration.THREE_ROWS,
-//TouchZoneConfiguration.THREE_ROWS_FIXED,
-//TouchZoneConfiguration.FOUR_ROWS_FIXED,
-//TouchZoneConfiguration.TWO_COLUMNS,
-//TouchZoneConfiguration.THREE_COLUMNS,
-//TouchZoneConfiguration.THREE_COLUMNS_FIXED,
-//TouchZoneConfiguration.FOUR_COLUMNS_FIXED,
-//TouchZoneConfiguration.TRIANGLE_SIDES,
-//TouchZoneConfiguration.TRIANGLE_SIDES_CENTER
 
 fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
     val tapConfigurations = listOf(
@@ -36,11 +18,6 @@ fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
             TouchZoneConfiguration.THREE_ROWS_TWO_COLUMNS,
             TouchZoneConfiguration.TWO_ROWS_THREE_COLUMNS,
             TouchZoneConfiguration.SIXTEEN_FIXED
-    )
-
-    val pinchConfigurations = listOf(
-            TouchZoneConfiguration.SINGLE,
-            TouchZoneConfiguration.FOUR
     )
 
     val horizontalScrollConfigurations = listOf(
@@ -91,7 +68,15 @@ fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
             )
         }
 
-//        val verticalScrolls = controlDialog(model)
+        val verticalScrolls = controlDialog(model) {
+            controlDirectionTaps(
+                    R.string.settingsUIControlVerticalScrolls, it, verticalScrollConfigurations,
+                    settings.touches.upScrolls::configuration, settings.touches.downScrolls::configuration,
+                    settings.touches.upScrolls::horizontalProperty, settings.touches.downScrolls::horizontalProperty,
+                    R.drawable.ic_long_arrow_up, R.drawable.ic_long_arrow_down,
+                    LinearLayoutCompat.VERTICAL
+            )
+        }
 
         details(
                 model, R.string.settingsUIControlOneFinger,
@@ -99,14 +84,13 @@ fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
                         popupSetting(model, emptyPreview(), singleTaps, R.string.settingsUIControlSingleTaps),
                         popupSetting(model, emptyPreview(), longTaps, R.string.settingsUIControlLongTaps),
                         popupSetting(model, emptyPreview(), doubleTaps, R.string.settingsUIControlDoubleTaps),
-                        popupSetting(model, emptyPreview(), horizontalScrolls, R.string.settingsUIControlHorizontalScrolls)
-//                        popupSetting(model, emptyPreview(), verticalScrolls, R.string.settingsUIControlVerticalScrolls)
+                        popupSetting(model, emptyPreview(), horizontalScrolls, R.string.settingsUIControlHorizontalScrolls),
+                        popupSetting(model, emptyPreview(), verticalScrolls, R.string.settingsUIControlVerticalScrolls)
                 )
         )
     }
 
     val twoFingers = place {
-        //        val pinch = controlDialog(model)
         val singleTaps = controlDialog(model) {
             controlTaps(
                     R.string.settingsUIControlSingleTaps, it, tapConfigurations,
@@ -127,18 +111,45 @@ fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
                     settings.touches.twoFingersDoubleTaps::configuration, settings.touches.twoFingersDoubleTaps::property, settings.touches::doubleTapEnabled
             )
         }
-//        val horizontalScrolls = controlDialog(model)
-//        val verticalScrolls = controlDialog(model)
+
+        val horizontalScrolls = controlDialog(model) {
+            controlDirectionTaps(
+                    R.string.settingsUIControlHorizontalScrolls, it, horizontalScrollConfigurations,
+                    settings.touches.twoFingersLeftScrolls::configuration, settings.touches.twoFingersRightScrolls::configuration,
+                    settings.touches.twoFingersLeftScrolls::horizontalProperty, settings.touches.twoFingersRightScrolls::horizontalProperty,
+                    R.drawable.ic_long_arrow_left, R.drawable.ic_long_arrow_right,
+                    LinearLayoutCompat.HORIZONTAL
+            )
+        }
+
+        val verticalScrolls = controlDialog(model) {
+            controlDirectionTaps(
+                    R.string.settingsUIControlVerticalScrolls, it, verticalScrollConfigurations,
+                    settings.touches.twoFingersUpScrolls::configuration, settings.touches.twoFingersDownScrolls::configuration,
+                    settings.touches.twoFingersUpScrolls::horizontalProperty, settings.touches.twoFingersDownScrolls::horizontalProperty,
+                    R.drawable.ic_long_arrow_up, R.drawable.ic_long_arrow_down,
+                    LinearLayoutCompat.VERTICAL
+            )
+        }
+
+        val pinch = controlDialog(model) {
+            controlPinchTaps(
+                    R.string.settingsUIControlPinch, it,
+                    settings.touches.twoFingersPinches::pinchIn, settings.touches.twoFingersPinches::pinchOut,
+                    R.drawable.ic_arrows_in, R.drawable.ic_arrows_out,
+                    LinearLayoutCompat.VERTICAL
+            )
+        }
 
         details(
                 model, R.string.settingsUIControlTwoFingers,
                 verticalScroll(
-//                        popupSetting(model, emptyPreview(), pinch, R.string.settingsUIControlPinch),
                         popupSetting(model, emptyPreview(), singleTaps, R.string.settingsUIControlSingleTaps),
                         popupSetting(model, emptyPreview(), longTaps, R.string.settingsUIControlLongTaps),
-                        popupSetting(model, emptyPreview(), doubleTaps, R.string.settingsUIControlDoubleTaps)
-//                        popupSetting(model, emptyPreview(), horizontalScrolls, R.string.settingsUIControlHorizontalScrolls),
-//                        popupSetting(model, emptyPreview(), verticalScrolls, R.string.settingsUIControlVerticalScrolls)
+                        popupSetting(model, emptyPreview(), doubleTaps, R.string.settingsUIControlDoubleTaps),
+                        popupSetting(model, emptyPreview(), horizontalScrolls, R.string.settingsUIControlHorizontalScrolls),
+                        popupSetting(model, emptyPreview(), verticalScrolls, R.string.settingsUIControlVerticalScrolls),
+                        popupSetting(model, emptyPreview(), pinch, R.string.settingsUIControlPinch)
                 )
         )
     }
