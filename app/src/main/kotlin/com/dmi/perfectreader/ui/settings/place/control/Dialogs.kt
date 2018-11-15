@@ -49,79 +49,64 @@ fun Places.controlDialog(
     }
 }
 
-fun ViewBuild.controlTaps(
-        @StringRes titleRes: Int,
-        dialog: Dialog,
-        configurations: List<TouchZoneConfiguration>,
-        configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
-        getActionProperty: (zone: TouchZone) -> KMutableProperty0<ActionID>
-): LinearLayoutCompat = LinearLayoutCompat(context).apply {
+fun ViewBuild.control(toolBar: View, content: View) = LinearLayoutCompat(context).apply {
     orientation = LinearLayoutCompat.VERTICAL
-
-    child(params(matchParent, wrapContent, weight = 0F), controlToolbar(titleRes, dialog))
-    child(params(matchParent, matchParent, weight = 1F), controlContent(configurations, configurationProperty, getActionProperty))
+    child(params(matchParent, wrapContent, weight = 0F), toolBar)
+    child(params(matchParent, matchParent, weight = 1F), content)
 }
 
 fun ViewBuild.controlDoubleTaps(
+        taps: View,
+        enabledProperty: KMutableProperty0<Boolean>
+) = FrameLayout(context).apply {
+    child(params(matchParent, matchParent), taps.apply {
+        autorun {
+            isVisible = enabledProperty.get()
+        }
+    })
+
+    child(params(wrapContent, wrapContent, gravity = Gravity.CENTER), LinearLayoutCompat(context).apply {
+        padding = dip(16)
+        orientation = LinearLayoutCompat.VERTICAL
+
+        child(params(matchParent, wrapContent), TextView(context).apply {
+            TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
+            textColor = color(R.color.onBackground)
+            textResource = R.string.settingsUIControlDoubleTapsIsDisabled
+            gravity = Gravity.CENTER_HORIZONTAL
+        })
+
+        child(params(matchParent, wrapContent), TextView(context).apply {
+            TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
+            textColor = color(R.color.onBackground).withOpacity(0.60)
+            textResource = R.string.settingsUIControlDoubleTapsWarning
+            gravity = Gravity.CENTER_HORIZONTAL
+        })
+
+        autorun {
+            isVisible = !enabledProperty.get()
+        }
+    })
+}
+
+fun ViewBuild.controlDoubleTapsToolbar(
         @StringRes titleRes: Int,
         dialog: Dialog,
-        configurations: List<TouchZoneConfiguration>,
-        configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
-        getActionProperty: (zone: TouchZone) -> KMutableProperty0<ActionID>,
-        doubleTapEnabledProperty: KMutableProperty0<Boolean>
-): LinearLayoutCompat = LinearLayoutCompat(context).apply {
-    orientation = LinearLayoutCompat.VERTICAL
-
-    fun switch() = SwitchCompat(context).apply {
-        isChecked = doubleTapEnabledProperty.get()
+        enabledProperty: KMutableProperty0<Boolean>
+) = controlToolbar(titleRes, dialog).apply {
+    setPadding(0, 0, dip(16), 0)
+    val item = menu.add(R.string.settingsUIControlDoubleTapsEnable)
+    item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+    item.actionView = SwitchCompat(context).apply {
+        isChecked = enabledProperty.get()
         onClick {
-            doubleTapEnabledProperty.set(isChecked)
+            enabledProperty.set(isChecked)
         }
     }
-
-    child(params(matchParent, wrapContent, weight = 0F), controlToolbar(titleRes, dialog).apply {
-        setPadding(0, 0, dip(16), 0)
-        menu.add(R.string.settingsUIControlDoubleTapsEnable).apply {
-            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-            actionView = switch()
-        }
-    })
-
-    child(params(matchParent, matchParent, weight = 1F), FrameLayout(context).apply {
-        child(params(matchParent, matchParent), controlContent(configurations, configurationProperty, getActionProperty).apply {
-            autorun {
-                isVisible = doubleTapEnabledProperty.get()
-            }
-        })
-        child(params(wrapContent, wrapContent, gravity = Gravity.CENTER), LinearLayoutCompat(context).apply {
-            padding = dip(16)
-            orientation = LinearLayoutCompat.VERTICAL
-
-            child(params(matchParent, wrapContent), TextView(context).apply {
-                TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
-                textColor = color(R.color.onBackground)
-                textResource = R.string.settingsUIControlDoubleTapsIsDisabled
-                gravity = Gravity.CENTER_HORIZONTAL
-            })
-
-            child(params(matchParent, wrapContent), TextView(context).apply {
-                TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
-                textColor = color(R.color.onBackground).withOpacity(0.60)
-                textResource = R.string.settingsUIControlDoubleTapsWarning
-                gravity = Gravity.CENTER_HORIZONTAL
-            })
-
-            autorun {
-                isVisible = !doubleTapEnabledProperty.get()
-            }
-        })
-    })
 }
 
 @Suppress("UNUSED_PARAMETER")
 fun ViewBuild.controlPinchTaps(
-        @StringRes titleRes: Int,
-        dialog: Dialog,
         actionProperty1: KMutableProperty0<ActionID>,
         actionProperty2: KMutableProperty0<ActionID>,
         @DrawableRes icon1: Int,
@@ -138,7 +123,7 @@ fun ViewBuild.controlPinchTaps(
     fun getActionProperty2(zone: TouchZone) = actionProperty2
 
     return controlDirectionTaps(
-            titleRes, dialog, listOf(TouchZoneConfiguration.SINGLE),
+            listOf(TouchZoneConfiguration.SINGLE),
             configurationProperty::delegate, configurationProperty::delegate,
             ::getActionProperty1, ::getActionProperty2,
             icon1, icon2, layoutOrientation
@@ -146,8 +131,6 @@ fun ViewBuild.controlPinchTaps(
 }
 
 fun ViewBuild.controlDirectionTaps(
-        @StringRes titleRes: Int,
-        dialog: Dialog,
         configurations: List<TouchZoneConfiguration>,
         configurationProperty1: KMutableProperty0<TouchZoneConfiguration>,
         configurationProperty2: KMutableProperty0<TouchZoneConfiguration>,
@@ -156,7 +139,7 @@ fun ViewBuild.controlDirectionTaps(
         @DrawableRes icon1: Int,
         @DrawableRes icon2: Int,
         layoutOrientation: Int
-): LinearLayoutCompat = LinearLayoutCompat(context).apply {
+): View {
     val configurationProperty = object {
         var delegate: TouchZoneConfiguration
             get() = configurationProperty1.get()
@@ -166,18 +149,13 @@ fun ViewBuild.controlDirectionTaps(
             }
     }
 
-    fun cell(
-            zone: TouchZone
-    ): View = doubleCell(
+    fun cell(zone: TouchZone) = doubleCell(
             getActionProperty1(zone), getActionProperty2(zone),
             icon1, icon2,
             layoutOrientation
     )
 
-    orientation = LinearLayoutCompat.VERTICAL
-
-    child(params(matchParent, wrapContent, weight = 0F), controlToolbar(titleRes, dialog))
-    child(params(matchParent, matchParent, weight = 1F), controlContent(configurations, configurationProperty::delegate, getCell = ::cell))
+    return controlTaps(configurations, configurationProperty::delegate, getCell = ::cell)
 }
 
 fun ViewBuild.controlToolbar(@StringRes titleRes: Int, dialog: Dialog) = Toolbar(context).apply {
@@ -203,8 +181,8 @@ class MenuBuild(val menu: Menu) {
 fun ViewBuild.cell(property: KMutableProperty0<ActionID>, @DrawableRes icon: Int? = null) = FrameLayout(context).apply {
     backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
 
-    val isSmallHorizontal = layoutParams.width >= 0 &&  layoutParams.width <= dip(32)
-    val isSmallVertical = layoutParams.height >= 0 &&  layoutParams.height <= dip(32)
+    val isSmallHorizontal = layoutParams.width >= 0 && layoutParams.width <= dip(32)
+    val isSmallVertical = layoutParams.height >= 0 && layoutParams.height <= dip(32)
 
     val textView = TextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
@@ -316,16 +294,16 @@ fun ViewBuild.doubleCell(
 }
 
 @JvmName("controlContent1")
-fun ViewBuild.controlContent(
+fun ViewBuild.controlTaps(
         configurations: List<TouchZoneConfiguration>,
         configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
         getActionProperty: (zone: TouchZone) -> KMutableProperty0<ActionID>
-) = controlContent(configurations, configurationProperty, getCell = {
+) = controlTaps(configurations, configurationProperty, getCell = {
     cell(getActionProperty(it))
 })
 
 @JvmName("controlContent2")
-fun ViewBuild.controlContent(
+fun ViewBuild.controlTaps(
         configurations: List<TouchZoneConfiguration>,
         configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
         getCell: (zone: TouchZone) -> View

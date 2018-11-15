@@ -38,43 +38,56 @@ fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
 
     val oneFinger = place {
         val singleTaps = controlDialog(model) {
-            controlTaps(
-                    R.string.settingsUIControlSingleTaps, it, tapConfigurations,
-                    settings.touches.singleTaps::configuration, settings.touches.singleTaps::property
+            control(
+                    controlToolbar(R.string.settingsUIControlSingleTaps, it),
+                    controlTaps(
+                            tapConfigurations, settings.touches.singleTaps::configuration, settings.touches.singleTaps::property
+                    )
             )
         }
 
         val longTaps = controlDialog(model) {
-            controlTaps(
-                    R.string.settingsUIControlLongTaps, it, tapConfigurations,
-                    settings.touches.longTaps::configuration, settings.touches.longTaps::property
+            control(
+                    controlToolbar(R.string.settingsUIControlLongTaps, it),
+                    controlTaps(
+                            tapConfigurations, settings.touches.longTaps::configuration, settings.touches.longTaps::property
+                    )
             )
         }
 
         val doubleTaps = controlDialog(model) {
-            controlDoubleTaps(
-                    R.string.settingsUIControlDoubleTaps, it, tapConfigurations,
-                    settings.touches.doubleTaps::configuration, settings.touches.doubleTaps::property, settings.touches::doubleTapEnabled
+            control(
+                    controlDoubleTapsToolbar(R.string.settingsUIControlDoubleTaps, it, settings.touches::doubleTapEnabled),
+                    controlDoubleTaps(
+                            controlTaps(tapConfigurations, settings.touches.doubleTaps::configuration, settings.touches.doubleTaps::property),
+                            settings.touches::doubleTapEnabled
+                    )
             )
         }
 
         val horizontalScrolls = controlDialog(model) {
-            controlDirectionTaps(
-                    R.string.settingsUIControlHorizontalScrolls, it, horizontalScrollConfigurations,
-                    settings.touches.leftScrolls::configuration, settings.touches.rightScrolls::configuration,
-                    settings.touches.leftScrolls::horizontalProperty, settings.touches.rightScrolls::horizontalProperty,
-                    R.drawable.ic_long_arrow_left, R.drawable.ic_long_arrow_right,
-                    LinearLayoutCompat.HORIZONTAL
+            control(
+                    controlToolbar(R.string.settingsUIControlHorizontalScrolls, it),
+                    controlDirectionTaps(
+                            horizontalScrollConfigurations,
+                            settings.touches.leftScrolls::configuration, settings.touches.rightScrolls::configuration,
+                            settings.touches.leftScrolls::horizontalProperty, settings.touches.rightScrolls::horizontalProperty,
+                            R.drawable.ic_long_arrow_left, R.drawable.ic_long_arrow_right,
+                            LinearLayoutCompat.HORIZONTAL
+                    )
             )
         }
 
         val verticalScrolls = controlDialog(model) {
-            controlDirectionTaps(
-                    R.string.settingsUIControlVerticalScrolls, it, verticalScrollConfigurations,
-                    settings.touches.upScrolls::configuration, settings.touches.downScrolls::configuration,
-                    settings.touches.upScrolls::verticalProperty, settings.touches.downScrolls::verticalProperty,
-                    R.drawable.ic_long_arrow_up, R.drawable.ic_long_arrow_down,
-                    LinearLayoutCompat.VERTICAL
+            control(
+                    controlToolbar(R.string.settingsUIControlVerticalScrolls, it),
+                    controlDirectionTaps(
+                            verticalScrollConfigurations,
+                            settings.touches.upScrolls::configuration, settings.touches.downScrolls::configuration,
+                            settings.touches.upScrolls::verticalProperty, settings.touches.downScrolls::verticalProperty,
+                            R.drawable.ic_long_arrow_up, R.drawable.ic_long_arrow_down,
+                            LinearLayoutCompat.VERTICAL
+                    )
             )
         }
 
@@ -92,52 +105,68 @@ fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
 
     val twoFingers = place {
         val singleTaps = controlDialog(model) {
-            controlTaps(
-                    R.string.settingsUIControlSingleTaps, it, tapConfigurations,
-                    settings.touches.twoFingersSingleTaps::configuration, settings.touches.twoFingersSingleTaps::property
+            control(
+                    controlToolbar(R.string.settingsUIControlSingleTaps, it),
+                    controlTaps(
+                            tapConfigurations,
+                            settings.touches.twoFingersSingleTaps::configuration, settings.touches.twoFingersSingleTaps::property
+                    )
             )
         }
 
         val longTaps = controlDialog(model) {
-            controlTaps(
-                    R.string.settingsUIControlLongTaps, it, tapConfigurations,
-                    settings.touches.twoFingersLongTaps::configuration, settings.touches.twoFingersLongTaps::property
+            control(
+                    controlToolbar(R.string.settingsUIControlLongTaps, it),
+                    controlTaps(
+                            tapConfigurations, settings.touches.twoFingersLongTaps::configuration, settings.touches.twoFingersLongTaps::property
+                    )
             )
         }
 
         val doubleTaps = controlDialog(model) {
-            controlDoubleTaps(
-                    R.string.settingsUIControlDoubleTaps, it, tapConfigurations,
-                    settings.touches.twoFingersDoubleTaps::configuration, settings.touches.twoFingersDoubleTaps::property, settings.touches::doubleTapEnabled
+            control(
+                    controlDoubleTapsToolbar(R.string.settingsUIControlDoubleTaps, it, settings.touches::doubleTapEnabled),
+                    controlDoubleTaps(
+                            controlTaps(tapConfigurations, settings.touches.twoFingersDoubleTaps::configuration, settings.touches.twoFingersDoubleTaps::property),
+                            settings.touches::doubleTapEnabled
+                    )
             )
         }
 
         val horizontalScrolls = controlDialog(model) {
-            controlDirectionTaps(
-                    R.string.settingsUIControlHorizontalScrolls, it, horizontalScrollConfigurations,
-                    settings.touches.twoFingersLeftScrolls::configuration, settings.touches.twoFingersRightScrolls::configuration,
-                    settings.touches.twoFingersLeftScrolls::horizontalProperty, settings.touches.twoFingersRightScrolls::horizontalProperty,
-                    R.drawable.ic_long_arrow_left, R.drawable.ic_long_arrow_right,
-                    LinearLayoutCompat.HORIZONTAL
+            control(
+                    controlToolbar(R.string.settingsUIControlHorizontalScrolls, it),
+                    controlDirectionTaps(
+                            horizontalScrollConfigurations,
+                            settings.touches.twoFingersLeftScrolls::configuration, settings.touches.twoFingersRightScrolls::configuration,
+                            settings.touches.twoFingersLeftScrolls::horizontalProperty, settings.touches.twoFingersRightScrolls::horizontalProperty,
+                            R.drawable.ic_long_arrow_left, R.drawable.ic_long_arrow_right,
+                            LinearLayoutCompat.HORIZONTAL
+                    )
             )
         }
 
         val verticalScrolls = controlDialog(model) {
-            controlDirectionTaps(
-                    R.string.settingsUIControlVerticalScrolls, it, verticalScrollConfigurations,
-                    settings.touches.twoFingersUpScrolls::configuration, settings.touches.twoFingersDownScrolls::configuration,
-                    settings.touches.twoFingersUpScrolls::verticalProperty, settings.touches.twoFingersDownScrolls::verticalProperty,
-                    R.drawable.ic_long_arrow_up, R.drawable.ic_long_arrow_down,
-                    LinearLayoutCompat.VERTICAL
+            control(
+                    controlToolbar(R.string.settingsUIControlVerticalScrolls, it),
+                    controlDirectionTaps(
+                            verticalScrollConfigurations,
+                            settings.touches.twoFingersUpScrolls::configuration, settings.touches.twoFingersDownScrolls::configuration,
+                            settings.touches.twoFingersUpScrolls::verticalProperty, settings.touches.twoFingersDownScrolls::verticalProperty,
+                            R.drawable.ic_long_arrow_up, R.drawable.ic_long_arrow_down,
+                            LinearLayoutCompat.VERTICAL
+                    )
             )
         }
 
         val pinch = controlDialog(model) {
-            controlPinchTaps(
-                    R.string.settingsUIControlPinch, it,
-                    settings.touches.twoFingersPinches::pinchIn, settings.touches.twoFingersPinches::pinchOut,
-                    R.drawable.ic_arrows_in, R.drawable.ic_arrows_out,
-                    LinearLayoutCompat.VERTICAL
+            control(
+                    controlToolbar(R.string.settingsUIControlPinch, it),
+                    controlPinchTaps(
+                            settings.touches.twoFingersPinches::pinchIn, settings.touches.twoFingersPinches::pinchOut,
+                            R.drawable.ic_arrows_in, R.drawable.ic_arrows_out,
+                            LinearLayoutCompat.VERTICAL
+                    )
             )
         }
 
