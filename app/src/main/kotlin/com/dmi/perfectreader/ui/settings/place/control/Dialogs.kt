@@ -149,13 +149,14 @@ fun ViewBuild.controlDirectionTaps(
             }
     }
 
-    fun cell(zone: TouchZone) = doubleCell(
+    fun cell(zone: TouchZone, isSmallHorizontal: Boolean, isSmallVertical: Boolean) = doubleCell(
             getActionProperty1(zone), getActionProperty2(zone),
+            isSmallHorizontal, isSmallVertical,
             icon1, icon2,
             layoutOrientation
     )
 
-    return controlTaps(configurations, configurationProperty::delegate, getCell = ::cell)
+    return controlTaps(configurations, configurationProperty::delegate, cell = ::cell)
 }
 
 fun ViewBuild.controlToolbar(@StringRes titleRes: Int, dialog: Dialog) = Toolbar(context).apply {
@@ -178,11 +179,13 @@ class MenuBuild(val menu: Menu) {
     fun add(name: String): MenuItem = menu.add(name)
 }
 
-fun ViewBuild.cell(property: KMutableProperty0<ActionID>, @DrawableRes icon: Int? = null) = FrameLayout(context).apply {
+fun ViewBuild.cell(
+        property: KMutableProperty0<ActionID>,
+        isSmallHorizontal: Boolean,
+        isSmallVertical: Boolean,
+        @DrawableRes icon: Int? = null
+) = FrameLayout(context).apply {
     backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
-
-    val isSmallHorizontal = layoutParams.width >= 0 && layoutParams.width <= dip(32)
-    val isSmallVertical = layoutParams.height >= 0 && layoutParams.height <= dip(32)
 
     val textView = TextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
@@ -280,16 +283,15 @@ private fun ViewBuild.twoInCenter(orientation: Int, view1: View, view2: View) = 
 }
 
 fun ViewBuild.doubleCell(
-        property1: KMutableProperty0<ActionID>,
-        property2: KMutableProperty0<ActionID>,
-        @DrawableRes icon1: Int,
-        @DrawableRes icon2: Int,
+        property1: KMutableProperty0<ActionID>, property2: KMutableProperty0<ActionID>,
+        isSmallHorizontal: Boolean, isSmallVertical: Boolean,
+        @DrawableRes icon1: Int,@DrawableRes icon2: Int,
         layoutOrientation: Int
 ) = FrameLayout(context).apply {
     child(params(matchParent, matchParent), LinearLayoutCompat(context).apply {
         orientation = layoutOrientation
-        child(params(matchParent, matchParent, weight = 0.5F), cell(property1, icon1))
-        child(params(matchParent, matchParent, weight = 0.5F), cell(property2, icon2))
+        child(params(matchParent, matchParent, weight = 0.5F), cell(property1, isSmallHorizontal, isSmallVertical, icon1))
+        child(params(matchParent, matchParent, weight = 0.5F), cell(property2, isSmallHorizontal, isSmallVertical, icon2))
     })
 }
 
@@ -298,19 +300,23 @@ fun ViewBuild.controlTaps(
         configurations: List<TouchZoneConfiguration>,
         configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
         getActionProperty: (zone: TouchZone) -> KMutableProperty0<ActionID>
-) = controlTaps(configurations, configurationProperty, getCell = {
-    cell(getActionProperty(it))
-})
+): View {
+    fun cell(zone: TouchZone, isSmallHorizontal: Boolean, isSmallVertical: Boolean) =
+            cell(getActionProperty(zone), isSmallHorizontal, isSmallVertical)
+    return controlTaps(configurations, configurationProperty, cell = ::cell)
+}
 
 @JvmName("controlContent2")
-fun ViewBuild.controlTaps(
+private fun ViewBuild.controlTaps(
         configurations: List<TouchZoneConfiguration>,
         configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
-        getCell: (zone: TouchZone) -> View
+        cell: (TouchZone, isSmallHorizontal: Boolean, isSmallVertical: Boolean) -> View
 ): View {
     fun LinearLayoutCompat.tapColumn(horizontal: ShapeZone, vertical: ShapeZone) {
-        val zone = zone(horizontal.zone, vertical.zone)
-        child(hparams(horizontal.size), getCell(zone))
+        val touchZone = zone(horizontal.zone, vertical.zone)
+        val isSmallHorizontal = horizontal.size in 0..32
+        val isSmallVertical = vertical.size in 0..32
+        child(hparams(horizontal.size), cell(touchZone, isSmallHorizontal, isSmallVertical))
     }
 
     fun LinearLayoutCompat.tapRow(vertical: ShapeZone, horizontals: List<ShapeZone>) {
