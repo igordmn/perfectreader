@@ -8,6 +8,7 @@ import android.opengl.EGL14.EGL_NO_CONTEXT
 import android.opengl.EGL14.eglGetCurrentContext
 import android.opengl.GLES20.*
 import android.opengl.GLSurfaceView
+import android.view.View
 import android.widget.FrameLayout
 import com.dmi.util.coroutine.initThreadContext
 import com.dmi.util.coroutine.wrapContinuation
@@ -42,6 +43,9 @@ class GLSurfaceScopedView(
         private val log: Log,
         private val createRenderer: (CopyScope) -> ((Size) -> Renderer)
 ) : FrameLayout(context) {
+    @Volatile
+    private var blackFlickeringFixApplied = false
+
     private val eglContextClientVersion = 2
     private val glSurfaceView = GLSurfaceView(context)
 
@@ -103,6 +107,7 @@ class GLSurfaceScopedView(
         glSurfaceView.setEGLContextFactory(DefaultContextFactory())
         glSurfaceView.setRenderer(OriginalRenderer())
         glSurfaceView.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
+        visibility = View.INVISIBLE
         scope = CopyScope(threadContext, Dispatchers.Main)
 
         glSurfaceView.queueEvent {
@@ -168,6 +173,13 @@ class GLSurfaceScopedView(
                 init()
             } else {
                 afterInit.add(::init)
+            }
+
+            if (!blackFlickeringFixApplied) {
+                blackFlickeringFixApplied = true
+                post {
+                    visibility = View.VISIBLE
+                }
             }
         }
 
