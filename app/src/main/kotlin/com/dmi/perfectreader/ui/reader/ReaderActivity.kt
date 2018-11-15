@@ -6,19 +6,26 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import com.dmi.perfectreader.main
+import com.dmi.perfectreader.ui.library.LibraryActivity
 import com.dmi.util.android.view.ActivityExt
 import com.dmi.util.android.view.ViewBuild
 import kotlinx.serialization.cbor.CBOR.Companion.dump
 import kotlinx.serialization.cbor.CBOR.Companion.load
 
 class ReaderActivity : ActivityExt<ReaderLoad>() {
-    override fun createModel(stateData: ByteArray?) = ReaderLoad(readerContext(), intent.data!!, ::close, loadState(stateData))
+    override fun createModel(stateData: ByteArray?) = ReaderLoad(readerContext(), intent.data!!, ::close, ::showLibrary, loadState(stateData))
     override fun saveModel(model: ReaderLoad) = saveState(model.state)
     override fun ViewBuild.view(model: ReaderLoad) = readerLoadView(model)
     private fun loadState(stateData: ByteArray?): ReaderLoadState = if (stateData != null) load(stateData) else ReaderLoadState()
     private fun saveState(state: ReaderLoadState): ByteArray = dump(state)
-    private fun close() = finish()
     private fun readerContext() = ReaderContext(main, this)
+
+    private fun close() = finish()
+
+    private fun showLibrary() {
+        finish()
+        LibraryActivity.open(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE

@@ -6,11 +6,11 @@ import kotlinx.serialization.Serializable
 
 class Menu(
         val book: Book,
+        val showLibrary: () -> Unit,
         val showSettings: () -> Unit,
         val showTableOfContents: () -> Unit,
         val showSearch: () -> Unit,
         val back: () -> Unit,
-        val close: () -> Unit,
         val state: MenuState
 ) : Screen by Screen() {
     val locationText: String get() = if (book.pageNumber == 0) bookName else chapterName

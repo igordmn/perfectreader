@@ -12,6 +12,7 @@ class ReaderLoad(
         private val context: ReaderContext,
         private val uri: Uri,
         val close: () -> Unit,
+        private val showLibrary: () -> Unit,
         val state: ReaderLoadState,
         private val log: Log = context.main.log,
         scope: Scope = Scope()
@@ -23,7 +24,7 @@ class ReaderLoad(
     init {
         scope.launch {
             try {
-                reader = reader(context, uri, close, state.reader)
+                reader = reader(context, uri, close, showLibrary, state.reader)
             } catch (e: IOException) {
                 log.e(e, "Book load error")
                 error = LoadError.IO()

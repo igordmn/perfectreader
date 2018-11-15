@@ -24,15 +24,16 @@ import com.dmi.util.scope.observable
 import com.dmi.util.screen.Screen
 import kotlinx.serialization.Serializable
 
-suspend fun reader(context: ReaderContext, uri: Uri, close: () -> Unit, state: ReaderState): Reader {
+suspend fun reader(context: ReaderContext, uri: Uri, close: () -> Unit, showLibrary: () -> Unit, state: ReaderState): Reader {
     val book = book(context, uri)
-    return Reader(context, book, close, state)
+    return Reader(context, book, close, showLibrary, state)
 }
 
 class Reader(
         private val context: ReaderContext,
         book: Book,
         private val close: () -> Unit,
+        val showLibrary: () -> Unit,
         val state: ReaderState,
         scope: Scope = Scope()
 ) : Screen by Screen(scope) {
@@ -67,10 +68,6 @@ class Reader(
 
     fun showSearch() = showSearch("")
 
-    fun showLibrary() {
-        TODO()
-    }
-
     fun showSearch(text: String) {
         popup = SearchUI(SearchUIState(text))
     }
@@ -90,11 +87,11 @@ class Reader(
     private fun Selection(state: SelectionState) = Selection(context, this, ::deselect, state)
     private fun Menu(state: MenuState = MenuState()) = Menu(
             book,
+            showLibrary,
             ::showSettings,
             ::showTableOfContents,
             ::showSearch,
             ::hidePopup,
-            close,
             state
     )
     private fun SettingsUI(state: SettingsUIState = SettingsUIState()) = SettingsUI(::hidePopup, this, state)

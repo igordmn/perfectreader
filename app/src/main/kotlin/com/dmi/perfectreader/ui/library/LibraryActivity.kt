@@ -1,5 +1,7 @@
 package com.dmi.perfectreader.ui.library
 
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.ui.reader.ReaderActivity
@@ -21,5 +23,11 @@ class LibraryActivity : ActivityExt<Library>() {
     override fun onStart() {
         super.onStart()
         model.refresh()
+    }
+
+    companion object {
+        fun open(context: Context): Unit = context.startActivity(
+                Intent(context, LibraryActivity::class.java)
+        )
     }
 }

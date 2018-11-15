@@ -55,7 +55,7 @@ fun ViewBuild.menuView(model: Menu): View {
             title = book.description.name ?: book.description.fileName
             contentInsetStartWithNavigation = 0
             setNavigationOnClickListener {
-                model.close()
+                model.showLibrary()
             }
             menu.add(R.string.menuSearch).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
