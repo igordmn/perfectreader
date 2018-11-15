@@ -90,17 +90,12 @@ private fun View.applyFullscreen(model: Reader) {
 
     fun Activity.hideSystemUI() {
         window.decorView.systemUiVisibility = (original or View.SYSTEM_UI_FLAG_IMMERSIVE
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_FULLSCREEN)
     }
 
     fun Activity.showSystemUI() {
-        window.decorView.systemUiVisibility = (original or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+        window.decorView.systemUiVisibility = original
     }
 
     autorun {
@@ -117,7 +112,8 @@ private fun View.applyFullscreen(model: Reader) {
     }
 
     setOnSystemUiVisibilityChangeListener { visibility ->
-        if (activity.hasWindowFocus() && visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0 && model.popup == null) {
+        val isFullscreen = visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0
+        if (activity.hasWindowFocus() && isFullscreen && model.popup == null) {
             model.showMenu()
         }
     }
