@@ -167,21 +167,17 @@ fun ViewBuild.controlDirectionTaps(
     }
 
     fun cell(
-            zone: TouchZone,
-            isSmallVertical: Boolean,
-            isSmallHorizontal: Boolean
+            zone: TouchZone
     ): View = doubleCell(
             getActionProperty1(zone), getActionProperty2(zone),
             icon1, icon2,
-            layoutOrientation,
-            isSmallVertical,
-            isSmallHorizontal
+            layoutOrientation
     )
 
     orientation = LinearLayoutCompat.VERTICAL
 
     child(params(matchParent, wrapContent, weight = 0F), controlToolbar(titleRes, dialog))
-    child(params(matchParent, matchParent, weight = 1F), controlContent(configurations, configurationProperty::delegate, ::cell))
+    child(params(matchParent, matchParent, weight = 1F), controlContent(configurations, configurationProperty::delegate, getCell = ::cell))
 }
 
 fun ViewBuild.controlToolbar(@StringRes titleRes: Int, dialog: Dialog) = Toolbar(context).apply {
@@ -204,13 +200,11 @@ class MenuBuild(val menu: Menu) {
     fun add(name: String): MenuItem = menu.add(name)
 }
 
-fun ViewBuild.cell(
-        property: KMutableProperty0<ActionID>,
-        isSmallVertical: Boolean,
-        isSmallHorizontal: Boolean,
-        @DrawableRes icon: Int? = null
-) = FrameLayout(context).apply {
+fun ViewBuild.cell(property: KMutableProperty0<ActionID>, @DrawableRes icon: Int? = null) = FrameLayout(context).apply {
     backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
+
+    val isSmallHorizontal = layoutParams.width >= 0 &&  layoutParams.width <= dip(32)
+    val isSmallVertical = layoutParams.height >= 0 &&  layoutParams.height <= dip(32)
 
     val textView = TextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
@@ -312,35 +306,33 @@ fun ViewBuild.doubleCell(
         property2: KMutableProperty0<ActionID>,
         @DrawableRes icon1: Int,
         @DrawableRes icon2: Int,
-        layoutOrientation: Int,
-        isSmallVertical: Boolean,
-        isSmallHorizontal: Boolean
+        layoutOrientation: Int
 ) = FrameLayout(context).apply {
     child(params(matchParent, matchParent), LinearLayoutCompat(context).apply {
         orientation = layoutOrientation
-        child(params(matchParent, matchParent, weight = 0.5F), cell(property1, isSmallVertical, isSmallHorizontal, icon1))
-        child(params(matchParent, matchParent, weight = 0.5F), cell(property2, isSmallVertical, isSmallHorizontal, icon2))
+        child(params(matchParent, matchParent, weight = 0.5F), cell(property1, icon1))
+        child(params(matchParent, matchParent, weight = 0.5F), cell(property2, icon2))
     })
 }
 
+@JvmName("controlContent1")
 fun ViewBuild.controlContent(
         configurations: List<TouchZoneConfiguration>,
         configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
         getActionProperty: (zone: TouchZone) -> KMutableProperty0<ActionID>
-) = controlContent(configurations, configurationProperty) { zone, isSmallVertical, isSmallHorizontal ->
-    cell(getActionProperty(zone), isSmallVertical, isSmallHorizontal)
-}
+) = controlContent(configurations, configurationProperty, getCell = {
+    cell(getActionProperty(it))
+})
 
+@JvmName("controlContent2")
 fun ViewBuild.controlContent(
         configurations: List<TouchZoneConfiguration>,
         configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
-        getCell: (zone: TouchZone, isSmallVertical: Boolean, isSmallHorizontal: Boolean) -> View
+        getCell: (zone: TouchZone) -> View
 ): View {
     fun LinearLayoutCompat.tapColumn(horizontal: ShapeZone, vertical: ShapeZone) {
         val zone = zone(horizontal.zone, vertical.zone)
-        val isSmallVertical = vertical.size in 0..32
-        val isSmallHorizontal = horizontal.size in 0..32
-        child(hparams(horizontal.size), getCell(zone, isSmallVertical, isSmallHorizontal))
+        child(hparams(horizontal.size), getCell(zone))
     }
 
     fun LinearLayoutCompat.tapRow(vertical: ShapeZone, horizontals: List<ShapeZone>) {
