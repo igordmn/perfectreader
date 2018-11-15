@@ -142,11 +142,15 @@
     <string name="settingsUIControlOneFinger">Одним пальцем</string>
     <string name="settingsUIControlTwoFingers">Двумя пальцами</string>
     <string name="settingsUIControlSingleTaps">Короткие касания</string>
-    <string name="settingsUIControlLongTaps">Длинные касания</string>
+    <string name="settingsUIControlLongTaps">Долгие касания</string>
     <string name="settingsUIControlDoubleTaps">Двойные касания</string>
     <string name="settingsUIControlHorizontalScrolls">Горизонтальные свайпы</string>
     <string name="settingsUIControlVerticalScrolls">Вертикальные свайпы</string>
     <string name="settingsUIControlPinch">Сведение</string>
+
+    <string name="settingsUIControlDoubleTapsEnable">Включить</string>
+    <string name="settingsUIControlDoubleTapsIsDisabled">Двойные касания отключены</string>
+    <string name="settingsUIControlDoubleTapsWarning">Если включить, будет небольшая задержка при одиночных касаниях</string>
 
     <string name="searchHint">Поиск…</string>
     <string name="searchNoResultsFound">Ничего не найдено</string>

@@ -4,15 +4,14 @@ import android.app.Dialog
 import android.text.TextUtils
 import android.view.Gravity
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
-import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.appcompat.widget.PopupMenu
-import androidx.appcompat.widget.Toolbar
-import androidx.appcompat.widget.TooltipCompat
+import androidx.appcompat.widget.*
+import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import androidx.viewpager.widget.ViewPager
 import com.dmi.perfectreader.R
@@ -49,37 +48,64 @@ import kotlin.reflect.KMutableProperty0
 //TouchZoneConfiguration.TRIANGLE_SIDES_CENTER
 
 fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
+    val tapConfigurations = listOf(
+            TouchZoneConfiguration.SINGLE,
+            TouchZoneConfiguration.FOUR,
+            TouchZoneConfiguration.NINE,
+            TouchZoneConfiguration.THREE_ROWS_TWO_COLUMNS,
+            TouchZoneConfiguration.TWO_ROWS_THREE_COLUMNS,
+            TouchZoneConfiguration.SIXTEEN_FIXED
+    )
+
+    val pinchConfigurations = listOf(
+            TouchZoneConfiguration.SINGLE,
+            TouchZoneConfiguration.FOUR
+    )
+
+    val horizontalScrollConfigurations = listOf(
+            TouchZoneConfiguration.SINGLE,
+            TouchZoneConfiguration.FOUR,
+            TouchZoneConfiguration.THREE_ROWS,
+            TouchZoneConfiguration.THREE_ROWS_FIXED,
+            TouchZoneConfiguration.FOUR_ROWS_FIXED
+    )
+
+    val verticalScrollConfigurations = listOf(
+            TouchZoneConfiguration.SINGLE,
+            TouchZoneConfiguration.TWO_COLUMNS,
+            TouchZoneConfiguration.THREE_COLUMNS,
+            TouchZoneConfiguration.THREE_COLUMNS_FIXED,
+            TouchZoneConfiguration.FOUR_COLUMNS_FIXED
+    )
+
     val oneFinger = place {
-        val tapConfigurations = listOf(
-                TouchZoneConfiguration.SINGLE,
-                TouchZoneConfiguration.FOUR,
-                TouchZoneConfiguration.NINE,
-                TouchZoneConfiguration.THREE_ROWS_TWO_COLUMNS,
-                TouchZoneConfiguration.TWO_ROWS_THREE_COLUMNS,
-                TouchZoneConfiguration.SIXTEEN_FIXED
-        )
+        val singleTaps = controlDialog(model) {
+            controlTap(
+                    it, tapConfigurations, settings.touches.singleTaps::configuration,
+                    settings.touches.singleTaps::property, R.string.settingsUIControlSingleTaps
+            )
+        }
 
-        val singleTaps = controlDialog(
-                model, tapConfigurations,
-                settings.touches.singleTaps::configuration, settings.touches.singleTaps::property,
-                R.string.settingsUIControlSingleTaps
-        )
+        val longTaps = controlDialog(model) {
+            controlTap(
+                    it, tapConfigurations, settings.touches.longTaps::configuration,
+                    settings.touches.longTaps::property, R.string.settingsUIControlLongTaps
+            )
+        }
 
-        val longTaps = controlDialog(
-                model, tapConfigurations,
-                settings.touches.singleTaps::configuration, settings.touches.singleTaps::property,
-                R.string.settingsUIControlSingleTaps
-        )
+        val doubleTaps = controlDialog(model) {
+            controlDoubleTap(
+                    it, tapConfigurations, settings.touches.doubleTaps::configuration,
+                    settings.touches.doubleTaps::property, settings.touches::doubleTapEnabled, R.string.settingsUIControlDoubleTaps
+            )
+        }
 
-        val doubleTaps = controlDialog(
-                model, tapConfigurations,
-                settings.touches.singleTaps::configuration, settings.touches.singleTaps::property,
-                R.string.settingsUIControlSingleTaps
-        )
-
-//        val longTaps = controlDialog(model)
-//        val doubleTaps = controlDialog(model)
-//        val horizontalScrolls = controlDialog(model)
+//        val horizontalScrolls = controlDialog(model) {
+//            controlDoubleTap(
+//                    it, tapConfigurations, settings.touches.doubleTaps::configuration,
+//                    settings.touches.doubleTaps::property, settings.touches::doubleTapEnabled, R.string.settingsUIControlDoubleTaps
+//            )
+//        }
 //        val verticalScrolls = controlDialog(model)
 
         details(
@@ -96,21 +122,38 @@ fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
 
     val twoFingers = place {
         //        val pinch = controlDialog(model)
-//        val singleTaps = controlDialog(model)
-//        val longTaps = controlDialog(model)
-//        val doubleTaps = controlDialog(model)
+        val singleTaps = controlDialog(model) {
+            controlTap(
+                    it, tapConfigurations, settings.touches.twoFingersSingleTaps::configuration,
+                    settings.touches.twoFingersSingleTaps::property, R.string.settingsUIControlSingleTaps
+            )
+        }
+
+        val longTaps = controlDialog(model) {
+            controlTap(
+                    it, tapConfigurations, settings.touches.twoFingersLongTaps::configuration,
+                    settings.touches.twoFingersLongTaps::property, R.string.settingsUIControlLongTaps
+            )
+        }
+
+        val doubleTaps = controlDialog(model) {
+            controlDoubleTap(
+                    it, tapConfigurations, settings.touches.twoFingersDoubleTaps::configuration,
+                    settings.touches.twoFingersDoubleTaps::property, settings.touches::doubleTapEnabled, R.string.settingsUIControlDoubleTaps
+            )
+        }
 //        val horizontalScrolls = controlDialog(model)
 //        val verticalScrolls = controlDialog(model)
 
         details(
                 model, R.string.settingsUIControlTwoFingers,
                 verticalScroll(
-//                        detailsSetting(model, emptyPreview(), pinch, R.string.settingsUIControlPinch),
-//                        detailsSetting(model, emptyPreview(), singleTaps, R.string.settingsUIControlSingleTaps),
-//                        detailsSetting(model, emptyPreview(), longTaps, R.string.settingsUIControlLongTaps),
-//                        detailsSetting(model, emptyPreview(), doubleTaps, R.string.settingsUIControlDoubleTaps),
-//                        detailsSetting(model, emptyPreview(), horizontalScrolls, R.string.settingsUIControlHorizontalScrolls),
-//                        detailsSetting(model, emptyPreview(), verticalScrolls, R.string.settingsUIControlVerticalScrolls)
+//                        popupSetting(model, emptyPreview(), pinch, R.string.settingsUIControlPinch),
+                        popupSetting(model, emptyPreview(), singleTaps, R.string.settingsUIControlSingleTaps),
+                        popupSetting(model, emptyPreview(), longTaps, R.string.settingsUIControlLongTaps),
+                        popupSetting(model, emptyPreview(), doubleTaps, R.string.settingsUIControlDoubleTaps)
+//                        popupSetting(model, emptyPreview(), horizontalScrolls, R.string.settingsUIControlHorizontalScrolls),
+//                        popupSetting(model, emptyPreview(), verticalScrolls, R.string.settingsUIControlVerticalScrolls)
                 )
         )
     }
@@ -123,11 +166,102 @@ fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
 
 private fun Places.controlDialog(
         model: SettingsUI,
+        view: (Dialog) -> View
+) = dialog {
+    Dialog(context, R.style.fullScreenDialog).apply {
+        val dialog = this
+        setContentView(RelativeLayout(context).apply {
+            child(params(matchParent, matchParent), view(dialog))
+        })
+        setOnDismissListener {
+            model.popup = null
+        }
+    }
+}
+
+private fun ViewBuild.controlTap(
+        dialog: Dialog,
         configurations: List<TouchZoneConfiguration>,
         configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
         getActionProperty: (zone: TouchZone) -> KMutableProperty0<ActionID>,
         @StringRes titleRes: Int
-) = dialog {
+): LinearLayoutCompat = LinearLayoutCompat(context).apply {
+    orientation = LinearLayoutCompat.VERTICAL
+
+    child(params(matchParent, wrapContent, weight = 0F), controlToolbar(titleRes, dialog))
+    child(params(matchParent, matchParent, weight = 1F), controlContent(configurations, configurationProperty, getActionProperty))
+}
+
+private fun ViewBuild.controlDoubleTap(
+        dialog: Dialog,
+        configurations: List<TouchZoneConfiguration>,
+        configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
+        getActionProperty: (zone: TouchZone) -> KMutableProperty0<ActionID>,
+        doubleTapEnabledProperty: KMutableProperty0<Boolean>,
+        @StringRes titleRes: Int
+): LinearLayoutCompat = LinearLayoutCompat(context).apply {
+    orientation = LinearLayoutCompat.VERTICAL
+
+    child(params(matchParent, wrapContent, weight = 0F), controlToolbar(titleRes, dialog).apply {
+        setPadding(0, 0, dip(16), 0)
+        menu.add(R.string.settingsUIControlDoubleTapsEnable).apply {
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            actionView = SwitchCompat(context).apply {
+                isChecked = doubleTapEnabledProperty.get()
+                onClick {
+                    doubleTapEnabledProperty.set(isChecked)
+                }
+            }
+        }
+
+    })
+
+    child(params(matchParent, matchParent, weight = 1F), FrameLayout(context).apply {
+        child(params(matchParent, matchParent), controlContent(configurations, configurationProperty, getActionProperty).apply {
+            autorun {
+                isVisible = doubleTapEnabledProperty.get()
+            }
+        })
+        child(params(wrapContent, wrapContent, gravity = Gravity.CENTER), LinearLayoutCompat(context).apply {
+            padding = dip(16)
+            orientation = LinearLayoutCompat.VERTICAL
+
+            child(params(matchParent, wrapContent), TextView(context).apply {
+                TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
+                textColor = color(R.color.onBackground)
+                textResource = R.string.settingsUIControlDoubleTapsIsDisabled
+                gravity = Gravity.CENTER_HORIZONTAL
+            })
+
+            child(params(matchParent, wrapContent), TextView(context).apply {
+                TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
+                textColor = color(R.color.onBackground).withOpacity(0.60)
+                textResource = R.string.settingsUIControlDoubleTapsWarning
+                gravity = Gravity.CENTER_HORIZONTAL
+            })
+
+            autorun {
+                isVisible = !doubleTapEnabledProperty.get()
+            }
+        })
+    })
+}
+
+private fun ViewBuild.controlToolbar(@StringRes titleRes: Int, dialog: Dialog) = Toolbar(context).apply {
+    setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
+    backgroundColor = color(android.R.color.transparent)
+    navigationIcon = drawable(R.drawable.ic_arrow_back)
+    title = string(titleRes)
+    setNavigationOnClickListener {
+        dialog.dismiss()
+    }
+}
+
+private fun ViewBuild.controlContent(
+        configurations: List<TouchZoneConfiguration>,
+        configurationProperty: KMutableProperty0<TouchZoneConfiguration>,
+        getActionProperty: (zone: TouchZone) -> KMutableProperty0<ActionID>
+): View {
     fun LinearLayoutCompat.horizontalDivider() {
         child(params(matchParent, dip(1), weight = 0F), View(context).apply {
             backgroundColor = color(attr(android.R.attr.colorControlHighlight).resourceId)
@@ -246,9 +380,9 @@ private fun Places.controlDialog(
 
         adapter = ViewPagerAdapter(views)
         currentItem = configurations.indexOf(configuration)
-        addOnPageChangeListener(object: ViewPager.OnPageChangeListener {
+        addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) = Unit
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int)  = Unit
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) = Unit
 
             override fun onPageSelected(position: Int) {
                 configurationProperty.set(configurations[position])
@@ -256,31 +390,8 @@ private fun Places.controlDialog(
         })
     }
 
-    fun view(dialog: Dialog): LinearLayoutCompat = LinearLayoutCompat(context).apply {
-        orientation = LinearLayoutCompat.VERTICAL
-
-        child(params(matchParent, wrapContent, weight = 0F), Toolbar(context).apply {
-            setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
-            backgroundColor = color(android.R.color.transparent)
-            navigationIcon = drawable(R.drawable.ic_arrow_back)
-            title = string(titleRes)
-            setNavigationOnClickListener {
-                dialog.dismiss()
-            }
-        })
-        child(params(matchParent, matchParent, weight = 1F), FrameLayout(context).apply {
-            setPadding(0, 0, 0, dip(16))
-            child(params(matchParent, matchParent), viewPager())
-        })
-    }
-
-    Dialog(context, R.style.fullScreenDialog).apply {
-        val dialog = this
-        setContentView(RelativeLayout(context).apply {
-            child(params(matchParent, matchParent), view(dialog))
-        })
-        setOnDismissListener {
-            model.popup = null
-        }
+    return FrameLayout(context).apply {
+        setPadding(0, 0, 0, dip(16))
+        child(params(matchParent, matchParent), viewPager())
     }
 }
