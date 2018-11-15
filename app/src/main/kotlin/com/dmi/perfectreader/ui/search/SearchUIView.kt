@@ -87,13 +87,13 @@ fun ViewBuild.searchUIView(
 
     backgroundColor = color(R.color.background)
 
-    child(params(matchParent, wrapContent, weight = 0F), Toolbar {
+    Toolbar {
         setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
         backgroundColor = color(android.R.color.transparent)
         navigationIcon = drawable(R.drawable.ic_arrow_left)
         setContentInsetsRelative(0, dip(16))
 
-        child(params(matchParent, wrapContent), SearchView {
+        SearchView {
             queryHint = string(R.string.searchHint)
             setIconifiedByDefault(false)
             isIconified = false
@@ -110,7 +110,7 @@ fun ViewBuild.searchUIView(
                     hideSoftKeyboard()
             }
 
-            setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     model.searchQuery = query
                     hideSoftKeyboard()
@@ -121,18 +121,18 @@ fun ViewBuild.searchUIView(
             })
 
             requestFocus()
-        })
+        } into container(matchParent, wrapContent)
 
         setNavigationOnClickListener {
             model.back()
         }
-    })
+    } into container(matchParent, wrapContent, weight = 0F)
 
-    child(params(matchParent, matchParent, weight = 1F), FrameLayout {
-        child(params(matchParent, matchParent), results())
-        child(params(wrapContent, wrapContent, Gravity.CENTER_HORIZONTAL), progress())
-        child(params(matchParent, wrapContent), noResults())
-    })
+    FrameLayout {
+        results() into container(matchParent, matchParent)
+        progress() into container(wrapContent, wrapContent, Gravity.CENTER_HORIZONTAL)
+        noResults() into container(matchParent, wrapContent)
+    } into container(matchParent, matchParent, weight = 1F)
 }
 
 class SearchResultView(
@@ -147,10 +147,10 @@ class SearchResultView(
     private val pageView = TextView(context)
 
     init {
-        layoutParams = params(matchParent, wrapContent)
+        layoutParams = LinearLayoutCompat.LayoutParams(matchParent, wrapContent)
 
-        child(params(matchParent, wrapContent, Gravity.TOP, weight = 1F), textView)
-        child(params(wrapContent, wrapContent, Gravity.END or Gravity.TOP, weight = 0F), pageView)
+        textView into container(matchParent, wrapContent, Gravity.TOP, weight = 1F)
+        pageView into container(wrapContent, wrapContent, Gravity.END or Gravity.TOP, weight = 0F)
 
         orientation = LinearLayoutCompat.HORIZONTAL
         isClickable = true

@@ -19,7 +19,7 @@ fun ViewBuild.fontStyleView(
 ) = PreviewView(
         view = HorizontalLayout {
             setPadding(0, 0, dip(12), 0)
-            child(params(dip(48), dip(48)), CheckableImageButton {
+            CheckableImageButton {
                 contentDescription = string(boldStringId)
                 TooltipCompat.setTooltipText(this, contentDescription)
                 image = drawable(R.drawable.ic_text_bold, color(R.color.onBackground))
@@ -28,9 +28,9 @@ fun ViewBuild.fontStyleView(
                 onChecked {
                     boldProperty.set(it)
                 }
-            })
+            } into container(dip(48), dip(48))
 
-            child(params(dip(48), dip(48)), CheckableImageButton {
+            CheckableImageButton {
                 contentDescription = string(italicStringId)
                 TooltipCompat.setTooltipText(this, contentDescription)
                 image = drawable(R.drawable.ic_text_italic, color(R.color.onBackground))
@@ -39,7 +39,7 @@ fun ViewBuild.fontStyleView(
                 onChecked {
                     italicProperty.set(it)
                 }
-            })
+            } into container(dip(48), dip(48))
         },
         withPadding = false,
         isClickable = false

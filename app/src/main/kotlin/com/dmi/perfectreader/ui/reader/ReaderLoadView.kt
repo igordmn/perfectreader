@@ -17,15 +17,15 @@ fun ViewBuild.readerLoadView(model: ReaderLoad) = FrameLayoutExt {
     isFocusable = true
     isFocusableInTouchMode = true
 
-    bindChild(params(matchParent, matchParent, Gravity.CENTER), model::reader, ViewBuild::readerView, defferStateRestore = true).apply {
+    bindChild(container(matchParent, matchParent, Gravity.CENTER), model::reader, ViewBuild::readerView, defferStateRestore = true).apply {
         id = generateId()
     }
-    child(params(wrapContent, wrapContent, Gravity.CENTER), ProgressBar {
+    ProgressBar {
         autorun {
             visibility = if (model.isLoading) View.VISIBLE else View.GONE
         }
-    })
-    child(params(wrapContent, wrapContent, Gravity.CENTER), TextView {
+    } into container(wrapContent, wrapContent, Gravity.CENTER)
+    TextView {
         fun showError(strId: Int) {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
             visibility = View.VISIBLE
@@ -41,7 +41,7 @@ fun ViewBuild.readerLoadView(model: ReaderLoad) = FrameLayoutExt {
                 is LoadError.IO -> showError(R.string.bookOpenError)
             }
         }
-    })
+    } into container(wrapContent, wrapContent, Gravity.CENTER)
 
     applyOrientation()
 

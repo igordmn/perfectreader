@@ -24,29 +24,29 @@ class PerformingActionView(context: Context) : FrameLayout(context) {
     private val value: TextView
 
     init {
-        child(params(wrapContent, wrapContent), MaterialCardView(context).apply {
+        MaterialCardView(context).apply {
             setBackgroundColor(color(R.color.secondary))
             elevation = dipFloat(3F)
             useCompatPadding = true
 
-            child(params(wrapContent, wrapContent), LinearLayoutCompat(context).apply {
+            LinearLayoutCompat(context).apply {
                 orientation = LinearLayoutCompat.VERTICAL
                 gravity = Gravity.CENTER_HORIZONTAL
                 setPadding(dip(12), dip(4), dip(12), dip(4))
 
-                name = child(params(wrapContent, wrapContent), TextView(context).apply {
+                name = TextView(context).apply {
                     isAllCaps = true
                     textColor = color(R.color.onSecondary)
                     textSize = spFloat(16F)
-                })
+                } into container(wrapContent, wrapContent)
 
-                value = child(params(wrapContent, wrapContent), TextView(context).apply {
+                value = TextView(context).apply {
                     isAllCaps = true
                     textColor = color(R.color.onSecondary)
                     textSize = spFloat(24F)
-                })
-            })
-        })
+                } into container(wrapContent, wrapContent)
+            } into container(wrapContent, wrapContent)
+        } into container(wrapContent, wrapContent)
     }
 
     fun set(action: PerformingAction) {

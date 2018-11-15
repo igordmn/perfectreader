@@ -26,18 +26,18 @@ fun ViewBuild.selectionView(model: Selection) = FrameLayoutExt {
         cardElevation = dipFloat(6F)
         useCompatPadding = true
 
-        child(params(wrapContent, wrapContent), ScrollView {
+        ScrollView {
             backgroundColor = color(R.color.background)
 
-            child(params(wrapContent, wrapContent), HorizontalLayout {
+            HorizontalLayout {
                 fun item(@DrawableRes icon: Int, @StringRes str: Int, action: () -> Unit) {
-                    child(params(dip(48), dip(48)), AppCompatImageButton {
+                    AppCompatImageButton {
                         backgroundResource = attr(R.attr.selectableItemBackground).resourceId
                         contentDescription = string(str)
                         image = drawable(icon, color(R.color.onBackground))
                         TooltipCompat.setTooltipText(this, contentDescription)
                         onClick { action() }
-                    })
+                    } into container(dip(48), dip(48))
                 }
 
                 item(R.drawable.ic_content_copy, R.string.selectionCopy, model::copySelectedText)
@@ -45,27 +45,27 @@ fun ViewBuild.selectionView(model: Selection) = FrameLayoutExt {
                 item(R.drawable.ic_search, R.string.selectionSearchBook, model::searchBookSelectedText)
                 item(R.drawable.ic_search_web, R.string.selectionSearchWeb, model::searchWebSelectedText)
                 item(R.drawable.ic_search_wiki, R.string.selectionSearchWiki, model::searchWikiSelectedText)
-            })
-        })
+            } into container(wrapContent, wrapContent)
+        } into container(wrapContent, wrapContent)
     }
 
-    child(params(matchParent, matchParent), FrameLayout {
-        val handles = child(params(wrapContent, wrapContent), HandlesView(context, model))
+    FrameLayout {
+        val handles = HandlesView(context, model) into container(wrapContent, wrapContent)
         autorun {
             handles.set(model.handles)
         }
-    })
+    } into container(matchParent, matchParent)
 
-    child(params(matchParent, matchParent), FrameLayout {
+    FrameLayout {
         layoutTransition = fadeTransition(300)
-        val actions = child(params(wrapContent, wrapContent), actions())
+        val actions = actions() into container(wrapContent, wrapContent)
         onSizeChange { _, _ ->
             updateActions(this, actions)
         }
         autorun {
             updateActions(this, actions)
         }
-    })
+    } into container(matchParent, matchParent)
 
     onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.deselect(); true }
 }

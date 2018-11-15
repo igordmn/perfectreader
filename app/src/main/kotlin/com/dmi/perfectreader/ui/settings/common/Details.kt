@@ -21,8 +21,8 @@ fun ViewBuild.details(
 ) = VerticalLayoutExt {
     backgroundColor = color(R.color.background)
 
-    child(params(matchParent, wrapContent, weight = 0F), toolbar)
-    child(params(matchParent, matchParent, weight = 1F), content)
+    toolbar into container(matchParent, wrapContent, weight = 0F)
+    content into container(matchParent, matchParent, weight = 1F)
 }
 
 fun ViewBuild.detailsToolbar(

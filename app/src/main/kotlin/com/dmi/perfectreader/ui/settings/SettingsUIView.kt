@@ -34,11 +34,11 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
     }
 
     fun ViewBuild.main(): View = VerticalLayout {
-        val tabLayout = child(params(matchParent, wrapContent, weight = 0F), TabLayout {
+        val tabLayout = TabLayout {
             tabMode = TabLayout.MODE_SCROLLABLE
-        })
+        } into container(matchParent, wrapContent, weight = 0F)
 
-        child(params(matchParent, matchParent, weight = 1F), ViewPagerSaveable {
+        ViewPagerSaveable {
             id = generateId()
             adapter = ViewPagerAdapter(
                     string(R.string.settingsUIFont) to places.font.viewRef,
@@ -48,7 +48,7 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
                     string(R.string.settingsUIControl) to places.control.viewRef
             )
             tabLayout.setupWithViewPager(this)
-        })
+        } into container(matchParent, matchParent, weight = 1F)
     }
 
     fun ViewBuild.screenView(screen: Screen): View {
@@ -76,12 +76,12 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
     }
 
     return VerticalLayoutExt {
-        child(params(matchParent, 0, weight = 0.4F), space())
-        child(params(matchParent, 0, weight = 0.6F), ScreensView(context, model.screens, ViewBuild::screenView).apply {
+        space() into container(matchParent, 0, weight = 0.4F)
+        ScreensView(context, model.screens, ViewBuild::screenView).apply {
             id = generateId()
             backgroundColor = color(R.color.background)
             elevation = dipFloat(8F)
-        })
+        } into container(matchParent, 0, weight = 0.6F)
 
         onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.screens.goBackward(); true }
         onInterceptKeyDown(KeyEvent.KEYCODE_MENU) { model.back(); true }

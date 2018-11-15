@@ -42,7 +42,7 @@ fun ViewBuild.tableOfContentsUIView(
 
     backgroundColor = color(R.color.background)
 
-    child(params(matchParent, wrapContent, weight = 0F), Toolbar {
+    Toolbar {
         val description = book.description
         setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
         backgroundColor = color(android.R.color.transparent)
@@ -53,9 +53,9 @@ fun ViewBuild.tableOfContentsUIView(
         setNavigationOnClickListener {
             model.back()
         }
-    })
+    } into container(matchParent, wrapContent, weight = 0F)
 
-    child(params(matchParent, matchParent, weight = 1F), content())
+    content() into container(matchParent, matchParent, weight = 1F)
 }
 
 class ChapterView(
@@ -69,10 +69,10 @@ class ChapterView(
     private val pageView = TextView(context)
 
     init {
-        layoutParams = params(matchParent, wrapContent)
+        layoutParams = LinearLayoutCompat.LayoutParams(matchParent, wrapContent)
 
-        child(params(matchParent, wrapContent, Gravity.TOP, weight = 1F), chapterView)
-        child(params(wrapContent, wrapContent, Gravity.END or Gravity.TOP, weight = 0F), pageView)
+        chapterView into container(matchParent, wrapContent, Gravity.TOP, weight = 1F)
+        pageView into container(wrapContent, wrapContent, Gravity.END or Gravity.TOP, weight = 0F)
 
         orientation = LinearLayoutCompat.HORIZONTAL
         isClickable = true

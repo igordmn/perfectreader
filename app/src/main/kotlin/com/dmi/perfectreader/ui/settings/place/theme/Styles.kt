@@ -124,7 +124,7 @@ fun ViewBuild.stylesDetails(model: SettingsUI): LinearLayoutExt {
     }
 
     fun toolbar() = FrameLayout {
-        child(params(matchParent, wrapContent), detailsToolbar(R.string.settingsUIThemeSaved, model).apply {
+        detailsToolbar(R.string.settingsUIThemeSaved, model).apply {
             menu.add(R.string.settingsUIThemeSavedAdd).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 icon = drawable(R.drawable.ic_plus, color(R.color.onBackground))
@@ -133,12 +133,12 @@ fun ViewBuild.stylesDetails(model: SettingsUI): LinearLayoutExt {
             autorun {
                 isVisible = adapter.selectedPositions.isEmpty()
             }
-        })
-        child(params(matchParent, wrapContent), selectionToolbar().apply {
+        } into container(matchParent, wrapContent)
+        selectionToolbar().apply {
             autorun {
                 isVisible = adapter.selectedPositions.isNotEmpty()
             }
-        })
+        } into container(matchParent, wrapContent)
     }
 
     return details(toolbar(), recyclerView)
@@ -155,9 +155,9 @@ class ThemeSavedItemView(context: Context) : FrameLayout(context), Bindable<Save
 
     init {
         padding = dip(12)
-        child(params(wrapContent, wrapContent, gravity = Gravity.CENTER), backgroundBitmap)
-        child(params(dip(64), dip(64), gravity = Gravity.CENTER), backgroundColor)
-        child(params(wrapContent, wrapContent, gravity = Gravity.CENTER), letter)
+        backgroundBitmap into container(wrapContent, wrapContent, gravity = Gravity.CENTER)
+        backgroundColor into container(dip(64), dip(64), gravity = Gravity.CENTER)
+        letter into container(wrapContent, wrapContent, gravity = Gravity.CENTER)
     }
 
     override fun bind(model: SavedTheme) {

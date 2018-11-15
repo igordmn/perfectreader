@@ -38,7 +38,7 @@ fun Places.controlDialog(
     Dialog(context, R.style.fullScreenDialog).apply {
         val dialog = this
         setContentView(RelativeLayout {
-            child(params(matchParent, matchParent), view(dialog))
+            view(dialog) into container(matchParent, matchParent)
         })
         setOnDismissListener {
             model.popup = null
@@ -47,41 +47,41 @@ fun Places.controlDialog(
 }
 
 fun ViewBuild.control(toolBar: View, content: View) = VerticalLayout {
-    child(params(matchParent, wrapContent, weight = 0F), toolBar)
-    child(params(matchParent, matchParent, weight = 1F), content)
+    toolBar into container(matchParent, wrapContent, weight = 0F)
+    content into container(matchParent, matchParent, weight = 1F)
 }
 
 fun ViewBuild.controlDoubleTaps(
         taps: View,
         enabledProperty: KMutableProperty0<Boolean>
 ) = FrameLayout {
-    child(params(matchParent, matchParent), taps.apply {
+    taps.apply {
         autorun {
             isVisible = enabledProperty.get()
         }
-    })
+    } into container(matchParent, matchParent)
 
-    child(params(wrapContent, wrapContent, gravity = Gravity.CENTER), VerticalLayout {
+    VerticalLayout {
         padding = dip(16)
 
-        child(params(matchParent, wrapContent), TextView {
+        TextView {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
             textColor = color(R.color.onBackground)
             textResource = R.string.settingsUIControlDoubleTapsIsDisabled
             gravity = Gravity.CENTER_HORIZONTAL
-        })
+        } into container(matchParent, wrapContent)
 
-        child(params(matchParent, wrapContent), TextView {
+        TextView {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
             textColor = color(R.color.onBackground).withOpacity(0.60)
             textResource = R.string.settingsUIControlDoubleTapsWarning
             gravity = Gravity.CENTER_HORIZONTAL
-        })
+        } into container(matchParent, wrapContent)
 
         autorun {
             isVisible = !enabledProperty.get()
         }
-    })
+    } into container(wrapContent, wrapContent, gravity = Gravity.CENTER)
 }
 
 fun ViewBuild.controlDoubleTapsToolbar(
@@ -192,18 +192,15 @@ fun ViewBuild.cell(
     }
 
     if (icon != null) {
-        child(
-                params(matchParent, matchParent),
-                twoInCenter(
-                        if (isSmallVertical) LinearLayoutCompat.HORIZONTAL else LinearLayoutCompat.VERTICAL,
-                        ImageView {
-                            image = drawable(icon, color(R.color.onBackground).withOpacity(0.10))
-                        },
-                        textView
-                )
-        )
+        twoInCenter(
+                if (isSmallVertical) LinearLayoutCompat.HORIZONTAL else LinearLayoutCompat.VERTICAL,
+                ImageView {
+                    image = drawable(icon, color(R.color.onBackground).withOpacity(0.10))
+                },
+                textView
+        ) into container(matchParent, matchParent)
     } else {
-        child(params(wrapContent, wrapContent, gravity = Gravity.CENTER), textView)
+        textView into container(wrapContent, wrapContent, gravity = Gravity.CENTER)
     }
 
     autorun {
@@ -227,9 +224,9 @@ fun ViewBuild.cell(
 fun FrameLayout.attachMenu(configure: PopupMenu.() -> Unit) {
     var lastX = 0F
     var lastY = 0F
-    val menuAnchor = child(params(1, 1), View(context).apply {
+    val menuAnchor = View(context).apply {
         backgroundColor = Color.TRANSPARENT
-    })
+    } into container(1, 1)
 
     onTouch(returnValue = false) { _, event ->
         lastX = event.x
@@ -268,13 +265,13 @@ private fun ViewBuild.twoInCenter(orientation: Int, view1: View, view2: View) = 
 
     this.orientation = orientation
 
-    child(params(matchParent, matchParent, weight = 0.5F), FrameLayout {
-        child(params(dip(24), dip(24), gravity = gravity1), view1)
-    })
+    FrameLayout {
+        view1 into container(dip(24), dip(24), gravity = gravity1)
+    } into container(matchParent, matchParent, weight = 0.5F)
 
-    child(params(matchParent, matchParent, weight = 0.5F), FrameLayout {
-        child(params(wrapContent, wrapContent, gravity = gravity2), view2)
-    })
+    FrameLayout {
+        view2 into container(wrapContent, wrapContent, gravity = gravity2)
+    } into container(matchParent, matchParent, weight = 0.5F)
 }
 
 fun ViewBuild.doubleCell(
@@ -283,11 +280,11 @@ fun ViewBuild.doubleCell(
         @DrawableRes icon1: Int,@DrawableRes icon2: Int,
         layoutOrientation: Int
 ) = FrameLayout {
-    child(params(matchParent, matchParent), LinearLayoutCompat {
+    LinearLayoutCompat {
         orientation = layoutOrientation
-        child(params(matchParent, matchParent, weight = 0.5F), cell(property1, isSmallHorizontal, isSmallVertical, icon1))
-        child(params(matchParent, matchParent, weight = 0.5F), cell(property2, isSmallHorizontal, isSmallVertical, icon2))
-    })
+        cell(property1, isSmallHorizontal, isSmallVertical, icon1) into container(matchParent, matchParent, weight = 0.5F)
+        cell(property2, isSmallHorizontal, isSmallVertical, icon2) into container(matchParent, matchParent, weight = 0.5F)
+    } into container(matchParent, matchParent)
 }
 
 @JvmName("controlContent1")
@@ -311,17 +308,17 @@ private fun ViewBuild.controlTaps(
         val touchZone = zone(horizontal.zone, vertical.zone)
         val isSmallHorizontal = horizontal.size in 0..32
         val isSmallVertical = vertical.size in 0..32
-        child(hparams(horizontal.size), cell(touchZone, isSmallHorizontal, isSmallVertical))
+        cell(touchZone, isSmallHorizontal, isSmallVertical) into hcontainer(horizontal.size)
     }
 
     fun LinearLayoutCompat.tapRow(vertical: ShapeZone, horizontals: List<ShapeZone>) {
-        child(vparams(vertical.size), HorizontalLayout {
+        HorizontalLayout {
             verticalDivider()
             for (horizontal in horizontals) {
                 tapColumn(horizontal, vertical)
                 verticalDivider()
             }
-        })
+        } into vcontainer(vertical.size)
     }
 
     fun ViewBuild.taps(configuration: TouchZoneConfiguration): View = VerticalLayout {
@@ -357,30 +354,30 @@ private fun ViewBuild.controlTaps(
 
     return FrameLayout {
         setPadding(0, 0, 0, dip(16))
-        child(params(matchParent, matchParent), viewPager())
+        viewPager() into container(matchParent, matchParent)
     }
 }
 
 fun LinearLayoutCompat.horizontalDivider() {
-    child(params(matchParent, dip(1), weight = 0F), View(context).apply {
+    View(context).apply {
         backgroundColor = color(attr(android.R.attr.colorControlHighlight).resourceId)
-    })
+    } into container(matchParent, dip(1), weight = 0F)
 }
 
 fun LinearLayoutCompat.verticalDivider() {
-    child(params(dip(1), matchParent, weight = 0F), View(context).apply {
+    View(context).apply {
         backgroundColor = color(attr(android.R.attr.colorControlHighlight).resourceId)
-    })
+    } into container(dip(1), matchParent, weight = 0F)
 }
 
-fun LinearLayoutCompat.vparams(height: Int) = if (height < 0) {
-    params(matchParent, matchParent, weight = 1F)
+fun LinearLayoutCompat.vcontainer(height: Int) = if (height < 0) {
+    container(matchParent, matchParent, weight = 1F)
 } else {
-    params(matchParent, dip(height), weight = 0F)
+    container(matchParent, dip(height), weight = 0F)
 }
 
-fun LinearLayoutCompat.hparams(width: Int) = if (width < 0) {
-    params(matchParent, matchParent, weight = 1F)
+fun LinearLayoutCompat.hcontainer(width: Int) = if (width < 0) {
+    container(matchParent, matchParent, weight = 1F)
 } else {
-    params(dip(width), matchParent, weight = 0F)
+    container(dip(width), matchParent, weight = 0F)
 }

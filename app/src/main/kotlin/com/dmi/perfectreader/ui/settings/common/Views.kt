@@ -19,11 +19,11 @@ import kotlin.reflect.KProperty0
 
 fun ViewBuild.verticalScroll(vararg list: View) = NestedScrollView {
     id = generateId()
-    child(params(matchParent, wrapContent), VerticalLayout {
+    VerticalLayout {
         list.forEach {
-            child(params(matchParent, wrapContent), it)
+            it into container(matchParent, wrapContent)
         }
-    })
+    } into container(matchParent, wrapContent)
 }
 
 infix fun View.visibleIf(condition: () -> Boolean): View {
@@ -90,7 +90,7 @@ fun ViewBuild.floatSetting(
 
     var editNumber: EditNumber by initOnce()
     val view = HorizontalLayout {
-        child(params(dip(48), dip(48)), AppCompatImageButton {
+        AppCompatImageButton {
             backgroundResource = attr(R.attr.selectableItemBackground).resourceId
             image = drawable(R.drawable.ic_minus, color(R.color.onBackground).withOpacity(0.60))
             onContinuousClick {
@@ -104,9 +104,9 @@ fun ViewBuild.floatSetting(
                     editNumber.floatValue = max
                 }
             }
-        })
+        } into container(dip(48), dip(48))
 
-        editNumber = child(params(dip(48), dip(48)), EditNumber {
+        editNumber = EditNumber {
             setPadding(0, dip(12), 0, dip(12))
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
             gravity = Gravity.CENTER
@@ -118,9 +118,9 @@ fun ViewBuild.floatSetting(
             afterChange {
                 property.set(floatValue)
             }
-        })
+        } into container(dip(48), dip(48))
 
-        child(params(dip(48), dip(48)), AppCompatImageButton {
+        AppCompatImageButton {
             backgroundResource = attr(R.attr.selectableItemBackground).resourceId
             image = drawable(R.drawable.ic_plus, color(R.color.onBackground).withOpacity(0.60))
             onContinuousClick {
@@ -134,7 +134,7 @@ fun ViewBuild.floatSetting(
                     editNumber.floatValue = min
                 }
             }
-        })
+        } into container(dip(48), dip(48))
     }
 
     return titleSetting(PreviewView(view, withPadding = false), titleRes, subtitleRes).apply {
@@ -176,23 +176,23 @@ fun ViewBuild.titleSetting(
 ) = HorizontalLayout {
     setPadding(dip(16), 0, if (previewView.withPadding) dip(16) else 0, 0)
 
-    child(params(matchParent, wrapContent, Gravity.CENTER_VERTICAL, weight = 1F), VerticalLayout {
+    VerticalLayout {
         setPaddingRelative(0, dip(12), dip(16), dip(12))
-        child(params(wrapContent, wrapContent), TextView {
+        TextView {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
             textColor = color(R.color.onBackground)
             text = string(titleRes)
-        })
+        } into container(wrapContent, wrapContent)
         if (subtitleRes != null) {
-            child(params(wrapContent, wrapContent), TextView {
+            TextView {
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)
                 text = string(subtitleRes)
-            })
+            } into container(wrapContent, wrapContent)
         }
-    })
+    } into container(matchParent, wrapContent, Gravity.CENTER_VERTICAL, weight = 1F)
 
-    child(params(wrapContent, wrapContent, Gravity.END or Gravity.CENTER_VERTICAL, weight = 0F), previewView.view)
+    previewView.view into container(wrapContent, wrapContent, Gravity.END or Gravity.CENTER_VERTICAL, weight = 0F)
 
     if (previewView.isClickable) {
         backgroundResource = attr(R.attr.selectableItemBackground).resourceId

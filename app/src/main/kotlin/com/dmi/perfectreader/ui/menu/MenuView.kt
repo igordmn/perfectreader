@@ -45,7 +45,7 @@ fun ViewBuild.menuView(model: Menu): View {
         backgroundColor = color(R.color.background)
         elevation = dipFloat(4F)
 
-        child(params(matchParent, wrapContent), Toolbar {
+        Toolbar {
             setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
             backgroundColor = color(android.R.color.transparent)
             navigationIcon = drawable(R.drawable.ic_arrow_left)
@@ -68,12 +68,12 @@ fun ViewBuild.menuView(model: Menu): View {
                     model.showSettings()
                 }
             }
-        })
+        } into container(matchParent, wrapContent)
 
-        child(params(matchParent, wrapContent, topMargin = -dip(12)), LinearLayoutCompat {
+        LinearLayoutCompat {
             orientation = LinearLayoutCompat.HORIZONTAL
 
-            child(params(matchParent, wrapContent, weight = 1F), TextView {
+            TextView {
                 isClickable = true
                 isFocusable = true
                 setPadding(dip(16), dip(12), 0, dip(12))
@@ -90,9 +90,9 @@ fun ViewBuild.menuView(model: Menu): View {
                         model.showTableOfContents()
                     }
                 }
-            })
+            } into container(matchParent, wrapContent, weight = 1F)
 
-            val pageNumber = child(params(wrapContent, wrapContent, weight = 0F), EditNumber {
+            val pageNumber = EditNumber {
                 setPadding(dip(16), dip(12), 0, dip(12))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)
@@ -111,9 +111,9 @@ fun ViewBuild.menuView(model: Menu): View {
                 autorun {
                     intValue = book.pageNumber
                 }
-            })
+            } into container(wrapContent, wrapContent, weight = 0F)
 
-            child(params(wrapContent, wrapContent, weight = 0F), TextView {
+            TextView {
                 setPadding(0, dip(12), dip(16), dip(12))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)
@@ -125,8 +125,8 @@ fun ViewBuild.menuView(model: Menu): View {
                 onClick {
                     pageNumber.requestFocus()
                 }
-            })
-        })
+            } into container(wrapContent, wrapContent, weight = 0F)
+        } into container(matchParent, wrapContent, topMargin = -dip(12))
     }
 
     fun middle() = FrameLayout {
@@ -140,13 +140,7 @@ fun ViewBuild.menuView(model: Menu): View {
         backgroundColor = color(R.color.background)
         elevation = dipFloat(8F)
 
-        child(params(
-                matchParent, matchParent,
-                leftMargin = dip(4),
-                topMargin = dip(12),
-                rightMargin = dip(4),
-                bottomMargin = dip(12)
-        ), DiscreteSeekBar {
+        DiscreteSeekBar {
             min = 0
             max = 100
             setIndicatorFormatter("%d%%")
@@ -158,13 +152,19 @@ fun ViewBuild.menuView(model: Menu): View {
             setScrubberColor(color(R.color.secondary))
             numericTransformer = numericTransformer()
             setOnProgressChangeListener(onProgressChangeListener())
-        })
+        } into container(
+                matchParent, matchParent,
+                leftMargin = dip(4),
+                topMargin = dip(12),
+                rightMargin = dip(4),
+                bottomMargin = dip(12)
+        )
     }
 
     return VerticalLayoutExt {
-        child(params(matchParent, wrapContent, weight = 0F), top())
-        child(params(matchParent, wrapContent, weight = 1F), middle())
-        child(params(matchParent, wrapContent, weight = 0F), bottom())
+        top() into container(matchParent, wrapContent, weight = 0F)
+        middle() into container(matchParent, wrapContent, weight = 1F)
+        bottom() into container(matchParent, wrapContent, weight = 0F)
 
         onInterceptKeyDown(KeyEvent.KEYCODE_BACK) { model.back(); true }
         onInterceptKeyDown(KeyEvent.KEYCODE_MENU) { model.back(); true }

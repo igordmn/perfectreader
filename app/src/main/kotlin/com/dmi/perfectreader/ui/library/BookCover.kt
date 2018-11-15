@@ -23,15 +23,15 @@ class BookCover(context: Context, private val imageSize: Size) : FrameLayout(con
     private val value1 = 0.40F
     private val value2 = 0.60F
 
-    private val image = child(params(imageSize.width, imageSize.height), ImageView(context).apply {
+    private val image = ImageView(context).apply {
         scaleType = ImageView.ScaleType.CENTER
-    })
-    private val text = child(params(imageSize.width, imageSize.height), TextView(context).apply {
+    } into container(imageSize.width, imageSize.height)
+    private val text = TextView(context).apply {
         padding = imageSize.width / 12
         gravity = Gravity.CENTER
         textColor = color(R.color.onSecondary)
         textSize = imageSize.width / 8F
-    })
+    } into container(imageSize.width, imageSize.height)
 
     private val load = ViewLoad(this)
 

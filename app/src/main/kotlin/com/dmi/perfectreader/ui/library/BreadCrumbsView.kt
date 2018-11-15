@@ -26,7 +26,7 @@ class BreadCrumbsView(context: Context) : HorizontalScrollView(context) {
     }
 
     init {
-        child(params(matchParent, matchParent), container)
+        container into container(matchParent, matchParent)
         isHorizontalScrollBarEnabled = false
     }
 

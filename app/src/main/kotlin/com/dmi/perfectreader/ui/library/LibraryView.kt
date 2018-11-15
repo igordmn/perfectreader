@@ -102,8 +102,8 @@ fun ViewBuild.libraryView(model: Library): View {
     }
 
     fun collapsingBar() = VerticalLayout {
-        child(params(matchParent, wrapContent), recentBooks())
-        child(params(matchParent, wrapContent), toolbar())
+        recentBooks() into container(matchParent, wrapContent)
+        toolbar() into container(matchParent, wrapContent)
     }
 
     fun folders() = RecyclerView(context, null, R.attr.verticalRecyclerViewStyle).apply {
@@ -155,20 +155,17 @@ fun ViewBuild.libraryView(model: Library): View {
     }
 
     return CoordinatorLayoutExt {
-        child(params(matchParent, wrapContent), AppBarLayout {
-            val collapsing = child(
-                    params(matchParent, wrapContent, scrollFlags = SCROLL_FLAG_SCROLL or SCROLL_FLAG_EXIT_UNTIL_COLLAPSED),
-                    CollapsingToolbarLayout {
-                        child(params(matchParent, wrapContent, mode = COLLAPSE_MODE_PARALLAX, parallaxMultiplier = 0.7F), collapsingBar())
-                        scrimVisibleHeightTrigger = 100000000
-                    }
-            )
-            child(params(matchParent, wrapContent, scrollFlags = SCROLL_FLAG_SCROLL), addressBar())
+        AppBarLayout {
+            val collapsing = CollapsingToolbarLayout {
+                collapsingBar() into container(matchParent, wrapContent, mode = COLLAPSE_MODE_PARALLAX, parallaxMultiplier = 0.7F)
+                scrimVisibleHeightTrigger = 100000000
+            } into container(matchParent, wrapContent, scrollFlags = SCROLL_FLAG_SCROLL or SCROLL_FLAG_EXIT_UNTIL_COLLAPSED)
+            addressBar() into container(matchParent, wrapContent, scrollFlags = SCROLL_FLAG_SCROLL)
             setFadingScrimOnHide(collapsing)
-        })
+        } into container(matchParent, wrapContent)
 
-        child(params(matchParent, matchParent, behavior = AppBarLayout.ScrollingViewBehavior()), SwipeRefreshLayout {
-            child(params(matchParent, matchParent), folders())
+        SwipeRefreshLayout {
+            folders() into container(matchParent, matchParent)
 
             setOnRefreshListener {
                 model.refresh()
@@ -177,9 +174,9 @@ fun ViewBuild.libraryView(model: Library): View {
                 if (model.items == null)
                     isRefreshing = false
             }
-        })
+        } into container(matchParent, matchParent, behavior = AppBarLayout.ScrollingViewBehavior())
 
-        child(params(wrapContent, wrapContent, Gravity.CENTER), emptyFolder())
+        emptyFolder() into container(wrapContent, wrapContent, Gravity.CENTER)
 
         onInterceptKeyDown(KeyEvent.KEYCODE_BACK) {
             model.back()

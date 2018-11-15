@@ -22,7 +22,7 @@ fun Places.screenBrightness(model: SettingsUI) = place {
                     padding = dip(8)
                     gravity = Gravity.CENTER_VERTICAL
 
-                    child(params(wrapContent, wrapContent), imageView {
+                    imageView {
                         backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
                         padding = dip(4)
 
@@ -37,9 +37,9 @@ fun Places.screenBrightness(model: SettingsUI) = place {
                         onClick {
                             settings.screen.brightnessIsSystem = !settings.screen.brightnessIsSystem
                         }
-                    })
+                    } into container(wrapContent, wrapContent)
 
-                    child(params(matchParent, wrapContent), object : SeekBar(context) {
+                    object : SeekBar(context) {
                         init {
                             progressDrawable.setColorFilter(color(com.dmi.perfectreader.R.color.secondary), PorterDuff.Mode.MULTIPLY)
                             max = 1000
@@ -67,7 +67,7 @@ fun Places.screenBrightness(model: SettingsUI) = place {
                             }
                             return super.dispatchTouchEvent(event)
                         }
-                    })
+                    } into container(matchParent, wrapContent)
 
                     onAttachStateChangeListener {
                         onViewDetachedFromWindow {

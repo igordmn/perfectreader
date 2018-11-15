@@ -5,8 +5,8 @@ import android.view.Gravity
 import android.widget.ProgressBar
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isVisible
-import com.dmi.util.android.view.child
-import com.dmi.util.android.view.params
+import com.dmi.util.android.view.container
+import com.dmi.util.android.view.into
 import com.dmi.util.graphic.Size
 import com.dmi.util.lang.unsupported
 import org.jetbrains.anko.dip
@@ -36,13 +36,13 @@ class LibraryRecentBook(
         }
 
     init {
-        child(params(matchParent, wrapContent), LinearLayoutCompat(context).apply {
+        LinearLayoutCompat(context).apply {
             setPadding(dip(8), dip(8), dip(8), dip(4))
             orientation = LinearLayoutCompat.VERTICAL
 
-            child(params(wrapContent, wrapContent, gravity = Gravity.CENTER_HORIZONTAL), cover)
-            child(params(matchParent, wrapContent), readProgress)
-        })
+            cover into container(wrapContent, wrapContent, gravity = Gravity.CENTER_HORIZONTAL)
+            readProgress into container(matchParent, wrapContent)
+        } into container(matchParent, wrapContent)
     }
 
     override fun bind(model: Int) {

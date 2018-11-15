@@ -36,18 +36,18 @@ fun ViewBuild.readerView(model: Reader) = FrameLayout {
         is SearchUI -> searchUIView(popup)
         else -> unsupported()
     }
-    child(params(matchParent, matchParent), bookView)
-    child(params(matchParent, matchParent), controlView(model.control))
-    bindChild(params(matchParent, matchParent), model::selection, ViewBuild::selectionView).apply {
+    bookView into container(matchParent, matchParent)
+    controlView(model.control) into container(matchParent, matchParent)
+    bindChild(container(matchParent, matchParent), model::selection, ViewBuild::selectionView).apply {
         id = generateId()
         layoutTransition = fadeTransition(300)
     }
-    bindChild(params(matchParent, matchParent), model::popup, ViewBuild::popupView).apply {
+    bindChild(container(matchParent, matchParent), model::popup, ViewBuild::popupView).apply {
         id = generateId()
         layoutTransition = fadeTransition(300)
         fitsSystemWindows = true
     }
-    bindChild(params(wrapContent, wrapContent, Gravity.CENTER_HORIZONTAL), model::performingAction, ViewBuild::performingActionView).apply {
+    bindChild(container(wrapContent, wrapContent, Gravity.CENTER_HORIZONTAL), model::performingAction, ViewBuild::performingActionView).apply {
         id = generateId()
         layoutTransition = fadeTransition(300)
         padding = dip(48)

@@ -63,10 +63,10 @@ fun ViewBuild.colorHEXDialog(
         inputType = TYPE_CLASS_TEXT
     }
     val view = HorizontalLayout {
-        child(params(wrapContent, wrapContent, Gravity.CENTER_VERTICAL, weight = 0F), TextView {
+        TextView {
             text = "#"
-        })
-        child(params(matchParent, wrapContent, Gravity.CENTER_VERTICAL, weight = 1F), editText)
+        } into container(wrapContent, wrapContent, Gravity.CENTER_VERTICAL, weight = 0F)
+        editText into container(matchParent, wrapContent, Gravity.CENTER_VERTICAL, weight = 1F)
     }
     return AlertDialog.Builder(context)
             .setTitle(R.string.settingsUIColorHEX)

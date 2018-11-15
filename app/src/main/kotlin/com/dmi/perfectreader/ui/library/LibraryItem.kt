@@ -39,23 +39,23 @@ class FolderItemView(
     }
 
     init {
-        child(params(matchParent, wrapContent), LinearLayoutCompat(context).apply {
+        LinearLayoutCompat(context).apply {
             setPadding(dip(16), dip(8), dip(16), dip(8))
 
             orientation = LinearLayoutCompat.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
 
-            child(params(dip(48), dip(48), weight = 0F), ImageView(context).apply {
+            ImageView(context).apply {
                 image = drawable(R.drawable.library_folder, color(R.color.secondary))
                 scaleType = ImageView.ScaleType.CENTER
-            })
-            child(params(matchParent, wrapContent, weight = 1F), LinearLayoutCompat(context).apply {
+            } into container(dip(48), dip(48), weight = 0F)
+            LinearLayoutCompat(context).apply {
                 setPadding(dip(16), 0, 0, 0)
                 orientation = LinearLayoutCompat.VERTICAL
-                child(params(matchParent, wrapContent), name)
-                child(params(matchParent, wrapContent), count)
-            })
-        })
+                name into container(matchParent, wrapContent)
+                count into container(matchParent, wrapContent)
+            } into container(matchParent, wrapContent, weight = 1F)
+        } into container(matchParent, wrapContent)
     }
 
     override fun bind(model: Int) {
@@ -106,26 +106,26 @@ class BookItemView(
         }
 
     init {
-        child(params(matchParent, wrapContent), LinearLayoutCompat(context).apply {
+        LinearLayoutCompat(context).apply {
             setPadding(dip(16), dip(8), dip(16), dip(8))
             orientation = LinearLayoutCompat.HORIZONTAL
 
-            child(params(wrapContent, wrapContent, weight = 0F, gravity = Gravity.CENTER_VERTICAL), cover)
-            child(params(matchParent, wrapContent, weight = 1F, gravity = Gravity.CENTER_VERTICAL), LinearLayoutCompat(context).apply {
+            cover into container(wrapContent, wrapContent, weight = 0F, gravity = Gravity.CENTER_VERTICAL)
+            LinearLayoutCompat(context).apply {
                 orientation = LinearLayoutCompat.VERTICAL
                 setPadding(dip(16), 0, 0, 0)
 
-                child(params(matchParent, wrapContent), LinearLayoutCompat(context).apply {
+                LinearLayoutCompat(context).apply {
                     orientation = LinearLayoutCompat.HORIZONTAL
-                    child(params(matchParent, wrapContent, weight = 1F), name)
-                    child(params(wrapContent, wrapContent, weight = 0F), fileSize).apply {
+                    name into container(matchParent, wrapContent, weight = 1F)
+                    fileSize into container(wrapContent, wrapContent, weight = 0F).apply {
                         setPadding(dip(16), 0, 0, 0)
                     }
-                })
-                child(params(matchParent, wrapContent), author)
-                child(params(matchParent, wrapContent), readProgress)
-            })
-        })
+                } into container(matchParent, wrapContent)
+                author into container(matchParent, wrapContent)
+                readProgress into container(matchParent, wrapContent)
+            } into container(matchParent, wrapContent, weight = 1F, gravity = Gravity.CENTER_VERTICAL)
+        } into container(matchParent, wrapContent)
     }
 
     override fun bind(model: Int) {

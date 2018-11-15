@@ -7,7 +7,6 @@ import android.os.Parcelable
 import android.util.SparseArray
 import android.view.View
 import android.widget.FrameLayout
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.util.set
 import com.dmi.util.scope.dontObserve
 import org.jetbrains.anko.matchParent
@@ -43,7 +42,7 @@ class BindView<M, V: View>(
                     if (created !== old) {
                         if (childCount > 0)
                             removeView(getChildAt(0))
-                        created.layoutParams = params(matchParent, matchParent)
+                        created.layoutParams = FrameLayout.LayoutParams(matchParent, matchParent)
                         addView(created)
                     }
                     created
@@ -77,8 +76,8 @@ class BindView<M, V: View>(
  * Returns container for child.
  */
 @JvmName("bindChild1")
-fun <M : Any, V : View> FrameLayout.bindChild(
-        params: FrameLayout.LayoutParams,
+fun <M : Any, V : View> ViewBuild.bindChild(
+        container: Container,
         model: KProperty0<M?>,
         view: ViewBuild.(M, old: V?) -> V,
         /**
@@ -87,45 +86,20 @@ fun <M : Any, V : View> FrameLayout.bindChild(
          */
         defferStateRestore: Boolean = false
 ): FrameLayout {
-    val container = BindView(context, model, view, defferStateRestore)
-    container.layoutParams = params
-    addView(container)
-    return container
+    val childContainer = BindView(context, model, view, defferStateRestore)
+    childContainer.layoutParams = container.params
+    container.view.addView(childContainer)
+    return childContainer
 }
 
 @JvmName("bindChild2")
-fun <M : Any> FrameLayout.bindChild(
-        params: FrameLayout.LayoutParams,
+fun <M : Any> ViewBuild.bindChild(
+        container: Container,
         model: KProperty0<M?>,
         view: ViewBuild.(M) -> View,
         defferStateRestore: Boolean = false
 ): FrameLayout {
     @Suppress("UNUSED_PARAMETER")
     fun ViewBuild.view(model: M, old: View?) = view(model)
-    return bindChild(params, model, ViewBuild::view, defferStateRestore)
-}
-
-@JvmName("bindChild3")
-fun <M : Any, V : View> LinearLayoutCompat.bindChild(
-        params: LinearLayoutCompat.LayoutParams,
-        model: KProperty0<M?>,
-        view: ViewBuild.(M, old: V?) -> V,
-        defferStateRestore: Boolean = false
-): FrameLayout {
-    val container = BindView(context, model, view, defferStateRestore)
-    container.layoutParams = params
-    addView(container)
-    return container
-}
-
-@JvmName("bindChild4")
-fun <M : Any> LinearLayoutCompat.bindChild(
-        params: LinearLayoutCompat.LayoutParams,
-        model: KProperty0<M?>,
-        view: ViewBuild.(M) -> View,
-        defferStateRestore: Boolean = false
-): FrameLayout {
-    @Suppress("UNUSED_PARAMETER")
-    fun ViewBuild.view(model: M, old: View?) = view(model)
-    return bindChild(params, model, ViewBuild::view, defferStateRestore)
+    return bindChild(container, model, ViewBuild::view, defferStateRestore)
 }

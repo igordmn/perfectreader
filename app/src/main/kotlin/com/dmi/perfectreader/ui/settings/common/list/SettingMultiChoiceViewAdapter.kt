@@ -6,8 +6,8 @@ import android.widget.FrameLayout
 import com.dmi.perfectreader.R
 import com.dmi.util.android.view.Bindable
 import com.dmi.util.android.view.BindableViewAdapter
-import com.dmi.util.android.view.child
-import com.dmi.util.android.view.params
+import com.dmi.util.android.view.container
+import com.dmi.util.android.view.into
 import com.dmi.util.scope.observable
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.matchParent
@@ -48,8 +48,8 @@ class SettingMultiChoiceViewAdapter<T, V>(
 
         init {
             allItemViews.add(this)
-            layoutParams = params(matchParent, wrapContent)
-            child(params(matchParent, wrapContent), original)
+            layoutParams = FrameLayout.LayoutParams(matchParent, wrapContent)
+            original into container(matchParent, wrapContent)
             isClickable = true
             isFocusable = true
             backgroundResource = R.drawable.settings_list_item_background

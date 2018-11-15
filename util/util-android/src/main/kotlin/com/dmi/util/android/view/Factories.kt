@@ -27,7 +27,14 @@ class ViewBuild(val context: Context) {
     fun generateId(): Int = lastId++
 }
 
-fun LinearLayoutCompat.params(
+class Container(val view: ViewGroup, val params: ViewGroup.LayoutParams)
+
+infix fun <T : View> T.into(container: Container): T {
+    container.view.addView(this, container.params)
+    return this
+}
+
+fun LinearLayoutCompat.container(
         width: Int,
         height: Int,
         gravity: Int = -1,
@@ -36,15 +43,15 @@ fun LinearLayoutCompat.params(
         topMargin: Int = 0,
         rightMargin: Int = 0,
         bottomMargin: Int = 0
-) = LinearLayoutCompat.LayoutParams(width, height, weight).apply {
+) = Container(this, LinearLayoutCompat.LayoutParams(width, height, weight).apply {
     this.gravity = gravity
     this.leftMargin = leftMargin
     this.topMargin = topMargin
     this.rightMargin = rightMargin
     this.bottomMargin = bottomMargin
-}
+})
 
-fun FrameLayout.params(
+fun FrameLayout.container(
         width: Int,
         height: Int,
         gravity: Int = -1,
@@ -52,67 +59,59 @@ fun FrameLayout.params(
         topMargin: Int = 0,
         rightMargin: Int = 0,
         bottomMargin: Int = 0
-) = FrameLayout.LayoutParams(width, height, gravity).apply {
+) = Container(this, FrameLayout.LayoutParams(width, height, gravity).apply {
     this.leftMargin = leftMargin
     this.topMargin = topMargin
     this.rightMargin = rightMargin
     this.bottomMargin = bottomMargin
-}
+})
 
-fun ConstraintLayout.params(
+fun ConstraintLayout.container(
         width: Int,
         height: Int,
         leftMargin: Int = 0,
         topMargin: Int = 0,
         rightMargin: Int = 0,
         bottomMargin: Int = 0
-) = ConstraintLayout.LayoutParams(width, height).apply {
+) = Container(this, ConstraintLayout.LayoutParams(width, height).apply {
     this.leftMargin = leftMargin
     this.topMargin = topMargin
     this.rightMargin = rightMargin
     this.bottomMargin = bottomMargin
-}
+})
 
-fun CoordinatorLayout.params(
+fun CoordinatorLayout.container(
         width: Int,
         height: Int,
         gravity: Int = Gravity.NO_GRAVITY,
         behavior: CoordinatorLayout.Behavior<*>? = null
-) = CoordinatorLayout.LayoutParams(width, height).apply {
+) = Container(this, CoordinatorLayout.LayoutParams(width, height).apply {
     this.gravity = gravity
     this.behavior = behavior
-}
+})
 
-fun AppBarLayout.params(
+fun AppBarLayout.container(
         width: Int,
         height: Int,
         scrollFlags: Int = 1
-) = AppBarLayout.LayoutParams(width, height).apply {
+) = Container(this, AppBarLayout.LayoutParams(width, height).apply {
     this.scrollFlags = scrollFlags
-}
+})
 
-fun CollapsingToolbarLayout.params(
+fun CollapsingToolbarLayout.container(
         width: Int,
         height: Int,
         mode: Int = 0,
         parallaxMultiplier: Float = 0F
-) = CollapsingToolbarLayout.LayoutParams(width, height).apply {
+) = Container(this, CollapsingToolbarLayout.LayoutParams(width, height).apply {
     this.collapseMode = mode
     this.parallaxMultiplier = parallaxMultiplier
-}
+})
 
-fun ViewGroup.params(
+fun ViewGroup.container(
         width: Int,
         height: Int
-) = ViewGroup.LayoutParams(width, height)
-
-fun <T : View> ViewGroup.child(
-        params: ViewGroup.LayoutParams,
-        view: T
-): T = view.apply {
-    layoutParams = params
-    addView(this)
-}
+) = Container(this, ViewGroup.LayoutParams(width, height))
 
 fun ViewBuild.HorizontalLayout(build: LinearLayoutCompat.() -> Unit): LinearLayoutCompat {
     val layout = LinearLayoutCompat(context)
