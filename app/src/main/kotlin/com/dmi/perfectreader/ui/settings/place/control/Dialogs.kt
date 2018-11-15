@@ -303,19 +303,23 @@ fun ViewBuild.cell(
         TooltipCompat.setTooltipText(this, desc)
     }
 
+    var lastX = 0F
+    var lastY = 0F
+
     onTouch { _, event ->
-        if (event.actionMasked == MotionEvent.ACTION_UP) {
-            menuAnchor.x = event.x
-            menuAnchor.y = event.y
-            val popup = PopupMenu(context, menuAnchor)
-            actionsMenu(popup.menu, onClick = { actionId ->
-                property.set(actionId)
-            })
-            popup.show()
-            true
-        } else {
-            false
-        }
+        lastX = event.x
+        lastY = event.y
+        false
+    }
+
+    onClick {
+        menuAnchor.x = lastX
+        menuAnchor.y = lastY
+        val popup = PopupMenu(context, menuAnchor)
+        actionsMenu(popup.menu, onClick = { actionId ->
+            property.set(actionId)
+        })
+        popup.show()
     }
 }
 
