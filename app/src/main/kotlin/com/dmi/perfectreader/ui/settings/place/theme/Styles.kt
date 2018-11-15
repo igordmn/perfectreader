@@ -105,7 +105,7 @@ fun ViewBuild.stylesDetails(model: SettingsUI): LinearLayoutExt {
     fun selectionToolbar() = Toolbar(ContextThemeWrapper(context, R.style.ThemeOverlay_AppCompat_Dark_ActionBar)).apply {
         setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
         backgroundColor = color(R.color.dark)
-        navigationIcon = drawable(R.drawable.ic_arrow_back, color(R.color.onSecondary))
+        navigationIcon = drawable(R.drawable.ic_arrow_left, color(R.color.onSecondary))
         setNavigationOnClickListener { adapter.deselect() }
         menu.add(R.string.settingsUIThemeSavedSelectAll).apply {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)

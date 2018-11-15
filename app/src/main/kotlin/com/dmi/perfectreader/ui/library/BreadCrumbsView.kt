@@ -66,6 +66,6 @@ class BreadCrumbsView(context: Context) : HorizontalScrollView(context) {
     }
 
     private fun divider() = ImageView(context).apply {
-        image = drawable(R.drawable.ic_arrow_right, color(R.color.onBackground).withOpacity(0.38))
+        image = drawable(R.drawable.ic_keyboard_arrow_right, color(R.color.onBackground).withOpacity(0.38))
     }
 }

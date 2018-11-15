@@ -3,3 +3,6 @@
 ic_search_web https://www.flaticon.com/free-icon/search_1179990
 ic_search_wiki https://commons.wikimedia.org/wiki/File:Wikipedia%27s_W.svg
 ic_launcher https://www.flaticon.com/free-icon/hardbound-book-variant_33932
+ic_pinch_in https://www.flaticon.com/free-icon/opposing-arrows_3595
+ic_long_arrow_left https://www.flaticon.com/free-icon/left-arrow_3718
+ic_long_arrow_down https://www.flaticon.com/free-icon/down-arrow_3590

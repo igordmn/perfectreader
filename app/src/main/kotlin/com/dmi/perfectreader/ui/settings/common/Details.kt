@@ -34,7 +34,7 @@ fun ViewBuild.detailsToolbar(
 ) = Toolbar(context).apply {
     setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
     backgroundColor = color(android.R.color.transparent)
-    navigationIcon = drawable(R.drawable.ic_arrow_back)
+    navigationIcon = drawable(R.drawable.ic_arrow_left)
     this.title = string(titleRes)
     setNavigationOnClickListener {
         model.screens.goBackward()
