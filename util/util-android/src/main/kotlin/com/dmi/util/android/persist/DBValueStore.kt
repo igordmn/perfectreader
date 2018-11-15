@@ -4,7 +4,6 @@ import android.database.sqlite.SQLiteDatabase
 import com.dmi.util.android.db.getNullOrDouble
 import com.dmi.util.android.db.getNullOrLong
 import com.dmi.util.android.db.getNullOrString
-import com.dmi.util.lang.Enums
 import com.dmi.util.lang.unsupported
 import com.dmi.util.persist.ValueStore
 import com.google.common.io.BaseEncoding.base64
@@ -71,7 +70,7 @@ class DBValueStore(
                 value is Double -> realValue as T?
                 value is Boolean -> intValue?.let { it == 1L } as T?
                 value is String -> textValue as T?
-                value is Enum<*> -> textValue?.let { enumValueOrNull(value.javaClass as Class<Enum<*>>, it) } as T?
+                value is Enum<*> -> textValue?.let { enumValueOrNull(cls.java as Class<Enum<*>>, it) } as T?
                 CBOR.isSupported(cls) -> textValue?.let { CBOR.load(cls, base64().decode(it)) }
                 else -> unsupported(value)
             }
@@ -79,11 +78,10 @@ class DBValueStore(
                 value = newValue
         }
 
-        private fun enumValueOrNull(enumClass: Class<Enum<*>>, text: String) = try {
-            Enums.unsafeValueOf(enumClass, text)
-        } catch (e: Exception) {
-            null
-        }
+        private fun enumValueOrNull(
+                enumClass: Class<Enum<*>>,
+                text: String
+        ) = enumClass.enumConstants.firstOrNull { it.name == text }
 
         override fun get(): T = value
 
