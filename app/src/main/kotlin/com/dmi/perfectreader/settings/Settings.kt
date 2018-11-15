@@ -30,8 +30,4 @@ class Settings(store: ValueStore) {
     val other by store.group(::OtherSettings)
 }
 
-fun Settings.switchStyle() {
-    val style = styles.nextToApply()
-    if (style != null)
-        theme.load(style)
-}
+fun Settings.switchStyle() = styles.applyNext(theme)

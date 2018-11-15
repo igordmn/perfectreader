@@ -12,12 +12,14 @@ class Styles(store: ValueStore) {
 @Serializable
 class SavedThemes(val list: List<SavedTheme>)
 
-fun Styles.nextToApply() = if (saved.list.isNotEmpty()) {
-    var nextStyleIndex = lastAppliedIndex + 1
-    if (nextStyleIndex >= saved.list.size) {
-        nextStyleIndex = 0
+fun Styles.applyNext(themeSettings: ThemeSettings) {
+    if (saved.list.isNotEmpty()) {
+        var nextStyleIndex = lastAppliedIndex + 1
+        if (nextStyleIndex >= saved.list.size)
+            nextStyleIndex = 0
+
+        lastAppliedIndex = nextStyleIndex
+
+        themeSettings.load(saved.list[nextStyleIndex])
     }
-    saved.list[nextStyleIndex]
-} else {
-    null
 }
