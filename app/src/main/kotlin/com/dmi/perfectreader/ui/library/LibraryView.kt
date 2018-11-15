@@ -5,15 +5,11 @@ import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
-import android.widget.Toolbar
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.dmi.perfectreader.R
 import com.dmi.util.android.screen.withPopup
 import com.dmi.util.android.view.*
@@ -25,8 +21,6 @@ import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_PARALLAX
 import org.jetbrains.anko.*
-
-
 
 fun ViewBuild.libraryView(model: Library): View {
     val places = object : Places() {
@@ -80,7 +74,7 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
-    fun addressBar() = BreadCrumbsView(context).apply {
+    fun addressBar() = BreadCrumbsView {
         subscribe(
                 model.folders,
                 afterAdd = {
@@ -96,7 +90,7 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
-    fun toolbar() = Toolbar(context).apply {
+    fun toolbar() = Toolbar {
         backgroundColor = color(android.R.color.transparent)
         menu.add(R.string.librarySort).apply {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
@@ -107,8 +101,7 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
-    fun collapsingBar() = LinearLayoutCompat(context).apply {
-        orientation = LinearLayoutCompat.VERTICAL
+    fun collapsingBar() = VerticalLayout {
         child(params(matchParent, wrapContent), recentBooks())
         child(params(matchParent, wrapContent), toolbar())
     }
@@ -142,7 +135,7 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
-    fun emptyFolder(): View = TextView(context).apply {
+    fun emptyFolder(): View = TextView {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
         padding = dip(16)
         textColor = color(R.color.onBackground).withOpacity(0.60)
@@ -161,11 +154,11 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
-    return CoordinatorLayoutExt(context).apply {
-        child(params(matchParent, wrapContent), AppBarLayout(context).apply {
+    return CoordinatorLayoutExt {
+        child(params(matchParent, wrapContent), AppBarLayout {
             val collapsing = child(
                     params(matchParent, wrapContent, scrollFlags = SCROLL_FLAG_SCROLL or SCROLL_FLAG_EXIT_UNTIL_COLLAPSED),
-                    CollapsingToolbarLayout(context).apply {
+                    CollapsingToolbarLayout {
                         child(params(matchParent, wrapContent, mode = COLLAPSE_MODE_PARALLAX, parallaxMultiplier = 0.7F), collapsingBar())
                         scrimVisibleHeightTrigger = 100000000
                     }
@@ -174,7 +167,7 @@ fun ViewBuild.libraryView(model: Library): View {
             setFadingScrimOnHide(collapsing)
         })
 
-        child(params(matchParent, matchParent, behavior = AppBarLayout.ScrollingViewBehavior()), SwipeRefreshLayout(context).apply {
+        child(params(matchParent, matchParent, behavior = AppBarLayout.ScrollingViewBehavior()), SwipeRefreshLayout {
             child(params(matchParent, matchParent), folders())
 
             setOnRefreshListener {

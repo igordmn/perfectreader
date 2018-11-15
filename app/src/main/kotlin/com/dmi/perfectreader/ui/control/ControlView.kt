@@ -1,15 +1,15 @@
 package com.dmi.perfectreader.ui.control
 
-import android.content.Context
 import android.view.KeyEvent
 import android.view.MotionEvent
 import com.dmi.util.android.input.hardKeyFromKeyCode
 import com.dmi.util.android.input.performTouchEvents
 import com.dmi.util.android.view.FrameLayoutExt
+import com.dmi.util.android.view.ViewBuild
 import com.dmi.util.android.view.onSizeChange
 import org.jetbrains.anko.sdk27.coroutines.onTouch
 
-fun controlView(context: Context, model: Control) = FrameLayoutExt(context).apply {
+fun ViewBuild.controlView(model: Control) = FrameLayoutExt {
     onTouch(returnValue = true) { _, event ->
         when(event.actionMasked) {
             MotionEvent.ACTION_CANCEL -> model.cancelTouch()

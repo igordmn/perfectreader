@@ -14,6 +14,8 @@ import com.dmi.util.collection.removeLast
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 
+fun ViewBuild.BreadCrumbsView(build: BreadCrumbsView.() -> Unit) = BreadCrumbsView(context).apply(build)
+
 class BreadCrumbsView(context: Context) : HorizontalScrollView(context) {
     private val textViews = ArrayList<TextView>()
     private val dividers = ArrayList<View>()

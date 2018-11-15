@@ -2,8 +2,6 @@ package com.dmi.perfectreader.ui.settings.common
 
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.appcompat.widget.Toolbar
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.ui.settings.SettingsUI
 import com.dmi.util.android.view.*
@@ -20,8 +18,7 @@ fun ViewBuild.details(
 fun ViewBuild.details(
         toolbar: View,
         content: View
-) = LinearLayoutExt(context).apply {
-    orientation = LinearLayoutCompat.VERTICAL
+) = VerticalLayoutExt {
     backgroundColor = color(R.color.background)
 
     child(params(matchParent, wrapContent, weight = 0F), toolbar)
@@ -31,7 +28,7 @@ fun ViewBuild.details(
 fun ViewBuild.detailsToolbar(
         titleRes: Int,
         model: SettingsUI
-) = Toolbar(context).apply {
+) = Toolbar {
     setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
     backgroundColor = color(android.R.color.transparent)
     navigationIcon = drawable(R.drawable.ic_arrow_left)

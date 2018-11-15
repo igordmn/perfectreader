@@ -9,16 +9,12 @@ import android.text.InputType.TYPE_CLASS_TEXT
 import android.text.method.DigitsKeyListener
 import android.view.Gravity
 import android.view.MenuItem
-import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.LinearLayoutCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.ui.settings.SettingsUI
 import com.dmi.util.android.view.*
-import com.jaredrummler.android.colorpicker.ColorPickerView
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.wrapContent
 import kotlin.reflect.KMutableProperty0
@@ -46,7 +42,7 @@ fun ViewBuild.colorDetails(
                 }
             }
         },
-        ColorPickerView(context).apply {
+        ColorPickerView {
             setOnColorChangedListener {
                 property.set(color)
             }
@@ -60,15 +56,14 @@ fun ViewBuild.colorHEXDialog(
         model: SettingsUI,
         property: KMutableProperty0<Int>
 ): AlertDialog {
-    val editText = EditText(context).apply {
+    val editText = EditText {
         setText(colorToHEX(property.get()))
         filters = arrayOf(InputFilter.LengthFilter(6))
         keyListener = DigitsKeyListener.getInstance("0123456789ABCDEFabcdef")
         inputType = TYPE_CLASS_TEXT
     }
-    val view = LinearLayoutCompat(context).apply {
-        orientation = LinearLayout.HORIZONTAL
-        child(params(wrapContent, wrapContent, Gravity.CENTER_VERTICAL, weight = 0F), TextView(context).apply {
+    val view = HorizontalLayout {
+        child(params(wrapContent, wrapContent, Gravity.CENTER_VERTICAL, weight = 0F), TextView {
             text = "#"
         })
         child(params(matchParent, wrapContent, Gravity.CENTER_VERTICAL, weight = 1F), editText)

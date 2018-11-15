@@ -9,18 +9,19 @@ import android.text.SpannableString
 import android.text.style.StyleSpan
 import android.view.Gravity
 import android.view.View
-import android.widget.*
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import androidx.core.widget.TextViewCompat.setTextAppearance
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.ui.book.Book
 import com.dmi.perfectreader.book.content.location.Location
+import com.dmi.perfectreader.ui.book.Book
 import com.dmi.util.android.system.hideSoftKeyboard
 import com.dmi.util.android.view.*
 import com.rubengees.easyheaderfooteradapter.EasyHeaderFooterAdapter
@@ -29,7 +30,7 @@ import org.jetbrains.anko.sdk27.coroutines.onClick
 
 fun ViewBuild.searchUIView(
         model: SearchUI
-): View = LinearLayoutCompat(context).apply {
+): View = VerticalLayout {
     val book = model.book
 
     fun results(): View = RecyclerView(context, null, R.attr.verticalRecyclerViewStyle).apply {
@@ -40,7 +41,7 @@ fun ViewBuild.searchUIView(
             override fun view(viewType: Int) = SearchResultView(context, model, book) { model.results!!.list[it] }
         }).apply {
             id = generateId()
-            header = TextView(context).apply {
+            header = TextView {
                 setPadding(dip(16), dip(12), dip(16), dip(12))
                 layoutParams = LinearLayout.LayoutParams(matchParent, wrapContent)
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
@@ -64,14 +65,14 @@ fun ViewBuild.searchUIView(
         }
     }
 
-    fun progress(): View = ProgressBar(context).apply {
+    fun progress(): View = ProgressBar {
         padding = dip(16)
         autorun {
             isVisible = model.isLoading
         }
     }
 
-    fun noResults(): View = TextView(context).apply {
+    fun noResults(): View = TextView {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
         gravity = Gravity.CENTER
         padding = dip(16)
@@ -84,16 +85,15 @@ fun ViewBuild.searchUIView(
         }
     }
 
-    orientation = LinearLayoutCompat.VERTICAL
     backgroundColor = color(R.color.background)
 
-    child(params(matchParent, wrapContent, weight = 0F), Toolbar(context).apply {
+    child(params(matchParent, wrapContent, weight = 0F), Toolbar {
         setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
         backgroundColor = color(android.R.color.transparent)
         navigationIcon = drawable(R.drawable.ic_arrow_left)
         setContentInsetsRelative(0, dip(16))
 
-        child(params(matchParent, wrapContent), SearchView(context).apply {
+        child(params(matchParent, wrapContent), SearchView {
             queryHint = string(R.string.searchHint)
             setIconifiedByDefault(false)
             isIconified = false
@@ -128,7 +128,7 @@ fun ViewBuild.searchUIView(
         }
     })
 
-    child(params(matchParent, matchParent, weight = 1F), FrameLayout(context).apply {
+    child(params(matchParent, matchParent, weight = 1F), FrameLayout {
         child(params(matchParent, matchParent), results())
         child(params(wrapContent, wrapContent, Gravity.CENTER_HORIZONTAL), progress())
         child(params(matchParent, wrapContent), noResults())

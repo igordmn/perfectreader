@@ -7,7 +7,6 @@ import android.view.Gravity
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.TextViewCompat.setTextAppearance
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +19,7 @@ import org.jetbrains.anko.sdk27.coroutines.onClick
 
 fun ViewBuild.tableOfContentsUIView(
         model: TableOfContentsUI
-): View = LinearLayoutCompat(context).apply {
+): View = VerticalLayout {
     val book = model.book
 
     fun content(): View = RecyclerView(context, null, R.attr.verticalRecyclerViewStyle).apply {
@@ -41,10 +40,9 @@ fun ViewBuild.tableOfContentsUIView(
             layoutManager.scrollToPositionWithOffset(currentIndex, dip(80))
     }
 
-    orientation = LinearLayoutCompat.VERTICAL
     backgroundColor = color(R.color.background)
 
-    child(params(matchParent, wrapContent, weight = 0F), Toolbar(context).apply {
+    child(params(matchParent, wrapContent, weight = 0F), Toolbar {
         val description = book.description
         setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
         backgroundColor = color(android.R.color.transparent)

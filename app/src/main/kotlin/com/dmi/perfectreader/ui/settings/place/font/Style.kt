@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.ui.settings.place.font
 
 import androidx.annotation.StringRes
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.TooltipCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.ui.settings.common.PreviewView
@@ -18,9 +17,9 @@ fun ViewBuild.fontStyleView(
         @StringRes
         italicStringId: Int
 ) = PreviewView(
-        view = LinearLayoutCompat(context).apply {
+        view = HorizontalLayout {
             setPadding(0, 0, dip(12), 0)
-            child(params(dip(48), dip(48)), CheckableImageButton(context).apply {
+            child(params(dip(48), dip(48)), CheckableImageButton {
                 contentDescription = string(boldStringId)
                 TooltipCompat.setTooltipText(this, contentDescription)
                 image = drawable(R.drawable.ic_text_bold, color(R.color.onBackground))
@@ -31,7 +30,7 @@ fun ViewBuild.fontStyleView(
                 }
             })
 
-            child(params(dip(48), dip(48)), CheckableImageButton(context).apply {
+            child(params(dip(48), dip(48)), CheckableImageButton {
                 contentDescription = string(italicStringId)
                 TooltipCompat.setTooltipText(this, contentDescription)
                 image = drawable(R.drawable.ic_text_italic, color(R.color.onBackground))

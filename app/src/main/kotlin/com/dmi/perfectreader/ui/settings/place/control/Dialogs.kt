@@ -9,9 +9,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.*
@@ -40,7 +37,7 @@ fun Places.controlDialog(
 ) = dialog {
     Dialog(context, R.style.fullScreenDialog).apply {
         val dialog = this
-        setContentView(RelativeLayout(context).apply {
+        setContentView(RelativeLayout {
             child(params(matchParent, matchParent), view(dialog))
         })
         setOnDismissListener {
@@ -49,8 +46,7 @@ fun Places.controlDialog(
     }
 }
 
-fun ViewBuild.control(toolBar: View, content: View) = LinearLayoutCompat(context).apply {
-    orientation = LinearLayoutCompat.VERTICAL
+fun ViewBuild.control(toolBar: View, content: View) = VerticalLayout {
     child(params(matchParent, wrapContent, weight = 0F), toolBar)
     child(params(matchParent, matchParent, weight = 1F), content)
 }
@@ -58,25 +54,24 @@ fun ViewBuild.control(toolBar: View, content: View) = LinearLayoutCompat(context
 fun ViewBuild.controlDoubleTaps(
         taps: View,
         enabledProperty: KMutableProperty0<Boolean>
-) = FrameLayout(context).apply {
+) = FrameLayout {
     child(params(matchParent, matchParent), taps.apply {
         autorun {
             isVisible = enabledProperty.get()
         }
     })
 
-    child(params(wrapContent, wrapContent, gravity = Gravity.CENTER), LinearLayoutCompat(context).apply {
+    child(params(wrapContent, wrapContent, gravity = Gravity.CENTER), VerticalLayout {
         padding = dip(16)
-        orientation = LinearLayoutCompat.VERTICAL
 
-        child(params(matchParent, wrapContent), TextView(context).apply {
+        child(params(matchParent, wrapContent), TextView {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
             textColor = color(R.color.onBackground)
             textResource = R.string.settingsUIControlDoubleTapsIsDisabled
             gravity = Gravity.CENTER_HORIZONTAL
         })
 
-        child(params(matchParent, wrapContent), TextView(context).apply {
+        child(params(matchParent, wrapContent), TextView {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
             textColor = color(R.color.onBackground).withOpacity(0.60)
             textResource = R.string.settingsUIControlDoubleTapsWarning
@@ -97,7 +92,7 @@ fun ViewBuild.controlDoubleTapsToolbar(
     setPadding(0, 0, dip(16), 0)
     val item = menu.add(R.string.settingsUIControlDoubleTapsEnable)
     item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-    item.actionView = SwitchCompat(context).apply {
+    item.actionView = SwitchCompat {
         isChecked = enabledProperty.get()
         onClick {
             enabledProperty.set(isChecked)
@@ -159,7 +154,7 @@ fun ViewBuild.controlDirectionTaps(
     return controlTaps(configurations, configurationProperty::delegate, cell = ::cell)
 }
 
-fun ViewBuild.controlToolbar(@StringRes titleRes: Int, dialog: Dialog) = Toolbar(context).apply {
+fun ViewBuild.controlToolbar(@StringRes titleRes: Int, dialog: Dialog) = Toolbar {
     setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
     backgroundColor = color(android.R.color.transparent)
     navigationIcon = drawable(R.drawable.ic_arrow_left)
@@ -184,10 +179,10 @@ fun ViewBuild.cell(
         isSmallHorizontal: Boolean,
         isSmallVertical: Boolean,
         @DrawableRes icon: Int? = null
-) = FrameLayout(context).apply {
+) = FrameLayout {
     backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
 
-    val textView = TextView(context).apply {
+    val textView = TextView {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
         textColor = color(R.color.onBackground)
         textSize = spFloat(8F)
@@ -201,7 +196,7 @@ fun ViewBuild.cell(
                 params(matchParent, matchParent),
                 twoInCenter(
                         if (isSmallVertical) LinearLayoutCompat.HORIZONTAL else LinearLayoutCompat.VERTICAL,
-                        ImageView(context).apply {
+                        ImageView {
                             image = drawable(icon, color(R.color.onBackground).withOpacity(0.10))
                         },
                         textView
@@ -267,17 +262,17 @@ fun ViewBuild.actionsMenu(menu: Menu, onClick: (ActionID) -> Unit) {
 }
 
 @SuppressLint("RtlHardcoded")
-private fun ViewBuild.twoInCenter(orientation: Int, view1: View, view2: View) = LinearLayoutCompat(context).apply {
+private fun ViewBuild.twoInCenter(orientation: Int, view1: View, view2: View) = LinearLayoutCompat {
     val gravity1 = if (orientation == LinearLayoutCompat.VERTICAL) Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL else Gravity.RIGHT or Gravity.CENTER_VERTICAL
     val gravity2 = if (orientation == LinearLayoutCompat.VERTICAL) Gravity.TOP or Gravity.CENTER_HORIZONTAL else Gravity.LEFT or Gravity.CENTER_VERTICAL
 
     this.orientation = orientation
 
-    child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
+    child(params(matchParent, matchParent, weight = 0.5F), FrameLayout {
         child(params(dip(24), dip(24), gravity = gravity1), view1)
     })
 
-    child(params(matchParent, matchParent, weight = 0.5F), FrameLayout(context).apply {
+    child(params(matchParent, matchParent, weight = 0.5F), FrameLayout {
         child(params(wrapContent, wrapContent, gravity = gravity2), view2)
     })
 }
@@ -287,8 +282,8 @@ fun ViewBuild.doubleCell(
         isSmallHorizontal: Boolean, isSmallVertical: Boolean,
         @DrawableRes icon1: Int,@DrawableRes icon2: Int,
         layoutOrientation: Int
-) = FrameLayout(context).apply {
-    child(params(matchParent, matchParent), LinearLayoutCompat(context).apply {
+) = FrameLayout {
+    child(params(matchParent, matchParent), LinearLayoutCompat {
         orientation = layoutOrientation
         child(params(matchParent, matchParent, weight = 0.5F), cell(property1, isSmallHorizontal, isSmallVertical, icon1))
         child(params(matchParent, matchParent, weight = 0.5F), cell(property2, isSmallHorizontal, isSmallVertical, icon2))
@@ -320,8 +315,7 @@ private fun ViewBuild.controlTaps(
     }
 
     fun LinearLayoutCompat.tapRow(vertical: ShapeZone, horizontals: List<ShapeZone>) {
-        child(vparams(vertical.size), LinearLayoutCompat(context).apply {
-            orientation = LinearLayoutCompat.HORIZONTAL
+        child(vparams(vertical.size), HorizontalLayout {
             verticalDivider()
             for (horizontal in horizontals) {
                 tapColumn(horizontal, vertical)
@@ -330,9 +324,8 @@ private fun ViewBuild.controlTaps(
         })
     }
 
-    fun ViewBuild.taps(configuration: TouchZoneConfiguration): View = LinearLayoutCompat(context).apply {
+    fun ViewBuild.taps(configuration: TouchZoneConfiguration): View = VerticalLayout {
         val shapes = configuration.shapes as TouchZoneConfiguration.Shapes.Table
-        orientation = LinearLayoutCompat.VERTICAL
         setPadding(dip(16), 0, dip(16), 0)
 
         horizontalDivider()
@@ -342,7 +335,7 @@ private fun ViewBuild.controlTaps(
         }
     }
 
-    fun viewPager() = ViewPager(context).apply {
+    fun viewPager() = ViewPager {
         val views = configurations.map { configuration ->
             val view: ViewBuild.() -> View = { taps(configuration) }
             view
@@ -362,7 +355,7 @@ private fun ViewBuild.controlTaps(
         })
     }
 
-    return FrameLayout(context).apply {
+    return FrameLayout {
         setPadding(0, 0, 0, dip(16))
         child(params(matchParent, matchParent), viewPager())
     }

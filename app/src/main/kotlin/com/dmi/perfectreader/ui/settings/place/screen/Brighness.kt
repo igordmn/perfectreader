@@ -4,10 +4,8 @@ import android.graphics.PorterDuff
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.WindowManager
-import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.LinearLayoutCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.ui.settings.SettingsUI
@@ -20,12 +18,11 @@ fun Places.screenBrightness(model: SettingsUI) = place {
     val settings = context.main.settings
     DialogView(context) {
         AlertDialog.Builder(context)
-                .setView(LinearLayoutCompat(context).apply {
+                .setView(HorizontalLayout {
                     padding = dip(8)
-                    orientation = LinearLayoutCompat.HORIZONTAL
                     gravity = Gravity.CENTER_VERTICAL
 
-                    child(params(wrapContent, wrapContent), ImageView(context).apply {
+                    child(params(wrapContent, wrapContent), imageView {
                         backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
                         padding = dip(4)
 

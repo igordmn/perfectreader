@@ -2,8 +2,6 @@ package com.dmi.perfectreader.ui.settings
 
 import android.view.KeyEvent
 import android.view.View
-import android.widget.FrameLayout
-import androidx.appcompat.widget.LinearLayoutCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.ui.settings.place.control.control
@@ -35,14 +33,12 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
         val control = control(model, settings.control)
     }
 
-    fun ViewBuild.main(): View = LinearLayoutExt(context).apply {
-        orientation = LinearLayoutCompat.VERTICAL
-
-        val tabLayout = child(params(matchParent, wrapContent, weight = 0F), TabLayout(context).apply {
+    fun ViewBuild.main(): View = VerticalLayout {
+        val tabLayout = child(params(matchParent, wrapContent, weight = 0F), TabLayout {
             tabMode = TabLayout.MODE_SCROLLABLE
         })
 
-        child(params(matchParent, matchParent, weight = 1F), ViewPagerSaveable(context).apply {
+        child(params(matchParent, matchParent, weight = 1F), ViewPagerSaveable {
             id = generateId()
             adapter = ViewPagerAdapter(
                     string(R.string.settingsUIFont) to places.font.viewRef,
@@ -72,16 +68,14 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
         }
     }
 
-    fun space() = FrameLayout(context).apply {
+    fun space() = FrameLayout {
         backgroundColor = color(android.R.color.transparent)
         isClickable = true
         isFocusable = true
         onClick { model.back() }
     }
 
-    return LinearLayoutExt(context).apply {
-        orientation = LinearLayoutCompat.VERTICAL
-
+    return VerticalLayoutExt {
         child(params(matchParent, 0, weight = 0.4F), space())
         child(params(matchParent, 0, weight = 0.6F), ScreensView(context, model.screens, ViewBuild::screenView).apply {
             id = generateId()

@@ -5,29 +5,27 @@ import android.content.pm.ActivityInfo
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
-import com.dmi.perfectreader.ui.reader.ReaderLoad.LoadError
 import com.dmi.perfectreader.settings.ScreenOrientation
+import com.dmi.perfectreader.ui.reader.ReaderLoad.LoadError
 import com.dmi.util.android.view.*
 import org.jetbrains.anko.*
 
-fun ViewBuild.readerLoadView(model: ReaderLoad) = FrameLayoutExt(context).apply {
+fun ViewBuild.readerLoadView(model: ReaderLoad) = FrameLayoutExt {
     isFocusable = true
     isFocusableInTouchMode = true
 
     bindChild(params(matchParent, matchParent, Gravity.CENTER), model::reader, ViewBuild::readerView, defferStateRestore = true).apply {
         id = generateId()
     }
-    child(params(wrapContent, wrapContent, Gravity.CENTER), ProgressBar(context).apply {
+    child(params(wrapContent, wrapContent, Gravity.CENTER), ProgressBar {
         autorun {
             visibility = if (model.isLoading) View.VISIBLE else View.GONE
         }
     })
-    child(params(wrapContent, wrapContent, Gravity.CENTER), TextView(context).apply {
+    child(params(wrapContent, wrapContent, Gravity.CENTER), TextView {
         fun showError(strId: Int) {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
             visibility = View.VISIBLE

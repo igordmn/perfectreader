@@ -17,7 +17,6 @@ import org.jetbrains.anko.padding
 import org.jetbrains.anko.textColor
 import kotlin.random.Random
 
-
 class BookCover(context: Context, private val imageSize: Size) : FrameLayout(context), Bindable<BookCover.Content> {
     private val saturation1 = 0.40F
     private val saturation2 = 0.60F

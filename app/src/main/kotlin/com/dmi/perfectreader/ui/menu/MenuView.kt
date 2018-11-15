@@ -6,10 +6,7 @@ import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
-import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
 import com.dmi.util.android.view.*
@@ -44,12 +41,11 @@ fun ViewBuild.menuView(model: Menu): View {
         }
     }
 
-    fun top() = LinearLayoutCompat(context).apply {
-        orientation = LinearLayoutCompat.VERTICAL
+    fun top() = VerticalLayout {
         backgroundColor = color(R.color.background)
         elevation = dipFloat(4F)
 
-        child(params(matchParent, wrapContent), Toolbar(context).apply {
+        child(params(matchParent, wrapContent), Toolbar {
             setTitleTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
             backgroundColor = color(android.R.color.transparent)
             navigationIcon = drawable(R.drawable.ic_arrow_left)
@@ -74,10 +70,10 @@ fun ViewBuild.menuView(model: Menu): View {
             }
         })
 
-        child(params(matchParent, wrapContent, topMargin = -dip(12)), LinearLayoutCompat(context).apply {
+        child(params(matchParent, wrapContent, topMargin = -dip(12)), LinearLayoutCompat {
             orientation = LinearLayoutCompat.HORIZONTAL
 
-            child(params(matchParent, wrapContent, weight = 1F), TextView(context).apply {
+            child(params(matchParent, wrapContent, weight = 1F), TextView {
                 isClickable = true
                 isFocusable = true
                 setPadding(dip(16), dip(12), 0, dip(12))
@@ -96,7 +92,7 @@ fun ViewBuild.menuView(model: Menu): View {
                 }
             })
 
-            val pageNumber = child(params(wrapContent, wrapContent, weight = 0F), EditNumber(context).apply {
+            val pageNumber = child(params(wrapContent, wrapContent, weight = 0F), EditNumber {
                 setPadding(dip(16), dip(12), 0, dip(12))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)
@@ -117,7 +113,7 @@ fun ViewBuild.menuView(model: Menu): View {
                 }
             })
 
-            child(params(wrapContent, wrapContent, weight = 0F), TextView(context).apply {
+            child(params(wrapContent, wrapContent, weight = 0F), TextView {
                 setPadding(0, dip(12), dip(16), dip(12))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)
@@ -133,15 +129,14 @@ fun ViewBuild.menuView(model: Menu): View {
         })
     }
 
-    fun middle() = FrameLayout(context).apply {
+    fun middle() = FrameLayout {
         backgroundColor = color(android.R.color.transparent)
         isClickable = true
         isFocusable = true
         onClick { model.back() }
     }
 
-    fun bottom() = LinearLayoutCompat(context).apply {
-        orientation = LinearLayoutCompat.VERTICAL
+    fun bottom() = VerticalLayout {
         backgroundColor = color(R.color.background)
         elevation = dipFloat(8F)
 
@@ -151,7 +146,7 @@ fun ViewBuild.menuView(model: Menu): View {
                 topMargin = dip(12),
                 rightMargin = dip(4),
                 bottomMargin = dip(12)
-        ), DiscreteSeekBar(context).apply {
+        ), DiscreteSeekBar {
             min = 0
             max = 100
             setIndicatorFormatter("%d%%")
@@ -166,9 +161,7 @@ fun ViewBuild.menuView(model: Menu): View {
         })
     }
 
-    return LinearLayoutExt(context).apply {
-        orientation = LinearLayoutCompat.VERTICAL
-
+    return VerticalLayoutExt {
         child(params(matchParent, wrapContent, weight = 0F), top())
         child(params(matchParent, wrapContent, weight = 1F), middle())
         child(params(matchParent, wrapContent, weight = 0F), bottom())

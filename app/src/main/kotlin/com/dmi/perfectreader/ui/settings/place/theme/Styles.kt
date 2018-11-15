@@ -123,7 +123,7 @@ fun ViewBuild.stylesDetails(model: SettingsUI): LinearLayoutExt {
         }
     }
 
-    fun toolbar() = FrameLayout(context).apply {
+    fun toolbar() = FrameLayout {
         child(params(matchParent, wrapContent), detailsToolbar(R.string.settingsUIThemeSaved, model).apply {
             menu.add(R.string.settingsUIThemeSavedAdd).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)

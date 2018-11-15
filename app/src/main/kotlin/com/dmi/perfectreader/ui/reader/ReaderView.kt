@@ -3,7 +3,6 @@ package com.dmi.perfectreader.ui.reader
 import android.app.Activity
 import android.view.Gravity
 import android.view.View
-import android.widget.FrameLayout
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.ui.action.performingActionView
 import com.dmi.perfectreader.ui.book.bookView
@@ -27,7 +26,7 @@ import org.jetbrains.anko.padding
 import org.jetbrains.anko.wrapContent
 
 
-fun ViewBuild.readerView(model: Reader) = FrameLayout(context).apply {
+fun ViewBuild.readerView(model: Reader) = FrameLayout {
     val bookView = bookView(model)
 
     fun ViewBuild.popupView(popup: Any) = when (popup) {
@@ -38,7 +37,7 @@ fun ViewBuild.readerView(model: Reader) = FrameLayout(context).apply {
         else -> unsupported()
     }
     child(params(matchParent, matchParent), bookView)
-    child(params(matchParent, matchParent), controlView(context, model.control))
+    child(params(matchParent, matchParent), controlView(model.control))
     bindChild(params(matchParent, matchParent), model::selection, ViewBuild::selectionView).apply {
         id = generateId()
         layoutTransition = fadeTransition(300)
