@@ -118,9 +118,9 @@ class BookItemView(
                 LinearLayoutCompat(context).apply {
                     orientation = LinearLayoutCompat.HORIZONTAL
                     name into container(matchParent, wrapContent, weight = 1F)
-                    fileSize into container(wrapContent, wrapContent, weight = 0F).apply {
+                    fileSize.apply {
                         setPadding(dip(16), 0, 0, 0)
-                    }
+                    } into container(wrapContent, wrapContent, weight = 0F)
                 } into container(matchParent, wrapContent)
                 author into container(matchParent, wrapContent)
                 readProgress into container(matchParent, wrapContent)
