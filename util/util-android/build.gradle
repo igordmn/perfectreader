@@ -49,6 +49,9 @@ dependencies {
     api "androidx.appcompat:appcompat:$projectVersions.androidx"
     api "androidx.annotation:annotation:$projectVersions.androidx"
     api 'androidx.constraintlayout:constraintlayout:1.1.2'
+    api 'me.dkzwm.widget.srl:core:1.6.5.androidx'
+    api 'me.dkzwm.widget.srl:ext-material:1.6.5.androidx'
+    api 'me.dkzwm.widget.srl:ext-util:1.6.5.androidx'
     api "com.google.android.material:material:$projectVersions.androidx"
     api "androidx.recyclerview:recyclerview:$projectVersions.androidx"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$projectVersions.coroutines"

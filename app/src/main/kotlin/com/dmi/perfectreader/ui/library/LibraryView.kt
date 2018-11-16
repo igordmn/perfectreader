@@ -1,11 +1,10 @@
 package com.dmi.perfectreader.ui.library
 
-import android.graphics.Color
 import android.view.Gravity
 import android.view.KeyEvent
-import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,14 +12,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dmi.perfectreader.R
 import com.dmi.util.android.screen.withPopup
 import com.dmi.util.android.view.*
-import com.dmi.util.lang.max
 import com.dmi.util.lang.unsupported
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
 import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
-import com.google.android.material.appbar.CollapsingToolbarLayout
-import com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_PARALLAX
+import me.dkzwm.widget.srl.SmoothRefreshLayout
+import me.dkzwm.widget.srl.extra.header.MaterialHeader
+import me.dkzwm.widget.srl.indicator.DefaultIndicator
+import me.dkzwm.widget.srl.utils.QuickConfigAppBarUtil
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
+
 
 fun ViewBuild.libraryView(model: Library): View {
     val places = object : Places() {
@@ -90,20 +92,22 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
-    fun toolbar() = Toolbar {
-        backgroundColor = color(android.R.color.transparent)
-        menu.add(R.string.librarySort).apply {
-            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-            icon = drawable(R.drawable.ic_sort, color(R.color.onBackground))
+    fun foldersBar() = HorizontalLayout {
+        backgroundColor = color(R.color.primary)
+        addressBar() into container(matchParent, wrapContent, weight = 1F)
+        ImageView {
+            padding = dip(4)
+            image = drawable(R.drawable.ic_sort, color(R.color.onBackground))
+            backgroundResource = attr(android.R.attr.selectableItemBackgroundBorderless).resourceId
+            ViewCompat.setTooltipText(this, string(R.string.librarySort))
             onClick {
                 model.popup = places.sort.id
             }
-        }
+        } into container(dip(32), dip(32), weight = 0F, gravity = Gravity.CENTER_VERTICAL, leftMargin = dip(8), rightMargin = dip(8))
     }
 
     fun collapsingBar() = VerticalLayout {
         recentBooks() into container(matchParent, wrapContent)
-        toolbar() into container(matchParent, wrapContent)
     }
 
     fun folders() = RecyclerView(context, null, R.attr.verticalRecyclerViewStyle).apply {
@@ -154,42 +158,42 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
-    return CoordinatorLayoutExt {
-        AppBarLayout {
-            val collapsing = CollapsingToolbarLayout {
-                collapsingBar() into container(matchParent, wrapContent, mode = COLLAPSE_MODE_PARALLAX, parallaxMultiplier = 0.7F)
-                scrimVisibleHeightTrigger = 100000000
-            } into container(matchParent, wrapContent, scrollFlags = SCROLL_FLAG_SCROLL or SCROLL_FLAG_EXIT_UNTIL_COLLAPSED)
-            addressBar() into container(matchParent, wrapContent, scrollFlags = SCROLL_FLAG_SCROLL)
-            setFadingScrimOnHide(collapsing)
-        } into container(matchParent, wrapContent)
+    return MaterialSmoothRefreshLayoutExt {
+        materialStyle()
+        setDisableWhenAnotherDirectionMove(true)
+        setEnableDynamicEnsureTargetView(true)
+        addLifecycleObserver(QuickConfigAppBarUtil())
 
-        SwipeRefreshLayout {
-            folders() into container(matchParent, matchParent)
+        setHeaderView(MaterialHeader<DefaultIndicator>(context).apply {
+            setColorSchemeColors(intArrayOf(color(R.color.secondary)))
+        })
 
-            setOnRefreshListener {
-                model.refresh()
-            }
-            autorun {
-                if (model.items == null)
-                    isRefreshing = false
-            }
-        } into container(matchParent, matchParent, behavior = AppBarLayout.ScrollingViewBehavior())
+        setOnRefreshListener(object : SmoothRefreshLayout.OnRefreshListener {
+            override fun onLoadingMore() = Unit
+            override fun onRefreshing() = model.refresh()
+        })
 
-        emptyFolder() into container(wrapContent, wrapContent, Gravity.CENTER)
+        autorun {
+            if (model.items == null)
+                refreshComplete()
+        }
 
         onInterceptKeyDown(KeyEvent.KEYCODE_BACK) {
             model.back()
             true
         }
-    }.withPopup(this, model::popup, ViewBuild::popupView)
-}
 
-private fun AppBarLayout.setFadingScrimOnHide(collapsing: CollapsingToolbarLayout) {
-    val minScrimActivation = dip(16)
-    collapsing.setContentScrimColor(Color.TRANSPARENT)
-    addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
-        val collapsePercent = max(0, -verticalOffset - minScrimActivation).toFloat() / (collapsing.height - minScrimActivation)
-        collapsing.setContentScrimColor(Color.BLACK.withOpacity(0.60 * collapsePercent))
-    })
+        CoordinatorLayoutExt {
+            AppBarLayout {
+                CollapsingToolbarLayout {
+                    collapsingBar() into container(matchParent, wrapContent)
+                    scrimVisibleHeightTrigger = 100000000
+                } into container(matchParent, wrapContent, scrollFlags = SCROLL_FLAG_SCROLL or SCROLL_FLAG_EXIT_UNTIL_COLLAPSED)
+                foldersBar() into container(matchParent, wrapContent)
+            } into container(matchParent, wrapContent)
+
+            folders() into container(matchParent, matchParent, behavior = AppBarLayout.ScrollingViewBehavior())
+            emptyFolder() into container(wrapContent, wrapContent, Gravity.CENTER)
+        } into container(matchParent, matchParent)
+    }.withPopup(this, model::popup, ViewBuild::popupView)
 }

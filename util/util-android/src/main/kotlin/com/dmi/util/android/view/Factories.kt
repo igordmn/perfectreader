@@ -19,6 +19,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.tabs.TabLayout
 import com.jaredrummler.android.colorpicker.ColorPickerView
+import me.dkzwm.widget.srl.MaterialSmoothRefreshLayout
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 
 class ViewBuild(val context: Context) {
@@ -134,6 +135,7 @@ fun ViewBuild.VerticalLayoutExt(build: LinearLayoutExt.() -> Unit): LinearLayout
     return layout
 }
 
+fun ViewBuild.MaterialSmoothRefreshLayout(build: MaterialSmoothRefreshLayout.() -> Unit) = MaterialSmoothRefreshLayout(context).apply(build)
 fun ViewBuild.ScrollView(build: ScrollView.() -> Unit) = ScrollView(context).apply(build)
 fun ViewBuild.AppCompatImageButton(build: AppCompatImageButton.() -> Unit) = AppCompatImageButton(context).apply(build)
 fun ViewBuild.NestedScrollView(build: NestedScrollView.() -> Unit) = NestedScrollView(context).apply(build)
@@ -145,6 +147,7 @@ fun ViewBuild.SwipeRefreshLayout(build: SwipeRefreshLayout.() -> Unit) = SwipeRe
 fun ViewBuild.ColorPickerView(build: ColorPickerView.() -> Unit) = ColorPickerView(context).apply(build)
 fun ViewBuild.LinearLayoutExt(build: LinearLayoutExt.() -> Unit) = LinearLayoutExt(context).apply(build)
 fun ViewBuild.FrameLayoutExt(build: FrameLayoutExt.() -> Unit) = FrameLayoutExt(context).apply(build)
+fun ViewBuild.MaterialSmoothRefreshLayoutExt(build: MaterialSmoothRefreshLayoutExt.() -> Unit) = MaterialSmoothRefreshLayoutExt(context).apply(build)
 fun ViewBuild.CoordinatorLayoutExt(build: CoordinatorLayoutExt.() -> Unit) = CoordinatorLayoutExt(context).apply(build)
 fun ViewBuild.LinearLayoutCompat(build: LinearLayoutCompat.() -> Unit) = LinearLayoutCompat(context).apply(build)
 fun ViewBuild.ProgressBar(build: ProgressBar.() -> Unit) = ProgressBar(context).apply(build)
