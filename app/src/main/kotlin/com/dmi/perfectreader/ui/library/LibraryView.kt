@@ -174,7 +174,7 @@ fun ViewBuild.libraryView(model: Library): View {
         })
 
         autorun {
-            if (model.items == null)
+            if (model.items != null && model.recentBooks != null)
                 refreshComplete()
         }
 

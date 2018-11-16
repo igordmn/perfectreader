@@ -24,8 +24,11 @@ class Library(
 ) : Screen by Screen(scope) {
     var popup: Id? by observableProperty(state::popup)
 
+    private var refreshNotifier by observable(Unit)
+
     val recentBooks: List<Item.Book>? by scope.async {
-        userBooks.lastBooks(count = 5).map {
+        refreshNotifier
+        userBooks.lastBooks(count = 8).map {
             loadBookItem(context, it.uri, 0)
         }
     }
@@ -38,6 +41,7 @@ class Library(
     var sort: Sort by observable(Sort(Sort.Field.Name, Sort.Method.ASC))
 
     val items: List<Item>? by scope.async {
+        refreshNotifier
         currentFolder.items().let(sort::apply)
     }
     private val currentFolder: Item.Folder get() = folders[currentIndex]
@@ -57,7 +61,7 @@ class Library(
     }
 
     fun refresh() {
-        currentIndex = currentIndex
+        refreshNotifier = Unit
     }
 
     fun back() {
