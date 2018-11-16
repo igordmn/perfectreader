@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.ui.library
 
+import android.graphics.Color
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
@@ -16,6 +17,8 @@ import com.dmi.util.lang.unsupported
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
 import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_PARALLAX
 import me.dkzwm.widget.srl.SmoothRefreshLayout
 import me.dkzwm.widget.srl.extra.header.MaterialHeader
 import me.dkzwm.widget.srl.indicator.DefaultIndicator
@@ -186,15 +189,25 @@ fun ViewBuild.libraryView(model: Library): View {
 
         CoordinatorLayoutExt {
             AppBarLayout {
-                CollapsingToolbarLayout {
-                    recentBooks() into container(matchParent, dip(184))
+                val collapsing = CollapsingToolbarLayout {
+                    recentBooks() into container(matchParent, dip(184), mode = COLLAPSE_MODE_PARALLAX, parallaxMultiplier = 0.7F)
                     scrimVisibleHeightTrigger = 100000000
                 } into container(matchParent, wrapContent, scrollFlags = SCROLL_FLAG_SCROLL or SCROLL_FLAG_EXIT_UNTIL_COLLAPSED)
-                foldersBar() into container(matchParent, wrapContent)
+                val foldersBar = foldersBar() into container(matchParent, wrapContent)
+                configureCollapsing(collapsing, foldersBar)
             } into container(matchParent, wrapContent)
 
             folders() into container(matchParent, matchParent, behavior = AppBarLayout.ScrollingViewBehavior())
             emptyFolder() into container(wrapContent, wrapContent, Gravity.CENTER)
         } into container(matchParent, matchParent)
     }.withPopup(this, model::popup, ViewBuild::popupView)
+}
+
+private fun AppBarLayout.configureCollapsing(collapsing: CollapsingToolbarLayout, toolbar: View) {
+    collapsing.setContentScrimColor(Color.TRANSPARENT)
+    addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+        val collapsePercent = -verticalOffset.toFloat() / collapsing.height
+        collapsing.setContentScrimColor(Color.BLACK.withOpacity(0.60 * collapsePercent))
+        toolbar.elevation = if (verticalOffset == 0) 0F else dipFloat(8F)
+    })
 }
