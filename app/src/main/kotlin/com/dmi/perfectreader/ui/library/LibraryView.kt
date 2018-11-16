@@ -23,7 +23,6 @@ import me.dkzwm.widget.srl.utils.QuickConfigAppBarUtil
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 
-
 fun ViewBuild.libraryView(model: Library): View {
     val places = object : Places() {
         val sort = place {
@@ -60,7 +59,8 @@ fun ViewBuild.libraryView(model: Library): View {
     }
 
     fun recentBooks() = RecyclerView(context, null, R.attr.verticalRecyclerViewStyle).apply {
-        setPadding(dip(8), dip(8), dip(8), dip(8))
+        setPadding(dip(8), dip(8), dip(8), dip(0))
+        setHasFixedSize(true)
 
         val adapter = object : BindableViewAdapter<LibraryItemView>() {
             override fun getItemCount() = model.recentBooks?.size ?: 0
@@ -70,8 +70,13 @@ fun ViewBuild.libraryView(model: Library): View {
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         this.adapter = adapter
 
+        if (!model.hasRecentBooks())
+            isVisible = false
+
         autorun {
-            isVisible = model.recentBooks != null
+            val recentBooks = model.recentBooks
+            if (recentBooks != null && recentBooks.isNotEmpty())
+                isVisible = true
             adapter.notifyDataSetChanged()
         }
     }
@@ -104,10 +109,6 @@ fun ViewBuild.libraryView(model: Library): View {
                 model.popup = places.sort.id
             }
         } into container(dip(32), dip(32), weight = 0F, gravity = Gravity.CENTER_VERTICAL, leftMargin = dip(8), rightMargin = dip(8))
-    }
-
-    fun collapsingBar() = VerticalLayout {
-        recentBooks() into container(matchParent, wrapContent)
     }
 
     fun folders() = RecyclerView(context, null, R.attr.verticalRecyclerViewStyle).apply {
@@ -186,7 +187,7 @@ fun ViewBuild.libraryView(model: Library): View {
         CoordinatorLayoutExt {
             AppBarLayout {
                 CollapsingToolbarLayout {
-                    collapsingBar() into container(matchParent, wrapContent)
+                    recentBooks() into container(matchParent, dip(184))
                     scrimVisibleHeightTrigger = 100000000
                 } into container(matchParent, wrapContent, scrollFlags = SCROLL_FLAG_SCROLL or SCROLL_FLAG_EXIT_UNTIL_COLLAPSED)
                 foldersBar() into container(matchParent, wrapContent)

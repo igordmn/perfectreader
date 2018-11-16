@@ -11,6 +11,7 @@ import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
 import com.dmi.util.scope.observableProperty
 import com.dmi.util.screen.Screen
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 
 class Library(
@@ -28,7 +29,7 @@ class Library(
 
     val recentBooks: List<Item.Book>? by scope.async {
         refreshNotifier
-        userBooks.lastBooks(count = 8).map {
+        userBooks.recentBooks(count = 8).map {
             loadBookItem(context, it.uri, 0)
         }
     }
@@ -37,6 +38,8 @@ class Library(
         add(root)
     }
 
+    private val currentFolder: Item.Folder get() = folders[currentIndex]
+
     var currentIndex: Int by observable(0)
     var sort: Sort by observable(Sort(Sort.Field.Name, Sort.Method.ASC))
 
@@ -44,7 +47,8 @@ class Library(
         refreshNotifier
         currentFolder.items().let(sort::apply)
     }
-    private val currentFolder: Item.Folder get() = folders[currentIndex]
+
+    fun hasRecentBooks() = runBlocking { userBooks.hasRecentBooks() }
 
     fun open(item: Item) {
         when (item) {

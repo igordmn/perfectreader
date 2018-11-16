@@ -37,7 +37,7 @@ class LibraryRecentBook(
 
     init {
         LinearLayoutCompat(context).apply {
-            setPadding(dip(8), dip(8), dip(8), dip(4))
+            setPadding(dip(8), dip(8), dip(8), dip(2))
             orientation = LinearLayoutCompat.VERTICAL
 
             cover into container(wrapContent, wrapContent, gravity = Gravity.CENTER_HORIZONTAL)

@@ -21,7 +21,15 @@ class UserBooks(private val db: SQLiteDatabase) {
         }
     }
 
-    suspend fun lastBooks(count: Int): List<Book> = withContext(Dispatchers.IO) {
+    suspend fun hasRecentBooks(): Boolean = withContext(Dispatchers.IO) {
+        db.execQuery("SELECT count(*) FROM UserBook") {
+            moveToFirst()
+            val count = getInt(0)
+            count > 0
+        }
+    }
+
+    suspend fun recentBooks(count: Int): List<Book> = withContext(Dispatchers.IO) {
         db.execQuery("SELECT uri, offset, percent, lastReadTime FROM UserBook ORDER BY lastReadTime DESC LIMIT $count") {
             parseList(parser())
         }
