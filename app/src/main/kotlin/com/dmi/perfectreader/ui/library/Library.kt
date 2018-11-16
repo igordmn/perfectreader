@@ -34,18 +34,18 @@ class Library(
         }
     }
 
-    val folders = ObservableList<Item.Folder>().apply {
-        add(root)
+    val locations = ObservableList<Location>().apply {
+        add(Location(root))
     }
 
-    private val currentFolder: Item.Folder get() = folders[currentIndex]
+    val currentLocation: Location get() = locations[currentIndex]
 
     var currentIndex: Int by observable(0)
     var sort: Sort by observable(Sort(Sort.Field.Name, Sort.Method.ASC))
 
     val items: List<Item>? by scope.async {
         refreshNotifier
-        currentFolder.items().let(sort::apply)
+        currentLocation.folder.items().let(sort::apply)
     }
 
     fun hasRecentBooks() = runBlocking { userBooks.hasRecentBooks() }
@@ -53,12 +53,12 @@ class Library(
     fun open(item: Item) {
         when (item) {
             is Item.Folder -> {
-                repeat(folders.size - 1 - currentIndex) {
-                    folders.remove()
+                repeat(locations.size - 1 - currentIndex) {
+                    locations.remove()
                 }
 
-                folders.add(item)
-                currentIndex = folders.size - 1
+                locations.add(Location(item))
+                currentIndex = locations.size - 1
             }
             is Item.Book -> openBook(item.uri)
         }
@@ -74,6 +74,10 @@ class Library(
         } else {
             close()
         }
+    }
+
+    class Location(val folder: Item.Folder, var scrollPosition: ScrollPosition = ScrollPosition(0, 0)) {
+        class ScrollPosition(val index: Int, val offset: Int)
     }
 
     sealed class Item {

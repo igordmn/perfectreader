@@ -86,10 +86,10 @@ fun ViewBuild.libraryView(model: Library): View {
 
     fun addressBar() = BreadCrumbsView {
         subscribe(
-                model.folders,
+                model.locations,
                 afterAdd = {
                     val index = size
-                    add(it.name, onClick = {
+                    add(it.folder.name, onClick = {
                         model.currentIndex = index
                     })
                 },
@@ -119,6 +119,7 @@ fun ViewBuild.libraryView(model: Library): View {
             val folder = 1
             val book = 2
         }
+
         val adapter = object : BindableViewAdapter<LibraryItemView>() {
             override fun getItemCount() = model.items?.size ?: 0
 
@@ -133,13 +134,29 @@ fun ViewBuild.libraryView(model: Library): View {
                 is Library.Item.Book -> viewTypes.book
             }
         }
+
         id = generateId()
-        this.layoutManager = LinearLayoutManager(context)
+        val layoutManager = LinearLayoutManager(context)
+        this.layoutManager = layoutManager
         this.adapter = adapter
 
+        addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val startView = getChildAt(0)
+                model.currentLocation.scrollPosition = Library.Location.ScrollPosition(
+                        index = layoutManager.findFirstVisibleItemPosition(),
+                        offset = if (startView == null) 0 else startView.top - paddingTop
+                )
+            }
+        })
+
         autorun {
-            isVisible = model.items != null && model.items!!.isNotEmpty()
+            val scrollPosition = model.currentLocation.scrollPosition
+            val items = model.items
+
+            isVisible = items != null && items.isNotEmpty()
             adapter.notifyDataSetChanged()
+            layoutManager.scrollToPositionWithOffset(scrollPosition.index, scrollPosition.offset)
         }
     }
 
