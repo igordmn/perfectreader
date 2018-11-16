@@ -18,6 +18,8 @@ import org.jetbrains.anko.db.replace
 import org.jetbrains.anko.db.select
 import kotlin.reflect.KClass
 
+// todo think, what to do when serializable values will change. how to migrate to new values?
+
 class DBValueStore(
         private val database: SQLiteDatabase,
         private val schema: Schema

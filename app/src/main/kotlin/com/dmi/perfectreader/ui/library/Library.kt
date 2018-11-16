@@ -37,12 +37,10 @@ class Library(
     val locations = ObservableList<Location>().apply {
         add(Location(root))
     }
-
+    var currentIndex: Int by observable(0)
     val currentLocation: Location get() = locations[currentIndex]
 
-    var currentIndex: Int by observable(0)
     var sort: Sort by observable(Sort(Sort.Field.Name, Sort.Method.ASC))
-
     val items: List<Item>? by scope.async {
         refreshNotifier
         currentLocation.folder.items().let(sort::apply)
@@ -76,9 +74,8 @@ class Library(
         }
     }
 
-    class Location(val folder: Item.Folder, var scrollPosition: ScrollPosition = ScrollPosition(0, 0)) {
-        class ScrollPosition(val index: Int, val offset: Int)
-    }
+    class Location(val folder: Item.Folder, var scrollPosition: ScrollPosition = ScrollPosition(0, 0))
+    class ScrollPosition(val index: Int, val offset: Int)
 
     sealed class Item {
         class Folder(

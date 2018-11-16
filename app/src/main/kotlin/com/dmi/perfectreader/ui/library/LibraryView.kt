@@ -143,7 +143,7 @@ fun ViewBuild.libraryView(model: Library): View {
         addOnScrollListener(object: RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 val startView = getChildAt(0)
-                model.currentLocation.scrollPosition = Library.Location.ScrollPosition(
+                model.currentLocation.scrollPosition = Library.ScrollPosition(
                         index = layoutManager.findFirstVisibleItemPosition(),
                         offset = if (startView == null) 0 else startView.top - paddingTop
                 )
