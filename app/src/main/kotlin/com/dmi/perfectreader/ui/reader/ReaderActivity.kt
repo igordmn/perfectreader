@@ -14,6 +14,7 @@ import kotlinx.serialization.cbor.CBOR.Companion.load
 
 // todo if error occurred, close activity, and show library
 // todo change task name by book name
+// todo save location into database when book started, and not when page turned
 class ReaderActivity : ActivityExt<ReaderLoad>() {
     override fun createModel(stateData: ByteArray?) = ReaderLoad(readerContext(), intent.data!!, ::close, ::showLibrary, loadState(stateData))
     override fun saveModel(model: ReaderLoad) = saveState(model.state)
