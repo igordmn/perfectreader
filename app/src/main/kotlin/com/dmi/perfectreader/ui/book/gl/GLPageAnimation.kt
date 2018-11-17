@@ -6,17 +6,22 @@ import com.dmi.util.android.opengl.*
 import com.dmi.util.graphic.Size
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.io.ProtocolURIHandler
-import com.dmi.util.xml.getChild
-import com.dmi.util.xml.parseXML
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.Scope
+import com.dmi.util.xml.getChild
+import com.dmi.util.xml.parseXML
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URI
 
 suspend fun glPageAnimation(uriHandler: ProtocolURIHandler, uri: URI, size: Size): GLPageAnimation {
     val source = loadAnimationSource(uriHandler, uri)
-    return GLPageAnimation(source.vertexShader, source.fragmentShader, size)
+    return try {
+        GLPageAnimation(source.vertexShader, source.fragmentShader, size)
+    } catch (e: Exception) {
+        System.err.println("error on loading animation: $uri")
+        throw e
+    }
 }
 
 private suspend fun loadAnimationSource(uriHandler: ProtocolURIHandler, uri: URI): AnimationSource = withContext(Dispatchers.IO) {

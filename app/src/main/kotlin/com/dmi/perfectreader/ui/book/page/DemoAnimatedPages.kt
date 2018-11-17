@@ -2,7 +2,6 @@ package com.dmi.perfectreader.ui.book.page
 
 import com.dmi.perfectreader.book.pagination.page.Page
 import com.dmi.util.graphic.SizeF
-import com.dmi.util.lang.modPositive
 import com.dmi.util.scope.Disposable
 import com.dmi.util.scope.EmittableEvent
 import com.dmi.util.scope.Scope
@@ -27,23 +26,24 @@ class DemoAnimatedPages(
     companion object {
         fun pages(pages: LoadingPages) = object : Pages {
             override val current: Page? get() = pages[0]
+            override val next: Page? get() = pages[1]
         }
     }
 
     private var animation by observable(PageAnimation(display.currentTime))
 
     val visible: VisiblePages by scope.cached {
-        val animationX = (animation.currentPage modPositive 1.0).toFloat()
+        val animationX = animation.currentPage.toFloat()
         VisiblePages(
                 left = pages.current,
-                right = pages.current,
+                right = pages.next ?: pages.current,
                 future = pages.current,
                 leftProgress = -animationX,
                 rightProgress = 1 - animationX
         )
     }
 
-    val isMoving: Boolean get() = !animation.isStill
+    val isMoving: Boolean get() = animation.currentPage != 0.0
 
     private val afterAnimate = EmittableEvent()
 
@@ -83,5 +83,6 @@ class DemoAnimatedPages(
 
     interface Pages {
         val current: Page?
+        val next: Page?
     }
 }

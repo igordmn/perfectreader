@@ -4,7 +4,7 @@ import com.dmi.util.persist.ValueStore
 import com.dmi.util.persist.value
 
 class ScreenSettings(store: ValueStore) {
-    var animationPath by store.value("assets:///resources/animations/curl.xml")
+    var animationPath by store.value("assets:///resources/animations/0001.xml")
     var timeout by store.value(-1L)
     var brightnessIsSystem by store.value(true)
     var brightnessValue by store.value(1.0F)
