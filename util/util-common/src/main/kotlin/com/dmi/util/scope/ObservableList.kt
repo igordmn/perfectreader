@@ -25,3 +25,16 @@ class ObservableList<T : Any>: Iterable<T> {
     operator fun get(index: Int) = list[index]
     override fun iterator(): Iterator<T> = list.iterator()
 }
+
+fun <T : Any> ObservableList<T>.bind(list: ArrayList<T>): ObservableList<T> {
+    for (item in list) {
+        add(item)
+    }
+    afterAdd.subscribe {
+        list.add(top!!)
+    }
+    afterRemove.subscribe {
+        list.removeLast()
+    }
+    return this
+}

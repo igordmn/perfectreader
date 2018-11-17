@@ -14,8 +14,28 @@ import com.dmi.perfectreader.book.parse.BookParsers
 import com.dmi.util.android.view.string
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 
 private data class ContentEntry(val id: Int, val parentId: Int, val uri: Uri, val size: Long)
+
+private sealed class FolderName {
+    abstract fun toString(context: Context): String
+}
+
+@Serializable
+@Suppress("CanSealedSubClassBeObject")
+private class RootFolderName : FolderName() {
+    override fun toString(context: Context) = context.string(R.string.libraryFolders)
+}
+
+@Serializable
+private class FixedFolderName(val name: String) : FolderName() {
+    override fun toString(context: Context) = name
+}
+
+// todo this class is persist on disk across different app versions. think how to migrate from one version to another
+@Serializable
+private data class FolderState(val name: FolderName, val deepChildCount: Int, val volume: String, val id: Int)
 
 private class ContentTree {
     var entry: ContentEntry? = null
@@ -24,13 +44,31 @@ private class ContentTree {
 }
 
 // todo benchmark with many files, and add caching if it is slow or consuming a lot of memory
-// todo add external sd card
-fun androidRoot(
+// todo maybe add internal memory
+fun androidFolders(
         context: MainContext,
         androidContext: Context = context.android
-) = Library.Item.Folder(androidContext.string(R.string.libraryFolders), -1) {
-    //    loadItems(main, "internal", id = 0) + loadItems(main, "external", id = 0)
-    loadItems(context, "external", id = 0)
+) = object : Library.Folders {
+    override val root = run {
+        val name = androidContext.string(R.string.libraryFolders)
+        val deepChildCount = -1
+        val volume = "external"
+        val id = 0
+        Library.Item.Folder(
+                name, deepChildCount,
+                items = { loadItems(context, volume, id) },
+                state = FolderState(RootFolderName(), deepChildCount, volume, id))
+    }
+
+    override fun load(state: Any): Library.Item.Folder {
+        state as FolderState
+        return Library.Item.Folder(
+                state.name.toString(androidContext),
+                state.deepChildCount,
+                items = { loadItems(context, state.volume, state.id) },
+                state = state
+        )
+    }
 }
 
 private suspend fun loadItems(
@@ -132,8 +170,9 @@ private suspend fun ContentTree.toItem(context: MainContext, volumeName: String)
         loadBookItem(context, entry.uri, entry.size)
     } else {
         val name = entry.uri.lastPathSegment!!
+        val stateName = FixedFolderName(entry.uri.lastPathSegment!!)
         suspend fun items() = loadItems(context, volumeName, entry.id)
-        Library.Item.Folder(name, deepChildCount, ::items)
+        Library.Item.Folder(name, deepChildCount, ::items, FolderState(stateName, deepChildCount, volumeName, entry.id))
     }
 }
 

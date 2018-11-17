@@ -5,7 +5,9 @@ import com.dmi.perfectreader.MainContext
 import com.dmi.perfectreader.book.UserBooks
 import com.dmi.perfectreader.book.content.BookDescription
 import com.dmi.util.android.view.Id
+import com.dmi.util.collection.removeLast
 import com.dmi.util.lang.unsupported
+import com.dmi.util.lang.value
 import com.dmi.util.scope.ObservableList
 import com.dmi.util.scope.Scope
 import com.dmi.util.scope.observable
@@ -18,8 +20,9 @@ class Library(
         val context: MainContext,
         val close: () -> Unit,
         val openBook: (uri: Uri) -> Unit,
-        val state: LibraryState,
-        private val root: Item.Folder = androidRoot(context),
+        loadState: (Folders) -> LibraryState,
+        private val folders: Folders = androidFolders(context),
+        val state: LibraryState = loadState(folders),
         private val userBooks: UserBooks = context.userBooks,
         private val scope: Scope = Scope()
 ) : Screen by Screen(scope) {
@@ -35,9 +38,17 @@ class Library(
     }
 
     val locations = ObservableList<Location>().apply {
-        add(Location(root))
+        for (item in state.locations.list) {
+            add(Location(item))
+        }
+        afterAdd.subscribe {
+            state.locations.list.add(top!!.state)
+        }
+        afterRemove.subscribe {
+            state.locations.list.removeLast()
+        }
     }
-    var currentIndex: Int by observable(0)
+    var currentIndex: Int by observableProperty(state.locations::currentIndex)
     val currentLocation: Location get() = locations[currentIndex]
 
     var sort: Sort by observable(Sort(Sort.Field.Name, Sort.Method.ASC))
@@ -55,7 +66,7 @@ class Library(
                     locations.remove()
                 }
 
-                locations.add(Location(item))
+                locations.add(Location(LibraryLocationState(item.state)))
                 currentIndex = locations.size - 1
             }
             is Item.Book -> openBook(item.uri)
@@ -74,14 +85,12 @@ class Library(
         }
     }
 
-    class Location(val folder: Item.Folder, var scrollPosition: ScrollPosition = ScrollPosition(0, 0))
-    class ScrollPosition(val index: Int, val offset: Int)
-
     sealed class Item {
         class Folder(
                 val name: String,
                 val deepBookCount: Int,
-                val items: suspend () -> List<Item>
+                val items: suspend () -> List<Item>,
+                val state: Any
         ) : Item()
 
         class Book(
@@ -155,7 +164,29 @@ class Library(
             abstract fun <T, R : Comparable<R>> apply(list: List<T>, selector: (T) -> R?): List<T>
         }
     }
+
+    interface Folders {
+        val root: Item.Folder
+        fun load(state: Any): Item.Folder
+    }
+
+    fun Location(state: LibraryLocationState) = Location(folders.load(state.folderState), state)
+
+    inner class Location(val folder: Item.Folder, val state: LibraryLocationState) {
+        var scrollPosition by value(state::scrollPosition)
+    }
 }
 
 @Serializable
-class LibraryState(var popup: Id? = null)
+class LibraryState(var popup: Id? = null, val locations: LibraryLocationsState)
+
+fun LibraryLocationsState(folders: Library.Folders) = LibraryLocationsState(arrayListOf(LibraryLocationState(folders.root.state)), currentIndex = 0)
+
+@Serializable
+class LibraryLocationsState(val list: ArrayList<LibraryLocationState>, var currentIndex: Int)
+
+@Serializable
+class LibraryLocationState(val folderState: Any, var scrollPosition: LibraryScrollPosition = LibraryScrollPosition(0, 0))
+
+@Serializable
+class LibraryScrollPosition(val index: Int, val offset: Int)

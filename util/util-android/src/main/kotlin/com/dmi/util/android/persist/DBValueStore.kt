@@ -73,11 +73,19 @@ class DBValueStore(
                 value is Boolean -> intValue?.let { it == 1L } as T?
                 value is String -> textValue as T?
                 value is Enum<*> -> textValue?.let { enumValueOrNull(cls.java as Class<Enum<*>>, it) } as T?
-                CBOR.isSupported(cls) -> textValue?.let { CBOR.load(cls, base64().decode(it)) }
+                CBOR.isSupported(cls) -> textValue?.let(::tryLoadSerializable)
                 else -> unsupported(value)
             }
             if (newValue != null)
                 value = newValue
+        }
+
+        private fun tryLoadSerializable(text: String) = try {
+            CBOR.load(cls, base64().decode(text))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            System.err.println("error loading serializable value")
+            null
         }
 
         private fun enumValueOrNull(
