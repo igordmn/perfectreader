@@ -18,16 +18,19 @@ class LibraryActivity : ActivityExt<Library>() {
     private fun saveState(state: LibraryState): ByteArray = dump(state)
     private fun back() = finish()
 
-    private fun openBook(uri: Uri) = ReaderActivity.open(this, uri)
+    private fun openBook(uri: Uri) = ReaderActivity.start(this, uri)
 
     override fun onStart() {
         super.onStart()
         model.refresh()
+        main.settings.state.isLibrary = true
     }
 
     companion object {
-        fun open(context: Context): Unit = context.startActivity(
-                Intent(context, LibraryActivity::class.java)
+        fun start(context: Context): Unit = context.startActivity(
+                Intent(context, LibraryActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
+                }
         )
     }
 }

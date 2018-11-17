@@ -1,9 +1,10 @@
 package com.dmi.perfectreader
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
+import androidx.core.net.toUri
 import com.dmi.perfectreader.ui.library.LibraryActivity
+import com.dmi.perfectreader.ui.reader.ReaderActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,14 +18,22 @@ class MainActivity : Activity(), CoroutineScope {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        finish()
-        val context = this
         launch {
             if (main.permissions.askReadStorage()) {
-                startActivity(Intent(context, LibraryActivity::class.java))
+                startRecentActivity()
             } else {
                 toast(R.string.needStoragePermissions)
             }
+            finish()
+        }
+    }
+
+    private fun startRecentActivity() {
+        val settings = main.settings.state
+        if (settings.isLibrary) {
+            LibraryActivity.start(this)
+        } else {
+            ReaderActivity.start(this, settings.bookUri.toUri())
         }
     }
 

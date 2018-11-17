@@ -21,6 +21,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/appName"
+            android:excludeFromRecents="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -49,8 +50,7 @@
         <activity
             android:name="com.dmi.perfectreader.ui.library.LibraryActivity"
             android:configChanges="orientation|screenSize"
-            android:label="@string/appName"
-            android:launchMode="singleTask">
+            android:label="@string/appName">
         </activity>
 
     </application>

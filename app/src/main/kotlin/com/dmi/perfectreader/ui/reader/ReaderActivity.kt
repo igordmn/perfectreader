@@ -12,6 +12,8 @@ import com.dmi.util.android.view.ViewBuild
 import kotlinx.serialization.cbor.CBOR.Companion.dump
 import kotlinx.serialization.cbor.CBOR.Companion.load
 
+// todo if error occurred, close activity, and show library
+// todo change task name by book name
 class ReaderActivity : ActivityExt<ReaderLoad>() {
     override fun createModel(stateData: ByteArray?) = ReaderLoad(readerContext(), intent.data!!, ::close, ::showLibrary, loadState(stateData))
     override fun saveModel(model: ReaderLoad) = saveState(model.state)
@@ -24,7 +26,7 @@ class ReaderActivity : ActivityExt<ReaderLoad>() {
 
     private fun showLibrary() {
         finish()
-        LibraryActivity.open(this)
+        LibraryActivity.start(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,11 +36,17 @@ class ReaderActivity : ActivityExt<ReaderLoad>() {
         super.onCreate(savedInstanceState)
     }
 
+    override fun onStart() {
+        super.onStart()
+        main.settings.state.isLibrary = false
+        main.settings.state.bookUri = intent.data!!.toString()
+    }
+
     companion object {
-        fun open(context: Context, uri: Uri): Unit = context.startActivity(
+        fun start(context: Context, uri: Uri): Unit = context.startActivity(
                 Intent(context, ReaderActivity::class.java).apply {
                     data = uri
-                    flags = Intent.FLAG_ACTIVITY_NEW_DOCUMENT
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
                 }
         )
     }

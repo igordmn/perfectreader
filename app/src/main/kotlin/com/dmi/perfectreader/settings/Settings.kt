@@ -28,6 +28,7 @@ class Settings(store: ValueStore) {
     val control by store.group(::ControlSettings)
     val screen by store.group(::ScreenSettings)
     val other by store.group(::OtherSettings)
+    val state by store.group(::StateSettings)
 }
 
 fun Settings.switchStyle() = styles.applyNext(theme)
