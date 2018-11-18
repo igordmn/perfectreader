@@ -23,7 +23,6 @@ class GLBook(
     init {
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glDepthFunc(GL_LEQUAL)
     }
 
@@ -49,13 +48,16 @@ class GLBook(
 
         // При рисовании во фреймбуфер, привязанный к текстуре, нужно рисовать вверх ногами, чтобы текстура была правильно повернута
         // (page/pageBackground рисуются вверх ногами из-за использования GLTextureBackground)
+
         pageFrameBuffer.bind {
             glClearColor(0F, 0F, 0F, 0F)
             glClear(GL_COLOR_BUFFER_BIT)
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
             pageBackground.draw()
             page?.draw()
         }
 
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         pageAnimation?.draw(pageTexture, progress)
     }
 }
