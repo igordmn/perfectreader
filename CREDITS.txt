@@ -1,0 +1,33 @@
+// todo add all third party resources/libraries, license, authors, and links
+
+Icons
+
+ic_search_web    https://www.flaticon.com/free-icon/search_1179990
+ic_search_wiki    https://commons.wikimedia.org/wiki/File:Wikipedia%27s_W.svg
+ic_launcher    https://www.flaticon.com/free-icon/hardbound-book-variant_33932
+ic_pinch_in    https://www.flaticon.com/free-icon/opposing-arrows_3595
+ic_long_arrow_left    https://www.flaticon.com/free-icon/left-arrow_3718
+ic_long_arrow_down    https://www.flaticon.com/free-icon/down-arrow_3590
+
+
+
+Pages
+
+01_light_0001.webp    https://www.deviantart.com/dioma/art/Textures-Paper-58028330
+01_light_0002.jpg    https://www.freeimages.com/photo/old-paper-1180145
+01_light_0003.jpg    https://www.freeimages.com/photo/old-paper-1183922
+01_light_0004.webp    https://www.freeimages.com/photo/old-paper-1191767
+01_light_0005.webp    https://www.graphicsfuel.com/2016/03/10-tileable-paper-patterns
+01_light_0006.jpg    https://pixabay.com/old-2012064
+01_light_0007.jpg    https://pixabay.com/paper-1074131
+01_light_0008.jpg    https://pixabay.com/paper-3224651
+01_light_0009.webp    https://pixabay.com/stack-of-paper-1058406
+
+03_light_transparent_0001.webp    https://www.freeimages.com/photo/aged-paper-mixed-1194255
+03_light_transparent_0002.webp    https://www.freeimages.com/photo/old-paper-1312830
+03_light_transparent_0003.webp    https://www.freeimages.com/photo/sheet-of-paper-1427188
+
+02_dark_0001.jpg    https://www.wildtextures.com/free-textures/leather-texture-sorensen-campo-dark-brown
+02_dark_0002.jpg    http://www.wildtextures.com/free-textures/leather-texture-campo-series-petroleum
+02_dark_0003.webp    https://pixabay.com/background-3246124
+02_dark_0004.webp    https://pixabay.com/black-1072366

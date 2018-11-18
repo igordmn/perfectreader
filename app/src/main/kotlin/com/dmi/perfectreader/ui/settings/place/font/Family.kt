@@ -8,14 +8,14 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
-import com.dmi.perfectreader.common.Nano
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.ui.settings.SettingsUI
 import com.dmi.perfectreader.ui.settings.common.PreviewView
-import com.dmi.perfectreader.ui.settings.common.list.SettingSingleChoiceListView
 import com.dmi.perfectreader.ui.settings.common.details
+import com.dmi.perfectreader.ui.settings.common.list.SettingSingleChoiceListView
 import com.dmi.util.android.font.AndroidFont
 import com.dmi.util.android.view.*
+import com.dmi.util.coroutine.Heavy
 import com.dmi.util.font.Fonts
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -56,7 +56,7 @@ class FontFamilyItemView(context: Context) : TextView(context), Bindable<String>
 
         load.start {
             visibility = View.INVISIBLE
-            val font = withContext(Dispatchers.Nano) {
+            val font = withContext(Dispatchers.Heavy) {
                 fonts.loadFont(familyName, isBold = false, isItalic = false).font as AndroidFont
             }
 

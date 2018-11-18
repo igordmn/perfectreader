@@ -2,6 +2,7 @@ package com.dmi.util.android.graphics
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.dmi.util.coroutine.Heavy
 import com.dmi.util.graphic.Size
 import com.google.common.io.ByteSource
 import kotlinx.coroutines.Dispatchers
@@ -10,7 +11,7 @@ import kotlinx.io.InputStream
 
 // todo use inSampleSize for faster loading and low memory consumption
 suspend fun InputStream.toBitmap(maxSize: Size): Bitmap = use { stream ->
-    withContext(Dispatchers.IO) {
+    withContext(Dispatchers.Heavy) {
         val original = BitmapFactory.decodeStream(stream)
         val originalAspect = original.width.toFloat() / original.height
         val maxAspect = maxSize.width.toFloat() / maxSize.height

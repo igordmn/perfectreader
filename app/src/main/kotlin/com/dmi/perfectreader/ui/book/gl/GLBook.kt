@@ -3,10 +3,7 @@ package com.dmi.perfectreader.ui.book.gl
 import android.content.Context
 import android.opengl.GLES20.*
 import com.dmi.perfectreader.ui.book.render.factory.PageRenderer
-import com.dmi.util.android.opengl.GLFrameBuffer
-import com.dmi.util.android.opengl.GLQuad
-import com.dmi.util.android.opengl.GLTexture
-import com.dmi.util.android.opengl.bind
+import com.dmi.util.android.opengl.*
 import com.dmi.util.graphic.Size
 import com.dmi.util.io.ProtocolURIHandler
 import com.dmi.util.scope.Disposable
@@ -26,6 +23,7 @@ class GLBook(
         glDepthFunc(GL_LEQUAL)
     }
 
+    private val underColor: GLColor by scope.cached { GLColor(model.themeUnderColor) }
     private val pageTexture by scope.observableDisposable(GLTexture(size))
     private val pageFrameBuffer by scope.observableDisposable(GLFrameBuffer().apply { bindTo(pageTexture) })
     private val quad by scope.observableDisposable(GLQuad(context))
@@ -37,8 +35,7 @@ class GLBook(
 
     fun draw() {
         glViewport(0, 0, size.width, size.height)
-        glClearColor(1F, 1F, 1F, 1F)
-        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+        underColor.draw()
         drawAnimatedPage(pages.right, pages.rightProgress)
         drawAnimatedPage(pages.left, pages.leftProgress)
     }

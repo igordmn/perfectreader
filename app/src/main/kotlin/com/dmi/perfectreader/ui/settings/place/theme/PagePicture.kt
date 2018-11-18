@@ -13,29 +13,29 @@ import com.dmi.util.android.view.autorun
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.padding
 
-fun ViewBuild.themeBackgroundPictureDetails(model: SettingsUI) = details(
-        model, R.string.settingsUIThemeBackgroundPicture,
+fun ViewBuild.themePagePictureDetails(model: SettingsUI) = details(
+        model, R.string.settingsUIThemePageImage,
         SettingSingleChoiceListView(
                 context,
-                context.main.settings.theme::backgroundPath,
-                context.main.resources.backgrounds.map { it.toString() },
+                context.main.settings.theme::pagePath,
+                context.main.resources.pages.map { it.toString() },
                 {
-                    SettingBitmapView(it, size = 64).apply {
+                    SettingBitmapView(it, size = context.dip(64)).apply {
                         padding = dip(12)
                     }
                 },
+                GridAutoFitLayoutManager(context, columnWidth = context.dip(64 + 12 * 2)),
                 onItemClick = {},
                 onItemSecondClick = model.screens::goBackward
         ).apply {
-            layoutManager = GridAutoFitLayoutManager(context, columnWidth = dip(64 + 12 * 2))
             setPaddingRelative(dip(12), 0, dip(12), 0)
         }
 )
 
-fun ViewBuild.themeBackgroundPicturePreview() = PreviewView(
-        SettingBitmapView(context, size = 24).apply {
+fun ViewBuild.themePageImagePreview() = PreviewView(
+        SettingBitmapView(context, size = context.dip(24)).apply {
             autorun {
-                bind(context.main.settings.theme.backgroundPath)
+                bind(context.main.settings.theme.pagePath)
             }
         }
 )

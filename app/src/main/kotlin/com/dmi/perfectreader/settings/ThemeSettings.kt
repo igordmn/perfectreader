@@ -22,10 +22,11 @@ class ThemeSettings(store: ValueStore) {
     var textShadowBlurEm by themeStore.value(0.05F)
     var textShadowColor by themeStore.value(Color.GRAY.withAlpha(128).value)
 
-    var backgroundIsImage by themeStore.value(false)
-    var backgroundColor by themeStore.value(Color.WHITE.value)
-    var backgroundPath by themeStore.value("assets:///resources/backgrounds/0004.png")
-    var backgroundContentAwareResize by themeStore.value(true)
+    var underColor by themeStore.value(Color.WHITE.value)
+    var pageIsImage by themeStore.value(false)
+    var pageColor by themeStore.value(Color.WHITE.value)
+    var pagePath by themeStore.value("assets:///resources/pages/01_light_0001.webp")
+    var pageContentAwareResize by themeStore.value(true)
 
     var selectionColor by store.value(Color(255, 174, 223, 240).value)
 
@@ -41,15 +42,15 @@ var ThemeSettings.textShadowOpacity: Float
     }
 
 val DefaultStyles = SavedThemes(listOf(
-        savedTheme(textColor = Color.BLACK, backgroundColor = Color.WHITE),
-        savedTheme(textColor = Color.WHITE, backgroundColor = Color.BLACK)
+        savedTheme(textColor = Color.BLACK, pageColor = Color.WHITE),
+        savedTheme(textColor = Color.WHITE, pageColor = Color.BLACK)
 ))
 
-fun savedTheme(textColor: Color, backgroundColor: Color): SavedTheme {
+fun savedTheme(textColor: Color, pageColor: Color): SavedTheme {
     val store = MemoryValueStore()
     val settings = ThemeSettings(store)
     settings.textColor = textColor.value
-    settings.backgroundColor = backgroundColor.value
+    settings.pageColor = pageColor.value
     return settings.save()
 }
 

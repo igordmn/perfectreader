@@ -23,11 +23,11 @@ class GLBackground(
         private val model: GLBookModel,
         private val scope: Scope = Scope()
 ) : Disposable by scope {
-    private val color: GLColor by scope.cached { GLColor(model.pageBackgroundColor) }
+    private val color: GLColor by scope.cached { GLColor(model.themePageColor) }
     private val texture: GLTexture? by scope.asyncDisposable {
-        if (model.pageBackgroundIsImage) {
-            val path = model.pageBackgroundPath
-            val contentAwareResize = model.pageBackgroundContentAwareResize
+        if (model.themePageIsImage) {
+            val path = model.themePagePath
+            val contentAwareResize = model.themePageContentAwareResize
             val bitmap: Bitmap? = withContext(backgroundLoadContext) {
                 val original: Bitmap? = try {
                     BitmapFactory.decodeStream(
@@ -65,8 +65,8 @@ class GLBackground(
 
     fun draw() {
         val texture = texture
-        if (texture != null) {
-            quad.draw(texture)
+        if (model.themePageIsImage) {
+            texture?.let(quad::draw)
         } else {
             color.draw()
         }

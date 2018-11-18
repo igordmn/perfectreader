@@ -3,7 +3,6 @@ package com.dmi.util.android.view
 import android.view.View
 import androidx.annotation.UiThread
 import kotlinx.coroutines.*
-import org.jetbrains.anko.sdk27.coroutines.onAttachStateChangeListener
 
 class ViewLoad(private val view: View) {
     private var isFinished = false
@@ -11,19 +10,19 @@ class ViewLoad(private val view: View) {
     private var launchJob: (() -> Job)? = null
 
     init {
-        view.onAttachStateChangeListener {
-            onViewAttachedToWindow {
+        view.addOnAttachStateChangeListener(object: View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(v: View?) {
                 if (!isFinished && launchJob != null) {
                     check(currentJob == null)
                     currentJob = launchJob!!()
                 }
             }
 
-            onViewDetachedFromWindow {
+            override fun onViewDetachedFromWindow(v: View?) {
                 currentJob?.cancel()
                 currentJob = null
             }
-        }
+        })
     }
 
     @UiThread

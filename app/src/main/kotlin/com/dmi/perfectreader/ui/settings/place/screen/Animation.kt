@@ -1,14 +1,16 @@
 package com.dmi.perfectreader.ui.settings.place.screen
 
 import android.content.Context
+import android.view.Gravity
+import android.widget.FrameLayout
 import android.widget.ImageView
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.ui.book.Book
 import com.dmi.perfectreader.ui.settings.SettingsUI
 import com.dmi.perfectreader.ui.settings.common.PreviewView
-import com.dmi.perfectreader.ui.settings.common.list.SettingSingleChoiceListView
 import com.dmi.perfectreader.ui.settings.common.details
+import com.dmi.perfectreader.ui.settings.common.list.SettingSingleChoiceListView
 import com.dmi.util.android.opengl.GLContext
 import com.dmi.util.android.view.*
 import com.dmi.util.graphic.Size
@@ -27,38 +29,33 @@ fun ViewBuild.screenAnimationDetails(
                 context.main.settings.screen::animationPath,
                 context.main.resources.pageAnimations.map { it.toString() },
                 {
-                    ScreenAnimationPreviewView(context, glContext, size = 64).apply {
+                    ScreenAnimationPreviewView(context, glContext, size = context.dip(64)).apply {
                         padding = dip(12)
                     }
                 },
+                GridAutoFitLayoutManager(context, columnWidth = context.dip(64 + 12 * 2)),
                 onItemClick = book::showDemoAnimation
         ).apply {
-            layoutManager = GridAutoFitLayoutManager(context, columnWidth = dip(64 + 12 * 2))
             setPaddingRelative(dip(12), 0, dip(12), 0)
         }
 )
 
 fun ViewBuild.screenAnimationPreview(
         glContext: GLContext
-) = PreviewView(ScreenAnimationPreviewView(context, glContext, size = 24).apply {
+) = PreviewView(ScreenAnimationPreviewView(context, glContext, size = context.dip(24)).apply {
     autorun {
         bind(context.main.settings.screen.animationPath)
     }
 })
 
-class ScreenAnimationPreviewView(
+private class ScreenAnimationPreviewViewInner(
         context: Context,
         glContext: GLContext,
         size: Int
 ) : ImageView(context), Bindable<String> {
     private val previews = context.main.resources.pageAnimationPreviews(glContext)
     private val load = ViewLoad(this)
-    private val previewSize = Size(dip(size), dip(size * 4 / 3F))
-
-    init {
-        minimumWidth = previewSize.width
-        minimumHeight = previewSize.height
-    }
+    private val previewSize = Size(size, size * 4 / 3)
 
     override fun bind(model: String) {
         val path = URI(model)
@@ -67,5 +64,13 @@ class ScreenAnimationPreviewView(
             val preview = previews.of(path, previewSize)
             setImageBitmap(preview)
         }
+    }
+}
+
+class ScreenAnimationPreviewView(context: Context, glContext: GLContext, size: Int) : FrameLayout(context), Bindable<String> {
+    private val inner = ScreenAnimationPreviewViewInner(context, glContext, size) into container(size, size, gravity = Gravity.CENTER)
+
+    override fun bind(model: String) {
+        inner.bind(model)
     }
 }

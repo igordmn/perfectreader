@@ -23,6 +23,7 @@ class SettingSingleChoiceListView<T, V>(
         private val property: KMutableProperty0<T>,
         private val items: List<T>,
         private val createItemView: (Context) -> V,
+        layoutManager: LinearLayoutManager = LinearLayoutManager(context),
         private val onItemClick: () -> Unit = {},
         private val onItemSecondClick: () -> Unit = {}
 ) : RecyclerView(context, null, R.attr.verticalRecyclerViewStyle) where V : View, V : Bindable<T> {
@@ -31,7 +32,6 @@ class SettingSingleChoiceListView<T, V>(
 
     init {
         setHasFixedSize(true)
-        val layoutManager = LinearLayoutManager(context)
         this.layoutManager = layoutManager
         adapter = object : BindableViewAdapter<ItemView>() {
             override fun getItemCount() = items.size

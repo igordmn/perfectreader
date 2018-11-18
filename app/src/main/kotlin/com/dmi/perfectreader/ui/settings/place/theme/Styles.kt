@@ -145,8 +145,8 @@ fun ViewBuild.stylesDetails(model: SettingsUI): LinearLayoutExt {
 }
 
 class ThemeSavedItemView(context: Context) : FrameLayout(context), Bindable<SavedTheme> {
-    private val backgroundBitmap = SettingBitmapView(context, size = 64)
-    private val backgroundColor = View(context)
+    private val pageBitmap = SettingBitmapView(context, size = dip(64))
+    private val pageColor = View(context)
     private val letter = TextView(context).apply {
         textSize = dipFloat(16F)
         typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
@@ -155,17 +155,17 @@ class ThemeSavedItemView(context: Context) : FrameLayout(context), Bindable<Save
 
     init {
         padding = dip(12)
-        backgroundBitmap into container(wrapContent, wrapContent, gravity = Gravity.CENTER)
-        backgroundColor into container(dip(64), dip(64), gravity = Gravity.CENTER)
+        pageBitmap into container(wrapContent, wrapContent, gravity = Gravity.CENTER)
+        pageColor into container(dip(64), dip(64), gravity = Gravity.CENTER)
         letter into container(wrapContent, wrapContent, gravity = Gravity.CENTER)
     }
 
     override fun bind(model: SavedTheme) {
         val settings = themeSettings(model)
-        backgroundBitmap.isVisible = settings.backgroundIsImage
-        backgroundBitmap.bind(if (settings.backgroundIsImage) settings.backgroundPath else "")
-        backgroundColor.isVisible = !settings.backgroundIsImage
-        backgroundColor.backgroundColor = settings.backgroundColor
+        pageBitmap.isVisible = settings.pageIsImage
+        pageBitmap.bind(if (settings.pageIsImage) settings.pagePath else "")
+        pageColor.isVisible = !settings.pageIsImage
+        pageColor.backgroundColor = settings.pageColor
         letter.textColor = settings.textColor
     }
 }

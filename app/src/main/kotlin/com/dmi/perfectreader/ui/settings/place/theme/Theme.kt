@@ -14,21 +14,22 @@ fun Places.theme(model: SettingsUI, settings: ThemeSettings) = place {
         stylesDetails(model)
     }
 
-    fun formatBackgroundIsImage(backgroundIsPicture: Boolean) = when (backgroundIsPicture) {
-        false -> context.string(R.string.settingsUIThemeBackgroundSelectColor)
-        true -> context.string(R.string.settingsUIThemeBackgroundSelectPicture)
+    fun formatPageIsImage(pageIsPicture: Boolean) = when (pageIsPicture) {
+        false -> context.string(R.string.settingsUIThemePageSelectColor)
+        true -> context.string(R.string.settingsUIThemePageSelectImage)
     }
 
-    val backgroundIsImage = singleChoice(
-            model, settings::backgroundIsImage, arrayOf(false, true),
-            ::formatBackgroundIsImage, R.string.settingsUIThemeBackground
+    val pageIsImage = singleChoice(
+            model, settings::pageIsImage, arrayOf(false, true),
+            ::formatPageIsImage, R.string.settingsUIThemePage
     )
 
-    val backgroundPicture = place {
-        themeBackgroundPictureDetails(model)
+    val pagePicture = place {
+        themePagePictureDetails(model)
     }
 
-    val backgroundColor = colorPlace(model, settings::backgroundColor, R.string.settingsUIThemeBackgroundColor)
+    val underColor = colorPlace(model, settings::underColor, R.string.settingsUIThemePageColor)
+    val pageColor = colorPlace(model, settings::pageColor, R.string.settingsUIThemePageColor)
     val textColor = colorPlace(model, settings::textColor, R.string.settingsUIThemeText)
     val selectionColor = colorPlace(model, settings::selectionColor, R.string.settingsUIThemeSelection)
 
@@ -68,19 +69,22 @@ fun Places.theme(model: SettingsUI, settings: ThemeSettings) = place {
             detailsSetting(model, emptyPreview(), styles, R.string.settingsUIThemeSaved),
             popupSetting(
                     model,
-                    propertyPreview(settings::backgroundIsImage, ::formatBackgroundIsImage),
-                    backgroundIsImage,
-                    R.string.settingsUIThemeBackground
+                    propertyPreview(settings::pageIsImage, ::formatPageIsImage),
+                    pageIsImage,
+                    R.string.settingsUIThemePage
             ),
             detailsSetting(
-                    model, themeBackgroundPicturePreview(), backgroundPicture, R.string.settingsUIThemeBackgroundPicture
-            ) visibleIf { settings.backgroundIsImage },
+                    model, themePageImagePreview(), pagePicture, R.string.settingsUIThemePageImage
+            ) visibleIf { settings.pageIsImage },
             detailsSetting(
-                    model, colorPreview(settings::backgroundColor), backgroundColor, R.string.settingsUIThemeBackgroundColor
-            ) visibleIf { !settings.backgroundIsImage },
+                    model, colorPreview(settings::pageColor), pageColor, R.string.settingsUIThemePageColor
+            ) visibleIf { !settings.pageIsImage },
             booleanSetting(
-                    settings::backgroundContentAwareResize, R.string.settingsUIThemeBackgroundContentAwareResize
-            ) visibleIf { settings.backgroundIsImage },
+                    settings::pageContentAwareResize, R.string.settingsUIThemePageContentAwareResize
+            ) visibleIf { settings.pageIsImage },
+            detailsSetting(
+                    model, colorPreview(settings::underColor), underColor, R.string.settingsUIThemeUnderColor, R.string.settingsUIThemeUnderColorDesc
+            ),
             detailsSetting(model, colorPreview(settings::textColor), textColor, R.string.settingsUIThemeText),
             detailsSetting(model, colorPreview(settings::selectionColor), selectionColor, R.string.settingsUIThemeSelection),
             detailsSetting(model, emptyPreview(), textShadow, R.string.settingsUIThemeTextShadow),

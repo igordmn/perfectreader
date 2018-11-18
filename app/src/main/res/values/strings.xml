@@ -89,7 +89,7 @@
     <string name="settingsUIFormatJustify">По ширине</string>
 
     <string name="settingsUIColorHEX">HEX</string>
-    <string name="settingsUIThemeBackground">Фон</string>
+    <string name="settingsUIThemePage">Фон</string>
 
     <string name="settingsUIThemeSaved">Стили</string>
     <string name="settingsUIThemeSavedAdd">Добавить</string>
@@ -98,11 +98,13 @@
     <string name="settingsUIThemeSavedRemovedSingle">Стиль удален</string>
     <string name="settingsUIThemeSavedRemovedMultiple">Стили удалены</string>
     <string name="settingsUIThemeSavedUndoRemove">Отменить</string>
-    <string name="settingsUIThemeBackgroundColor">Цвет фона</string>
-    <string name="settingsUIThemeBackgroundSelectPicture">Картинка</string>
-    <string name="settingsUIThemeBackgroundSelectColor">Цвет</string>
-    <string name="settingsUIThemeBackgroundPicture">Картинка фона</string>
-    <string name="settingsUIThemeBackgroundContentAwareResize">Масштабирование с учетом содержимого</string>
+    <string name="settingsUIThemePageColor">Цвет страницы</string>
+    <string name="settingsUIThemePageSelectImage">Картинка</string>
+    <string name="settingsUIThemePageSelectColor">Цвет</string>
+    <string name="settingsUIThemePageImage">Картинка страницы</string>
+    <string name="settingsUIThemePageContentAwareResize">Масштабирование с учетом содержимого</string>
+    <string name="settingsUIThemeUnderColor">Цвет за страницей</string>
+    <string name="settingsUIThemeUnderColorDesc">Виден за прозрачной страницей и в некоторых анимациях</string>
     <string name="settingsUIThemeText">Текст</string>
     <string name="settingsUIThemeTextGammaCorrection">Гамма-коррекция</string>
     <string name="settingsUIThemeTextShadow">Тень</string>
