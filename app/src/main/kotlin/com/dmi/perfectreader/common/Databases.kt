@@ -10,7 +10,7 @@ class Databases(
         private val log: Log,
         private val context: Context
 ) {
-    val default = context.openOrCreateDatabase("user", MODE_PRIVATE, null)
+    val default = context.openOrCreateDatabase("default", MODE_PRIVATE, null)
 
     init {
         upgrade()
