@@ -28,7 +28,7 @@ fun Places.theme(model: SettingsUI, settings: ThemeSettings) = place {
         themePagePictureDetails(model)
     }
 
-    val underColor = colorPlace(model, settings::underColor, R.string.settingsUIThemePageColor)
+    val underColor = colorPlace(model, settings::underColor, R.string.settingsUIThemeUnderColor)
     val pageColor = colorPlace(model, settings::pageColor, R.string.settingsUIThemePageColor)
     val textColor = colorPlace(model, settings::textColor, R.string.settingsUIThemeText)
     val selectionColor = colorPlace(model, settings::selectionColor, R.string.settingsUIThemeSelection)
