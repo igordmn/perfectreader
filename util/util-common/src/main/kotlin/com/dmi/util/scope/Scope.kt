@@ -118,7 +118,6 @@ class Scope : Disposable {
             private val compute: suspend CoroutineScope.() -> T?,
             private val dispose: (T) -> Unit
     ) : ReadOnlyProperty2<Any?, T?> {
-        private lateinit var job: Job
         private lateinit var subscription: Disposable
         private var observable by observableDisposable<T?>(null, dispose = { it?.let(dispose) })
 
@@ -126,14 +125,13 @@ class Scope : Disposable {
             start()
             disposables += object : Disposable {
                 override fun dispose() {
-                    job.cancel()
                     subscription.dispose()
                 }
             }
         }
 
         private fun start() {
-            val (job, subscription) = subscribeOnChange(context, action = {
+            val subscription = subscribeOnChange(context, action = {
                 // todo exceptions throwing here not break calling thread (probably because of GlobalScope)
                 // after fix remove try/catch
                 try {
@@ -148,12 +146,10 @@ class Scope : Disposable {
             }, onresult = {
                 observable = it
             })
-            this.job = job
             this.subscription = subscription
         }
 
         private fun stop() {
-            job.cancel()
             subscription.dispose()
             if (resetOnRecompute)
                 observable = null

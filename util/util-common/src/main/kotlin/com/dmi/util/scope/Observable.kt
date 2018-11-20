@@ -8,6 +8,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KMutableProperty0
 
@@ -106,14 +109,27 @@ fun <T> subscribeOnChange(
         action: suspend CoroutineScope.() -> T,
         onresult: (T) -> Unit,
         onchange: () -> Unit
-): Pair<Job, Disposable> {
+): Disposable {
     val subscription = Disposables()
+    val isCanceled = AtomicBoolean(false)
+    val lock = ReentrantLock()
     val callContext = CallContext()
-    val job = callContext.useLaunch(context, action, onresult, afterBlock = {
-        callContext.dependencies.forEach {
-            subscription += it.subscribe(onchange)
+
+    fun afterBlock() = lock.withLock {
+        if (!isCanceled.get()) {
+            callContext.dependencies.forEach {
+                subscription += it.subscribe(onchange)
+            }
+            callContext.calledEvents.clear()
         }
-        callContext.calledEvents.clear()
-    })
-    return job to subscription
+    }
+
+    val job = callContext.useLaunch(context, action, onresult, ::afterBlock)
+    return object : Disposable {
+        override fun dispose() = lock.withLock {
+            isCanceled.set(true)
+            job.cancel()
+            subscription.dispose()
+        }
+    }
 }
