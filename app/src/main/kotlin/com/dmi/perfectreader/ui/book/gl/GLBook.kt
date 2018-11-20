@@ -43,9 +43,6 @@ class GLBook(
     private fun drawAnimatedPage(page: GLPage?, progress: Float) {
         if (progress <= -1.0 || progress >= 1.0) return
 
-        // При рисовании во фреймбуфер, привязанный к текстуре, нужно рисовать вверх ногами, чтобы текстура была правильно повернута
-        // (page/pageBackground рисуются вверх ногами из-за использования GLTextureBackground)
-
         pageFrameBuffer.bind {
             glClearColor(0F, 0F, 0F, 0F)
             glClear(GL_COLOR_BUFFER_BIT)

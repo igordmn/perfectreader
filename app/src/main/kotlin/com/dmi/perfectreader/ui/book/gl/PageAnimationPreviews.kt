@@ -1,9 +1,6 @@
 package com.dmi.perfectreader.ui.book.gl
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.opengl.GLES20.*
 import com.dmi.perfectreader.MainContext
 import com.dmi.util.android.opengl.GLContext
@@ -23,14 +20,16 @@ class PageAnimationPreviews(
         private val uriHandler: ProtocolURIHandler = context.uriHandler
 ) {
     suspend fun of(path: URI, size: Size): Bitmap {
-        val pageBitmap = pageBitmap(size)
+        val pageBitmapLeft = pageBitmap(size, "B")
+        val pageBitmapRight = pageBitmap(size, "A")
 
         val pixelBuffer = ByteBuffer.allocateDirect(size.width * size.height * 4).order(ByteOrder.nativeOrder())
 
         glContext.perform {
             resourceScope {
                 val animation = glPageAnimation(uriHandler, path, size).use()
-                val pageTexture = GLTexture(size).apply { refreshBy(pageBitmap) }.use()
+                val pageTextureLeft = GLTexture(size).apply { refreshBy(pageBitmapLeft) }.use()
+                val pageTextureRight = GLTexture(size).apply { refreshBy(pageBitmapRight) }.use()
                 val previewTexture = GLTexture(size).use()
                 val frameBuffer = GLFrameBuffer().apply { bindTo(previewTexture) }.use()
 
@@ -39,23 +38,24 @@ class PageAnimationPreviews(
                 frameBuffer.bind {
                     glClearColor(0F, 0F, 0F, 0F)
                     glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-                    animation.draw(pageTexture, 0.3F)
-                    animation.draw(pageTexture, -0.7F)
+                    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
+                    animation.draw(pageTextureRight, 0.3F)
+                    animation.draw(pageTextureLeft, -0.7F)
                     glReadPixels(0, 0, size.width, size.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelBuffer)
                     pixelBuffer.rewind()
                 }
             }
         }
 
-        val previewBitmap = pageBitmap
+        val previewBitmap = pageBitmapLeft  // reuse bitmap
         previewBitmap.copyPixelsFromBuffer(pixelBuffer)
-        return pageBitmap
+        return pageBitmapLeft
     }
 
-    private fun pageBitmap(size: Size): Bitmap {
-        val canvas = Canvas()
+    private fun pageBitmap(size: Size, text: String): Bitmap {
         val paint = Paint()
         paint.isAntiAlias = true
+        val canvas = Canvas()
         val pageBitmap = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888)
         canvas.setBitmap(pageBitmap)
 
@@ -63,23 +63,25 @@ class PageAnimationPreviews(
 
         val width = size.width.toFloat()
         val height = size.height.toFloat()
-        val spacing = width * 0.04F
+        val spacing = height * 0.04F
 
         paint.color = Color.WHITE
         paint.style = Paint.Style.FILL
         canvas.drawRect(spacing, spacing, width - spacing, height - spacing, paint)
 
-        paint.color = Color.LTGRAY
+        paint.color = Color.BLACK
         paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 1F
+        paint.strokeWidth = height * 0.01F
         canvas.drawRect(spacing, spacing, width - spacing, height - spacing, paint)
 
         paint.style = Paint.Style.FILL
-        paint.color = Color.DKGRAY
-        canvas.drawRect(width * 0.20F, height * 0.15F, width * 0.80F, height * 0.25F, paint)
-        canvas.drawRect(width * 0.20F, height * 0.35F, width * 0.80F, height * 0.45F, paint)
-        canvas.drawRect(width * 0.20F, height * 0.55F, width * 0.80F, height * 0.65F, paint)
-        canvas.drawRect(width * 0.20F, height * 0.75F, width * 0.80F, height * 0.85F, paint)
+        paint.color = Color.BLACK
+
+        val textBounds = Rect()
+        paint.textSize = height * 0.8F
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        paint.getTextBounds(text, 0, text.length, textBounds)
+        canvas.drawText(text, width / 2 - textBounds.exactCenterX(), height / 2 - textBounds.exactCenterY(), paint)
 
         return pageBitmap
     }

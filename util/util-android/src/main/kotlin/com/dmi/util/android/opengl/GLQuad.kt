@@ -17,10 +17,10 @@ class GLQuad(context: Context) : Disposable {
     private val textureHandle = glGetUniformLocation(id, "texture")
 
     private val coordinates = GLArrayBuffer(GL_STATIC_DRAW, floatArrayOf(
-            -1F, -1F, 0F, 0F,
-            1F, -1F, 1F, 0F,
-            -1F, 1F, 0F, 1F,
-            1F, 1F, 1F, 1F
+            -1F, -1F, 0F, 1F,
+            1F, -1F, 1F, 1F,
+            -1F, 1F, 0F, 0F,
+            1F, 1F, 1F, 0F
     ))
 
     override fun dispose() {

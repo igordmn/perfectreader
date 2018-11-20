@@ -68,7 +68,7 @@ class GLPageAnimation(
                 for (y in 0..rows) {
                     for (x in 0..cols) {
                         this[i++] = halfWidth * (x.toFloat() / cols * 2 - 1)
-                        this[i++] = -halfHeight * (y.toFloat() / rows * 2 - 1)
+                        this[i++] = halfHeight * (y.toFloat() / rows * 2 - 1)
                     }
                 }
             }
