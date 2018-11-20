@@ -9,6 +9,7 @@ import com.dmi.perfectreader.R
 import com.dmi.util.android.view.*
 import com.google.android.material.card.MaterialCardView
 import org.jetbrains.anko.dip
+import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.wrapContent
 import java.util.*
@@ -24,29 +25,31 @@ class PerformingActionView(context: Context) : FrameLayout(context) {
     private val value: TextView
 
     init {
-        MaterialCardView(context).apply {
-            setBackgroundColor(color(R.color.secondary))
-            elevation = dipFloat(3F)
-            useCompatPadding = true
+        FrameLayout(context).apply {
+            MaterialCardView(context).apply {
+                setBackgroundColor(color(R.color.secondary))
+                elevation = dipFloat(3F)
+                useCompatPadding = true
 
-            LinearLayoutCompat(context).apply {
-                orientation = LinearLayoutCompat.VERTICAL
-                gravity = Gravity.CENTER_HORIZONTAL
-                setPadding(dip(12), dip(4), dip(12), dip(4))
+                LinearLayoutCompat(context).apply {
+                    orientation = LinearLayoutCompat.VERTICAL
+                    gravity = Gravity.CENTER_HORIZONTAL
+                    setPadding(dip(12), dip(4), dip(12), dip(4))
 
-                name = TextView(context).apply {
-                    isAllCaps = true
-                    textColor = color(R.color.onSecondary)
-                    textSize = spFloat(16F)
+                    name = TextView(context).apply {
+                        isAllCaps = true
+                        textColor = color(R.color.onSecondary)
+                        textSize = spFloat(16F)
+                    } into container(wrapContent, wrapContent)
+
+                    value = TextView(context).apply {
+                        isAllCaps = true
+                        textColor = color(R.color.onSecondary)
+                        textSize = spFloat(24F)
+                    } into container(wrapContent, wrapContent)
                 } into container(wrapContent, wrapContent)
-
-                value = TextView(context).apply {
-                    isAllCaps = true
-                    textColor = color(R.color.onSecondary)
-                    textSize = spFloat(24F)
-                } into container(wrapContent, wrapContent)
-            } into container(wrapContent, wrapContent)
-        } into container(wrapContent, wrapContent)
+            } into container(wrapContent, wrapContent, gravity = Gravity.CENTER_HORIZONTAL)
+        } into container(matchParent, matchParent)
     }
 
     fun set(action: PerformingAction) {

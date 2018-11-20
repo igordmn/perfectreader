@@ -37,8 +37,11 @@ class BreadCrumbsView(context: Context) : HorizontalScrollView(context) {
             require(value == null || value in 0 until size)
             textViews.forEachIndexed { i, it ->
                 it.textColor = if (i == value) color(R.color.secondary) else color(R.color.onBackground).withOpacity(0.38)
-                if (i == value)
-                    requestChildFocus(it, it)
+                if (i == value) {
+                    post {
+                        smoothScrollTo(it.left - dip(16), 0)
+                    }
+                }
             }
         }
 

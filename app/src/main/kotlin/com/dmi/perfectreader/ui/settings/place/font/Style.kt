@@ -19,6 +19,7 @@ fun ViewBuild.fontStyleView(
 ) = PreviewView(
         view = HorizontalLayout {
             setPadding(0, 0, dip(12), 0)
+
             CheckableImageButton {
                 contentDescription = string(boldStringId)
                 TooltipCompat.setTooltipText(this, contentDescription)

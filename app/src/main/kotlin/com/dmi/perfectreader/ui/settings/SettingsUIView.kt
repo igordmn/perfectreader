@@ -77,7 +77,7 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
 
     return VerticalLayoutExt {
         space() into container(matchParent, 0, weight = 0.4F)
-        ScreensView(context, model.screens, ViewBuild::screenView).apply {
+        ScreensView(context, model.screens, ViewBuild::screenView, fadeTransition(300), fadeTransition(300)).apply {
             id = generateId()
             backgroundColor = color(R.color.background)
             elevation = dipFloat(8F)

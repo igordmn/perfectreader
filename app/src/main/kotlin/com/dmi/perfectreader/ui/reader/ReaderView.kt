@@ -1,7 +1,6 @@
 package com.dmi.perfectreader.ui.reader
 
 import android.app.Activity
-import android.view.Gravity
 import android.view.View
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.ui.action.performingActionView
@@ -23,7 +22,6 @@ import com.dmi.util.lang.unsupported
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
-import org.jetbrains.anko.wrapContent
 
 
 fun ViewBuild.readerView(model: Reader) = FrameLayout {
@@ -47,7 +45,7 @@ fun ViewBuild.readerView(model: Reader) = FrameLayout {
         layoutTransition = fadeTransition(300)
         fitsSystemWindows = true
     }
-    bindChild(container(wrapContent, wrapContent, Gravity.CENTER_HORIZONTAL), model::performingAction, ViewBuild::performingActionView).apply {
+    bindChild(container(matchParent, matchParent), model::performingAction, ViewBuild::performingActionView).apply {
         id = generateId()
         layoutTransition = fadeTransition(300)
         padding = dip(48)

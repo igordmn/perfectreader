@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.dmi.util.graphic.Size
+import org.jetbrains.anko.sdk27.coroutines.onTouch
 
 val View.size: Size get() = Size(width, height)
+
+fun View.ownsTouchEvents() = onTouch(returnValue = true) { _, _ ->  }
 
 operator fun View.contains(event: MotionEvent): Boolean {
     val rect = Rect()

@@ -124,6 +124,7 @@ fun ViewBuild.stylesDetails(model: SettingsUI): LinearLayoutExt {
     }
 
     fun toolbar() = FrameLayout {
+        layoutTransition = fadeTransition(300)
         detailsToolbar(R.string.settingsUIThemeSaved, model).apply {
             menu.add(R.string.settingsUIThemeSavedAdd).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
@@ -135,6 +136,7 @@ fun ViewBuild.stylesDetails(model: SettingsUI): LinearLayoutExt {
             }
         } into container(matchParent, wrapContent)
         selectionToolbar().apply {
+            isVisible = false
             autorun {
                 isVisible = adapter.selectedPositions.isNotEmpty()
             }

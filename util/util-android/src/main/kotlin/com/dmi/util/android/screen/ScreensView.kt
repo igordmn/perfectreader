@@ -1,5 +1,6 @@
 package com.dmi.util.android.screen
 
+import android.animation.LayoutTransition
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
@@ -20,7 +21,9 @@ import java.util.*
 class ScreensView(
         context: Context,
         private val model: Screens,
-        private val screenView: ViewBuild.(Screen) -> View
+        private val screenView: ViewBuild.(Screen) -> View,
+        private val backwardTransition: LayoutTransition? = null,
+        private val forwardTransition: LayoutTransition? = null
 ) : FrameLayout(context) {
     private val backstackStates = LinkedList<Bundle?>()
     private var currentRestoredState: Bundle? = null
@@ -40,13 +43,17 @@ class ScreensView(
             val currentView = currentView()
             if (currentView != null) {
                 backstackStates.push(currentView.saveState())
+                layoutTransition = forwardTransition
                 removeView(currentView)
+            } else {
+                layoutTransition = null
             }
             addView(ViewBuild(context).screenView(model.current!!))
         }
 
         subscriptions += model.afterGoBackward.subscribe {
             removeView(currentView()!!)
+            layoutTransition = backwardTransition
             if (model.size > 0) {
                 val view = ViewBuild(context).screenView(model.current!!)
                 addView(view)

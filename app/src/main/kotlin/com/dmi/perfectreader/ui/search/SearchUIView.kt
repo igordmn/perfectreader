@@ -129,6 +129,7 @@ fun ViewBuild.searchUIView(
     } into container(matchParent, wrapContent, weight = 0F)
 
     FrameLayout {
+        ownsTouchEvents()
         results() into container(matchParent, matchParent)
         progress() into container(wrapContent, wrapContent, Gravity.CENTER_HORIZONTAL)
         noResults() into container(matchParent, wrapContent)
