@@ -1,10 +1,10 @@
 package com.dmi.perfectreader.ui.control
 
+import com.dmi.perfectreader.settings.Settings
 import com.dmi.perfectreader.ui.action.ActionID
 import com.dmi.perfectreader.ui.action.Actions
 import com.dmi.perfectreader.ui.reader.Reader
 import com.dmi.perfectreader.ui.reader.ReaderContext
-import com.dmi.perfectreader.settings.Settings
 import com.dmi.util.action.TouchActionPerformer
 import com.dmi.util.graphic.SizeF
 import com.dmi.util.input.GestureDetector
@@ -46,7 +46,7 @@ class Control(
 
     fun onKeyUp(hardKey: HardKey): Boolean {
         val actionID = settings.control.hardKeys.property(hardKey).get()
-        return actionID == ActionID.NONE
+        return actionID != ActionID.NONE
     }
 }
 
