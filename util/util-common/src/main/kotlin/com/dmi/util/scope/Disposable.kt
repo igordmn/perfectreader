@@ -1,5 +1,9 @@
 package com.dmi.util.scope
 
+import com.dmi.util.debug.IsDebug
+import com.dmi.util.log.getStackTraceString
+
+// todo now many wrappers implement own isDisposed. move isDisposed here
 interface Disposable {
     /**
      * dispose should't be called twice, throw exception if called
@@ -7,25 +11,40 @@ interface Disposable {
     fun dispose()
 }
 
-class Disposables : Disposable {
-    private val list = ArrayList<Disposable>()
-    private var disposed = false
+fun Disposable.debugIfEnabled() = if (IsDebug) debug() else this
+
+private fun Disposable.debug() = object : Disposable {
+    private var isDisposed = false
+    private val throwable = Throwable()
+
+    override fun dispose() {
+        check(!isDisposed)
+        this@debug.dispose()
+        isDisposed = true
+    }
 
     @Suppress("ProtectedInFinal", "unused")
     protected fun finalize() {
-        if (!disposed)
-            System.err.println("Object $this isn't disposed")
+        if (!isDisposed) {
+            val stacktrace = getStackTraceString(throwable)
+            System.err.println("Object isn't disposed:\n$stacktrace")
+        }
     }
+}
+
+class Disposables : Disposable {
+    private val list = ArrayList<Disposable>()
+    private var isDisposed = false
 
     operator fun plusAssign(disposable: Disposable) {
-        check(!disposed)
+        check(!isDisposed)
         list.add(disposable)
     }
 
     override fun dispose() {
-        check(!disposed)
+        check(!isDisposed)
         list.asReversed().forEach(Disposable::dispose)
-        disposed = true
+        isDisposed = true
     }
 }
 

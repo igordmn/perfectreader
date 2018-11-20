@@ -1,10 +1,7 @@
 package com.dmi.util.android.view
 
 import android.view.View
-import com.dmi.util.scope.Disposable
-import com.dmi.util.scope.Disposables
-import com.dmi.util.scope.ObservableList
-import com.dmi.util.scope.onchange
+import com.dmi.util.scope.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -63,6 +60,7 @@ fun View.autorun(action: () -> Unit) {
 
 fun <T : Any> View.subscribe(list: ObservableList<T>, afterAdd: (item: T) -> Unit, afterRemove: () -> Unit) {
     val subscriptions = Disposables()
+    val subscription = subscriptions.debugIfEnabled()
 
     check(!isAttachedToWindow)
 
@@ -78,7 +76,7 @@ fun <T : Any> View.subscribe(list: ObservableList<T>, afterAdd: (item: T) -> Uni
         }
 
         onViewDetachedFromWindow {
-            subscriptions.dispose()
+            subscription.dispose()
         }
     }
 }

@@ -93,6 +93,7 @@ class GLSurfaceScopedView(
     private val afterInit = ArrayList<() -> Unit>()
 
     private var renderer: Renderer? = null
+    private var drawSubscription: Disposable? = null
 
     init {
         addView(glSurfaceView)
@@ -190,7 +191,8 @@ class GLSurfaceScopedView(
                 task = drawTasks.poll()
             }
 
-            onchange {
+            drawSubscription?.dispose()
+            drawSubscription = onchange {
                 renderer?.draw()
             }.subscribeOnce {
                 glSurfaceView.requestRender()
@@ -207,6 +209,7 @@ class GLSurfaceScopedView(
         }
 
         override fun destroyContext(egl: EGL10, display: EGLDisplay, context: EGLContext) {
+            drawSubscription?.dispose()
             afterInit.clear()
             renderer?.dispose()
             renderer = null

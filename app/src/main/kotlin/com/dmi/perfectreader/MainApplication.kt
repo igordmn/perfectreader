@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.StrictMode
 import com.dmi.util.android.log.AndroidLog
 import com.dmi.util.coroutine.initThreadContext
+import com.dmi.util.debug.IsDebug
 import com.dmi.util.lang.NoStackTraceThrowable
 import com.dmi.util.log.DebugLog
 import com.dmi.util.log.Log
@@ -20,6 +21,7 @@ class MainApplication : Application() {
         super.onCreate()
         System.loadLibrary("utilAndroid")
         val log = initLog()
+        IsDebug = BuildConfig.DEBUG
         initMainExceptionCatcher(log)
         initStrictMode()
         initThreadContext(Dispatchers.Main)

@@ -12,11 +12,17 @@ import kotlin.reflect.KMutableProperty0
 
 class Scope : Disposable {
     private val disposables = Disposables()
+    private val disposable = disposables.debugIfEnabled()
     private val job = Job()
 
     override fun dispose() {
         job.cancel()
-        disposables.dispose()
+        disposable.dispose()
+    }
+
+    fun <T : Disposable> disposable(value: T) : T {
+        disposables += value
+        return value
     }
 
     fun <T> observableDisposable(initial: T, dispose: (T) -> Unit = {}) = ObservableDisposableDelegate(observable(initial), dispose)

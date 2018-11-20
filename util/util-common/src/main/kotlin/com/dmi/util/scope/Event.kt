@@ -16,8 +16,17 @@ interface Event {
         subscription = subscribe {
             action()
             subscription!!.dispose()
+            subscription = null
         }
-        return subscription
+        return object : Disposable {
+            private var isDisposed = false
+
+            override fun dispose() {
+                require(!isDisposed)
+                subscription?.dispose()
+                isDisposed = true
+            }
+        }
     }
 
     suspend fun wait() {

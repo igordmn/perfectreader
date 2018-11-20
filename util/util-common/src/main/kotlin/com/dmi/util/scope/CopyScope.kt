@@ -64,11 +64,10 @@ class CopyScope(
                 copy = observable(readValue)
             }
 
-            // it safe subscribe without dispose, because subscription will be disposed in scope.dispose
-            onchange { cached }.subscribe {
+            scope.disposable(onchange { cached }.subscribe {
                 changed = true
                 write.schedule()
-            }
+            })
         }
 
         fun write() {

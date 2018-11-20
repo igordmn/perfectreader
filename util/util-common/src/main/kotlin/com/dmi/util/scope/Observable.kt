@@ -88,7 +88,7 @@ fun onchange(action: () -> Unit): Event = onchange<Unit>(action).second
 
 /**
  * call [action] and intercept all called observable values. when any of this values changed, event will be emitted.
- * Warning: after event occured, observables intercepted in action can change. So you need call onchange again
+ * Warning: after event occurred, observables intercepted in action can change. So you need call onchange again
  */
 fun <T> onchange(action: () -> T): Pair<T, Event> {
     val callContext = CallContext()
@@ -99,7 +99,7 @@ fun <T> onchange(action: () -> T): Pair<T, Event> {
             callContext.dependencies.forEach {
                 disposables += it.subscribe(action)
             }
-            return disposables
+            return disposables.debugIfEnabled()
         }
     }
 }
@@ -110,7 +110,8 @@ fun <T> subscribeOnChange(
         onresult: (T) -> Unit,
         onchange: () -> Unit
 ): Disposable {
-    val subscription = Disposables()
+    val subscriptions = Disposables()
+    val subscription = subscriptions.debugIfEnabled()
     val isCanceled = AtomicBoolean(false)
     val lock = ReentrantLock()
     val callContext = CallContext()
@@ -118,7 +119,7 @@ fun <T> subscribeOnChange(
     fun afterBlock() = lock.withLock {
         if (!isCanceled.get()) {
             callContext.dependencies.forEach {
-                subscription += it.subscribe(onchange)
+                subscriptions += it.subscribe(onchange)
             }
             callContext.calledEvents.clear()
         }

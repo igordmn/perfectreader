@@ -13,6 +13,7 @@ import com.dmi.util.android.view.ViewBuild
 import com.dmi.util.android.view.restoreState
 import com.dmi.util.android.view.saveState
 import com.dmi.util.scope.Disposables
+import com.dmi.util.scope.debugIfEnabled
 import com.dmi.util.screen.Screen
 import com.dmi.util.screen.Screens
 import java.util.*
@@ -28,6 +29,7 @@ class ScreensView(
     private val backstackStates = LinkedList<Bundle?>()
     private var currentRestoredState: Bundle? = null
     private val subscriptions = Disposables()
+    private val subscription = subscriptions.debugIfEnabled()
 
     private fun currentView(): View? {
         require(childCount <= 1)
@@ -86,7 +88,7 @@ class ScreensView(
     }
 
     override fun onDetachedFromWindow() {
-        subscriptions.dispose()
+        subscription.dispose()
         super.onDetachedFromWindow()
     }
 

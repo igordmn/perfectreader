@@ -34,7 +34,7 @@ fun logFullMessage(t: Throwable?, message: String) =
         }
 
 // Don't replace by Log.getStackTraceString(). It hides UnknownHostException
-private fun getStackTraceString(t: Throwable): String {
+fun getStackTraceString(t: Throwable): String {
     val sw = StringWriter(MAX_STACKTRACE_LENGTH)
     val pw = PrintWriter(sw, false)
     t.printStackTrace(pw)
