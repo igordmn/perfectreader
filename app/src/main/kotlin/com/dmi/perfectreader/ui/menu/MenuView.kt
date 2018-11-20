@@ -76,7 +76,7 @@ fun ViewBuild.menuView(model: Menu): View {
             TextView {
                 isClickable = true
                 isFocusable = true
-                setPadding(dip(16), dip(12), 0, dip(12))
+                setPadding(dip(16), dip(16), 0, dip(16))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)
 
@@ -93,7 +93,7 @@ fun ViewBuild.menuView(model: Menu): View {
             } into container(matchParent, wrapContent, weight = 1F)
 
             val pageNumber = EditNumber {
-                setPadding(dip(16), dip(12), 0, dip(12))
+                setPadding(dip(16), dip(16), 0, dip(16))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
@@ -114,7 +114,7 @@ fun ViewBuild.menuView(model: Menu): View {
             } into container(wrapContent, wrapContent, weight = 0F)
 
             TextView {
-                setPadding(0, dip(12), dip(16), dip(12))
+                setPadding(0, dip(16), dip(16), dip(16))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
@@ -126,7 +126,7 @@ fun ViewBuild.menuView(model: Menu): View {
                     pageNumber.requestFocus()
                 }
             } into container(wrapContent, wrapContent, weight = 0F)
-        } into container(matchParent, wrapContent, topMargin = -dip(12))
+        } into container(matchParent, wrapContent, topMargin = -dip(8))
     }
 
     fun middle() = FrameLayout {

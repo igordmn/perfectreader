@@ -26,7 +26,7 @@ class ThemeSettings(store: ValueStore) {
     var pageIsImage by themeStore.value(false)
     var pageColor by themeStore.value(Color.WHITE.value)
     var pagePath by themeStore.value("assets:///resources/pages/01_light_0001.webp")
-    var pageContentAwareResize by themeStore.value(true)
+    var pageContentAwareResize by themeStore.value(false)
 
     var selectionColor by store.value(Color(255, 174, 223, 240).value)
 

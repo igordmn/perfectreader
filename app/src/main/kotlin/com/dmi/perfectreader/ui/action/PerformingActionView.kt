@@ -40,6 +40,7 @@ class PerformingActionView(context: Context) : FrameLayout(context) {
                         isAllCaps = true
                         textColor = color(R.color.onSecondary)
                         textSize = spFloat(16F)
+                        gravity = Gravity.CENTER_HORIZONTAL
                     } into container(wrapContent, wrapContent)
 
                     value = TextView(context).apply {

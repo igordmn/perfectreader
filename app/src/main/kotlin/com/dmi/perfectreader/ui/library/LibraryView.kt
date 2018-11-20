@@ -180,14 +180,12 @@ fun ViewBuild.libraryView(model: Library): View {
     }
 
     return MaterialSmoothRefreshLayoutExt {
+        @Suppress("UNCHECKED_CAST")
+        (headerView as MaterialHeader<DefaultIndicator>).setColorSchemeColors(intArrayOf(color(R.color.secondary)))
         materialStyle()
         setDisableWhenAnotherDirectionMove(true)
         setEnableDynamicEnsureTargetView(true)
         addLifecycleObserver(QuickConfigAppBarUtil())
-
-        setHeaderView(MaterialHeader<DefaultIndicator>(context).apply {
-            setColorSchemeColors(intArrayOf(color(R.color.secondary)))
-        })
 
         setOnRefreshListener(object : SmoothRefreshLayout.OnRefreshListener {
             override fun onLoadingMore() = Unit
