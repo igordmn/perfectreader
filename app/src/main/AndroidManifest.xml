@@ -29,10 +29,17 @@
             </intent-filter>
         </activity>
 
+        <!--
+         single task added because multiple ReaderActivities don't work properly now.
+         every ReaderActivity subscribe on common settings. and when settings change, every reader activity relayout their book.
+         it is huge impact on performance.
+         todo implement Scope.pause/resume for this issue
+         -->
         <activity
             android:name="com.dmi.perfectreader.ui.reader.ReaderActivity"
             android:configChanges="orientation|screenSize"
-            android:label="@string/appName">
+            android:label="@string/appName"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
