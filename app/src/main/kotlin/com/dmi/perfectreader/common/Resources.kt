@@ -10,6 +10,8 @@ import com.dmi.util.io.ProtocolURIHandler
 import com.dmi.util.log.Log
 import java.net.URI
 
+// todo handle situations when resource is missing
+
 class Resources(
         private val context: MainContext,
         log: Log = context.log,
