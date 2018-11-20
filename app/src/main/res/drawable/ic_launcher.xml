@@ -4,7 +4,7 @@
     android:viewportWidth="192"
     android:viewportHeight="192">
   <path
-      android:pathData="M26.822,43.243h116.673v121.622h-116.673z"
+      android:pathData="M26.822,43.243H143.495V164.865H26.822Z"
       android:strokeAlpha="1"
       android:strokeLineJoin="round"
       android:strokeWidth="0"
@@ -22,24 +22,26 @@
       android:fillColor="#40241a"
       android:fillAlpha="1"/>
   <path
-      android:pathData="M44.5,162.5h4.75v9.25h-4.75z"
+      android:pathData="m44.5,162.5h7.289v9.25H44.5Z"
       android:strokeAlpha="1"
       android:strokeLineJoin="round"
-      android:strokeWidth="0.0726483"
+      android:strokeWidth="0.08999513"
       android:fillColor="#40241a"
       android:strokeColor="#00000000"
       android:fillAlpha="1"
       android:strokeLineCap="round"/>
   <path
-      android:pathData="m71.22,119.414c0,0 25.315,-103.82 42.64,-72.541 17.325,31.279 -34.683,44.637 -34.683,44.637"
+      android:pathData="m107.477,34.582c-5.342,-0.352 -9.332,2.746 -12.371,6.117 -6.079,6.742 -10.713,17.085 -15.072,28.398 -2.564,6.653 -4.82,13.428 -6.873,19.938a6.442,6.442 0,0 0,-0.387 1.27c-4.689,15.03 -7.811,27.584 -7.811,27.584a6.442,6.442 0,1 0,12.514 3.051c0,0 2.782,-10.996 6.855,-24.34 4.047,-1.182 12.763,-3.967 22.266,-10.324 6.028,-4.032 11.893,-9.329 15.066,-16.68 3.173,-7.35 2.917,-16.659 -2.17,-25.844 -2.693,-4.861 -6.675,-8.818 -12.018,-9.17zM106.576,47.596c0.275,0.276 0.831,0.923 1.648,2.398 3.575,6.455 3.317,10.545 1.611,14.496 -1.706,3.951 -5.594,7.861 -10.402,11.078 -3.221,2.155 -6.62,3.821 -9.871,5.262 0.842,-2.38 1.597,-4.781 2.49,-7.1 4.135,-10.732 9.079,-20.479 12.619,-24.406 1.141,-1.265 1.687,-1.592 1.904,-1.729z"
       android:strokeAlpha="1"
       android:strokeLineJoin="round"
       android:strokeWidth="12.88188362"
-      android:fillColor="#00000000"
-      android:strokeColor="#ffffff"
+      android:fillColor="#ffffff"
+      android:strokeColor="#00000000"
+      android:fillType="nonZero"
+      android:fillAlpha="1"
       android:strokeLineCap="round"/>
   <path
-      android:pathData="M153.748,39h10.126v10.126h-10.126z"
+      android:pathData="m153.748,39h10.126v10.126h-10.126z"
       android:strokeAlpha="1"
       android:strokeLineJoin="round"
       android:strokeWidth="0"

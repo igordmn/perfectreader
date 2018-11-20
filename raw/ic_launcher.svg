@@ -41,11 +41,11 @@
      inkscape:window-height="1057"
      id="namedview6"
      showgrid="false"
-     showguides="true"
+     showguides="false"
      inkscape:guide-bbox="true"
-     inkscape:zoom="2.8284271"
-     inkscape:cx="58.788007"
-     inkscape:cy="99.938441"
+     inkscape:zoom="0.35355339"
+     inkscape:cx="-1310.6867"
+     inkscape:cy="471.79036"
      inkscape:window-x="54"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -227,9 +227,9 @@
        style="fill:#6d4c41;fill-opacity:1" />
   </g>
   <rect
-     style="opacity:1;fill:#40241a;fill-opacity:1;stroke:none;stroke-width:0.0726483;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+     style="opacity:1;fill:#40241a;fill-opacity:1;stroke:none;stroke-width:0.08999513;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
      id="rect1041"
-     width="4.7499981"
+     width="7.2892118"
      height="9.2499981"
      x="44.5"
      y="162.5" />
