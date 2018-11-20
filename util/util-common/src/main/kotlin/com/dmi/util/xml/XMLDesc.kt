@@ -10,8 +10,6 @@ import org.xmlpull.v1.XmlPullParser.FEATURE_PROCESS_NAMESPACES
 import java.util.*
 import kotlin.collections.ArrayList
 
-// todo when nothing to parse (all XMLDesc is bound already), stop parsing
-
 abstract class XMLDesc {
     /**
      * index of xml node in whole xml tree
@@ -35,6 +33,8 @@ abstract class ListDesc(vararg nodeByName: Pair<String, () -> ElementDesc>) : El
 
 abstract class ElementDesc : XMLDesc() {
     private var inits: Inits? = Inits()
+
+    internal val isComplete get() = inits!!.isComplete
 
     internal fun addAttribute(name: String, value: String) = inits!!.addAttribute(name, value)
     internal fun addElement(name: String): ElementDesc? = inits!!.addElement(name)
@@ -60,7 +60,7 @@ abstract class ElementDesc : XMLDesc() {
     protected fun <T : ElementDesc> element(name: String, desc: () -> T) = xmlDelegate<T?> {
         var value: T? = null
 
-        onElement(name) {
+        onFirstElement(name) {
             value = desc()
             value!!
         }
@@ -153,6 +153,7 @@ abstract class ElementDesc : XMLDesc() {
 
     private abstract class DelegateInit<T>(protected val inits: Inits) {
         fun onAttribute(name: String, action: (value: String) -> Unit) = inits.onAttribute(name, action)
+        fun onFirstElement(name: String, action: () -> ElementDesc) = inits.onFirstElement(name, action)
         fun onElement(name: String, action: () -> ElementDesc) = inits.onElement(name, action)
         fun onText(action: () -> Text) = inits.onText(action)
         abstract fun onValue(createValue: () -> T)
@@ -160,15 +161,24 @@ abstract class ElementDesc : XMLDesc() {
 
     private class Inits {
         private val attributeByName = HashMap<String, (value: String) -> Unit>()
+        private val firstElementByName = HashMap<String, () -> ElementDesc>()
         private val elementByName = HashMap<String, () -> ElementDesc>()
         private var text: (() -> Text)? = null
         private val commits = ArrayList<() -> Unit>()
 
+        internal val isComplete get() = attributeByName.isEmpty() && firstElementByName.isEmpty() && elementByName.isEmpty() && text == null
+
         fun addAttribute(name: String, value: String) {
             attributeByName[name]?.invoke(value)
+            attributeByName.remove(name)
         }
 
-        fun addElement(name: String): ElementDesc? = elementByName[name]?.invoke()
+        fun addElement(name: String): ElementDesc? {
+            val element = firstElementByName[name]?.invoke() ?: elementByName[name]?.invoke()
+            firstElementByName.remove(name)
+            return element
+        }
+
         fun addText(): Text? = text?.invoke()
         fun commit() = commits.forEach { it.invoke() }
 
@@ -177,8 +187,13 @@ abstract class ElementDesc : XMLDesc() {
             attributeByName[name] = action
         }
 
+        fun onFirstElement(name: String, action: () -> ElementDesc) {
+            require(!firstElementByName.contains(name) && !elementByName.contains(name))
+            firstElementByName[name] = action
+        }
+
         fun onElement(name: String, action: () -> ElementDesc) {
-            require(!elementByName.contains(name))
+            require(!firstElementByName.contains(name) && !elementByName.contains(name))
             elementByName[name] = action
         }
 
@@ -221,9 +236,11 @@ fun <T : ElementDesc> parseDesc(reader: Reader, name: String, desc: () -> T): T 
         it.index = index
     }
 
+    fun isComplete() = descs.all { it == null || it.isComplete }
+
     var index = 0
     var type = parser.next()
-    while (type != XmlPullParser.END_DOCUMENT) {
+    while (type != XmlPullParser.END_DOCUMENT && !isComplete()) {
         when (type) {
             XmlPullParser.START_TAG -> onStart(index)
             XmlPullParser.END_TAG -> onEnd()
@@ -233,7 +250,8 @@ fun <T : ElementDesc> parseDesc(reader: Reader, name: String, desc: () -> T): T 
         index++
     }
 
-    document.commit()
+    while(descs.size > 0)
+        descs.pop()!!.commit()
 
     return document.root
 }
