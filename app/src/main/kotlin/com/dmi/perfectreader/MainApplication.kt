@@ -6,9 +6,7 @@ import android.os.StrictMode
 import com.dmi.util.android.log.AndroidLog
 import com.dmi.util.coroutine.initThreadContext
 import com.dmi.util.debug.IsDebug
-import com.dmi.util.lang.NoStackTraceThrowable
 import com.dmi.util.log.DebugLog
-import com.dmi.util.log.Log
 import com.dmi.util.log.ReleaseLog
 import com.github.moduth.blockcanary.BlockCanary
 import com.github.moduth.blockcanary.BlockCanaryContext
@@ -29,7 +27,6 @@ class MainApplication : Application() {
         IsDebug = BuildConfig.DEBUG
         val log = initLog()
 //        TinyDancer.create().show(this)
-        initMainExceptionCatcher(log)
         initStrictMode()
         initThreadContext(Dispatchers.Main)
         context = MainContext(log, this)
@@ -59,14 +56,6 @@ class MainApplication : Application() {
         DebugLog(AndroidLog)
     } else {
         ReleaseLog(AndroidLog)
-    }
-
-    private fun initMainExceptionCatcher(log: Log) {
-        val oldHandler = Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            log.e(throwable, "Exception in thread \"${thread.name}\":")
-            oldHandler.uncaughtException(thread, NoStackTraceThrowable("See stacktrace above"))
-        }
     }
 
     private fun initStrictMode() {
