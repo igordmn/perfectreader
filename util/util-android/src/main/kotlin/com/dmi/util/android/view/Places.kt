@@ -7,11 +7,26 @@ typealias Id = Int
 
 open class Places {
     private val places = ArrayList<Place>()
+    private var finished = false
 
     operator fun get(id: Id): Place = places[id]
 
-    fun place(view: ViewBuild.() -> View) = object : Place() {
-        override fun ViewBuild.view() = view()
+    fun finish() {
+        finished = true
+    }
+
+    fun place(init: PlaceBuild.() -> Unit) = object : Place() {
+        private lateinit var buildView: (ViewBuild.() -> View)
+
+        init {
+            init(object : PlaceBuild {
+                override fun view(build: ViewBuild.() -> View) {
+                    buildView = build
+                }
+            })
+        }
+
+        override fun ViewBuild.view() = buildView()
     }
 
     @Suppress("LeakingThis")
@@ -19,6 +34,7 @@ open class Places {
         val id: Int = places.size
 
         init {
+            require(!finished)
             places.add(this)
         }
 
@@ -30,5 +46,11 @@ fun Places.Place.view(build: ViewBuild): View = build.view()
 val Places.Place.viewRef: ViewBuild.() -> View get() = { view() }
 
 fun Places.dialog(createDialog: ViewBuild.() -> Dialog) = place {
-    DialogView(context, createDialog)
+    view {
+        DialogView(context, createDialog)
+    }
+}
+
+interface PlaceBuild {
+    fun view(build: ViewBuild.() -> View)
 }

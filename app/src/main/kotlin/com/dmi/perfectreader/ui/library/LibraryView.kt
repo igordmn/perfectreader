@@ -60,6 +60,7 @@ fun ViewBuild.libraryView(model: Library): View {
             }
         }
     }
+    places.finish()
 
     fun recentBooks() = RecyclerView(context, null, R.attr.verticalRecyclerViewStyle).apply {
         setPadding(dip(8), dip(8), dip(8), dip(0))

@@ -32,6 +32,7 @@ fun ViewBuild.settingsUIView(model: SettingsUI, glContext: GLContext): View {
         val screen = screen(model, settings.screen, glContext)
         val control = control(model, settings.control)
     }
+    places.finish()
 
     fun ViewBuild.main(): View = VerticalLayout {
         val tabLayout = TabLayout {

@@ -31,7 +31,7 @@ import com.dmi.util.action.TouchZoneConfiguration.Shapes.Zone as ShapeZone
 
 fun Places.controlDialog(
         model: SettingsUI,
-        view: (Dialog) -> View
+        view: ViewBuild.(Dialog) -> View
 ) = dialog {
     Dialog(context, R.style.fullScreenDialog).apply {
         val dialog = this

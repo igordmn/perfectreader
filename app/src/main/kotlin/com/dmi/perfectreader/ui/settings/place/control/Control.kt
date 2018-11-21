@@ -91,16 +91,18 @@ fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
             )
         }
 
-        details(
-                model, R.string.settingsUIControlOneFinger,
-                verticalScroll(
-                        popupSetting(model, emptyPreview(), singleTaps, R.string.settingsUIControlSingleTaps),
-                        popupSetting(model, emptyPreview(), longTaps, R.string.settingsUIControlLongTaps),
-                        popupSetting(model, emptyPreview(), doubleTaps, R.string.settingsUIControlDoubleTaps),
-                        popupSetting(model, emptyPreview(), horizontalScrolls, R.string.settingsUIControlHorizontalScrolls),
-                        popupSetting(model, emptyPreview(), verticalScrolls, R.string.settingsUIControlVerticalScrolls)
-                )
-        )
+        view {
+            details(
+                    model, R.string.settingsUIControlOneFinger,
+                    verticalScroll(
+                            popupSetting(model, emptyPreview(), singleTaps, R.string.settingsUIControlSingleTaps),
+                            popupSetting(model, emptyPreview(), longTaps, R.string.settingsUIControlLongTaps),
+                            popupSetting(model, emptyPreview(), doubleTaps, R.string.settingsUIControlDoubleTaps),
+                            popupSetting(model, emptyPreview(), horizontalScrolls, R.string.settingsUIControlHorizontalScrolls),
+                            popupSetting(model, emptyPreview(), verticalScrolls, R.string.settingsUIControlVerticalScrolls)
+                    )
+            )
+        }
     }
 
     val twoFingers = place {
@@ -170,21 +172,25 @@ fun Places.control(model: SettingsUI, settings: ControlSettings) = place {
             )
         }
 
-        details(
-                model, R.string.settingsUIControlTwoFingers,
-                verticalScroll(
-                        popupSetting(model, emptyPreview(), singleTaps, R.string.settingsUIControlSingleTaps),
-                        popupSetting(model, emptyPreview(), longTaps, R.string.settingsUIControlLongTaps),
-                        popupSetting(model, emptyPreview(), doubleTaps, R.string.settingsUIControlDoubleTaps),
-                        popupSetting(model, emptyPreview(), horizontalScrolls, R.string.settingsUIControlHorizontalScrolls),
-                        popupSetting(model, emptyPreview(), verticalScrolls, R.string.settingsUIControlVerticalScrolls),
-                        popupSetting(model, emptyPreview(), pinch, R.string.settingsUIControlPinch)
-                )
-        )
+        view {
+            details(
+                    model, R.string.settingsUIControlTwoFingers,
+                    verticalScroll(
+                            popupSetting(model, emptyPreview(), singleTaps, R.string.settingsUIControlSingleTaps),
+                            popupSetting(model, emptyPreview(), longTaps, R.string.settingsUIControlLongTaps),
+                            popupSetting(model, emptyPreview(), doubleTaps, R.string.settingsUIControlDoubleTaps),
+                            popupSetting(model, emptyPreview(), horizontalScrolls, R.string.settingsUIControlHorizontalScrolls),
+                            popupSetting(model, emptyPreview(), verticalScrolls, R.string.settingsUIControlVerticalScrolls),
+                            popupSetting(model, emptyPreview(), pinch, R.string.settingsUIControlPinch)
+                    )
+            )
+        }
     }
 
-    verticalScroll(
-            detailsSetting(model, emptyPreview(), oneFinger, R.string.settingsUIControlOneFinger),
-            detailsSetting(model, emptyPreview(), twoFingers, R.string.settingsUIControlTwoFingers)
-    )
+    view {
+        verticalScroll(
+                detailsSetting(model, emptyPreview(), oneFinger, R.string.settingsUIControlOneFinger),
+                detailsSetting(model, emptyPreview(), twoFingers, R.string.settingsUIControlTwoFingers)
+        )
+    }
 }

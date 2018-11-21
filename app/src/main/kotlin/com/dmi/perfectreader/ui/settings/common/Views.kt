@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.ui.settings.common
 
+import android.content.Context
 import android.view.Gravity
 import android.view.View
 import android.view.ViewStub
@@ -37,9 +38,9 @@ class PreviewView(val view: View, val withPadding: Boolean = true, val isClickab
 
 fun ViewBuild.emptyPreview() = PreviewView(ViewStub(context))
 
-fun <T> ViewBuild.propertyPreview(property: KProperty0<T>, format: (value: T) -> String) = PreviewView(TextView {
+fun <T> ViewBuild.propertyPreview(property: KProperty0<T>, format: (Context, value: T) -> String) = PreviewView(TextView {
     autorun {
-        text = format(property.get())
+        text = format(context, property.get())
     }
 })
 

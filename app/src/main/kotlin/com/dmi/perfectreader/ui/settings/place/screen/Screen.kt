@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.ui.settings.place.screen
 
+import android.content.Context
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.settings.*
 import com.dmi.perfectreader.ui.settings.SettingsUI
@@ -11,8 +12,8 @@ import com.dmi.util.system.Nanos
 import com.dmi.util.system.minutes
 import com.dmi.util.system.toMinutes
 
-fun Places.screen(model: SettingsUI, settings: ScreenSettings, glContext: GLContext) =place {
-    fun formatFooterElements(footerElements: ScreenFooterElements): String {
+fun Places.screen(model: SettingsUI, settings: ScreenSettings, glContext: GLContext) = place {
+    fun formatFooterElements(context: Context, footerElements: ScreenFooterElements): String {
         val count = footerElements.toArray().count { it }
         return if (count == 0) {
             context.string(R.string.settingsUIScreenFooterHide)
@@ -21,7 +22,7 @@ fun Places.screen(model: SettingsUI, settings: ScreenSettings, glContext: GLCont
         }
     }
 
-    fun formatTimeout(time: Nanos) = when (time) {
+    fun formatTimeout(context: Context, time: Nanos) = when (time) {
         -1L -> context.string(R.string.settingsUIScreenTimeoutSystem)
         else -> {
             val minutes = time.toMinutes().toInt()
@@ -29,7 +30,7 @@ fun Places.screen(model: SettingsUI, settings: ScreenSettings, glContext: GLCont
         }
     }
 
-    fun formatBrightness(brightness: ScreenBrightness): String = when (brightness) {
+    fun formatBrightness(context: Context, brightness: ScreenBrightness): String = when (brightness) {
         is ScreenBrightness.System -> context.string(R.string.settingsUIScreenBrightnessSystem)
         is ScreenBrightness.Manual -> {
             val percentStr = (brightness.value * 100).toInt().toString()
@@ -37,14 +38,16 @@ fun Places.screen(model: SettingsUI, settings: ScreenSettings, glContext: GLCont
         }
     }
 
-    fun formatOrientation(orientation: ScreenOrientation) = context.string(when (orientation) {
+    fun formatOrientation(context: Context, orientation: ScreenOrientation) = context.string(when (orientation) {
         ScreenOrientation.SYSTEM -> R.string.settingsUIScreenOrientationSystem
         ScreenOrientation.PORTRAIT -> R.string.settingsUIScreenOrientationPortrait
         ScreenOrientation.LANDSCAPE -> R.string.settingsUIScreenOrientationLandscape
     })
 
     val animation = place {
-        screenAnimationDetails(model, model.reader.book, glContext)
+        view {
+            screenAnimationDetails(model, model.reader.book, glContext)
+        }
     }
 
     val timeout = singleChoice(
@@ -67,31 +70,33 @@ fun Places.screen(model: SettingsUI, settings: ScreenSettings, glContext: GLCont
             R.string.settingsUIScreenFooter
     )
 
-    verticalScroll(
-            detailsSetting(model, screenAnimationPreview(glContext), animation, R.string.settingsUIScreenAnimation),
-            popupSetting(
-                    model,
-                    propertyPreview(settings::footerElements, ::formatFooterElements),
-                    footerElements,
-                    R.string.settingsUIScreenFooter
-            ),
-            popupSetting(
-                    model,
-                    propertyPreview(settings::timeout, ::formatTimeout),
-                    timeout,
-                    R.string.settingsUIScreenTimeout
-            ),
-            popupSetting(
-                    model,
-                    propertyPreview(settings::brightness, ::formatBrightness),
-                    brightness,
-                    R.string.settingsUIScreenBrightness
-            ),
-            popupSetting(
-                    model,
-                    propertyPreview(settings::orientation, ::formatOrientation),
-                    orientation,
-                    R.string.settingsUIScreenOrientation
-            )
-    )
+    view {
+        verticalScroll(
+                detailsSetting(model, screenAnimationPreview(glContext), animation, R.string.settingsUIScreenAnimation),
+                popupSetting(
+                        model,
+                        propertyPreview(settings::footerElements, ::formatFooterElements),
+                        footerElements,
+                        R.string.settingsUIScreenFooter
+                ),
+                popupSetting(
+                        model,
+                        propertyPreview(settings::timeout, ::formatTimeout),
+                        timeout,
+                        R.string.settingsUIScreenTimeout
+                ),
+                popupSetting(
+                        model,
+                        propertyPreview(settings::brightness, ::formatBrightness),
+                        brightness,
+                        R.string.settingsUIScreenBrightness
+                ),
+                popupSetting(
+                        model,
+                        propertyPreview(settings::orientation, ::formatOrientation),
+                        orientation,
+                        R.string.settingsUIScreenOrientation
+                )
+        )
+    }
 }

@@ -25,7 +25,9 @@ fun Places.colorPlace(model: SettingsUI, property: KMutableProperty0<Int>, @Stri
         colorHEXDialog(model, property)
     }
 
-    colorDetails(model, titleRes, property, hex)
+    view {
+        colorDetails(model, titleRes, property, hex)
+    }
 }
 
 fun ViewBuild.colorDetails(

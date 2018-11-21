@@ -1,5 +1,6 @@
 package com.dmi.perfectreader.ui.settings.common
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import com.dmi.perfectreader.ui.settings.SettingsUI
@@ -12,23 +13,24 @@ fun <T> Places.singleChoice(
         model: SettingsUI,
         property: KMutableProperty0<T>,
         values: Array<T>,
-        format: (T) -> String,
+        format: (Context, T) -> String,
         @StringRes titleRes: Int
 ) = place {
-    val names: Array<String> = values.map(format).toTypedArray()
-
-    DialogView(context) {
-        val current = values.indexOf(property.get())
-        AlertDialog.Builder(context)
-                .setTitle(titleRes)
-                .setSingleChoiceItems(names, current) { dialog, which ->
-                    property.set(values[which])
-                    dialog.dismiss()
-                }
-                .setOnDismissListener {
-                    model.popup = null
-                }
-                .create()
+    view {
+        val names: Array<String> = values.map { format(context, it) }.toTypedArray()
+        DialogView(context) {
+            val current = values.indexOf(property.get())
+            AlertDialog.Builder(context)
+                    .setTitle(titleRes)
+                    .setSingleChoiceItems(names, current) { dialog, which ->
+                        property.set(values[which])
+                        dialog.dismiss()
+                    }
+                    .setOnDismissListener {
+                        model.popup = null
+                    }
+                    .create()
+        }
     }
 }
 
@@ -37,23 +39,25 @@ fun Places.multiChoice(
         property: KMutableProperty0<BooleanArray>,
         namesRes: Array<Int>,
         @StringRes titleRes: Int
-)  = place {
-    val names = namesRes.map { context.string(it) }.toTypedArray()
+) = place {
+    view {
+        val names = namesRes.map { context.string(it) }.toTypedArray()
 
-    DialogView(context) {
-        val checked = property.get()
-        AlertDialog.Builder(context)
-                .setTitle(titleRes)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
-                    property.set(checked)
-                }
-                .setNegativeButton(android.R.string.cancel) { _, _ -> }
-                .setMultiChoiceItems(names, checked) { _, which, isChecked ->
-                    checked[which] = isChecked
-                }
-                .setOnDismissListener {
-                    model.popup = null
-                }
-                .create()
+        DialogView(context) {
+            val checked = property.get()
+            AlertDialog.Builder(context)
+                    .setTitle(titleRes)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        property.set(checked)
+                    }
+                    .setNegativeButton(android.R.string.cancel) { _, _ -> }
+                    .setMultiChoiceItems(names, checked) { _, which, isChecked ->
+                        checked[which] = isChecked
+                    }
+                    .setOnDismissListener {
+                        model.popup = null
+                    }
+                    .create()
+        }
     }
 }
