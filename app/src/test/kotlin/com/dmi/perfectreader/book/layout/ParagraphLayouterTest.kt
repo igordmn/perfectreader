@@ -219,7 +219,7 @@ class ParagraphLayouterTest {
                 area shouldBe Area.WrapContent(200F)
             }
             with (height) {
-                percentBase shouldBe 0F
+                percentBase shouldBe 200F
                 area shouldBe Area.WrapContent(200F)
             }
         }

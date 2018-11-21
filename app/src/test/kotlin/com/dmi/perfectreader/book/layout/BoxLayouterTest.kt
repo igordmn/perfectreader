@@ -96,9 +96,9 @@ class BoxLayouterTest {
         // then
         with (renderBox) {
             width shouldBe 100F
-            height shouldBe 20F + 200F + 100F + 2F * 0F
+            height shouldBe 20F + 200F + 100F + 2F * 100F
             childWidths shouldBe listOf(200F, 300F, 100F, 2F * 100F)
-            childHeights shouldBe listOf(20F, 200F, 100F, 2F * 0F)
+            childHeights shouldBe listOf(20F, 200F, 100F, 2F * 100F)
         }
     }
 
@@ -124,9 +124,9 @@ class BoxLayouterTest {
         // then
         with (renderBox) {
             width shouldBe 300F
-            height shouldBe 20F + 200F + 100F + 2F * 0F
+            height shouldBe 20F + 200F + 100F + 2F * 100F
             childWidths shouldBe listOf(200F, 300F, 300F, 2F * 300F)
-            childHeights shouldBe listOf(20F, 200F, 100F, 2F * 0F)
+            childHeights shouldBe listOf(20F, 200F, 100F, 2F * 100F)
         }
     }
 
@@ -154,7 +154,7 @@ class BoxLayouterTest {
             width shouldBe 100F
             height shouldBe 100F
             childWidths shouldBe listOf(200F, 300F, 100F, 2F * 100F)
-            childHeights shouldBe listOf(20F, 200F, 100F, 2F * 0F)
+            childHeights shouldBe listOf(20F, 200F, 100F, 2F * 100F)
         }
     }
 
@@ -179,10 +179,10 @@ class BoxLayouterTest {
 
         // then
         with (renderBox) {
-            width shouldBe 1000F
-            height shouldBe 20F + 200F + 1000F + 2F * 0F
-            childWidths shouldBe listOf(200F, 300F, 1000F, 2F * 1000F)
-            childHeights shouldBe listOf(20F, 200F, 1000F, 2F * 0F)
+            width shouldBe 2000F
+            height shouldBe 20F + 200F + 1000F + 2F * 1000F
+            childWidths shouldBe listOf(200F, 300F, 2000F, 2F * 2000F)
+            childHeights shouldBe listOf(20F, 200F, 1000F, 2F * 1000F)
         }
     }
 
