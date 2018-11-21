@@ -185,7 +185,7 @@ fun ViewBuild.cell(
     val textView = TextView {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
         textColor = color(R.color.onBackground)
-        textSize = spFloat(10F)
+        textSize = dipFloat(10F)
         gravity = Gravity.CENTER
         padding = dip(4)
         ellipsize = TextUtils.TruncateAt.END
