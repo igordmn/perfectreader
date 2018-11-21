@@ -28,4 +28,4 @@ suspend fun InputStream.toBitmap(maxSize: Size): Bitmap = use { stream ->
     }
 }
 
-suspend fun ByteSource.toBitmap(maxSize: Size): Bitmap = openStream().toBitmap(maxSize)
+suspend fun ByteSource.toBitmap(maxSize: Size): Bitmap = withContext(Dispatchers.Heavy) { openStream().toBitmap(maxSize) }
