@@ -11,7 +11,7 @@ import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
+import androidx.appcompat.widget.AppCompatEditText
 import com.dmi.util.android.system.hideSoftKeyboard
 import com.dmi.util.android.system.showSoftKeyboard
 import com.dmi.util.lang.intCeil
@@ -19,7 +19,7 @@ import com.dmi.util.lang.intFloor
 import java.util.*
 import kotlin.math.max
 
-class EditNumber(context: Context) : EditText(context), ClearFocusOnClickOutside {
+class EditNumber(context: Context) : AppCompatEditText(context), ClearFocusOnClickOutside {
     var min: Float? = null
         set(value) {
             field = value
@@ -100,14 +100,14 @@ class EditNumber(context: Context) : EditText(context), ClearFocusOnClickOutside
     }
 
     var floatValue: Float
-        get() = text.toString().toFloat()
+        get() = text!!.toString().toFloat()
         set(value) {
             super.setText(formatValue(value))
             hint = text
         }
 
     var intValue: Int
-        get() = text.toString().toInt()
+        get() = text!!.toString().toInt()
         set(value) {
             super.setText(formatValue(value.toFloat()))
             hint = text
@@ -115,6 +115,7 @@ class EditNumber(context: Context) : EditText(context), ClearFocusOnClickOutside
 
     override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
         super.onFocusChanged(focused, direction, previouslyFocusedRect)
+        val text = text!!
         if (focused) {
             require(text.isNotEmpty())
             beforeEdit?.invoke()

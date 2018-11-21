@@ -1,5 +1,6 @@
 package com.dmi.util.android.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.Gravity
 import android.view.View
@@ -91,6 +92,7 @@ fun CoordinatorLayout.container(
     this.behavior = behavior
 })
 
+@SuppressLint("WrongConstant")
 fun AppBarLayout.container(
         width: Int,
         height: Int,
@@ -166,7 +168,7 @@ fun ViewBuild.RelativeLayout(build: RelativeLayout.() -> Unit) = RelativeLayout(
 fun ViewBuild.FrameLayout(build: FrameLayout.() -> Unit) = FrameLayout(context).apply(build)
 fun ViewBuild.AppCompatTextView(build: AppCompatTextView.() -> Unit) = AppCompatTextView(context).apply(build)
 fun ViewBuild.AppCompatImageView(build: AppCompatImageView.() -> Unit) = AppCompatImageView(context).apply(build)
-fun ViewBuild.EditText(build: EditText.() -> Unit) = EditText(context).apply(build)
+fun ViewBuild.AppCompatEditText(build: AppCompatEditText.() -> Unit) = AppCompatEditText(context).apply(build)
 fun ViewBuild.EditNumber(build: EditNumber.() -> Unit) = EditNumber(context).apply(build)
 fun ViewBuild.Toolbar(build: Toolbar.() -> Unit) = Toolbar(context).apply(build)
 fun ViewBuild.View(build: View.() -> Unit) = View(context).apply(build)

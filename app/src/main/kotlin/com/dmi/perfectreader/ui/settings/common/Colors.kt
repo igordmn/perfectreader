@@ -9,7 +9,6 @@ import android.text.InputType.TYPE_CLASS_TEXT
 import android.text.method.DigitsKeyListener
 import android.view.Gravity
 import android.view.MenuItem
-import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
@@ -59,7 +58,7 @@ fun ViewBuild.colorHEXDialog(
         model: SettingsUI,
         property: KMutableProperty0<Int>
 ): AlertDialog {
-    val editText = EditText {
+    val editText = AppCompatEditText {
         setText(colorToHEX(property.get()))
         filters = arrayOf(InputFilter.LengthFilter(6))
         keyListener = DigitsKeyListener.getInstance("0123456789ABCDEFabcdef")
