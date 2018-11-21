@@ -91,7 +91,7 @@ fun ViewBuild.controlDoubleTapsToolbar(
 ) = controlToolbar(titleRes, dialog).apply {
     setPadding(0, 0, dip(16), 0)
     val item = menu.add(R.string.settingsUIControlDoubleTapsEnable)
-    item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+    item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
     item.actionView = SwitchCompat {
         isChecked = enabledProperty.get()
         onClick {

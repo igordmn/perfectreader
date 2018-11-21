@@ -108,12 +108,12 @@ fun ViewBuild.stylesDetails(model: SettingsUI): LinearLayoutExt {
         navigationIcon = drawable(R.drawable.ic_arrow_left, color(R.color.onSecondary))
         setNavigationOnClickListener { adapter.deselect() }
         menu.add(R.string.settingsUIThemeSavedSelectAll).apply {
-            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
             icon = drawable(R.drawable.ic_select_all, color(R.color.onSecondary))
             onClick { selectAll() }
         }
         menu.add(R.string.settingsUIThemeSavedRemove).apply {
-            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
             icon = drawable(R.drawable.ic_delete, color(R.color.onSecondary))
             onClick { removeSelected() }
         }
@@ -127,7 +127,7 @@ fun ViewBuild.stylesDetails(model: SettingsUI): LinearLayoutExt {
         layoutTransition = fadeTransition(300)
         detailsToolbar(R.string.settingsUIThemeSaved, model).apply {
             menu.add(R.string.settingsUIThemeSavedAdd).apply {
-                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                 icon = drawable(R.drawable.ic_plus, color(R.color.onBackground))
                 onClick { add() }
             }

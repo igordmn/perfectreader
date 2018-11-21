@@ -38,7 +38,7 @@ fun ViewBuild.colorDetails(
 ) = details(
         detailsToolbar(titleRes, model).apply {
             menu.add(R.string.settingsUIColorHEX).apply {
-                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                 onClick {
                     model.popup = hex.id
                 }
