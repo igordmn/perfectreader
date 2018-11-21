@@ -22,7 +22,7 @@ fun Places.screenBrightness(model: SettingsUI) = place {
                     padding = dip(8)
                     gravity = Gravity.CENTER_VERTICAL
 
-                    imageView {
+                    ImageView {
                         backgroundResource = attr(R.attr.selectableItemBackgroundBorderless).resourceId
                         padding = dip(4)
 
