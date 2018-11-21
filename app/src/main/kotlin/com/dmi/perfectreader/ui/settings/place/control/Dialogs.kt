@@ -29,8 +29,6 @@ import org.jetbrains.anko.sdk27.coroutines.onTouch
 import kotlin.reflect.KMutableProperty0
 import com.dmi.util.action.TouchZoneConfiguration.Shapes.Zone as ShapeZone
 
-// todo refactoring
-
 fun Places.controlDialog(
         model: SettingsUI,
         view: (Dialog) -> View
@@ -40,6 +38,8 @@ fun Places.controlDialog(
         setContentView(RelativeLayout {
             view(dialog) into container(matchParent, matchParent)
         })
+        window!!.attributes.width = matchParent
+        window!!.attributes.height = matchParent
         setOnDismissListener {
             model.popup = null
         }
@@ -185,7 +185,7 @@ fun ViewBuild.cell(
     val textView = TextView {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
         textColor = color(R.color.onBackground)
-        textSize = spFloat(8F)
+        textSize = spFloat(10F)
         gravity = Gravity.CENTER
         padding = dip(4)
         ellipsize = TextUtils.TruncateAt.END
