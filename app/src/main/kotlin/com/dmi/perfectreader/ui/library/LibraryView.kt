@@ -29,34 +29,36 @@ import org.jetbrains.anko.sdk27.coroutines.onClick
 fun ViewBuild.libraryView(model: Library): View {
     val places = object : Places() {
         val sort = place {
-            val values = arrayOf(Library.Sort.Field.Name, Library.Sort.Field.Author, Library.Sort.Field.Size, Library.Sort.Field.ReadPercent)
-            val names = arrayOf(
-                    R.string.librarySortName, R.string.librarySortAuthor, R.string.librarySortSize, R.string.librarySortReadPercent
-            ).map { context.string(it) }.toTypedArray()
+            view {
+                val values = arrayOf(Library.Sort.Field.Name, Library.Sort.Field.Author, Library.Sort.Field.Size, Library.Sort.Field.ReadPercent)
+                val names = arrayOf(
+                        R.string.librarySortName, R.string.librarySortAuthor, R.string.librarySortSize, R.string.librarySortReadPercent
+                ).map { context.string(it) }.toTypedArray()
 
-            DialogView(context) {
-                var fieldIndex = values.indexOf(model.sort.field)
+                DialogView(context) {
+                    var fieldIndex = values.indexOf(model.sort.field)
 
-                fun apply(method: Library.Sort.Method) {
-                    val field = values[fieldIndex]
-                    model.sort = Library.Sort(field, method)
+                    fun apply(method: Library.Sort.Method) {
+                        val field = values[fieldIndex]
+                        model.sort = Library.Sort(field, method)
+                    }
+
+                    AlertDialog.Builder(context)
+                            .setTitle(R.string.librarySort)
+                            .setPositiveButton(R.string.librarySortAsc) { _, _ ->
+                                apply(Library.Sort.Method.ASC)
+                            }
+                            .setNegativeButton(R.string.librarySortDesc) { _, _ ->
+                                apply(Library.Sort.Method.DESC)
+                            }
+                            .setSingleChoiceItems(names, fieldIndex) { _, which ->
+                                fieldIndex = which
+                            }
+                            .setOnDismissListener {
+                                model.popup = null
+                            }
+                            .create()
                 }
-
-                AlertDialog.Builder(context)
-                        .setTitle(R.string.librarySort)
-                        .setPositiveButton(R.string.librarySortAsc) { _, _ ->
-                            apply(Library.Sort.Method.ASC)
-                        }
-                        .setNegativeButton(R.string.librarySortDesc) { _, _ ->
-                            apply(Library.Sort.Method.DESC)
-                        }
-                        .setSingleChoiceItems(names, fieldIndex) { _, which ->
-                            fieldIndex = which
-                        }
-                        .setOnDismissListener {
-                            model.popup = null
-                        }
-                        .create()
             }
         }
     }
