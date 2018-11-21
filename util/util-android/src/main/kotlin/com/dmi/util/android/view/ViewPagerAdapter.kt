@@ -65,14 +65,15 @@ class ViewPagerAdapter(vararg titlesWithCreateViews: Pair<String, ViewBuild.() -
             val array = state.getParcelableArray("items")
 
             if (array != null && items.size == array.size) {
-                restoreState(array)
+                restoreState(array, loader)
             }
         }
     }
 
-    private fun restoreState(array: Array<out Parcelable?>) {
+    private fun restoreState(array: Array<out Parcelable?>, loader: ClassLoader?) {
         for (i in items.indices) {
             val itemState = array[i] as Bundle?
+            itemState?.classLoader = loader
             val instantiated = instantiated[i]
             if (instantiated != null) {
                 if (itemState != null)
