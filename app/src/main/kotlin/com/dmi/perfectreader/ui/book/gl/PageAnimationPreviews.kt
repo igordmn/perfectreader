@@ -39,9 +39,8 @@ class PageAnimationPreviews(
                     // todo transparent background
                     glClearColor(1F, 1F, 1F, 1F)
                     glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-                    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
+                    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE)
                     animation.draw(pageTextureRight, 0.3F)
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
                     animation.draw(pageTextureLeft, -0.7F)
                     glReadPixels(0, 0, size.width, size.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelBuffer)
                     pixelBuffer.rewind()
