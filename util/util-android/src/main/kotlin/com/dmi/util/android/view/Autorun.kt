@@ -6,7 +6,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.jetbrains.anko.sdk27.coroutines.onAttachStateChangeListener
 
 /**
  * Call action and intercept all called scope values.
@@ -45,17 +44,17 @@ fun View.autorun(action: () -> Unit) {
     if (isAttachedToWindow)
         subscription = subscribe()
 
-    onAttachStateChangeListener {
-        onViewAttachedToWindow {
+    addOnAttachStateChangeListener(object: View.OnAttachStateChangeListener {
+        override fun onViewAttachedToWindow(v: View?) {
             check(subscription == null)
             subscription = subscribe()
         }
 
-        onViewDetachedFromWindow {
+        override fun onViewDetachedFromWindow(v: View?) {
             subscription!!.dispose()
             subscription = null
         }
-    }
+    })
 }
 
 fun <T : Any> View.subscribe(list: ObservableList<T>, afterAdd: (item: T) -> Unit, afterRemove: () -> Unit) {
@@ -64,8 +63,8 @@ fun <T : Any> View.subscribe(list: ObservableList<T>, afterAdd: (item: T) -> Uni
 
     check(!isAttachedToWindow)
 
-    onAttachStateChangeListener {
-        onViewAttachedToWindow {
+    addOnAttachStateChangeListener(object: View.OnAttachStateChangeListener {
+        override fun onViewAttachedToWindow(v: View?) {
             list.forEach(afterAdd)
             subscriptions += list.afterAdd.subscribe {
                 afterAdd(list.top!!)
@@ -75,8 +74,8 @@ fun <T : Any> View.subscribe(list: ObservableList<T>, afterAdd: (item: T) -> Uni
             }
         }
 
-        onViewDetachedFromWindow {
+        override fun onViewDetachedFromWindow(v: View?) {
             subscription.dispose()
         }
-    }
+    })
 }
