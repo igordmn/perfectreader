@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.HorizontalScrollView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.widget.TextViewCompat.setTextAppearance
 import com.dmi.perfectreader.R
@@ -52,7 +53,7 @@ class BreadCrumbsView(context: Context) : HorizontalScrollView(context) {
             container.addView(divider)
         }
 
-        val textView = TextView(context).apply {
+        val textView = AppCompatTextView(context).apply {
             setPadding(dip(8), dip(16), dip(8), dip(16))
             text = name
             setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Overline)

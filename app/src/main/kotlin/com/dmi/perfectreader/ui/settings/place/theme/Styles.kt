@@ -6,9 +6,9 @@ import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.TextView
 import android.widget.Toolbar
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.dmi.perfectreader.R
@@ -149,7 +149,7 @@ fun ViewBuild.stylesDetails(model: SettingsUI): LinearLayoutExt {
 class ThemeSavedItemView(context: Context) : FrameLayout(context), Bindable<SavedTheme> {
     private val pageBitmap = SettingBitmapView(context, size = dip(64))
     private val pageColor = View(context)
-    private val letter = TextView(context).apply {
+    private val letter = AppCompatTextView(context).apply {
         textSize = dipFloat(16F)
         typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         text = "A"

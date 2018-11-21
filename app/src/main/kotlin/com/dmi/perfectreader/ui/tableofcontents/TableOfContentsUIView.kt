@@ -5,7 +5,7 @@ import android.content.Context
 import android.graphics.Typeface
 import android.view.Gravity
 import android.view.View
-import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.widget.TextViewCompat.setTextAppearance
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -65,8 +65,8 @@ class ChapterView(
         private val currentIndex: Int,
         private val chapters: List<TableOfContents.PlainChapter>
 ) : LinearLayoutCompat(context), Bindable<Int> {
-    private val chapterView = TextView(context)
-    private val pageView = TextView(context)
+    private val chapterView = AppCompatTextView(context)
+    private val pageView = AppCompatTextView(context)
 
     init {
         layoutParams = LinearLayoutCompat.LayoutParams(matchParent, wrapContent)

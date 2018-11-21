@@ -64,14 +64,14 @@ fun ViewBuild.controlDoubleTaps(
     VerticalLayout {
         padding = dip(16)
 
-        TextView {
+        AppCompatTextView {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
             textColor = color(R.color.onBackground)
             textResource = R.string.settingsUIControlDoubleTapsIsDisabled
             gravity = Gravity.CENTER_HORIZONTAL
         } into container(matchParent, wrapContent)
 
-        TextView {
+        AppCompatTextView {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
             textColor = color(R.color.onBackground).withOpacity(0.60)
             textResource = R.string.settingsUIControlDoubleTapsWarning
@@ -182,7 +182,7 @@ fun ViewBuild.cell(
 ) = FrameLayout {
     backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
 
-    val textView = TextView {
+    val textView = AppCompatTextView {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
         textColor = color(R.color.onBackground)
         textSize = dipFloat(10F)

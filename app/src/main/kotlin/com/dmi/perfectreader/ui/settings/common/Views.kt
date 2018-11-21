@@ -38,7 +38,7 @@ class PreviewView(val view: View, val withPadding: Boolean = true, val isClickab
 
 fun ViewBuild.emptyPreview() = PreviewView(ViewStub(context))
 
-fun <T> ViewBuild.propertyPreview(property: KProperty0<T>, format: (Context, value: T) -> String) = PreviewView(TextView {
+fun <T> ViewBuild.propertyPreview(property: KProperty0<T>, format: (Context, value: T) -> String) = PreviewView(AppCompatTextView {
     autorun {
         text = format(context, property.get())
     }
@@ -179,13 +179,13 @@ fun ViewBuild.titleSetting(
 
     VerticalLayout {
         setPaddingRelative(0, dip(12), dip(16), dip(12))
-        TextView {
+        AppCompatTextView {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
             textColor = color(R.color.onBackground)
             text = string(titleRes)
         } into container(wrapContent, wrapContent)
         if (subtitleRes != null) {
-            TextView {
+            AppCompatTextView {
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)
                 text = string(subtitleRes)

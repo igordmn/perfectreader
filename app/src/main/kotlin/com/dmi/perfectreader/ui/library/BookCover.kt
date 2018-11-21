@@ -6,8 +6,8 @@ import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import com.dmi.perfectreader.R
 import com.dmi.util.android.graphics.toBitmap
 import com.dmi.util.android.view.*
@@ -27,7 +27,7 @@ class BookCover(context: Context, private val imageSize: Size) : FrameLayout(con
     private val image = AppCompatImageView(context).apply {
         scaleType = ImageView.ScaleType.CENTER
     } into container(imageSize.width, imageSize.height)
-    private val text = TextView(context).apply {
+    private val text = AppCompatTextView(context).apply {
         padding = imageSize.width / 12
         gravity = Gravity.CENTER
         textColor = color(R.color.onSecondary)

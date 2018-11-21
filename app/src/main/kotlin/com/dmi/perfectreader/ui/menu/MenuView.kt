@@ -73,7 +73,7 @@ fun ViewBuild.menuView(model: Menu): View {
         LinearLayoutCompat {
             orientation = LinearLayoutCompat.HORIZONTAL
 
-            TextView {
+            AppCompatTextView {
                 isClickable = true
                 isFocusable = true
                 setPadding(dip(16), dip(16), 0, dip(16))
@@ -113,7 +113,7 @@ fun ViewBuild.menuView(model: Menu): View {
                 }
             } into container(wrapContent, wrapContent, weight = 0F)
 
-            TextView {
+            AppCompatTextView {
                 setPadding(0, dip(16), dip(16), dip(16))
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Subtitle2)
                 textColor = color(R.color.onBackground).withOpacity(0.60)

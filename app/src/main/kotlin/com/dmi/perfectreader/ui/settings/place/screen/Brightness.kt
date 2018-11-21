@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import android.view.WindowManager
 import android.widget.SeekBar
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatSeekBar
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.ui.settings.SettingsUI
@@ -40,7 +41,7 @@ fun Places.screenBrightness(model: SettingsUI) = place {
                             }
                         } into container(wrapContent, wrapContent)
 
-                        object : SeekBar(context) {
+                        object : AppCompatSeekBar(context) {
                             init {
                                 progressDrawable.setColorFilter(color(com.dmi.perfectreader.R.color.secondary), PorterDuff.Mode.MULTIPLY)
                                 max = 1000

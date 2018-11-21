@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import com.dmi.perfectreader.R
 import com.dmi.util.android.view.*
@@ -36,14 +37,14 @@ class PerformingActionView(context: Context) : FrameLayout(context) {
                     gravity = Gravity.CENTER_HORIZONTAL
                     setPadding(dip(12), dip(4), dip(12), dip(4))
 
-                    name = TextView(context).apply {
+                    name = AppCompatTextView(context).apply {
                         isAllCaps = true
                         textColor = color(R.color.onSecondary)
                         textSize = spFloat(16F)
                         gravity = Gravity.CENTER_HORIZONTAL
                     } into container(wrapContent, wrapContent)
 
-                    value = TextView(context).apply {
+                    value = AppCompatTextView(context).apply {
                         isAllCaps = true
                         textColor = color(R.color.onSecondary)
                         textSize = spFloat(24F)

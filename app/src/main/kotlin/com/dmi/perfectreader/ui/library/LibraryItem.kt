@@ -4,8 +4,12 @@ import android.content.Context
 import android.text.TextUtils
 import android.text.format.Formatter
 import android.view.Gravity
-import android.widget.*
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -29,12 +33,12 @@ class FolderItemView(
         private val library: Library,
         private val get: (index: Int) -> Library.Item.Folder
 ) : LibraryItemView(context) {
-    private val name = TextView(context).apply {
+    private val name = AppCompatTextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
         maxLines = 2
         ellipsize = TextUtils.TruncateAt.END
     }
-    private val count = TextView(context).apply {
+    private val count = AppCompatTextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
         textColor = color(R.color.onBackground).withOpacity(0.60)
     }
@@ -78,20 +82,20 @@ class BookItemView(
 ) : LibraryItemView(context) {
     private val cover = BookCover(context, Size(dip(48), dip(72)))
 
-    private val name = TextView(context).apply {
+    private val name = AppCompatTextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
         maxLines = 2
         ellipsize = TextUtils.TruncateAt.END
     }
 
-    private val author = TextView(context).apply {
+    private val author = AppCompatTextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
         textColor = color(R.color.onBackground).withOpacity(0.60)
         maxLines = 2
         ellipsize = TextUtils.TruncateAt.END
     }
 
-    private val fileSize = TextView(context).apply {
+    private val fileSize = AppCompatTextView(context).apply {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
         textColor = color(R.color.onBackground).withOpacity(0.60)
     }

@@ -163,7 +163,7 @@ fun ViewBuild.libraryView(model: Library): View {
         }
     }
 
-    fun emptyFolder(): View = TextView {
+    fun emptyFolder(): View = AppCompatTextView {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
         padding = dip(16)
         textColor = color(R.color.onBackground).withOpacity(0.60)

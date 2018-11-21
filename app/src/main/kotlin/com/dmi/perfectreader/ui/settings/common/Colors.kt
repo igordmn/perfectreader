@@ -12,6 +12,7 @@ import android.view.MenuItem
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatTextView
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.ui.settings.SettingsUI
 import com.dmi.util.android.view.*
@@ -65,7 +66,7 @@ fun ViewBuild.colorHEXDialog(
         inputType = TYPE_CLASS_TEXT
     }
     val view = HorizontalLayout {
-        TextView {
+        AppCompatTextView {
             text = "#"
         } into container(wrapContent, wrapContent, Gravity.CENTER_VERTICAL, weight = 0F)
         editText into container(matchParent, wrapContent, Gravity.CENTER_VERTICAL, weight = 1F)
@@ -91,7 +92,7 @@ fun ViewBuild.colorPreview(property: KProperty0<Int>) = PreviewView(ColorPreview
 class ColorPreviewView(
         context: Context,
         private val property: KProperty0<Int>
-) : TextView(context) {
+) : AppCompatTextView(context) {
     private val paint = Paint()
     private var color: Int = property.get()
     private val strokeWidth = 1F

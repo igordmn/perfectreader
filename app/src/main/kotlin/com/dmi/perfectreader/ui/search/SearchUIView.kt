@@ -12,6 +12,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
@@ -41,7 +42,7 @@ fun ViewBuild.searchUIView(
             override fun view(viewType: Int) = SearchResultView(context, model, book) { model.results!!.list[it] }
         }).apply {
             id = generateId()
-            header = TextView {
+            header = AppCompatTextView {
                 setPadding(dip(16), dip(12), dip(16), dip(12))
                 layoutParams = LinearLayout.LayoutParams(matchParent, wrapContent)
                 TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
@@ -72,7 +73,7 @@ fun ViewBuild.searchUIView(
         }
     }
 
-    fun noResults(): View = TextView {
+    fun noResults(): View = AppCompatTextView {
         TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
         gravity = Gravity.CENTER
         padding = dip(16)
@@ -142,10 +143,10 @@ class SearchResultView(
         private val book: Book,
         private val getResult: (index: Int) -> SearchUI.Result
 ) : LinearLayoutCompat(context), Bindable<Int> {
-    private val textView = TextView(context).apply {
+    private val textView = AppCompatTextView(context).apply {
         setPadding(dip(0), dip(0), dip(16), dip(0))
     }
-    private val pageView = TextView(context)
+    private val pageView = AppCompatTextView(context)
 
     init {
         layoutParams = LinearLayoutCompat.LayoutParams(matchParent, wrapContent)

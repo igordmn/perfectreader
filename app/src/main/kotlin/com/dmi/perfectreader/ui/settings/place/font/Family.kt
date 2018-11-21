@@ -6,6 +6,7 @@ import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.widget.TextViewCompat
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
@@ -37,7 +38,7 @@ fun ViewBuild.fontFamilyDetails(model: SettingsUI) = details(
         )
 )
 
-class FontFamilyItemView(context: Context) : TextView(context), Bindable<String> {
+class FontFamilyItemView(context: Context) : AppCompatTextView(context), Bindable<String> {
     private val fonts = context.main.resources.fonts
     private val load = ViewLoad(this)
 
@@ -71,7 +72,7 @@ fun fontFamilyPreview(context: Context) = PreviewView(FontFamilyPreviewView(cont
 class FontFamilyPreviewView(
         context: Context,
         model: KProperty0<String> = context.main.settings.font::fontFamily
-) : TextView(context) {
+) : AppCompatTextView(context) {
     private val fonts: Fonts = context.main.resources.fonts
 
     init {

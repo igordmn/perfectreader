@@ -25,7 +25,7 @@ fun ViewBuild.readerLoadView(model: ReaderLoad) = FrameLayoutExt {
             visibility = if (model.isLoading) View.VISIBLE else View.GONE
         }
     } into container(wrapContent, wrapContent, Gravity.CENTER)
-    TextView {
+    AppCompatTextView {
         fun showError(strId: Int) {
             TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body1)
             visibility = View.VISIBLE
