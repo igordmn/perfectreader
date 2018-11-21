@@ -36,10 +36,12 @@ class PageAnimationPreviews(
                 glViewport(0, 0, size.width, size.height)
 
                 frameBuffer.bind {
-                    glClearColor(0F, 0F, 0F, 0F)
+                    // todo transparent background
+                    glClearColor(1F, 1F, 1F, 1F)
                     glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
                     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
                     animation.draw(pageTextureRight, 0.3F)
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
                     animation.draw(pageTextureLeft, -0.7F)
                     glReadPixels(0, 0, size.width, size.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelBuffer)
                     pixelBuffer.rewind()
@@ -71,7 +73,7 @@ class PageAnimationPreviews(
 
         paint.color = Color.BLACK
         paint.style = Paint.Style.STROKE
-        paint.strokeWidth = height * 0.01F
+        paint.strokeWidth = height * 0.03F
         canvas.drawRect(spacing, spacing, width - spacing, height - spacing, paint)
 
         paint.style = Paint.Style.FILL
