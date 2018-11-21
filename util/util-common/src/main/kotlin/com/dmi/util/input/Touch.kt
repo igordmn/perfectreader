@@ -5,19 +5,34 @@ import com.dmi.util.graphic.PositionF
 import com.dmi.util.graphic.distance
 import com.dmi.util.graphic.sqrDistance
 
-class TouchArea(val x: Float, val y: Float, val radius: Float) {
+data class TouchArea(val x: Float, val y: Float, val radius: Float) {
     operator fun times(multiplier: Float) = TouchArea(x * multiplier, y * multiplier, radius * multiplier)
     operator fun div(divider: Float) = TouchArea(x / divider, y / divider, radius / divider)
     val position: PositionF = PositionF(x, y)
 }
 
-class TouchState(val fingers: Array<out TouchArea>) {
+data class TouchState(val fingers: Array<out TouchArea>) {
     val fingerCount: Int get() = fingers.size
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as TouchState
+
+        if (!fingers.contentEquals(other.fingers)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return fingers.contentHashCode()
+    }
 }
 
 enum class TouchAction { DOWN, UP, MOVE }
 
-class TouchEvent(val action: TouchAction, val state: TouchState, val timeMillis: Long)
+data class TouchEvent(val action: TouchAction, val state: TouchState, val timeMillis: Long)
 
 fun touchCenterArea(state: TouchState): TouchArea {
     require(state.fingerCount >= 1)

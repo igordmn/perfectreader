@@ -7,13 +7,20 @@ import com.dmi.util.android.input.performTouchEvents
 import com.dmi.util.android.view.FrameLayoutExt
 import com.dmi.util.android.view.ViewBuild
 import com.dmi.util.android.view.onSizeChange
+import com.dmi.util.input.MissingTouchEvents
 import org.jetbrains.anko.sdk27.coroutines.onTouch
 
 fun ViewBuild.controlView(model: Control) = FrameLayoutExt {
+    val missingTouchEvents = MissingTouchEvents()
+
     onTouch(returnValue = true) { _, event ->
         when(event.actionMasked) {
             MotionEvent.ACTION_CANCEL -> model.cancelTouch()
-            else -> event.performTouchEvents { model.onTouchEvent(it) }
+            else -> event.performTouchEvents { original ->
+                missingTouchEvents.onTouch(original) { missing ->
+                    model.onTouchEvent(missing)
+                }
+            }
         }
     }
 

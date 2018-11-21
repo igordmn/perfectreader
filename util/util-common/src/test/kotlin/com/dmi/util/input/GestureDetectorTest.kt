@@ -287,6 +287,16 @@ class GestureDetectorTest {
     }
 
     @Test
+    fun `two fingers start pinch in 2`() = testDetector {
+        touchDown(area(10, 0, 1)) leadsTo nothing
+        touchDown(area(10, 0, 1), area(40, 0, 1)) leadsTo nothing
+        touchMove(area(10, 0, 1), area(30, 0, 1)) leadsTo nothing
+        touchMove(area(20, 0, 1), area(30, 0, 1)) leadsTo listOf(OnPinchStart(PinchDirection.IN), OnPinch(-10))
+        touchUp(area(20, 0, 1)) leadsTo nothing
+        touchUp() leadsTo OnPinchEnd
+    }
+
+    @Test
     fun `multiple fingers start pinch out`() = testDetector {
         touchDown(area(10, 0, 1)) leadsTo nothing
         touchMove(area(15, 0, 1)) leadsTo nothing
