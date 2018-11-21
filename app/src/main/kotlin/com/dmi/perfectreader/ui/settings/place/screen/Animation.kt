@@ -3,7 +3,7 @@ package com.dmi.perfectreader.ui.settings.place.screen
 import android.content.Context
 import android.view.Gravity
 import android.widget.FrameLayout
-import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatImageView
 import com.dmi.perfectreader.R
 import com.dmi.perfectreader.main
 import com.dmi.perfectreader.ui.book.Book
@@ -52,7 +52,7 @@ private class ScreenAnimationPreviewViewInner(
         context: Context,
         glContext: GLContext,
         size: Int
-) : ImageView(context), Bindable<String> {
+) : AppCompatImageView(context), Bindable<String> {
     private val previews = context.main.resources.pageAnimationPreviews(glContext)
     private val load = ViewLoad(this)
     private val previewSize = Size(size, size * 4 / 3)

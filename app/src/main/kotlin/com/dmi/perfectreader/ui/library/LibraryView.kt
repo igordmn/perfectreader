@@ -106,7 +106,7 @@ fun ViewBuild.libraryView(model: Library): View {
     fun foldersBar() = HorizontalLayout {
         backgroundColor = color(R.color.primary)
         addressBar() into container(matchParent, wrapContent, weight = 1F)
-        ImageView {
+        AppCompatImageView {
             padding = dip(4)
             image = drawable(R.drawable.ic_sort, color(R.color.onBackground))
             backgroundResource = attr(android.R.attr.selectableItemBackgroundBorderless).resourceId

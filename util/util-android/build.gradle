@@ -20,7 +20,7 @@ android {
         release {
             externalNativeBuild {
                 cmake {
-                    cppFlags.addAll('-ffunction-sections', '-fdata-sections', '-fvisibility=hidden', '-O2', '-Wl,--gc-sections')
+//                    cppFlags.addAll('-ffunction-sections', '-fdata-sections', '-fvisibility=hidden', '-O2', '-Wl,--gc-sections')
                 }
             }
         }

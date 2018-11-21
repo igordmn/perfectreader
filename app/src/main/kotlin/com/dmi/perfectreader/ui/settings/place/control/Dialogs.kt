@@ -194,7 +194,7 @@ fun ViewBuild.cell(
     if (icon != null) {
         twoInCenter(
                 if (isSmallVertical) LinearLayoutCompat.HORIZONTAL else LinearLayoutCompat.VERTICAL,
-                ImageView {
+                AppCompatImageView {
                     image = drawable(icon, color(R.color.onBackground).withOpacity(0.10))
                 },
                 textView

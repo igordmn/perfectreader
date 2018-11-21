@@ -4,8 +4,8 @@ import android.content.Context
 import android.view.Gravity
 import android.view.View
 import android.widget.HorizontalScrollView
-import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.widget.TextViewCompat.setTextAppearance
 import com.dmi.perfectreader.R
@@ -71,7 +71,7 @@ class BreadCrumbsView(context: Context) : HorizontalScrollView(context) {
         container.removeView(textViews.removeLast())
     }
 
-    private fun divider() = ImageView(context).apply {
+    private fun divider() = AppCompatImageView(context).apply {
         image = drawable(R.drawable.ic_keyboard_arrow_right, color(R.color.onBackground).withOpacity(0.38))
     }
 }

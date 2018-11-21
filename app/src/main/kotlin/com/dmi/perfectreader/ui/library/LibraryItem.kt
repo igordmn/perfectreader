@@ -5,6 +5,7 @@ import android.text.TextUtils
 import android.text.format.Formatter
 import android.view.Gravity
 import android.widget.*
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -45,7 +46,7 @@ class FolderItemView(
             orientation = LinearLayoutCompat.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
 
-            ImageView(context).apply {
+            AppCompatImageView(context).apply {
                 image = drawable(R.drawable.library_folder, color(R.color.secondary))
                 scaleType = ImageView.ScaleType.CENTER
             } into container(dip(48), dip(48), weight = 0F)

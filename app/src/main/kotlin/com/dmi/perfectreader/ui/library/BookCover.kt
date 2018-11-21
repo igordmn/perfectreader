@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
 import com.dmi.perfectreader.R
 import com.dmi.util.android.graphics.toBitmap
 import com.dmi.util.android.view.*
@@ -23,7 +24,7 @@ class BookCover(context: Context, private val imageSize: Size) : FrameLayout(con
     private val value1 = 0.40F
     private val value2 = 0.60F
 
-    private val image = ImageView(context).apply {
+    private val image = AppCompatImageView(context).apply {
         scaleType = ImageView.ScaleType.CENTER
     } into container(imageSize.width, imageSize.height)
     private val text = TextView(context).apply {

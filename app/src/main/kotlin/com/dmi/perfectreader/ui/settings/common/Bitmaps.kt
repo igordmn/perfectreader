@@ -3,7 +3,7 @@ package com.dmi.perfectreader.ui.settings.common
 import android.content.Context
 import android.view.Gravity
 import android.widget.FrameLayout
-import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatImageView
 import com.dmi.perfectreader.main
 import com.dmi.util.android.graphics.toBitmap
 import com.dmi.util.android.view.Bindable
@@ -13,7 +13,7 @@ import com.dmi.util.android.view.into
 import com.dmi.util.graphic.Size
 import java.net.URI
 
-private class SettingBitmapViewInner(context: Context, private val size: Int) : ImageView(context), Bindable<String> {
+private class SettingBitmapViewInner(context: Context, private val size: Int) : AppCompatImageView(context), Bindable<String> {
     private val uriHandler = context.main.uriHandler
     private val load = ViewLoad(this)
 
