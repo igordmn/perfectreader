@@ -115,7 +115,7 @@ class Actions(
             private val property: KMutableProperty0<Float>,
             private val values: FloatArray
     ) : Action {
-        private val sensitivity = 16F * density
+        private val sensitivity = 8F * density
 
         private var deltaFromLast = 0F
 
