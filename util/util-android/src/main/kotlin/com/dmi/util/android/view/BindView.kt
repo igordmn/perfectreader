@@ -7,6 +7,7 @@ import android.os.Parcelable
 import android.util.SparseArray
 import android.view.View
 import android.widget.FrameLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.util.set
 import com.dmi.util.scope.dontObserve
 import org.jetbrains.anko.matchParent
@@ -18,7 +19,7 @@ class BindView<M, V: View>(
         private val model: KProperty0<M?>,
         private val view: ViewBuild.(M, old: V?) -> V,
         private val defferStateRestore: Boolean
-) : FrameLayout(context) {
+) : CoordinatorLayout(context) {
     private var restoredState: Bundle? = null
 
     init {
@@ -85,7 +86,7 @@ fun <M : Any, V : View> ViewBuild.bindChild(
          * for example, use this when need restore state of loading view
          */
         defferStateRestore: Boolean = false
-): FrameLayout {
+): CoordinatorLayout {
     val childContainer = BindView(context, model, view, defferStateRestore)
     childContainer.layoutParams = container.params
     container.view.addView(childContainer)
@@ -98,7 +99,7 @@ fun <M : Any> ViewBuild.bindChild(
         model: KProperty0<M?>,
         view: ViewBuild.(M) -> View,
         defferStateRestore: Boolean = false
-): FrameLayout {
+): CoordinatorLayout {
     @Suppress("UNUSED_PARAMETER")
     fun ViewBuild.view(model: M, old: View?) = view(model)
     return bindChild(container, model, ViewBuild::view, defferStateRestore)
