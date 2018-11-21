@@ -32,6 +32,7 @@ android {
             jniDebuggable true
             minifyEnabled false
             shrinkResources false
+            testCoverageEnabled true
             signingConfig config['sign.enabled'] ? signingConfigs.main : null
         }
         release {
