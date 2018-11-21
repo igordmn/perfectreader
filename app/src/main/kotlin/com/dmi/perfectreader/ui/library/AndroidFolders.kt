@@ -80,8 +80,7 @@ private suspend fun loadItems(
 ): List<Library.Item> = withContext(Dispatchers.IO) {
     entries(androidContext, volumeName)
             .toTree(id)
-            .removeUnsupported(parsers)
-            .removeEmpty()
+            .removeUnsupportedAndEmpty(parsers)
             .calculateDeepCount()
             .children
             .map {
@@ -107,9 +106,7 @@ private fun entries(context: Context, volumeName: String) = sequence {
             MediaStore.Files.getContentUri(volumeName),
             arrayOf(_ID, PARENT, DATA, SIZE),
             null, null, null
-    ).use {
-        it!!
-
+    )?.use {
         while (it.moveToNext()) {
             val data = it.getStringOrNull(2)
             if (data != null) {
@@ -125,26 +122,13 @@ private fun entries(context: Context, volumeName: String) = sequence {
     }
 }
 
-private fun ContentTree.removeUnsupported(parsers: BookParsers): ContentTree {
+private fun ContentTree.removeUnsupportedAndEmpty(parsers: BookParsers): ContentTree {
     val it = children.iterator()
     while (it.hasNext()) {
         val child = it.next()
         val entry = child.entry
-        if (entry != null && entry.size > 0 && !parsers.isSupported(entry.uri)) {
-            it.remove()
-        }
-        child.removeUnsupported(parsers)
-    }
-    return this
-}
-
-private fun ContentTree.removeEmpty(): ContentTree {
-    val it = children.iterator()
-    while (it.hasNext()) {
-        val child = it.next()
-        val entry = child.entry
-        child.removeEmpty()
-        if (entry == null || entry.size == 0L && child.children.size == 0) {
+        child.removeUnsupportedAndEmpty(parsers)
+        if (entry == null || child.children.size == 0 && (entry.size == 0L || !parsers.isSupported(entry.uri))) {
             it.remove()
         }
     }
@@ -153,7 +137,7 @@ private fun ContentTree.removeEmpty(): ContentTree {
 
 private fun ContentTree.calculateDeepCount(): ContentTree {
     val entry = entry
-    if (entry != null && entry.size > 0) {
+    if (entry != null && children.size == 0) {
         deepChildCount++
     } else {
         for (child in children) {
@@ -166,7 +150,7 @@ private fun ContentTree.calculateDeepCount(): ContentTree {
 
 private suspend fun ContentTree.toItem(context: MainContext, volumeName: String): Library.Item {
     val entry = entry!!
-    return if (entry.size > 0) {
+    return if (children.size == 0) {
         loadBookItem(context, entry.uri, entry.size)
     } else {
         val name = entry.uri.lastPathSegment!!

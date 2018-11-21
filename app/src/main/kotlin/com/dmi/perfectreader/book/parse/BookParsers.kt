@@ -21,7 +21,7 @@ class BookParsers(log: Log) {
         return when (extension) {
             "txt" -> TXTParser(charsetDetector, source, fileName)
             "fb2" -> FB2Parser(charsetDetector, source, fileName)
-            else -> unsupported("Unsupported format")
+            else -> unsupported("Unsupported format $extension")
         }
     }
 
