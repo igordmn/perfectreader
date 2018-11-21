@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.dmi.perfectreader">
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
     <application>
     </application>
 

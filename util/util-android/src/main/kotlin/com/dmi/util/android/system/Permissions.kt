@@ -1,6 +1,5 @@
 package com.dmi.util.android.system
 
-import android.Manifest
 import android.content.Context
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
@@ -9,7 +8,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class Permissions(private val context: Context) {
-    suspend fun askReadStorage(): Boolean = suspendCoroutine { cont ->
+    suspend fun ask(permissions: Array<String>): Boolean = suspendCoroutine { cont ->
         TedPermission.with(context)
                 .setPermissionListener(object : PermissionListener {
                     override fun onPermissionGranted() {
@@ -20,7 +19,7 @@ class Permissions(private val context: Context) {
                         cont.resume(false)
                     }
                 })
-                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .setPermissions(*permissions)
                 .check()
     }
 }

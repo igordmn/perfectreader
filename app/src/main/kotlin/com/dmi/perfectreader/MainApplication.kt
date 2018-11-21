@@ -10,23 +10,49 @@ import com.dmi.util.lang.NoStackTraceThrowable
 import com.dmi.util.log.DebugLog
 import com.dmi.util.log.Log
 import com.dmi.util.log.ReleaseLog
+import com.github.moduth.blockcanary.BlockCanary
+import com.github.moduth.blockcanary.BlockCanaryContext
 import kotlinx.coroutines.Dispatchers
+import java.io.File
+
 
 @Suppress("ConstantConditionIf")
 class MainApplication : Application() {
     lateinit var context: MainContext
         private set
 
+    private var initAfterPermissions = false
+
     override fun onCreate() {
         super.onCreate()
         System.loadLibrary("utilAndroid")
-        val log = initLog()
         IsDebug = BuildConfig.DEBUG
+        val log = initLog()
+//        TinyDancer.create().show(this)
         initMainExceptionCatcher(log)
         initStrictMode()
         initThreadContext(Dispatchers.Main)
-//        TinyDancer.create().show(this)
         context = MainContext(log, this)
+    }
+
+    fun initAfterPermissions() {
+        if (!initAfterPermissions) {
+            initBlockCanary()
+            initAfterPermissions = true
+        }
+    }
+
+    private fun initBlockCanary() {
+        if (BuildConfig.DEBUG) {
+            val path = "$cacheDir/blockcanary/"
+            File(path).delete()
+            val context = object : BlockCanaryContext() {
+                override fun provideBlockThreshold() = 200
+                override fun providePath() = path
+                override fun displayNotification() = false
+            }
+            BlockCanary.install(this, context).start()
+        }
     }
 
     private fun initLog() = if (BuildConfig.DEBUG) {
