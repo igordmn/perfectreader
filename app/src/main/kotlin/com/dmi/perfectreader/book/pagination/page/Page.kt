@@ -26,5 +26,9 @@ class Page(
         footer?.forEachChildRecursive(x + footerPosition.x, y + footerPosition.y, action)
     }
 
+    fun forEachColumnChildRecursive(x: Float, y: Float, action: (x: Float, y: Float, obj: LayoutObject) -> Unit) {
+        column.forEachChildRecursive(x + contentPosition.x, y + contentPosition.y, action)
+    }
+
     override fun toString() = column.toString()
 }

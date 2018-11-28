@@ -146,7 +146,7 @@ fun Page.selectionCaretAtRight(location: Location): LayoutCaret? {
 
 fun Page.selectionCaretAtBegin(): LayoutCaret? {
     var firstObj: LayoutText? = null
-    forEachChildRecursive(0F, 0F) { _, _, obj ->
+    forEachColumnChildRecursive(0F, 0F) { _, _, obj ->
         if (obj is LayoutText) {
             if (firstObj == null)
                 firstObj = obj
@@ -157,7 +157,7 @@ fun Page.selectionCaretAtBegin(): LayoutCaret? {
 
 fun Page.selectionCaretAtEnd(): LayoutCaret? {
     var lastObj: LayoutText? = null
-    forEachChildRecursive(0F, 0F) { _, _, obj ->
+    forEachColumnChildRecursive(0F, 0F) { _, _, obj ->
         if (obj is LayoutText) {
             lastObj = obj
         }
@@ -168,7 +168,7 @@ fun Page.selectionCaretAtEnd(): LayoutCaret? {
 private fun Page.iterateSelectableObjects(
         action: (objLeft: Float, objTop: Float, obj: LayoutText) -> Unit
 ) {
-    forEachChildRecursive(0F, 0F) { objLeft, objTop, obj ->
+    forEachColumnChildRecursive(0F, 0F) { objLeft, objTop, obj ->
         if (obj is LayoutText && obj.isSelectable() && obj !is LayoutSpaceText) {
             action(objLeft, objTop, obj)
         }
