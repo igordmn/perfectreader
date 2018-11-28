@@ -15,7 +15,7 @@ class Menu(
 ) : Screen by Screen() {
     val locationText: String get() = if (book.pageNumber == 0) bookName else chapterName
     private val bookName: String get() = book.description.name ?: book.description.fileName
-    private val chapterName: String get() = book.chapter?.name ?: bookName
+    private val chapterName: String get() = book.chapter?.name ?: ""
 }
 
 @Serializable
