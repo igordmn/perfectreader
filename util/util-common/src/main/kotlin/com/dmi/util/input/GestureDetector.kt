@@ -53,7 +53,6 @@ class GestureDetector(
     private var velocityTrackerFingerCount = 0
 
     fun onTouchEvent(event: TouchEvent) {
-        println(event)
         val state = state
         val touchState = event.state
         val action = event.action
