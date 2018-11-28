@@ -6,6 +6,7 @@ import com.dmi.perfectreader.book.content.location.Location
 import com.dmi.perfectreader.book.content.location.LocationRange
 import com.dmi.perfectreader.book.parse.BookParser
 import com.dmi.perfectreader.book.parse.CharsetDetector
+import com.dmi.perfectreader.book.parse.format.txt.txtParagraphs
 import com.dmi.util.io.withoutUtfBom
 import com.google.common.io.ByteSource
 import kotlinx.coroutines.Dispatchers
@@ -21,16 +22,15 @@ class TXTParser(
         val content = Content.Builder()
         val root = content.root(locale = null)
 
-        var begin = 0.0
-
-        source.openBufferedStream().withoutUtfBom().reader(charset).forEachLine { text ->
-            if (text.isNotEmpty()) {
-                val end = begin + text.length
-                val range = LocationRange(Location(begin), Location(end))
+        source.openBufferedStream().withoutUtfBom().reader(charset).useLines { lines ->
+            lines.txtParagraphs().forEach { par ->
+                val range = LocationRange(
+                        Location(par.positions.first.toDouble()),
+                        Location(par.positions.last.toDouble())
+                )
                 root.frame {
-                    paragraph(text, range)
+                    paragraph(par.text, range)
                 }
-                begin = end
             }
         }
 
