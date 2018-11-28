@@ -41,7 +41,8 @@ class LoadingPages(
 
     private fun loadJob() = scope.launch {
         while (!buffer.isCompleted) {
-            load.perform()
+            if (load.isValid)
+                load.perform()
             load = nextLoad()
         }
     }
