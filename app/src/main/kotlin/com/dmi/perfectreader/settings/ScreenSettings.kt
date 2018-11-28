@@ -11,7 +11,7 @@ class ScreenSettings(store: ValueStore) {
     var orientation: ScreenOrientation by store.value(ScreenOrientation.SYSTEM)
     
     var footerEnabled by store.value(true)
-    var footerTextSizePercent by store.value(0.75F)
+    var footerTextSizePercent by store.value(0.7F)
     var footerHeightEm by store.value(1.4F)
     var footerPaddingBottomPercent by store.value(-0.2F)
     var footerPageNumber by store.value(true)
