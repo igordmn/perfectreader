@@ -1,6 +1,7 @@
 -optimizations !class/merging/horizontal
 -optimizationpasses 7
 -allowaccessmodification
+-dontobfuscate
 
 -dontpreverify
 -dontusemixedcaseclassnames
@@ -77,6 +78,7 @@
 -dontwarn afu.org.checkerframework.**
 -dontwarn org.checkerframework.**
 -dontwarn com.google.errorprone.annotations.*
+-dontwarn com.google.common.**
 
 # RxJava
 -dontwarn sun.misc.**
@@ -107,4 +109,26 @@
 -keep @com.dmi.util.android.jni.UsedByNative class *
 -keepclassmembers class ** {
     @com.dmi.util.android.jni.UsedByNative *;
+}
+
+-keep class kotlinx.coroutines.** { *; }
+-keep class com.dmi.util.android.jni.** { *; }
+-keepclassmembers class com.dmi.util.android.jni.** { *; }
+
+# Kotlin serialization
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.SerializationKt
+-keep,includedescriptorclasses class com.dmi.perfectreader.**$$serializer { *; }
+-keepclassmembers class com.dmi.perfectreader.** {
+    *** Companion;
+}
+-keepclasseswithmembers class com.dmi.perfectreader.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+# Kotlin coroutines
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepclassmembernames class kotlinx.** {
+    volatile <fields>;
 }

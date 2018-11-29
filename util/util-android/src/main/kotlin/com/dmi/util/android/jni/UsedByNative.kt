@@ -1,6 +1,6 @@
 package com.dmi.util.android.jni
 
-@Retention(AnnotationRetention.SOURCE)
+@Retention(AnnotationRetention.BINARY)
 @Target(
         AnnotationTarget.CLASS,
         AnnotationTarget.FILE,
