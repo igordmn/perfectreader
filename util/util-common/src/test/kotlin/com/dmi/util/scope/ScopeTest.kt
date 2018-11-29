@@ -452,6 +452,10 @@ class ScopeTest {
             X()
         }
 
+        val xx: X? by scope.async(context) {
+            x
+        }
+
         yield()
         yield()
         yield()
